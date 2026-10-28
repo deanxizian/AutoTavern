@@ -118,3 +118,7 @@ the last good checkpoint. A kill -9 or machine loss may lose progress since that
 This first stage does not implement an opponent league, self-play, search, or an LLM agent.
 Those are separate improvements to assess against this reproducible baseline. TavernBench
 data is not used to train this policy or to choose its checkpoints.
+
+For seat-balanced matches against frozen learned checkpoints, use `python -m training.arena`.
+The [readiness protocol](MODEL_READINESS.md) defines separate bot, learned-opponent,
+independent-audit and live-state checks before a manually operated client trial.
