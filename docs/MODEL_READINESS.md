@@ -49,6 +49,14 @@ It records one first complete episode per lane, not the fastest N results. There
 candidate result per independent lobby; do not treat seven opponent results in the same
 lobby as seven independent candidate samples.
 
+Audited evaluation replays terminal transitions from pre-step game copies before the
+batch environment's auto-reset can hide them. It verifies that placements match and
+rejects combat truncation, turn-limit endings and driver stops. A report without
+`guards_checked: true` is development evidence only. Guard failures are retained in a
+`.failed.json` file. Candidate behavior reports count repeated visible observations,
+operation types and decisions per recruit turn; review these together with inference
+latency before expecting a person to execute the recommendations.
+
 Example development match (use immutable copies of checkpoints):
 
 ```bash

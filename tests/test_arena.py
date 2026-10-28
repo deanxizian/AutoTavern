@@ -48,7 +48,8 @@ def test_every_role_occupies_every_seat_equally():
 def test_first_lobby_only_and_waiting_slots_never_reach_policy():
     model = EndTurn().train()
     result = play_arena([model] * 8, games=8, seed=17, threads=1, config={},
-                        device=torch.device("cpu"), env_factory=UnequalDurationEnv)
+                        device=torch.device("cpu"), env_factory=UnequalDurationEnv,
+                        audit_guards=False)
     assert model.training, "evaluation must restore the caller's training mode"
     assert result["driver_steps"] == 8
     assert result["candidate"]["placement_counts"] == [1] * 8

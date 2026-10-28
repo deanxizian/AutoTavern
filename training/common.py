@@ -97,7 +97,8 @@ def stats(places):
 
 
 @torch.no_grad()
-def evaluate(model, *, games, seed, threads, config, device, kind="policy"):
+def evaluate(model, *, games, seed, threads, config, device, kind="policy",
+             audit_guards=False, profile=False):
     """Fixed first episode per lane, equal games at all seats; never fastest-N sampling.
 
     These seeds are validation seeds when used to select a checkpoint, not a test set.
@@ -107,7 +108,9 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy"):
         raise ValueError("Evaluation games must be a positive multiple of eight")
     was_training = model.training
     model.eval()
-    places, per_seat = [], {}
+    places, per_seat, raw = [], {}, {}
+    from .diagnostics import BehaviorAudit
+    behavior = BehaviorAudit() if profile else None
     with torch.random.fork_rng(devices=[device.index or 0] if device.type == "cuda" else []):
         torch.manual_seed(seed)
         for seat in range(8):
@@ -116,6 +119,8 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy"):
             first = np.zeros(env.n_games, dtype=np.uint8)
             for _ in range(30_000):
                 obs = env.observe()
+                before = ({i: env.game(i) for i in np.flatnonzero(first == 0)}
+                          if audit_guards else {})
                 if kind == "bot":
                     actions = np.array([env.game(i).bot_action(seat) for i in range(env.n_games)])
                 else:
@@ -126,19 +131,32 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy"):
                         logits, _ = model(f, c, m)
                     actions = (Categorical(logits=logits).sample() if kind == "random"
                                else logits.argmax(-1)).cpu().numpy()
+                if behavior is not None:
+                    behavior.record(obs, actions, np.flatnonzero(first == 0), seat * env.n_games)
                 _, done, info = env.step(actions)
                 check_step(done, info)
                 take = done & (first == 0)
+                if audit_guards:
+                    from .diagnostics import replay_terminal_step
+                    for i in np.flatnonzero(take):
+                        replay_terminal_step(before[i], [actions[i]], (seat,), [done[i]],
+                                             [info["placement"][i]],
+                                             context={"seed": seed + seat, "lane": int(i), "seat": seat})
                 first[take] = info["placement"][take]
                 if first.all():
                     break
             else:
                 raise RuntimeError("Evaluation failed to finish within its driver limit")
             per_seat[str(seat)] = stats(first)
+            raw[str(seat)] = first.tolist()
             places.extend(first.tolist())
     model.train(was_training)
     return {**stats(places), "seed": seed, "kind": kind, "per_seat": per_seat,
-            "opponents": "seven bundled heuristic bots", "rules": config}
+            "opponents": "seven bundled heuristic bots", "rules": config,
+            "placements_by_seat": raw, "guards_checked": audit_guards,
+            "truncated_combats": 0 if audit_guards else None,
+            "turn_limit_ends": 0 if audit_guards else None,
+            "behavior": behavior.report() if behavior is not None else None}
 
 
 def atomic_json(path, data):

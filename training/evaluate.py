@@ -1,10 +1,13 @@
 """Evaluate a trusted checkpoint on a fresh seed range, without changing training."""
 
 import argparse
+import hashlib
 from pathlib import Path
 import torch
 
-from .common import atomic_json, evaluate, load_checkpoint
+from .common import atomic_json, evaluate
+from .arena import frozen_checkpoint
+from .diagnostics import SimulatorGuardError, check_seed_range
 
 
 def main():
@@ -19,12 +22,22 @@ def main():
     torch.set_num_threads(2)
     torch.set_float32_matmul_precision("high")
     device = torch.device(args.device)
-    model, ckpt = load_checkpoint(args.checkpoint, device)
-    if args.seed in (ckpt["args"]["seed"], ckpt["args"]["eval_seed"]):
-        p.error("Use a fresh seed range for this independent test")
-    score = evaluate(model, games=args.games, seed=args.seed, threads=args.threads,
-                     config={"turn_action_caps": [ckpt["args"]["action_cap"]]}, device=device)
-    score.update(checkpoint=str(args.checkpoint), training_steps=ckpt["steps"])
+    if args.out.exists() or args.out.with_suffix(".failed.json").exists():
+        p.error("Use a new output path; preserve earlier evaluation evidence")
+    model, metadata = frozen_checkpoint(args.checkpoint, device)
+    check_seed_range(args.seed, 8, metadata["train_seed"], metadata["validation_seed"])
+    metadata["evaluation_code_hash"] = hashlib.sha256(b"".join(
+        f.name.encode() + f.read_bytes() for f in sorted(Path(__file__).parent.glob("*.py")))).hexdigest()
+    args.out.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        score = evaluate(model, games=args.games, seed=args.seed, threads=args.threads,
+                         config={"turn_action_caps": [metadata["action_cap"]]}, device=device,
+                         audit_guards=True, profile=True)
+    except SimulatorGuardError as exc:
+        atomic_json(args.out.with_suffix(".failed.json"),
+                    {"checkpoint": metadata, "passed": False, "guard": exc.evidence})
+        raise
+    score.update(checkpoint=metadata, training_steps=metadata["steps"])
     atomic_json(args.out, score)
     print(score)
 

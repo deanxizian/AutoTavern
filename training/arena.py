@@ -16,6 +16,7 @@ import torch
 
 import taverngym as tg
 from .common import atomic_json, check_step, load_checkpoint, stats, tensors
+from .diagnostics import BehaviorAudit, SimulatorGuardError, check_seed_range, replay_terminal_step
 
 
 def wilson(successes, total):
@@ -47,7 +48,8 @@ def rotations(games):
 
 @torch.inference_mode()
 def play_arena(policies, *, games, seed, threads, config, device,
-               inference_batch=256, max_steps=30_000, env_factory=tg.BatchEnv):
+               inference_batch=256, max_steps=30_000, env_factory=tg.BatchEnv,
+               audit_guards=True):
     """Eight role policies: None means the bundled bot; otherwise a torch policy.
 
     Waiting and eliminated seats are never passed to a policy. Completed lanes may
@@ -61,6 +63,7 @@ def play_arena(policies, *, games, seed, threads, config, device,
                       config=config)
     first = np.zeros((games, 8), dtype=np.uint8)
     decision_counts = np.zeros(8, dtype=np.int64)
+    behavior = BehaviorAudit()
     started = time.monotonic()
     # Repeated opponents share one forward pass and one loaded model.
     groups = {}
@@ -73,6 +76,8 @@ def play_arena(policies, *, games, seed, threads, config, device,
         for driver_step in range(max_steps):
             active_lanes = ~first.all(axis=1)
             obs = env.observe()
+            before = ({i: env.game(i) for i in np.flatnonzero(active_lanes)}
+                      if audit_guards else {})
             ready = obs["ready"] & np.repeat(active_lanes, 8)
             actions = np.zeros(env.n_slots, dtype=np.int64)
             for policy, members in groups.values():
@@ -98,10 +103,18 @@ def play_arena(policies, *, games, seed, threads, config, device,
                         if not inputs[2].gather(1, chosen[:, None]).all():
                             raise RuntimeError("Arena policy chose a masked action")
                         actions[subset] = chosen.cpu().numpy()
+            behavior.record(obs, actions, np.flatnonzero(ready & (flat_roles == 0)))
             _, done, info = env.step(actions)
             relevant = np.repeat(active_lanes, 8)
             check_step(done[relevant], {k: v[relevant] for k, v in info.items()})
             take = done & relevant & (first.reshape(-1) == 0)
+            if audit_guards:
+                for lane in np.flatnonzero(take.reshape(games, 8).any(axis=1)):
+                    slots = slice(lane * 8, (lane + 1) * 8)
+                    replay_terminal_step(before[lane], actions[slots], tuple(range(8)),
+                                         done[slots], info["placement"][slots],
+                                         context={"seed": seed, "lane": int(lane),
+                                                  "driver_step": driver_step})
             first.reshape(-1)[take] = info["placement"][take]
             if first.all():
                 break
@@ -133,6 +146,10 @@ def play_arena(policies, *, games, seed, threads, config, device,
         "decisions_per_role": decision_counts.tolist(),
         "elapsed_seconds": time.monotonic() - started,
         "rejected_actions": 0, "incomplete_lobbies": 0,
+        "guards_checked": audit_guards,
+        "truncated_combats": 0 if audit_guards else None,
+        "turn_limit_ends": 0 if audit_guards else None,
+        "candidate_behavior": behavior.report(),
         "lobbies": [{"lane": lane, "role_by_seat": roles[lane].tolist(),
                      "placement_by_seat": first[lane].tolist()}
                     for lane in range(games)],
@@ -172,7 +189,7 @@ def main():
     parser.add_argument("--action-cap", type=int, default=128)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
-    if args.out.exists():
+    if args.out.exists() or args.out.with_suffix(".failed.json").exists():
         parser.error("Use a new output path; preserve earlier evaluation evidence")
     if tg.build_is_current() is not True:
         parser.error("Build the native extension from the current checkout first")
@@ -180,6 +197,8 @@ def main():
     torch.set_num_threads(2)
     torch.set_float32_matmul_precision("high")
     device = torch.device(args.device)
+    source_hash = hashlib.sha256(b"".join(
+        p.name.encode() + p.read_bytes() for p in sorted(Path(__file__).parent.glob("*.py")))).hexdigest()
     cache, policies, members = {}, [], []
     for name in [args.candidate, *args.opponents]:
         key = "bot" if name == "bot" else str(Path(name).resolve())
@@ -188,20 +207,25 @@ def main():
                           else frozen_checkpoint(Path(name), device))
         model, metadata = cache[key]
         if model is not None:
-            if args.seed in [metadata["train_seed"],
-                             *range(metadata["validation_seed"], metadata["validation_seed"] + 8)]:
-                parser.error("Arena seed overlaps a checkpoint's training/validation seeds")
+            check_seed_range(args.seed, 1, metadata["train_seed"], metadata["validation_seed"])
             if args.action_cap != metadata["action_cap"]:
                 parser.error("Arena action cap differs from a checkpoint's training rules")
         policies.append(model)
         members.append(metadata)
-    result = play_arena(policies, games=args.games, seed=args.seed, threads=args.threads,
-                        config={"turn_action_caps": [args.action_cap]}, device=device,
-                        inference_batch=args.inference_batch)
-    result.update(format_version=1, role_models=members, engine=tg.build_info(),
-                  game_version=tg.game_version(), torch_version=torch.__version__,
-                  protocol="one first episode per lane; one candidate per lobby; all eight seats controlled")
+    metadata = dict(format_version=2, role_models=members, engine=tg.build_info(),
+                    game_version=tg.game_version(), torch_version=torch.__version__,
+                    evaluation_code_hash=source_hash,
+                    protocol="one first episode per lane; one candidate per lobby; all eight seats controlled")
     args.out.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        result = play_arena(policies, games=args.games, seed=args.seed, threads=args.threads,
+                            config={"turn_action_caps": [args.action_cap]}, device=device,
+                            inference_batch=args.inference_batch)
+    except SimulatorGuardError as exc:
+        atomic_json(args.out.with_suffix(".failed.json"),
+                    {**metadata, "passed": False, "guard": exc.evidence})
+        raise
+    result.update(metadata)
     atomic_json(args.out, result)
     print({"out": str(args.out), "candidate": result["candidate"],
            "elapsed_seconds": result["elapsed_seconds"]}, flush=True)
