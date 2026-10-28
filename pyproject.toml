@@ -14,6 +14,8 @@ dependencies = ["numpy"]
 [project.optional-dependencies]
 test = ["pytest"]
 train = ["torch>=2.12,<3", "tensorboard", "transformers>=4.45,<5", "safetensors"]
+# Read-only client log diagnostics; these do not require a native simulator build.
+client = ["hslog==1.20.0", "hearthstone==9.22.0"]
 # TavernBench model runners (scoring needs none of these)
 bench = ["openai>=1.0", "httpx", "requests"]
 
