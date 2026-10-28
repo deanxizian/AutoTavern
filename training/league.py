@@ -19,14 +19,7 @@ import taverngym as tg
 from .common import tensors
 from .decoding import CancelRetryGuard
 from .diagnostics import check_game_guards
-
-
-def splitmix64(value):
-    mask = (1 << 64) - 1
-    value = (value + 0x9E3779B97F4A7C15) & mask
-    value = ((value ^ (value >> 30)) * 0xBF58476D1CE4E5B9) & mask
-    value = ((value ^ (value >> 27)) * 0x94D049BB133111EB) & mask
-    return value ^ (value >> 31)
+from .turns import DRIVER, next_ready, splitmix64
 
 
 def observation_rows(games, rows):
@@ -76,17 +69,20 @@ class LeagueEnv:
         self.learners = [0] * n_games
         self.assignments = [None] * n_games
         self.opponent_decisions = [0] * n_games
+        self.cursors = [0] * n_games
         self.games = [None] * n_games
         for model in opponents:
             if model is not None:
                 model.eval()
         for lane in range(n_games):
             self._fresh(lane)
+        self._drive(list(range(n_games)))
 
     def _fresh(self, lane):
         index = self.indices[lane]
         game_seed = splitmix64(splitmix64(self.seed ^ splitmix64(lane)) ^ index)
         self.games[lane] = tg.Game(game_seed, json.dumps(self.config))
+        self.cursors[lane] = 0
         if self.games[lane].num_players != 8:
             raise ValueError("The league requires eight-player lobbies")
         learner = self.learners[lane] = (lane + index) % 8
@@ -100,44 +96,46 @@ class LeagueEnv:
 
     def observe(self):
         rows = [(lane, self.learners[lane]) for lane in range(self.n_games)]
-        if any(not self.games[lane].needs_action(seat) for lane, seat in rows):
+        if any(self.cursors[lane] != seat or not self.games[lane].needs_action(seat)
+               for lane, seat in rows):
             raise RuntimeError("A waiting learner escaped the league transition driver")
         obs = observation_rows(self.games, rows)
         return (self.decoder.apply(obs, [lane * 8 + seat for lane, seat in rows])
                 if self.decoder is not None else obs)
 
     def _apply_chunk(self, chunk):
-        for lane, ready, actions in chunk:
+        for lane, seat, action in chunk:
             game = self.games[lane]
-            # Match native BatchEnv: snapshot readiness before the first action.
-            for seat in range(8):
-                if ready[seat] and not game.is_over() and game.needs_action(seat):
-                    game.step(seat, int(actions[seat]))
+            if not game.legal_mask(seat)[int(action)]:
+                raise ValueError("League action is masked at its decision point")
+            game.step(seat, int(action))
+            is_learner = seat == self.learners[lane]
+            if self.decoder is not None and (is_learner or
+                    self.opponents[self.assignments[lane][seat]] is not None):
+                self.decoder.record([action], [lane * 8 + seat])
+            self.cursors[lane] = (seat + 1) % 8
+            if not is_learner:
+                self.opponent_decisions[lane] += 1
+
+    def _apply(self, work):
+        if self.executor is None or len(work) < 2:
+            self._apply_chunk(work)
+        else:
+            size = math.ceil(len(work) / self.threads)
+            list(self.executor.map(self._apply_chunk,
+                                   [work[i:i + size] for i in range(0, len(work), size)]))
 
     @torch.inference_mode()
-    def _tick(self, lanes, learner_actions=None):
-        actions, readiness, groups = {}, {}, {}
-        for lane in lanes:
-            game = self.games[lane]
-            ready = readiness[lane] = [game.needs_action(seat) for seat in range(8)]
-            if not any(ready):
-                check_game_guards(game, context={"lane": lane, "episode": self.indices[lane]})
-                raise RuntimeError("League game has no ready seat and no terminal learner")
-            actions[lane] = np.zeros(8, np.int64)
-            learner = self.learners[lane]
-            if ready[learner]:
-                if learner_actions is None:
-                    raise RuntimeError("A ready learner must not advance during other lanes' waits")
-                actions[lane][learner] = learner_actions[lane]
-            for seat in range(8):
-                if seat == learner or not ready[seat]:
-                    continue
-                model = self.opponents[self.assignments[lane][seat]]
-                self.opponent_decisions[lane] += 1
-                if model is None:
-                    actions[lane][seat] = game.bot_action(seat)
-                else:
-                    groups.setdefault(id(model), (model, []))[1].append((lane, seat))
+    def _tick(self, acting_rows):
+        # Each lane contributes at most one player. No earlier action in the same
+        # lobby can invalidate a Discover, hand slot or target before execution.
+        actions, groups = {}, {}
+        for lane, seat in acting_rows:
+            model = self.opponents[self.assignments[lane][seat]]
+            if model is None:
+                actions[lane] = self.games[lane].bot_action(seat)
+            else:
+                groups.setdefault(id(model), (model, []))[1].append((lane, seat))
         for model, rows in groups.values():
             for start in range(0, len(rows), self.inference_batch):
                 batch = rows[start:start + self.inference_batch]
@@ -149,17 +147,25 @@ class LeagueEnv:
                 if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                     raise RuntimeError("Frozen opponent produced non-finite outputs")
                 selected = logits.argmax(-1).cpu().numpy()
-                if self.decoder is not None:
-                    self.decoder.record(selected, identities)
                 for (lane, seat), action in zip(batch, selected):
-                    actions[lane][seat] = action
-        work = [(lane, readiness[lane], actions[lane]) for lane in lanes]
-        if self.executor is None or len(work) < 2:
-            self._apply_chunk(work)
-        else:
-            size = math.ceil(len(work) / self.threads)
-            list(self.executor.map(self._apply_chunk,
-                                   [work[i:i + size] for i in range(0, len(work), size)]))
+                    actions[lane] = action
+        self._apply([(lane, seat, actions[lane]) for lane, seat in acting_rows])
+
+    def _drive(self, lanes):
+        for _ in range(30_000):
+            rows = []
+            for lane in lanes:
+                game, learner = self.games[lane], self.learners[lane]
+                if game.placements()[learner] or game.is_over():
+                    continue
+                seat = next_ready(game, self.cursors[lane])
+                self.cursors[lane] = seat
+                if seat != learner:
+                    rows.append((lane, seat))
+            if not rows:
+                return
+            self._tick(rows)
+        raise RuntimeError("League transition exceeded the driver limit")
 
     def step(self, actions):
         actions = np.asarray(actions, dtype=np.int64).reshape(-1)
@@ -170,37 +176,28 @@ class LeagueEnv:
             raise ValueError("Learner action is out of range")
         if not obs["action_mask"][np.arange(self.n_games), actions].all():
             raise ValueError("Learner action is masked")
-        if self.decoder is not None:
-            self.decoder.record(actions, [i * 8 + self.learners[i] for i in range(self.n_games)])
-        self._tick(list(range(self.n_games)), actions)
+        self._apply([(lane, self.learners[lane], action) for lane, action in enumerate(actions)])
+        self._drive(list(range(self.n_games)))
         rewards = np.zeros(self.n_games, np.float32)
         done = np.zeros(self.n_games, bool)
         placement = np.zeros(self.n_games, np.uint8)
-        pending = list(range(self.n_games))
-        for _ in range(30_000):
-            waiting = []
-            for lane in pending:
-                game, learner = self.games[lane], self.learners[lane]
-                place = game.placements()[learner]
-                if place:
-                    check_game_guards(game, context={"lane": lane, "episode": self.indices[lane]})
-                    if not 1 <= place <= 8:
-                        raise RuntimeError("Invalid league placement")
-                    rewards[lane] = np.float32(1) - np.float32(2) * np.float32(place - 1) / np.float32(7)
-                    done[lane], placement[lane] = True, place
-                    self.indices[lane] += 1
-                    self._fresh(lane)
-                elif game.is_over():
-                    raise RuntimeError("League game ended without the learner's placement")
-                elif not game.needs_action(learner):
-                    waiting.append(lane)
-            if not waiting:
-                return rewards, done, {"placement": placement,
-                                       "rejected": np.zeros(self.n_games, bool)}
-            # Completed or ready lanes remain untouched while these lanes catch up.
-            self._tick(waiting)
-            pending = waiting
-        raise RuntimeError("League transition exceeded the driver limit")
+        reset = []
+        for lane in range(self.n_games):
+            game, learner = self.games[lane], self.learners[lane]
+            place = game.placements()[learner]
+            if place:
+                check_game_guards(game, context={"lane": lane, "episode": self.indices[lane]})
+                if not 1 <= place <= 8:
+                    raise RuntimeError("Invalid league placement")
+                rewards[lane] = np.float32(1) - np.float32(2) * np.float32(place - 1) / np.float32(7)
+                done[lane], placement[lane] = True, place
+                self.indices[lane] += 1
+                self._fresh(lane)
+                reset.append(lane)
+            elif game.is_over():
+                raise RuntimeError("League game ended without the learner's placement")
+        self._drive(reset)
+        return rewards, done, {"placement": placement, "rejected": np.zeros(self.n_games, bool)}
 
     def game(self, lane):
         return self.games[lane].copy()
@@ -210,7 +207,8 @@ class LeagueEnv:
 
     def save(self, lane):
         return json.dumps({
-            "format": "league-v1", "engine_hash": self.engine_hash,
+            "format": "league-v2", "driver": DRIVER, "cursor": self.cursors[lane],
+            "engine_hash": self.engine_hash,
             "seed": self.seed, "n_games": self.n_games, "lane": lane,
             "config": self.config, "opponent_ids": self.opponent_ids,
             "episode": self.indices[lane], "learner": self.learners[lane],
@@ -223,7 +221,7 @@ class LeagueEnv:
 
     def load(self, lane, state):
         data = json.loads(state)
-        required = {"format": "league-v1", "engine_hash": self.engine_hash,
+        required = {"format": "league-v2", "driver": DRIVER, "engine_hash": self.engine_hash,
                     "seed": self.seed, "n_games": self.n_games, "lane": lane,
                     "config": self.config, "opponent_ids": self.opponent_ids}
         for key, value in required.items():
@@ -232,6 +230,7 @@ class LeagueEnv:
         if (data["decoder"] is not None) != (self.decoder is not None):
             raise ValueError("League resume changes cancellation decoding")
         self.indices[lane], self.learners[lane] = data["episode"], data["learner"]
+        self.cursors[lane] = data["cursor"]
         self.assignments[lane] = data["assignments"]
         self.opponent_decisions[lane] = data["opponent_decisions"]
         self.games[lane] = tg.Game.from_json(data["game"])

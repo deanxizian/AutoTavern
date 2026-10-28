@@ -49,8 +49,9 @@ It records one first complete episode per lane, not the fastest N results. There
 candidate result per independent lobby; do not treat seven opponent results in the same
 lobby as seven independent candidate samples.
 
-Audited evaluation replays terminal transitions from pre-step game copies before the
-batch environment's auto-reset can hide them. It verifies that placements match and
+Audited arena evaluation retains terminal games and verifies their placements directly.
+The single-seat batch benchmark replays terminal transitions from pre-step game copies
+before auto-reset can hide them. Both verify that placements match and
 rejects combat truncation, turn-limit endings and driver stops. A report without
 `guards_checked: true` is development evidence only. Guard failures are retained in a
 `.failed.json` file. Candidate behavior reports count repeated visible observations,
@@ -61,6 +62,12 @@ When assessing a history-aware cancellation decoder, freeze its version along wi
 weights. Apply it equally to candidate and learned references in arena matches, retain
 its mode in every report, and validate its state restoration. A decoder change requires
 a new assessment; earlier plain-greedy scores do not certify the guarded policy.
+
+Freeze the decision driver too. Arena and league training now use
+`round_robin_player_views_v1`: a player observes the game at its actual decision point,
+after earlier seats have acted. This fixes stale actions when a recruit-phase death
+gives Bigglesworth a Discover. Earlier simultaneous-action arena scores remain
+development evidence; new candidates require fresh evaluation with the corrected driver.
 
 Example development match (use immutable copies of checkpoints):
 

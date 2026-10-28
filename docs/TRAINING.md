@@ -141,10 +141,13 @@ bash tools/train_server.sh start runs/league \
 `LeagueEnv` advances each lane to the learner's next decision or terminal placement.
 It holds already-ready lanes unchanged while other lanes finish their opponents'
 actions. Waiting states do not enter PPO, and the terminal placement reward is attached
-to the preceding learner action. Opponent actions for a tick are chosen before any seat
-acts, then applied in seat order, with readiness captured at the start of the tick.
-Game/RNG state, opponent identities, episode/seat assignments and decoder history are
-included in checkpoints. Exact resume rejects changed opponent hashes or decoding mode.
+to the preceding learner action. Decisions proceed in cyclic seat order, with at most
+one action chosen per lobby in an inference batch. Each observation is taken when that
+player actually gets to act. This matters when another player dies during recruitment:
+Bigglesworth can receive a Discover that invalidates an action selected earlier.
+Game/RNG state, opponent identities, episode/seat assignments, the seat cursor and decoder
+history are included in checkpoints. Exact resume rejects changed opponent hashes,
+decoding mode, or the old simultaneous-action league format.
 
 This is a fixed opponent pool, not the report's human-calibrated opponent libraries and
 not a continuously updated self-play population. It uses Python Game lanes and batches
@@ -156,6 +159,11 @@ not by the earlier bot benchmark. Each validation writes `league_eval_XXXXXX.jso
 individual lobby outcomes, the opponent manifest, behavior counters and cutoff checks.
 The standalone bot benchmark remains available for regression checks. Do not compare
 the two validation curves as though the opponent population had stayed unchanged.
+
+Arena uses the same `round_robin_player_views_v1` scheduling and records its driver in
+each report. Completed games remain available for guard and placement checks. Earlier
+arena reports used simultaneous action selection within a lobby; treat a driver change
+as a protocol change and collect new evaluation evidence.
 
 ## Cancellation decoding
 

@@ -18,6 +18,8 @@ import taverngym as tg
 from .common import atomic_json, check_step, load_checkpoint, stats, tensors
 from .diagnostics import BehaviorAudit, SimulatorGuardError, check_seed_range, replay_terminal_step
 from .decoding import CancelRetryGuard
+from .turns import RoundRobinArena
+from .diagnostics import check_game_guards
 
 
 def wilson(successes, total):
@@ -49,12 +51,12 @@ def rotations(games):
 
 @torch.inference_mode()
 def play_arena(policies, *, games, seed, threads, config, device,
-               inference_batch=256, max_steps=30_000, env_factory=tg.BatchEnv,
+               inference_batch=256, max_steps=240_000, env_factory=RoundRobinArena,
                audit_guards=True, cancel_guard=False):
     """Eight role policies: None means the bundled bot; otherwise a torch policy.
 
-    Waiting and eliminated seats are never passed to a policy. Completed lanes may
-    auto-reset while other lanes finish; their later episodes are never counted.
+    Waiting and eliminated seats are never passed to a policy. The default driver
+    retains terminal games. Alternative drivers may reset; later episodes never count.
     """
     if len(policies) != 8 or inference_batch < 1:
         raise ValueError("Supply eight role policies and a positive inference batch")
@@ -79,8 +81,9 @@ def play_arena(policies, *, games, seed, threads, config, device,
         for driver_step in range(max_steps):
             active_lanes = ~first.all(axis=1)
             obs = env.observe()
+            retained = getattr(env, "terminal_is_retained", False)
             before = ({i: env.game(i) for i in np.flatnonzero(active_lanes)}
-                      if audit_guards else {})
+                      if audit_guards and not retained else {})
             ready = obs["ready"] & np.repeat(active_lanes, 8)
             policy_obs = (decoder.apply({**obs, "ready": ready & learned})
                           if decoder is not None else obs)
@@ -119,10 +122,15 @@ def play_arena(policies, *, games, seed, threads, config, device,
             if audit_guards:
                 for lane in np.flatnonzero(take.reshape(games, 8).any(axis=1)):
                     slots = slice(lane * 8, (lane + 1) * 8)
-                    replay_terminal_step(before[lane], actions[slots], tuple(range(8)),
-                                         done[slots], info["placement"][slots],
-                                         context={"seed": seed, "lane": int(lane),
-                                                  "driver_step": driver_step})
+                    context = {"seed": seed, "lane": int(lane), "driver_step": driver_step}
+                    if retained:
+                        terminal = env.game(lane)
+                        if list(terminal.placements()) != info["placement"][slots].tolist():
+                            raise RuntimeError("Arena placement report differs from retained game")
+                        check_game_guards(terminal, context=context)
+                    else:
+                        replay_terminal_step(before[lane], actions[slots], tuple(range(8)),
+                                             done[slots], info["placement"][slots], context=context)
             first.reshape(-1)[take] = info["placement"][take]
             if decoder is not None:
                 for slot in np.flatnonzero(done):
@@ -134,6 +142,8 @@ def play_arena(policies, *, games, seed, threads, config, device,
     finally:
         for policy, training in modes:
             policy.train(training)
+        if hasattr(env, "close"):
+            env.close()
     if not np.all(np.sort(first, axis=1) == np.arange(1, 9)):
         raise RuntimeError("A completed lobby does not contain placements 1 through 8")
     by_role = np.take_along_axis(first, roles.argsort(axis=1), axis=1)
@@ -153,6 +163,7 @@ def play_arena(policies, *, games, seed, threads, config, device,
             for seat in range(8)
         },
         "seed": seed, "rules": config, "games": games,
+        "driver": getattr(env, "driver", "batch_snapshot"),
         "driver_steps": driver_step + 1,
         "decisions_per_role": decision_counts.tolist(),
         "elapsed_seconds": time.monotonic() - started,
@@ -227,10 +238,10 @@ def main():
                 parser.error("Arena action cap differs from a checkpoint's training rules")
         policies.append(model)
         members.append(metadata)
-    metadata = dict(format_version=2, role_models=members, engine=tg.build_info(),
+    metadata = dict(format_version=3, role_models=members, engine=tg.build_info(),
                     game_version=tg.game_version(), torch_version=torch.__version__,
                     evaluation_code_hash=source_hash,
-                    protocol="one first episode per lane; one candidate per lobby; all eight seats controlled")
+                    protocol="one first episode per lane; one candidate per lobby; seat-ordered player views")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         result = play_arena(policies, games=args.games, seed=args.seed, threads=args.threads,

@@ -24,33 +24,31 @@ def bot_actions(env):
     return actions
 
 
-def test_single_lane_matches_native_multi_seat_driver():
+def test_single_lane_matches_seat_ordered_game_reference():
     env = league(1, guard=False)
-    native = tg.BatchEnv(1, seed=17, controlled=tuple(range(8)),
-                         config={"turn_action_caps": [32]})
+    reference = tg.BatchEnv(1, seed=17, controlled=tuple(range(8)),
+                            config={"turn_action_caps": [32]}).game(0)
     try:
-        assert env.game(0).state_json() == native.game(0).state_json()
+        assert env.game(0).state_json() == reference.state_json()
         for _ in range(1000):
             action = bot_actions(env)
             lr, ld, li = env.step(action)
-            for tick in range(1000):
-                obs = native.observe()
-                game = native.game(0)
-                actions = [game.bot_action(s) if obs["ready"][s] else 0 for s in range(8)]
-                if tick == 0:
-                    actions[0] = action[0]
-                else:
-                    assert not obs["ready"][0], "a ready learner must be held unchanged"
-                nr, nd, ni = native.step(actions)
-                if nd[0] or native.observe()["ready"][0]:
+            reference.step(0, action[0])
+            for offset in range(1, 8000):
+                seat = offset % 8
+                if reference.placements()[0] or (seat == 0 and reference.needs_action(0)):
                     break
-            assert ld[0] == nd[0]
-            np.testing.assert_array_equal(lr, nr[:1])
+                if reference.needs_action(seat):
+                    reference.step(seat, reference.bot_action(seat))
+            place = reference.placements()[0]
+            assert ld[0] == bool(place)
             if ld[0]:
-                assert li["placement"][0] == ni["placement"][0]
+                assert li["placement"][0] == place
+                assert lr[0] == np.float32(1) - np.float32(2) * np.float32(place - 1) / np.float32(7)
                 assert env.episode_index(0) == 1
                 break
-            assert env.game(0).state_json() == native.game(0).state_json()
+            assert lr[0] == 0
+            assert env.game(0).state_json() == reference.state_json()
         else:
             pytest.fail("No learner episode completed")
     finally:
@@ -77,6 +75,62 @@ def test_restore_and_thread_count_preserve_games_masks_and_rewards():
         assert [a.save(i) for i in range(4)] == [b.save(i) for i in range(4)]
     finally:
         a.close(); b.close()
+
+
+def death_discover_game():
+    """Pay Health for a shop spell: another seat's Bigglesworth gets a Discover."""
+    import json
+    game = tg.Game(1)
+    for seat in range(8):
+        game.step(seat, 30)
+    for seat in range(8):
+        while json.loads(game.view(seat))["me"]["pending"] is not None:
+            game.step(seat, game.bot_action(seat))
+        game.debug(json.dumps({"cmd": "set_hero", "p": seat, "hero": "TB_BaconShop_HERO_35"}))
+        game.debug(json.dumps({"cmd": "clear_zone", "p": seat, "zone": "hand"}))
+    game.debug(json.dumps({"cmd": "set_hero", "p": 6, "hero": "TB_BaconShop_HERO_70"}))
+    game.debug(json.dumps({"cmd": "set_player", "p": 2, "health": 1, "armor": 0, "gold": 0}))
+    game.debug(json.dumps({"cmd": "add_minion", "p": 2, "zone": "board", "card": "BG28_300"}))
+    game.debug(json.dumps({"cmd": "clear_zone", "p": 2, "zone": "shop"}))
+    game.debug(json.dumps({"cmd": "add_spell", "p": 2, "zone": "shop", "card": "BG28_571"}))
+    assert game.legal_mask(6)[0] and game.bot_action(2) == 8
+    return game
+
+
+def test_cross_player_discover_is_observed_before_learning_action():
+    env = league(1)
+    try:
+        env.games[0] = death_discover_game()
+        env.learners[0], env.cursors[0] = 6, 2
+        env.assignments[0] = [0] * 8
+        env.assignments[0][6] = -1
+        env._drive([0])
+        assert env.games[0].placements()[2] == 8
+        obs = env.observe()
+        assert not obs["action_mask"][0, 0], "EndTurn became stale when Bigglesworth received a Discover"
+        assert obs["action_mask"][0, 30:46].any()
+        env.step([int(np.flatnonzero(obs["action_mask"][0])[0])])
+    finally:
+        env.close()
+
+
+def test_arena_reads_cross_player_discover_at_execution_time():
+    from training.turns import RoundRobinArena
+    env = RoundRobinArena(1, seed=1, controlled=range(8), threads=1, config={})
+    env.games[0], env.cursors[0] = death_discover_game(), 2
+    try:
+        for expected_seat in (2, 3, 4, 5, 6):
+            obs = env.observe()
+            np.testing.assert_array_equal(np.flatnonzero(obs["ready"]), [expected_seat])
+            action = env.game(0).bot_action(expected_seat)
+            if expected_seat == 6:
+                assert not obs["action_mask"][6, 0]
+                assert 30 <= action < 46
+            actions = np.zeros(8, np.int64)
+            actions[expected_seat] = action
+            env.step(actions)
+    finally:
+        env.close()
 
 
 class VisibleEndTurn(torch.nn.Module):
