@@ -1,4 +1,4 @@
-"""Train an independent masked PPO baseline against TavernGym's scripted bots.
+"""Train masked PPO against heuristic bots or a fixed pool of frozen policies.
 
 Run from the repository root: python -m training.train --run-dir runs/ppo
 No external model API is used. See docs/TRAINING.md for limits and provenance.
@@ -36,6 +36,10 @@ def arguments():
     p.add_argument("--resume", type=Path)
     p.add_argument("--init-from", type=Path, help="Start a new stage from a trusted checkpoint")
     p.add_argument("--text-embeddings", type=Path)
+    p.add_argument("--opponents", nargs="+", default=[],
+                   help="Frozen checkpoint paths or bot; repeated entries weight the league pool")
+    p.add_argument("--cancel-guard", action="store_true")
+    p.add_argument("--opponent-batch", type=int, default=256)
     p.add_argument("--model", choices=("entity", "mlp"), default="entity")
     p.add_argument("--width", type=int, default=384)
     p.add_argument("--layers", type=int, default=8)
@@ -78,6 +82,10 @@ def arguments():
         p.error("Choose exact resume or a new stage, not both")
     if args.init_from and args.warmup_samples:
         p.error("A new stage requires --warmup-samples 0")
+    if args.opponents and args.warmup_samples:
+        p.error("League training requires --warmup-samples 0")
+    if args.cancel_guard and not args.opponents:
+        p.error("History-aware training requires the league environment (--opponents)")
     if min(args.envs, args.rollout, args.minibatch, args.epochs, args.eval_every) < 1:
         p.error("Batch sizes, epochs and evaluation interval must be positive")
     if args.eval_games < 8 or args.eval_games % 8:
@@ -101,8 +109,19 @@ def main():
     if device.type == "cuda" and not torch.cuda.is_available():
         raise SystemExit("CUDA requested but unavailable")
     config = {"turn_action_caps": [args.action_cap]}
-    env = tg.BatchEnv(args.envs, seed=args.seed, controlled=(0,), threads=args.threads,
-                      config=config)
+    opponent_models, opponent_manifest = [], []
+    if args.opponents:
+        from .league import LeagueEnv, load_opponents
+        opponent_models, opponent_manifest = load_opponents(args.opponents, device)
+        if any(m.get("action_cap", args.action_cap) != args.action_cap for m in opponent_manifest):
+            raise ValueError("A frozen opponent was trained with a different action cap")
+        env = LeagueEnv(args.envs, seed=args.seed, opponents=opponent_models,
+                        opponent_ids=[m["sha256"] for m in opponent_manifest], device=device,
+                        threads=args.threads, config=config, inference_batch=args.opponent_batch,
+                        cancel_guard=args.cancel_guard)
+    else:
+        env = tg.BatchEnv(args.envs, seed=args.seed, controlled=(0,), threads=args.threads,
+                          config=config)
     architecture = (dict(kind="entity", width=args.width, layers=args.layers, heads=args.heads)
                     if args.model == "entity" else dict(kind="mlp", hidden=args.hidden, embedding=args.embedding))
     model = make_policy(architecture).to(device)
@@ -131,6 +150,12 @@ def main():
         for key in ("envs", "seed", "gamma", "gae_lambda", "action_cap"):
             if getattr(args, key) != ckpt["args"][key]:
                 raise ValueError(f"Resume changes {key}; use the original setting")
+        if bool(args.opponents) != bool(ckpt["args"].get("opponents")):
+            raise ValueError("Resume changes environment type; use --init-from for a new stage")
+        if args.cancel_guard != ckpt["args"].get("cancel_guard", False):
+            raise ValueError("Resume changes cancellation decoding")
+        if [m["sha256"] for m in opponent_manifest] != [m["sha256"] for m in ckpt.get("opponent_manifest", [])]:
+            raise ValueError("Resume changes the frozen opponent pool")
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, eps=1e-5)
         optimizer.load_state_dict(ckpt["optimizer"])
         update, steps = ckpt["update"], ckpt["steps"]
@@ -179,6 +204,7 @@ def main():
             "format_version": 1, "engine_hash": tg.source_hash(),
             "training_code_hash": source_hash,
             "architecture": model.architecture,
+            "opponent_manifest": opponent_manifest,
             "anchor": anchor.state_dict() if anchor is not None else None,
             "args": {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
             "model": model.state_dict(), "optimizer": optimizer.state_dict(),
@@ -220,8 +246,23 @@ def main():
 
     def validation():
         nonlocal best, stale
-        score = evaluate(model, games=args.eval_games, seed=args.eval_seed,
-                         threads=args.threads, config=config, device=device)
+        if opponent_models:
+            from .arena import play_arena
+            roles = [model] + [opponent_models[i % len(opponent_models)] for i in range(7)]
+            arena = play_arena(roles, games=args.eval_games, seed=args.eval_seed,
+                               threads=args.threads, config=config, device=device,
+                               inference_batch=args.opponent_batch, cancel_guard=args.cancel_guard)
+            arena.update(opponent_manifest=opponent_manifest, training_steps=steps,
+                         training_code_hash=source_hash)
+            report = run / f"league_eval_{update:06d}.json"
+            atomic_json(report, arena)
+            score = {**arena["candidate"], "seed": args.eval_seed, "kind": "league",
+                     "opponents": "fixed frozen checkpoint pool and heuristic bots",
+                     "rules": config, "report": str(report),
+                     "guards_checked": arena["guards_checked"], "decoding": arena["decoding"]}
+        else:
+            score = evaluate(model, games=args.eval_games, seed=args.eval_seed,
+                             threads=args.threads, config=config, device=device)
         improved = score["mean_placement"] < best
         stale = 0 if improved else stale + 1
         if improved:
@@ -240,6 +281,9 @@ def main():
         "device": str(device), "parameters": sum(p.numel() for p in model.parameters()),
         "git_head": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
         "rules": config, "provenance": "Independent PPO baseline, not the paper's TavernAgent",
+        "environment": "frozen_opponent_league" if args.opponents else "heuristic_bots",
+        "opponent_manifest": opponent_manifest,
+        "decoding": {"cancel_retry_guard": args.cancel_guard},
     }
     atomic_json(run / ("resume_manifest.json" if args.resume else "manifest.json"), manifest)
     emit("started", parameters=manifest["parameters"], device=str(device), resumed=bool(args.resume))
@@ -392,6 +436,8 @@ def main():
                 "learning_rate": optimizer.param_groups[0]["lr"],
                 "recent_training": stats(recent), "rejected_actions": 0,
             }
+            if args.opponents:
+                report["opponent_decisions"] = sum(env.opponent_decisions)
             for key, value in report.items():
                 if isinstance(value, (int, float)):
                     writer.add_scalar("train/" + key, value, steps)
@@ -410,6 +456,8 @@ def main():
     finally:
         writer.close()
         metrics.close()
+        if hasattr(env, "close"):
+            env.close()
 
 
 if __name__ == "__main__":

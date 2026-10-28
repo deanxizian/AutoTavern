@@ -57,6 +57,11 @@ rejects combat truncation, turn-limit endings and driver stops. A report without
 operation types and decisions per recruit turn; review these together with inference
 latency before expecting a person to execute the recommendations.
 
+When assessing a history-aware cancellation decoder, freeze its version along with the
+weights. Apply it equally to candidate and learned references in arena matches, retain
+its mode in every report, and validate its state restoration. A decoder change requires
+a new assessment; earlier plain-greedy scores do not certify the guarded policy.
+
 Example development match (use immutable copies of checkpoints):
 
 ```bash

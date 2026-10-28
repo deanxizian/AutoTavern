@@ -17,6 +17,7 @@ import torch
 import taverngym as tg
 from .common import atomic_json, check_step, load_checkpoint, stats, tensors
 from .diagnostics import BehaviorAudit, SimulatorGuardError, check_seed_range, replay_terminal_step
+from .decoding import CancelRetryGuard
 
 
 def wilson(successes, total):
@@ -49,7 +50,7 @@ def rotations(games):
 @torch.inference_mode()
 def play_arena(policies, *, games, seed, threads, config, device,
                inference_batch=256, max_steps=30_000, env_factory=tg.BatchEnv,
-               audit_guards=True):
+               audit_guards=True, cancel_guard=False):
     """Eight role policies: None means the bundled bot; otherwise a torch policy.
 
     Waiting and eliminated seats are never passed to a policy. Completed lanes may
@@ -64,6 +65,8 @@ def play_arena(policies, *, games, seed, threads, config, device,
     first = np.zeros((games, 8), dtype=np.uint8)
     decision_counts = np.zeros(8, dtype=np.int64)
     behavior = BehaviorAudit()
+    decoder = CancelRetryGuard() if cancel_guard else None
+    learned = np.array([policy is not None for policy in policies])[flat_roles]
     started = time.monotonic()
     # Repeated opponents share one forward pass and one loaded model.
     groups = {}
@@ -79,6 +82,8 @@ def play_arena(policies, *, games, seed, threads, config, device,
             before = ({i: env.game(i) for i in np.flatnonzero(active_lanes)}
                       if audit_guards else {})
             ready = obs["ready"] & np.repeat(active_lanes, 8)
+            policy_obs = (decoder.apply({**obs, "ready": ready & learned})
+                          if decoder is not None else obs)
             actions = np.zeros(env.n_slots, dtype=np.int64)
             for policy, members in groups.values():
                 slots = np.flatnonzero(ready & np.isin(flat_roles, members))
@@ -95,7 +100,7 @@ def play_arena(policies, *, games, seed, threads, config, device,
                 else:
                     for offset in range(0, len(slots), inference_batch):
                         subset = slots[offset:offset + inference_batch]
-                        inputs = tensors({k: v[subset] for k, v in obs.items()}, device)
+                        inputs = tensors({k: v[subset] for k, v in policy_obs.items()}, device)
                         logits, value = policy(*inputs)
                         if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                             raise RuntimeError("Arena policy produced non-finite outputs")
@@ -104,6 +109,9 @@ def play_arena(policies, *, games, seed, threads, config, device,
                             raise RuntimeError("Arena policy chose a masked action")
                         actions[subset] = chosen.cpu().numpy()
             behavior.record(obs, actions, np.flatnonzero(ready & (flat_roles == 0)))
+            if decoder is not None:
+                slots = np.flatnonzero(ready & learned)
+                decoder.record(actions[slots], identities=slots)
             _, done, info = env.step(actions)
             relevant = np.repeat(active_lanes, 8)
             check_step(done[relevant], {k: v[relevant] for k, v in info.items()})
@@ -116,6 +124,9 @@ def play_arena(policies, *, games, seed, threads, config, device,
                                          context={"seed": seed, "lane": int(lane),
                                                   "driver_step": driver_step})
             first.reshape(-1)[take] = info["placement"][take]
+            if decoder is not None:
+                for slot in np.flatnonzero(done):
+                    decoder.reset(slot)
             if first.all():
                 break
         else:
@@ -150,6 +161,9 @@ def play_arena(policies, *, games, seed, threads, config, device,
         "truncated_combats": 0 if audit_guards else None,
         "turn_limit_ends": 0 if audit_guards else None,
         "candidate_behavior": behavior.report(),
+        "decoding": {"kind": "greedy", "cancel_retry_guard": cancel_guard,
+                     "guard_version": CancelRetryGuard.version if cancel_guard else None,
+                     "scope": "all learned policies equally; heuristic unchanged"},
         "lobbies": [{"lane": lane, "role_by_seat": roles[lane].tolist(),
                      "placement_by_seat": first[lane].tolist()}
                     for lane in range(games)],
@@ -185,6 +199,7 @@ def main():
     parser.add_argument("--seed", type=int, required=True)
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--device", default="cuda")
+    parser.add_argument("--cancel-guard", action="store_true")
     parser.add_argument("--inference-batch", type=int, default=256)
     parser.add_argument("--action-cap", type=int, default=128)
     parser.add_argument("--out", type=Path, required=True)
@@ -220,7 +235,7 @@ def main():
     try:
         result = play_arena(policies, games=args.games, seed=args.seed, threads=args.threads,
                             config={"turn_action_caps": [args.action_cap]}, device=device,
-                            inference_batch=args.inference_batch)
+                            inference_batch=args.inference_batch, cancel_guard=args.cancel_guard)
     except SimulatorGuardError as exc:
         atomic_json(args.out.with_suffix(".failed.json"),
                     {**metadata, "passed": False, "guard": exc.evidence})

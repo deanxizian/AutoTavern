@@ -115,10 +115,57 @@ settings when resuming a customized run. The new time limit is cumulative, not a
 Resuming is rejected if the simulator/card fingerprint differs. A failed update preserves
 the last good checkpoint. A kill -9 or machine loss may lose progress since that checkpoint.
 
-This first stage does not implement an opponent league, self-play, search, or an LLM agent.
-Those are separate improvements to assess against this reproducible baseline. TavernBench
-data is not used to train this policy or to choose its checkpoints.
+The initial stage uses heuristic opponents. TavernBench data is not used to train this
+policy or to choose its checkpoints. Search and an LLM agent are not implemented.
 
 For seat-balanced matches against frozen learned checkpoints, use `python -m training.arena`.
 The [readiness protocol](MODEL_READINESS.md) defines separate bot, learned-opponent,
 independent-audit and live-state checks before a manually operated client trial.
+
+## Frozen-opponent training
+
+After establishing the first-stage baseline, freeze its strongest checkpoints and start
+a new stage with `--init-from`, not `--resume`. Opponents use only their player-visible
+observations. Repeated pool entries set their relative frequency; the learner rotates
+through all eight seats as lanes start new episodes. For example:
+
+```bash
+bash tools/train_server.sh start runs/league \
+  --init-from runs/frozen/champion.pt --warmup-samples 0 \
+  --opponents runs/frozen/champion.pt runs/frozen/previous.pt bot bot \
+  --cancel-guard --envs 128 --threads 8 --rollout 256 --minibatch 2048 \
+  --lr 0.000006 --seed 20261030 --eval-seed 810000001 \
+  --eval-games 256 --eval-every 10 --max-hours 6 --skip-baselines
+```
+
+`LeagueEnv` advances each lane to the learner's next decision or terminal placement.
+It holds already-ready lanes unchanged while other lanes finish their opponents'
+actions. Waiting states do not enter PPO, and the terminal placement reward is attached
+to the preceding learner action. Opponent actions for a tick are chosen before any seat
+acts, then applied in seat order, with readiness captured at the start of the tick.
+Game/RNG state, opponent identities, episode/seat assignments and decoder history are
+included in checkpoints. Exact resume rejects changed opponent hashes or decoding mode.
+
+This is a fixed opponent pool, not the report's human-calibrated opponent libraries and
+not a continuously updated self-play population. It uses Python Game lanes and batches
+frozen-policy inference, so measure its throughput before scaling the run. Native game
+guards remain active and a guard failure stops the run with its last good checkpoint.
+
+In this stage, `best.pt` is selected by mean placement against the fixed validation pool,
+not by the earlier bot benchmark. Each validation writes `league_eval_XXXXXX.json` with
+individual lobby outcomes, the opponent manifest, behavior counters and cutoff checks.
+The standalone bot benchmark remains available for regression checks. Do not compare
+the two validation curves as though the opponent population had stayed unchanged.
+
+## Cancellation decoding
+
+Greedy policies can repeatedly open a target selector, cancel it and reopen it without
+changing the visible state. `--cancel-guard` retains cancellation but excludes that same
+opener after an exact return to the same player observation and native legal mask in
+the same turn. It does not force a target or add an illegal action. Other states and the
+next turn remain available. The short history is part of the resumable policy state.
+
+Use the same option in `training.evaluate` and `training.arena` when assessing this
+decoder. Arena applies it equally to all learned policies; the heuristic is unchanged.
+Reports record the decoder version. Scores from plain greedy and guarded decoding
+describe different deployed policies and must be labeled accordingly.

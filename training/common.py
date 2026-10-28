@@ -98,7 +98,7 @@ def stats(places):
 
 @torch.no_grad()
 def evaluate(model, *, games, seed, threads, config, device, kind="policy",
-             audit_guards=False, profile=False):
+             audit_guards=False, profile=False, cancel_guard=False):
     """Fixed first episode per lane, equal games at all seats; never fastest-N sampling.
 
     These seeds are validation seeds when used to select a checkpoint, not a test set.
@@ -114,17 +114,20 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
     with torch.random.fork_rng(devices=[device.index or 0] if device.type == "cuda" else []):
         torch.manual_seed(seed)
         for seat in range(8):
+            from .decoding import CancelRetryGuard
+            decoder = CancelRetryGuard() if cancel_guard and kind != "bot" else None
             env = tg.BatchEnv(games // 8, seed=seed + seat, controlled=(seat,),
                               threads=threads, config=config)
             first = np.zeros(env.n_games, dtype=np.uint8)
             for _ in range(30_000):
                 obs = env.observe()
+                policy_obs = decoder.apply(obs) if decoder is not None else obs
                 before = ({i: env.game(i) for i in np.flatnonzero(first == 0)}
                           if audit_guards else {})
                 if kind == "bot":
                     actions = np.array([env.game(i).bot_action(seat) for i in range(env.n_games)])
                 else:
-                    f, c, m = tensors(obs, device)
+                    f, c, m = tensors(policy_obs, device)
                     if kind == "random":
                         logits = torch.zeros(m.shape, device=device).masked_fill(~m, -1e9)
                     else:
@@ -133,6 +136,8 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
                                else logits.argmax(-1)).cpu().numpy()
                 if behavior is not None:
                     behavior.record(obs, actions, np.flatnonzero(first == 0), seat * env.n_games)
+                if decoder is not None:
+                    decoder.record(actions)
                 _, done, info = env.step(actions)
                 check_step(done, info)
                 take = done & (first == 0)
@@ -143,6 +148,9 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
                                              [info["placement"][i]],
                                              context={"seed": seed + seat, "lane": int(i), "seat": seat})
                 first[take] = info["placement"][take]
+                if decoder is not None:
+                    for i in np.flatnonzero(done):
+                        decoder.reset(i)
                 if first.all():
                     break
             else:
@@ -156,7 +164,10 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
             "placements_by_seat": raw, "guards_checked": audit_guards,
             "truncated_combats": 0 if audit_guards else None,
             "turn_limit_ends": 0 if audit_guards else None,
-            "behavior": behavior.report() if behavior is not None else None}
+            "behavior": behavior.report() if behavior is not None else None,
+            "decoding": {"kind": "greedy" if kind == "policy" else kind,
+                         "cancel_retry_guard": bool(cancel_guard and kind != "bot"),
+                         "guard_version": CancelRetryGuard.version if cancel_guard else None}}
 
 
 def atomic_json(path, data):

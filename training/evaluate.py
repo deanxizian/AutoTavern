@@ -17,6 +17,7 @@ def main():
     p.add_argument("--seed", type=int, default=900000001)
     p.add_argument("--threads", type=int, default=18)
     p.add_argument("--device", default="cuda")
+    p.add_argument("--cancel-guard", action="store_true")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args()
     torch.set_num_threads(2)
@@ -32,7 +33,7 @@ def main():
     try:
         score = evaluate(model, games=args.games, seed=args.seed, threads=args.threads,
                          config={"turn_action_caps": [metadata["action_cap"]]}, device=device,
-                         audit_guards=True, profile=True)
+                         audit_guards=True, profile=True, cancel_guard=args.cancel_guard)
     except SimulatorGuardError as exc:
         atomic_json(args.out.with_suffix(".failed.json"),
                     {"checkpoint": metadata, "passed": False, "guard": exc.evidence})
