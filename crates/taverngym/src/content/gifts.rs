@@ -633,6 +633,20 @@ pub fn gift_fits(
         charisma: CHARISMA_EXCLUDED.iter().map(|x| cid(x)).collect(),
     });
     let id = db().get(gift).id.as_str();
+    if c.g.cfg.hotfix_37_0_1 {
+        let normal = db().get(db().normal_of(def.cid));
+        // Published 37.0.1 exclusions apply to both normal and Golden forms. The
+        // Tier 4 Dark Paradox already fails Toreth's Blessing's shield prerequisite;
+        // keep that exclusion explicit without banning the distinct Tier 5 form.
+        if matches!(
+            (id, normal.id.as_str()),
+            ("BG36_MidGameEffect_000t16", "BG23_318")
+                | ("BG36_MidGameEffect_000t60", "BG36_849")
+                | ("BG36_MidGameEffect_000t15", "BG36_360t5")
+        ) {
+            return false;
+        }
+    }
     let typed = !def.races.is_none();
     let has = |m: Mech| def.mech.has(m);
     let battlecry = has(Mech::BATTLECRY) || has(Mech::CHOOSE_ONE);

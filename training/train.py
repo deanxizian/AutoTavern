@@ -39,6 +39,8 @@ def arguments():
     p.add_argument("--opponents", nargs="+", default=[],
                    help="Frozen checkpoint paths or bot; repeated entries weight the league pool")
     p.add_argument("--cancel-guard", action="store_true")
+    p.add_argument("--hotfix-37-0-1", action="store_true",
+                   help="Enable the audited hotfix rules; see docs/PATCH_COMPATIBILITY.md")
     p.add_argument("--opponent-batch", type=int, default=256)
     p.add_argument("--model", choices=("entity", "mlp"), default="entity")
     p.add_argument("--width", type=int, default=384)
@@ -97,6 +99,8 @@ def arguments():
 
 def main():
     args = arguments()
+    if tg.build_is_current() is not True:
+        raise SystemExit("Build the native extension from the current checkout before training")
     run = args.run_dir.resolve()
     run.mkdir(parents=True, exist_ok=True)
     if (run / "latest.pt").exists() and not args.resume:
@@ -109,6 +113,8 @@ def main():
     if device.type == "cuda" and not torch.cuda.is_available():
         raise SystemExit("CUDA requested but unavailable")
     config = {"turn_action_caps": [args.action_cap]}
+    if args.hotfix_37_0_1:
+        config["hotfix_37_0_1"] = True
     opponent_models, opponent_manifest = [], []
     if args.opponents:
         from .league import LeagueEnv, load_opponents
@@ -126,8 +132,10 @@ def main():
                     if args.model == "entity" else dict(kind="mlp", hidden=args.hidden, embedding=args.embedding))
     model = make_policy(architecture).to(device)
     anchor = None
+    initial_policy = None
     if args.init_from:
-        model, _ = load_checkpoint(args.init_from, device)
+        from .arena import frozen_checkpoint
+        model, initial_policy = frozen_checkpoint(args.init_from, device)
         anchor = copy.deepcopy(model).eval().requires_grad_(False)
     elif args.text_embeddings and args.model == "entity" and not args.resume:
         text_data = torch.load(args.text_embeddings, map_location="cpu", weights_only=True)
@@ -144,6 +152,11 @@ def main():
     phase = "warmup" if args.warmup_samples else "ppo"
     if args.resume:
         model, ckpt = load_checkpoint(args.resume, device)
+        if ckpt.get("weights_only"):
+            raise ValueError("Transferred policy has no training state; use --init-from")
+        if args.hotfix_37_0_1 != ckpt["args"].get("hotfix_37_0_1", False):
+            raise ValueError("Resume changes the hotfix rules; start a new stage")
+        initial_policy = ckpt.get("initial_policy")
         if ckpt.get("anchor") is not None:
             anchor = copy.deepcopy(model).eval().requires_grad_(False)
             anchor.load_state_dict(ckpt["anchor"])
@@ -205,6 +218,7 @@ def main():
             "training_code_hash": source_hash,
             "architecture": model.architecture,
             "opponent_manifest": opponent_manifest,
+            "initial_policy": initial_policy,
             "anchor": anchor.state_dict() if anchor is not None else None,
             "args": {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
             "model": model.state_dict(), "optimizer": optimizer.state_dict(),
@@ -283,6 +297,7 @@ def main():
         "rules": config, "provenance": "Independent PPO baseline, not the paper's TavernAgent",
         "environment": "frozen_opponent_league" if args.opponents else "heuristic_bots",
         "opponent_manifest": opponent_manifest,
+        "initial_policy": initial_policy,
         "decoding": {"cancel_retry_guard": args.cancel_guard},
     }
     atomic_json(run / ("resume_manifest.json" if args.resume else "manifest.json"), manifest)

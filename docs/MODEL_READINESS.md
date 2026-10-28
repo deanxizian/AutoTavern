@@ -21,7 +21,10 @@ compute alone is not a readiness criterion.
 
 ## Simulator gates
 
-Use the unchanged simulator rules and a 128-action cap throughout each comparison.
+Freeze the simulator rules profile and use a 128-action cap throughout each comparison.
+For current-client preparation, audit the published patch changes first (see
+[PATCH_COMPATIBILITY.md](PATCH_COMPATIBILITY.md)); apply the same profile to every seat.
+Legacy-rule scores do not certify a candidate under a new profile.
 
 1. Against the seven built-in bots: at least 512 games on each of three audit seeds,
    balanced across all eight seats. Across the 1,536 games, mean placement's 95% upper
@@ -52,7 +55,7 @@ lobby as seven independent candidate samples.
 Audited arena evaluation retains terminal games and verifies their placements directly.
 The single-seat batch benchmark replays terminal transitions from pre-step game copies
 before auto-reset can hide them. Both verify that placements match and
-rejects combat truncation, turn-limit endings and driver stops. A report without
+reject combat truncation, turn-limit endings and driver stops. A report without
 `guards_checked: true` is development evidence only. Guard failures are retained in a
 `.failed.json` file. Candidate behavior reports count repeated visible observations,
 operation types and decisions per recruit turn; review these together with inference

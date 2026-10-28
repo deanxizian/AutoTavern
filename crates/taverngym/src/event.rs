@@ -161,6 +161,13 @@ pub enum Event {
         card: CardId,
         hid: EntityId,
     },
+    /// Nellie's Ship consumed a Discover pick as crew. There is no hand entity to
+    /// copy or buff. Kept separate so the confirmed Hooktusk interaction does not
+    /// invent behavior for hand-copy effects such as Sinstone Sticker.
+    CrewDiscovered {
+        side: Side,
+        card: CardId,
+    },
     /// Any card played from hand (minion, spell, magnetize).
     CardPlayed {
         side: Side,
@@ -224,7 +231,7 @@ impl Event {
             Event::CardPlayed { .. } => ev::CARD_PLAYED,
             Event::GemPlayed { .. } => ev::GEM_PLAYED,
             Event::Consumed { .. } => ev::CONSUMED,
-            Event::Discovered { .. } => ev::DISCOVERED,
+            Event::Discovered { .. } | Event::CrewDiscovered { .. } => ev::DISCOVERED,
             Event::AttackDone { .. } => ev::ATTACK_DONE,
         }
     }
@@ -256,6 +263,7 @@ impl Event {
             | Event::GemPlayed { side, .. }
             | Event::Consumed { side, .. }
             | Event::Discovered { side, .. }
+            | Event::CrewDiscovered { side, .. }
             | Event::AttackDone { side, .. } => side,
         }
     }

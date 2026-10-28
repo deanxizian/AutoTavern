@@ -20,6 +20,12 @@ pub enum ContentMode {
 pub struct RulesConfig {
     pub num_players: usize,
     pub content: ContentMode,
+    /// Opt into the audited 37.0.1 behavior fixes on the unchanged 36.6.3 card vocabulary:
+    /// gift exclusions and Hooktusk's response to Nellie's Ship crew discovery.
+    /// This is not a claim of full live-client compatibility; see docs/PATCH_COMPATIBILITY.md.
+    /// Off preserves the released rules and old experiment configurations.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub hotfix_37_0_1: bool,
 
     // --- Economy (the client's recruit tips; base rules) -------------------------------------
     pub start_gold: i32,
@@ -228,6 +234,7 @@ impl Default for RulesConfig {
         RulesConfig {
             num_players: 8,
             content: ContentMode::Implemented,
+            hotfix_37_0_1: false,
             start_gold: 3,
             gold_increment: 1,
             gold_refill_cap: 10,
@@ -327,8 +334,12 @@ impl RulesConfig {
 
     /// The fields that are not written while they have their default (the default config
     /// stays the same): `from_json` knows them by name.
-    const UNWRITTEN_AT_DEFAULT: [&'static str; 3] =
-        ["hero_bans", "freeze_presses_per_turn", "experimental_mode"];
+    const UNWRITTEN_AT_DEFAULT: [&'static str; 4] = [
+        "hero_bans",
+        "freeze_presses_per_turn",
+        "experimental_mode",
+        "hotfix_37_0_1",
+    ];
 
     pub fn validate(&self) -> Result<(), String> {
         let (b, h, s) = (self.board_size, self.hand_size, 7 + self.shop_spell_slots);

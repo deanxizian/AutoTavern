@@ -197,6 +197,11 @@ def frozen_checkpoint(path, device):
                 "train_seed": checkpoint["args"]["seed"],
                 "validation_seed": checkpoint["args"]["eval_seed"],
                 "action_cap": checkpoint["args"]["action_cap"]}
+    if checkpoint.get("weight_transfer"):
+        metadata["weight_transfer"] = checkpoint["weight_transfer"]
+    if checkpoint.get("initial_policy"):
+        metadata["initial_policy"] = checkpoint["initial_policy"]
+    metadata["trained_hotfix_37_0_1"] = checkpoint["args"].get("hotfix_37_0_1", False)
     del checkpoint
     return model.to(device), metadata
 
@@ -211,6 +216,8 @@ def main():
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--cancel-guard", action="store_true")
+    parser.add_argument("--hotfix-37-0-1", action=argparse.BooleanOptionalAction, default=None,
+                        help="Defaults to the candidate's training profile; applies to every seat")
     parser.add_argument("--inference-batch", type=int, default=256)
     parser.add_argument("--action-cap", type=int, default=128)
     parser.add_argument("--out", type=Path, required=True)
@@ -238,6 +245,8 @@ def main():
                 parser.error("Arena action cap differs from a checkpoint's training rules")
         policies.append(model)
         members.append(metadata)
+    hotfix = (members[0].get("trained_hotfix_37_0_1", False) if args.hotfix_37_0_1 is None
+              else args.hotfix_37_0_1)
     metadata = dict(format_version=3, role_models=members, engine=tg.build_info(),
                     game_version=tg.game_version(), torch_version=torch.__version__,
                     evaluation_code_hash=source_hash,
@@ -245,7 +254,8 @@ def main():
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         result = play_arena(policies, games=args.games, seed=args.seed, threads=args.threads,
-                            config={"turn_action_caps": [args.action_cap]}, device=device,
+                            config={"turn_action_caps": [args.action_cap],
+                                    **({"hotfix_37_0_1": True} if hotfix else {})}, device=device,
                             inference_batch=args.inference_batch, cancel_guard=args.cancel_guard)
     except SimulatorGuardError as exc:
         atomic_json(args.out.with_suffix(".failed.json"),

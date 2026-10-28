@@ -18,6 +18,8 @@ def main():
     p.add_argument("--threads", type=int, default=18)
     p.add_argument("--device", default="cuda")
     p.add_argument("--cancel-guard", action="store_true")
+    p.add_argument("--hotfix-37-0-1", action=argparse.BooleanOptionalAction, default=None,
+                   help="Defaults to the checkpoint's training profile")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args()
     torch.set_num_threads(2)
@@ -26,13 +28,16 @@ def main():
     if args.out.exists() or args.out.with_suffix(".failed.json").exists():
         p.error("Use a new output path; preserve earlier evaluation evidence")
     model, metadata = frozen_checkpoint(args.checkpoint, device)
+    hotfix = (metadata["trained_hotfix_37_0_1"] if args.hotfix_37_0_1 is None
+              else args.hotfix_37_0_1)
     check_seed_range(args.seed, 8, metadata["train_seed"], metadata["validation_seed"])
     metadata["evaluation_code_hash"] = hashlib.sha256(b"".join(
         f.name.encode() + f.read_bytes() for f in sorted(Path(__file__).parent.glob("*.py")))).hexdigest()
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:
         score = evaluate(model, games=args.games, seed=args.seed, threads=args.threads,
-                         config={"turn_action_caps": [metadata["action_cap"]]}, device=device,
+                         config={"turn_action_caps": [metadata["action_cap"]],
+                                 **({"hotfix_37_0_1": True} if hotfix else {})}, device=device,
                          audit_guards=True, profile=True, cancel_guard=args.cancel_guard)
     except SimulatorGuardError as exc:
         atomic_json(args.out.with_suffix(".failed.json"),

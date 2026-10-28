@@ -117,7 +117,8 @@ pub fn scripts() -> Vec<(&'static str, Script)> {
             "BG36_344",
             Script {
                 on_event: Some(|c, me, e| {
-                    if !matches!(e, Event::Discovered { side, .. } if *side == me.side) {
+                    if !matches!(e, Event::Discovered { side, .. } | Event::CrewDiscovered { side, .. } if *side == me.side)
+                    {
                         return;
                     }
                     let n = c.player_ref(me.side).map_or(0, |p| p.stats.golden_played);

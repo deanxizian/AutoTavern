@@ -115,6 +115,11 @@ settings when resuming a customized run. The new time limit is cumulative, not a
 Resuming is rejected if the simulator/card fingerprint differs. A failed update preserves
 the last good checkpoint. A kill -9 or machine loss may lose progress since that checkpoint.
 
+For the audited 37.0.1 behavior profile, pass `--hotfix-37-0-1`. A rules/engine transition
+starts a fresh stage; [PATCH_COMPATIBILITY.md](PATCH_COMPATIBILITY.md) describes checked
+policy-only transfer and the remaining live-client checks. Evaluation defaults to the
+candidate's training profile and records the selected rules in its report.
+
 The initial stage uses heuristic opponents. TavernBench data is not used to train this
 policy or to choose its checkpoints. Search and an LLM agent are not implemented.
 
