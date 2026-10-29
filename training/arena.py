@@ -115,6 +115,9 @@ def play_arena(policies, *, games, seed, threads, config, device,
                         if getattr(policy, "requires_attachments", False):
                             selected_obs["attachments"] = AttachmentRows.from_env(
                                 env, [divmod(int(slot), 8) for slot in subset])
+                        from .strategy import add_strategy_observation
+                        add_strategy_observation(policy, selected_obs, env,
+                                                 [divmod(int(slot), 8) for slot in subset])
                         inputs = tensors(selected_obs, device)
                         if hasattr(policy, "set_context"):
                             policy.set_context(subset)
@@ -220,6 +223,10 @@ def play_arena(policies, *, games, seed, threads, config, device,
         "turn_limit_ends": 0 if audit_guards else None,
         "candidate_behavior": behavior.report(),
         "decoding": decoding, "role_decoding": role_decoding,
+        **({"expert_strategy": [{"roles": members, "sha256": policy.teacher.sha256}
+                                for policy, members in groups.values()
+                                if getattr(policy, "requires_strategy", False)]}
+           if any(getattr(p, "requires_strategy", False) for p in policies) else {}),
         **({"position_decoder": candidate_position} if candidate_position else {}),
         **({"position_decoders": position_decoders} if position_decoders else {}),
         "lobbies": [{"lane": lane, "role_by_seat": roles[lane].tolist(),
@@ -254,6 +261,8 @@ def frozen_checkpoint(path, device):
     metadata["training_turn_limit"] = checkpoint["args"].get("league_turn_limit", 0)
     metadata["truncated_training_episodes"] = checkpoint.get("truncated_training_episodes", 0)
     metadata["public_attachment_version"] = int(getattr(model, "requires_attachments", False))
+    if getattr(model, "requires_strategy", False):
+        metadata["strategy_sha256"] = model.teacher.sha256
     del checkpoint
     return model.to(device), metadata
 

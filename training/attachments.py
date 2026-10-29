@@ -106,9 +106,17 @@ class AttachmentRows:
 
 def policy_kwargs(policy, observation, device):
     """Supply supplemental inputs only to policies whose architecture requires them."""
-    if not getattr(policy, "requires_attachments", False):
-        return {}
-    rows = observation.get("attachments")
-    if not isinstance(rows, AttachmentRows) or len(rows) != len(observation["features"]):
-        raise ValueError("A public-attachment policy needs aligned attachment observation rows")
-    return {"attachments": rows.tensors(device)}
+    result = {}
+    if getattr(policy, "requires_attachments", False):
+        rows = observation.get("attachments")
+        if not isinstance(rows, AttachmentRows) or len(rows) != len(observation["features"]):
+            raise ValueError("A public-attachment policy needs aligned attachment observation rows")
+        result["attachments"] = rows.tensors(device)
+    if getattr(policy, "requires_strategy", False):
+        prior = observation.get("strategy_bias")
+        if (not isinstance(prior, np.ndarray) or prior.dtype != np.float32
+                or prior.shape != observation["action_mask"].shape
+                or not np.isfinite(prior).all() or np.any(np.abs(prior) > 6)):
+            raise ValueError("An expert policy needs aligned bounded strategy priors")
+        result["strategy_bias"] = torch.as_tensor(prior, device=device)
+    return result

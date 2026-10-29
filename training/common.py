@@ -177,6 +177,9 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
                         if getattr(model, "requires_attachments", False):
                             policy_obs["attachments"] = AttachmentRows.from_env(
                                 env, [(lane, seat) for lane in range(env.n_games)])
+                        from .strategy import add_strategy_observation
+                        add_strategy_observation(model, policy_obs, env,
+                                                 [(lane, seat) for lane in range(env.n_games)])
                         logits, value = model(f, c, m, **policy_kwargs(model, policy_obs, device))
                         if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                             raise RuntimeError("Evaluation policy produced non-finite outputs")
@@ -222,6 +225,8 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
             "truncated_combats": 0 if audit_guards else None,
             "turn_limit_ends": 0 if audit_guards else None,
             "behavior": behavior.report() if behavior is not None else None,
+            **({"expert_strategy_sha256": model.teacher.sha256}
+               if getattr(model, "requires_strategy", False) else {}),
             **({"position_decoder": {"counted_episode_moves": len(position_events),
                                        "events": position_events}}
                if position_events is not None else {}),
@@ -244,6 +249,11 @@ def load_checkpoint(path, device="cpu"):
     if ckpt["engine_hash"] != tg.source_hash():
         raise ValueError("Checkpoint engine/card table differs from this checkout")
     model = make_policy(ckpt["architecture"]).to(device)
+    if ckpt.get("strategy_bundle") is not None:
+        from .strategy import ExpertStrategyPolicy, digest
+        if digest(ckpt["strategy_bundle"]) != ckpt.get("strategy_sha256"):
+            raise ValueError("Checkpoint strategy knowledge checksum differs")
+        model = ExpertStrategyPolicy(model, ckpt["strategy_bundle"]).to(device)
     model.load_state_dict(ckpt["model"])
     return model, ckpt
 

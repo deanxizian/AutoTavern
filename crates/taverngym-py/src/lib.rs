@@ -86,9 +86,7 @@ fn attachment_observation(g: &Game, p: usize) -> PyResult<(Vec<i32>, Vec<i32>)> 
     let choices = shop + N_SHOP;
     for i in 0..N_CHOICE {
         slots[choices + i] = match pl.pending.last() {
-            Some(Pending::Discover { options, .. }) => {
-                options.get(i).and_then(|it| it.as_minion())
-            }
+            Some(Pending::Discover { options, .. }) => options.get(i).and_then(|it| it.as_minion()),
             Some(Pending::Timewarp { options, .. }) => {
                 options.get(i).and_then(|(it, _)| it.as_minion())
             }
@@ -252,6 +250,97 @@ impl PyGame {
     fn view(&self, py: Python<'_>, p: usize) -> PyResult<String> {
         check_seat(&self.g, p)?;
         Ok(py.detach(|| taverngym::debug::view(&self.g, p).to_string()))
+    }
+    /// Versioned player-visible strategy context. Unlike the diagnostic view, this
+    /// omits seeds, rules configuration, combat replays and private opponent boards.
+    fn strategy_view(&self, py: Python<'_>, p: usize) -> PyResult<String> {
+        check_seat(&self.g, p)?;
+        if self.g.players[p].sees_all_boards {
+            return Err(PyValueError::new_err(
+                "Strategy observations refuse the privileged diagnostic board view",
+            ));
+        }
+        Ok(py.detach(|| {
+            let source = taverngym::debug::public_view_without_combats(&self.g, p);
+            let mut output = serde_json::Map::new();
+            output.insert("schema_version".into(), serde_json::json!(1));
+            for key in [
+                "seat",
+                "turn",
+                "phase",
+                "version",
+                "lobby_races",
+                "has_aberrations",
+                "deity",
+                "paradox",
+                "alive",
+                "me",
+                "mask",
+                "actions",
+            ] {
+                output.insert(key.into(), source[key].clone());
+            }
+            // Only expose memories made by the player's own public actions.
+            // Holmes' answer and other hidden/random power memories stay private.
+            for (i, power) in self.g.players[p].powers.iter().enumerate() {
+                let visible = match db().get(power.card).id.as_str() {
+                    "BG20_HERO_280p5" => serde_json::json!({
+                        "purchases_remaining": if power.uses_turn > 0 { 0 } else { 3usize.saturating_sub(power.memory.len()) }
+                    }),
+                    "BG21_HERO_020p" => serde_json::json!({
+                        "pot_cards": power.memory.iter().map(|c| taverngym::debug::card_json(*c)).collect::<Vec<_>>()
+                    }),
+                    _ => serde_json::Value::Null,
+                };
+                if !visible.is_null() {
+                    output.get_mut("me").unwrap()["hero_powers"][i]["visible_progress"] = visible;
+                }
+            }
+            let opponents = source["opponents"]
+                .as_array()
+                .unwrap()
+                .iter()
+                .map(|opponent| {
+                    let mut public = serde_json::Map::new();
+                    for key in [
+                        "id",
+                        "hero",
+                        "health",
+                        "armor",
+                        "tier",
+                        "alive",
+                        "placement",
+                        "win_streak",
+                        "last_damage",
+                        "last_warband",
+                        "seen_board",
+                        "seen_turn",
+                        "hand_size",
+                        "trinkets",
+                        "quests",
+                        "rewards",
+                        "buddy_claims",
+                        "was_last_opponent",
+                        "is_next_opponent",
+                    ] {
+                        public.insert(key.into(), opponent[key].clone());
+                    }
+                    serde_json::Value::Object(public)
+                })
+                .collect::<Vec<_>>();
+            output.insert("opponents".into(), serde_json::Value::Array(opponents));
+            // The same source card already occupies legacy observation slot 4.
+            let source_card = taverngym::obs::observe(&self.g, p).cards[4];
+            output.insert(
+                "pending_source".into(),
+                if source_card > 0 {
+                    taverngym::debug::card_json(taverngym::cards::CardId((source_card - 1) as u16))
+                } else {
+                    serde_json::Value::Null
+                },
+            );
+            serde_json::Value::Object(output).to_string()
+        }))
     }
     /// Run a debug command given as JSON (`{"cmd": "set_player", ...}`); returns JSON.
     fn debug(&mut self, py: Python<'_>, cmd_json: &str) -> PyResult<String> {

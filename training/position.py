@@ -56,9 +56,19 @@ class PublicPositionPolicy(torch.nn.Module):
     def requires_attachments(self):
         return self.actor.requires_attachments
 
+    @property
+    def requires_strategy(self):
+        return getattr(self.actor, "requires_strategy", False)
+
+    @property
+    def teacher(self):
+        return self.actor.teacher
+
     def __init__(self, actor, encoder, ridge, threshold=.025):
         super().__init__()
-        require(isinstance(actor, EntityPolicy) and isinstance(encoder, EntityPolicy),
+        from .strategy import ExpertStrategyPolicy
+        underlying = actor.actor if isinstance(actor, ExpertStrategyPolicy) else actor
+        require(isinstance(underlying, EntityPolicy) and isinstance(encoder, EntityPolicy),
                 "Position decoding requires entity actor and encoder policies")
         require(not encoder.requires_attachments,
                 "This frozen position feature family requires its legacy observation encoder")
@@ -182,11 +192,15 @@ class PublicPositionPolicy(torch.nn.Module):
         return scores
 
     @torch.inference_mode()
-    def forward(self, features, cards, masks, attachments=None):
+    def forward(self, features, cards, masks, attachments=None, strategy_bias=None):
         require(self.context is not None and len(self.context) == len(features),
                 "One stable position identity is required per observation")
         ids, self.context = self.context, None
         kwargs = {"attachments": attachments} if self.requires_attachments else {}
+        if self.requires_strategy:
+            kwargs["strategy_bias"] = strategy_bias
+        elif strategy_bias is not None:
+            raise ValueError("A position actor without expert advice refuses strategy inputs")
         if attachments is not None and not self.requires_attachments:
             raise ValueError("A legacy position actor does not accept attachment inputs")
         logits, value = self.actor(features, cards, masks, **kwargs)

@@ -80,6 +80,10 @@ def arguments():
     p.add_argument("--grad-norm", type=float, default=1.0)
     p.add_argument("--anchor-coef", type=float, default=0.1)
     p.add_argument("--anchor-updates", type=int, default=100)
+    p.add_argument("--strategy-bundle", type=Path,
+                   help="Private, versioned expert knowledge JSON; copied into each checkpoint")
+    p.add_argument("--strategy-coef", type=float, default=0.02,
+                   help="Soft teaching loss for the base actor, only when expert advice is enabled")
     p.add_argument("--warmup-samples", type=int, default=262144)
     p.add_argument("--eval-games", type=int, default=256)
     p.add_argument("--eval-every", type=int, default=20)
@@ -98,6 +102,10 @@ def arguments():
         p.error("A new stage requires --warmup-samples 0")
     if args.opponents and args.warmup_samples:
         p.error("League training requires --warmup-samples 0")
+    if args.strategy_bundle and (args.model != "entity" or not args.opponents or args.warmup_samples):
+        p.error("Expert advice requires entity league training with --warmup-samples 0")
+    if not math.isfinite(args.strategy_coef) or args.strategy_coef < 0:
+        p.error("Strategy teaching coefficient must be finite and nonnegative")
     if args.public_attachments and (args.model != "entity" or not args.opponents or args.warmup_samples):
         p.error("--public-attachments requires an entity league and --warmup-samples 0")
     if args.attachment_lr is not None and (not args.public_attachments
@@ -182,7 +190,8 @@ def main():
     if args.init_from:
         from .arena import frozen_checkpoint
         model, initial_policy = frozen_checkpoint(args.init_from, device)
-        anchor = copy.deepcopy(model).eval().requires_grad_(False)
+        anchor = copy.deepcopy(model.actor if getattr(model, "requires_strategy", False)
+                               else model).eval().requires_grad_(False)
     elif args.text_embeddings and args.model == "entity" and not args.resume:
         text_data = torch.load(args.text_embeddings, map_location="cpu", weights_only=True)
         if text_data["engine_hash"] != tg.source_hash():
@@ -192,6 +201,16 @@ def main():
         raise ValueError("Prepare rule-text embeddings and pass --text-embeddings")
     if not args.resume and args.public_attachments != getattr(model, "requires_attachments", False):
         raise ValueError("The initialized policy and --public-attachments disagree")
+    from .strategy import ExpertStrategyPolicy, digest, teaching_loss
+    strategy_bundle = json.loads(args.strategy_bundle.read_text()) if args.strategy_bundle else None
+    if not args.resume and getattr(model, "requires_strategy", False) and strategy_bundle is None:
+        raise ValueError("An expert checkpoint requires its matching --strategy-bundle")
+    if not args.resume and strategy_bundle is not None:
+        if getattr(model, "requires_strategy", False):
+            if model.teacher.sha256 != digest(strategy_bundle):
+                raise ValueError("Initialize a new advice lineage from the underlying actor")
+        else:
+            model = ExpertStrategyPolicy(model, strategy_bundle).to(device)
     optimizer = make_optimizer(model, args.warmup_lr if args.warmup_samples else args.lr, args.attachment_lr)
     update = steps = warmup_done = 0
     best = float("inf")
@@ -200,6 +219,12 @@ def main():
     phase = "warmup" if args.warmup_samples else "ppo"
     if args.resume:
         model, ckpt = load_checkpoint(args.resume, device)
+        if ckpt.get("strategy_bundle") != strategy_bundle:
+            raise ValueError("Resume changes frozen expert knowledge; start a new stage")
+        if strategy_bundle and args.strategy_coef != ckpt["args"].get("strategy_coef"):
+            raise ValueError("Resume changes the strategy teaching loss")
+        if strategy_bundle:
+            model.teacher.counts.update(ckpt.get("strategy_rule_applications", {}))
         if ckpt.get("weights_only"):
             raise ValueError("Transferred policy has no training state; use --init-from")
         if (args.public_attachments != ckpt["args"].get("public_attachments", False)
@@ -211,7 +236,8 @@ def main():
             raise ValueError("Resume changes the hotfix rules; start a new stage")
         initial_policy = ckpt.get("initial_policy")
         if ckpt.get("anchor") is not None:
-            anchor = copy.deepcopy(model).eval().requires_grad_(False)
+            anchor = copy.deepcopy(model.actor if getattr(model, "requires_strategy", False)
+                                   else model).eval().requires_grad_(False)
             anchor.load_state_dict(ckpt["anchor"])
         for key in ("envs", "seed", "gamma", "gae_lambda", "action_cap"):
             if getattr(args, key) != ckpt["args"][key]:
@@ -241,6 +267,8 @@ def main():
         if device.type == "cuda":
             torch.cuda.set_rng_state_all([s.cpu() for s in ckpt["cuda_rng"]])
         np.random.set_state(ckpt["numpy_rng"])
+    if getattr(model, "requires_strategy", False):
+        env.strategy_teacher = model.teacher
     started = time.monotonic()
     sources = sorted(Path(__file__).parent.glob("*.py"))
     source_hash = hashlib.sha256(b"".join(p.name.encode() + p.read_bytes() for p in sources)).hexdigest()
@@ -274,6 +302,9 @@ def main():
             "format_version": 1, "engine_hash": tg.source_hash(),
             "training_code_hash": source_hash,
             "architecture": model.architecture,
+            "strategy_bundle": strategy_bundle,
+            "strategy_sha256": model.teacher.sha256 if strategy_bundle else None,
+            "strategy_rule_applications": dict(model.teacher.counts) if strategy_bundle else None,
             "opponent_manifest": opponent_manifest,
             "initial_policy": initial_policy,
             "anchor": anchor.state_dict() if anchor is not None else None,
@@ -358,6 +389,7 @@ def main():
         "environment": "frozen_opponent_league" if args.opponents else "heuristic_bots",
         "opponent_manifest": opponent_manifest,
         "initial_policy": initial_policy,
+        "strategy_sha256": model.teacher.sha256 if strategy_bundle else None,
         "decoding": {"cancel_retry_guard": args.cancel_guard},
         "observation_contract": {"public_attachment_version": int(args.public_attachments),
                                  "legacy_floats": tg.OBS_FLOATS, "legacy_cards": tg.OBS_CARDS},
@@ -428,6 +460,8 @@ def main():
             "dones": torch.empty((h, n), dtype=torch.bool, device=device),
             "placements": torch.empty((h, n), dtype=torch.long, device=device),
         }
+        if strategy_bundle:
+            buffers["strategy_bias"] = torch.empty((h, n, tg.N_ACTIONS), device=device)
         obs = env.observe()
         while phase == "ppo" and not should_stop():
             iteration_start = time.monotonic()
@@ -435,6 +469,8 @@ def main():
             for t in range(h):
                 f, c, m = tensors(obs, device)
                 kwargs = policy_kwargs(model, obs, device)
+                if strategy_bundle:
+                    buffers["strategy_bias"][t].copy_(kwargs["strategy_bias"])
                 if args.public_attachments:
                     attachment_rollout.append(obs["attachments"])
                 with torch.no_grad():
@@ -478,6 +514,8 @@ def main():
                 for idx in torch.randperm(n * h, device=device).split(args.minibatch):
                     kwargs = ({"attachments": attachment_batch[idx.cpu().numpy()].tensors(device)}
                               if attachment_batch is not None else {})
+                    if strategy_bundle:
+                        kwargs["strategy_bias"] = b["strategy_bias"][idx]
                     dist, value, place_logits = model.distribution(
                         b["features"][idx], b["cards"][idx], b["masks"][idx], auxiliary=True, **kwargs)
                     logratio = dist.log_prob(b["actions"][idx]) - b["logprobs"][idx]
@@ -504,10 +542,16 @@ def main():
                         with torch.no_grad():
                             reference, _ = anchor.distribution(
                                 b["features"][idx], b["cards"][idx], b["masks"][idx],
-                                **(kwargs if getattr(anchor, "requires_attachments", False) else {}))
+                                **({"attachments": kwargs["attachments"]}
+                                   if getattr(anchor, "requires_attachments", False) else {}))
                         anchored = torch.distributions.kl_divergence(reference, dist).mean()
+                    # Categorical normalizes by a row-wise constant; subtracting
+                    # the exact saved prior still recovers base log probabilities.
+                    taught = (teaching_loss(dist.logits, kwargs["strategy_bias"], b["masks"][idx])
+                              if strategy_bundle else value.sum() * 0)
                     loss = (pg + args.value_coef * vf - args.entropy * entropy
-                            + args.aux_coef * auxiliary + args.anchor_coef * anchored)
+                            + args.aux_coef * auxiliary + args.anchor_coef * anchored
+                            + args.strategy_coef * taught)
                     if not torch.isfinite(loss):
                         raise RuntimeError("Non-finite PPO loss")
                     optimizer.zero_grad(set_to_none=True)
@@ -533,6 +577,9 @@ def main():
                 "learning_rate": optimizer.param_groups[0]["lr"],
                 "recent_training": stats(recent), "rejected_actions": 0,
             }
+            if strategy_bundle:
+                report["strategy_rule_applications"] = dict(model.teacher.counts)
+                report["strategy_sha256"] = model.teacher.sha256
             if args.opponents:
                 report["opponent_decisions"] = sum(env.opponent_decisions)
                 report["truncated_training_episodes"] = sum(env.truncated_episodes)

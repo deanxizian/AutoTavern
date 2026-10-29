@@ -18,6 +18,8 @@ class FrozenOpponentGraphs(torch.nn.Module):
             raise ValueError("CUDA graphs require an already frozen evaluation policy")
         if getattr(policy, "requires_attachments", False):
             raise ValueError("Variable-length attachment inputs currently require eager inference")
+        if getattr(policy, "requires_strategy", False):
+            raise ValueError("Expert strategy inputs currently require eager inference")
         self.policy = policy
         self.max_batch = max_batch
         self.graphs = {}

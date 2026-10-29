@@ -87,6 +87,7 @@ class LeagueEnv:
         if public_attachments and not hasattr(tg.Game, "attachment_observation"):
             raise ValueError("The native build has no public attachment observation API")
         self.public_attachments = public_attachments
+        self.strategy_teacher = None
         if n_games < 1 or not opponents or len(opponents) != len(opponent_ids):
             raise ValueError("Supply positive lanes and a nonempty, identified opponent pool")
         if inference_batch < 1 or not 0 <= seed < 2**64:
@@ -128,6 +129,7 @@ class LeagueEnv:
             for model in opponents:
                 if model is not None and id(model) not in cache:
                     cache[id(model)] = (model if (getattr(model, "requires_attachments", False)
+                                                 or getattr(model, "requires_strategy", False)
                                                  or getattr(model, "decoder_metadata", {}))
                                         else FrozenOpponentGraphs(model, opponent_graph_max_batch))
             self.opponents = [cache[id(model)] if model is not None else None for model in opponents]
@@ -179,8 +181,11 @@ class LeagueEnv:
                for lane, seat in rows):
             raise RuntimeError("A waiting learner escaped the league transition driver")
         obs = observation_rows(self.games, rows, public_attachments=self.public_attachments)
-        return (self.decoder.apply(obs, [lane * 8 + seat for lane, seat in rows])
-                if self.decoder is not None else obs)
+        obs = (self.decoder.apply(obs, [lane * 8 + seat for lane, seat in rows])
+               if self.decoder is not None else obs)
+        if self.strategy_teacher is not None:
+            obs["strategy_bias"] = self.strategy_teacher.from_env(self, rows, obs["action_mask"])
+        return obs
 
     def _apply_chunk(self, chunk):
         for lane, seat, action in chunk:
@@ -223,6 +228,8 @@ class LeagueEnv:
                 identities = [lane * 8 + seat for lane, seat in batch]
                 if self.decoder is not None:
                     obs = self.decoder.apply(obs, identities)
+                from .strategy import add_strategy_observation
+                add_strategy_observation(model, obs, self, batch)
                 if hasattr(model, "set_context"):
                     model.set_context(identities)
                 logits, value = model(*tensors(obs, self.device), **policy_kwargs(model, obs, self.device))
@@ -305,6 +312,9 @@ class LeagueEnv:
             if self.decoder is not None:
                 info["final_observation"] = self.decoder.apply(
                     info["final_observation"], [lane * 8 + seat for lane, seat in rows])
+            if self.strategy_teacher is not None:
+                final = info["final_observation"]
+                final["strategy_bias"] = self.strategy_teacher.from_env(self, rows, final["action_mask"])
         for lane in reset:
             self.indices[lane] += 1
             self._fresh(lane)
