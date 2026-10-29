@@ -103,3 +103,57 @@ def test_entity_action_layout_and_gradients_after_recruit_actions():
     assert model.transformer[0].qkv.weight.grad.abs().sum() > 0
     _, done, info = env.step(actions.numpy())
     check_step(done, info)
+
+
+def test_skipped_kl_minibatch_releases_activations_before_next_rollout(tmp_path, monkeypatch):
+    """A skipped backward must not retain a full training graph across updates."""
+    import gc
+    import json
+    import sys
+    import weakref
+    from training import train
+
+    torch.set_num_threads(2)
+    torch.manual_seed(741)
+    model = EntityPolicy(width=16, layers=1, heads=2, text_dim=8, attachment_version=1)
+    initial = tmp_path / "initial.pt"
+    torch.save(dict(engine_hash=tg.source_hash(), training_code_hash="test-only", weights_only=True,
+                    architecture=model.architecture, model=model.state_dict(), update=0, steps=0,
+                    args=dict(seed=741, eval_seed=1741, action_cap=128, hotfix_37_0_1=True)), initial)
+    tracked, transitions = [], []
+    learner_was_grad = False
+    original = EntityPolicy.forward_aux
+
+    def pack(tensor):
+        saved = tensor.detach()
+        if saved.ndim == 3 and saved.shape[1] == 49 and saved.is_floating_point():
+            tracked.append(weakref.ref(saved))
+        return saved
+
+    def audited(self, *args, **kwargs):
+        nonlocal learner_was_grad
+        learner = any(p.requires_grad for p in self.parameters())
+        grad = torch.is_grad_enabled()
+        if learner and learner_was_grad and not grad:
+            gc.collect()
+            transitions.append(sum(ref() is not None for ref in tracked))
+        if learner:
+            learner_was_grad = grad
+        return original(self, *args, **kwargs)
+
+    monkeypatch.setattr(EntityPolicy, "forward_aux", audited)
+    monkeypatch.setattr(train.signal, "signal", lambda *args: None)
+    monkeypatch.setattr(sys, "argv", ["test-train", "--run-dir", str(tmp_path / "run"),
+        "--init-from", str(initial), "--device", "cpu", "--envs", "8", "--threads", "2",
+        "--torch-threads", "2", "--rollout", "64", "--minibatch", "64", "--epochs", "1",
+        "--width", "16", "--layers", "1", "--heads", "2", "--seed", "741", "--eval-seed", "1741",
+        "--eval-games", "8", "--eval-every", "100", "--warmup-samples", "0", "--opponents", "bot",
+        "--cancel-guard", "--hotfix-37-0-1", "--public-attachments", "--attachment-lr", ".001",
+        "--lr", ".001", "--target-kl", ".000001", "--league-turn-limit", "100", "--skip-baselines",
+        "--checkpoint-seconds", "999999", "--max-hours", "0", "--max-updates", "2"])
+    with torch.autograd.graph.saved_tensors_hooks(pack, lambda tensor: tensor):
+        train.main()
+    metrics = [json.loads(line) for line in (tmp_path / "run/metrics.jsonl").read_text().splitlines()]
+    updates = [row for row in metrics if row["event"] == "update"]
+    assert len(updates) == 2 and all(row["kl_early_stop"] for row in updates)
+    assert transitions == [0], "Skipped minibatch activations survived into the next rollout"

@@ -475,6 +475,10 @@ def main():
                     # steps; checking only after the epoch lets the policy drift too far.
                     if kl > args.target_kl:
                         early_stop = True
+                        # No backward pass will release this minibatch's saved tensors.
+                        # Drop its graph before collecting the next rollout or building
+                        # another full minibatch, which would otherwise overlap both.
+                        del dist, value, place_logits, logratio, ratio
                         break
                     pg = torch.maximum(-adv[idx] * ratio,
                                        -adv[idx] * ratio.clamp(1 - args.clip, 1 + args.clip)).mean()
