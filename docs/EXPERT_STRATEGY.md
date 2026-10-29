@@ -85,6 +85,11 @@ are restored. A model requiring advice fails if the input prior is absent. Legac
 policies receive no extra inputs and retain their previous behavior. Position
 wrappers pass advice to the actor while their frozen encoder remains unchanged.
 
+League action validation retains the public observation and cancellation mask,
+but does not recompute expert advice that the caller already collected. Rule
+application counts therefore exclude this unused legality-check calculation;
+policy observations and terminal bootstrap observations still include advice.
+
 Adding the native accessor changes the build fingerprint. `training.transfer`
 continues rejecting changed source contracts. A separately evidenced transition
 must verify unchanged gameplay, legacy observations, actions, card vocabulary,

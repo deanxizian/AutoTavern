@@ -175,7 +175,7 @@ class LeagueEnv:
             for seat in range(8):
                 model.reset_context(lane * 8 + seat)
 
-    def observe(self):
+    def observe(self, *, include_strategy=True):
         rows = [(lane, self.learners[lane]) for lane in range(self.n_games)]
         if any(self.cursors[lane] != seat or not self.games[lane].needs_action(seat)
                for lane, seat in rows):
@@ -183,7 +183,7 @@ class LeagueEnv:
         obs = observation_rows(self.games, rows, public_attachments=self.public_attachments)
         obs = (self.decoder.apply(obs, [lane * 8 + seat for lane, seat in rows])
                if self.decoder is not None else obs)
-        if self.strategy_teacher is not None:
+        if include_strategy and self.strategy_teacher is not None:
             obs["strategy_bias"] = self.strategy_teacher.from_env(self, rows, obs["action_mask"])
         return obs
 
@@ -260,7 +260,9 @@ class LeagueEnv:
         actions = np.asarray(actions, dtype=np.int64).reshape(-1)
         if len(actions) != self.n_games:
             raise ValueError("One action is required per learning lane")
-        obs = self.observe()
+        # Only legality is checked here. The caller already obtained and saved
+        # its policy prior; recomputing it has no effect on this action's mask.
+        obs = self.observe(include_strategy=False)
         if np.any(actions < 0) or np.any(actions >= tg.N_ACTIONS):
             raise ValueError("Learner action is out of range")
         if not obs["action_mask"][np.arange(self.n_games), actions].all():
