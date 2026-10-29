@@ -242,3 +242,201 @@ def test_real_cli_reports_evaluation_provenance(module_name, driver, tmp_path, m
     assert result['engine']['source_hash'] == tg.source_hash()
     assert result['evaluation_started_at'].endswith('+00:00')
     assert result['rejected_actions'] == result['incomplete_lobbies'] == 0
+
+
+@pytest.fixture
+def position_assessment(assessment):
+    from training import audit_bundles as bundles
+    m, reports = assessment
+    m.update(format_version=2, decoding=dict(bundles.ROLE_DECODING),
+             seed_history={'path':'seed-history.json','sha256':'f'*64},
+             role_decoding={k:dict(bundles.GREEDY) for k in bundles.POLICY_KEYS})
+    for key in ('candidate','champion'):
+        model = m[key]
+        model['trained_hotfix_37_0_1'] = True
+        config = dict(format_version=1, kind='public_position_v1', engine_hash=m['engine_hash'],
+                      rules=dict(m['rules']), threshold=.025,
+                      actor={'path':'actor.pt','sha256':model['sha256']},
+                      encoder={'path':'encoder.pt','sha256':'9'*64},
+                      ridge={'path':'ridge.pt','sha256':'8'*64})
+        encoder = dict(m['reference'], path=f'{key}-position/encoder.pt', sha256='9'*64,
+                       trained_hotfix_37_0_1=True, train_seed=201)
+        model['position_bundle'] = dict(path=f'{key}-position/position.json', sha256='7'*64,
+                                        config=config, encoder_metadata=encoder)
+        m['role_decoding'][key] = bundles.expected_position_decoder(model['position_bundle'])
+    for suite, _, _, name in audit.jobs(m):
+        report = reports[name]
+        event = dict(identity=0, turn=5, action=197, predicted_gain=.1)
+        report['position_decoder'] = dict(counted_episode_moves=1, events=[dict(event)])
+        if suite == 'bots':
+            report['decoding'] = dict(m['role_decoding']['candidate'])
+        else:
+            roles = bundles.suite_roles(suite)
+            report['role_decoding'] = [dict(m['role_decoding'][k]) if k != 'bot'
+                                       else {'kind':'bundled_heuristic'} for k in roles]
+            report['decoding'] = dict(bundles.GREEDY, kind='role_specific_public_position_v1')
+            report['position_decoders'] = [dict(roles=[0], statistics={'moves':1}, events=[dict(event)]),
+                dict(roles=[i for i,k in enumerate(roles) if k == 'champion'],
+                     statistics={'moves':1}, events=[dict(event, identity=1)])]
+    return m, reports
+
+
+def test_position_audit_keeps_all_nine_gates(position_assessment):
+    m, reports = position_assessment
+    result = audit.verify_reports(m, reports)
+    assert result['performance_gates_passed'] and not result['live_ready']
+    assert result['total_games'] == 3072
+    # Human-readable scope is excluded from the semantic identity only.
+    reports['champion-1.json']['role_decoding'][0]['scope'] = 'display text'
+    audit.verify_reports(m, reports)
+
+
+@pytest.mark.parametrize('case', [
+    'weak_reference', 'wrong_encoder', 'wrong_ridge', 'threshold', 'lineage_seed',
+    'path_escape', 'missing_role', 'wrong_event_role', 'duplicate_move', 'ineligible_turn',
+    'nonfinite_gain', 'threshold_boundary', 'missing_candidate_events', 'counter_mismatch',
+    'bot_autoreset_event', 'manifest_changed_decoder', 'missing_seed_history',
+])
+def test_position_corruption_cannot_pass(position_assessment, case):
+    m, reports = position_assessment
+    r = reports['champion-1.json']
+    bundle = m['candidate']['position_bundle']
+    if case == 'weak_reference': r['role_decoding'][1] = dict(audit.audit_bundles.GREEDY)
+    elif case == 'wrong_encoder': r['role_decoding'][0]['encoder_sha256'] = '0'*64
+    elif case == 'wrong_ridge': r['role_decoding'][1]['ridge_sha256'] = '0'*64
+    elif case == 'threshold': r['role_decoding'][0]['threshold'] = .5
+    elif case == 'lineage_seed': bundle['encoder_metadata']['train_seed'] = m['seeds'][0]
+    elif case == 'path_escape': bundle['config']['encoder']['path'] = '../encoder.pt'
+    elif case == 'missing_role': r['position_decoders'][1]['roles'].pop()
+    elif case == 'wrong_event_role': r['position_decoders'][1]['events'][0]['identity'] = 9
+    elif case == 'duplicate_move':
+        r['position_decoders'][0]['events'] *= 2
+        r['position_decoders'][0]['statistics']['moves'] = 2
+    elif case == 'ineligible_turn': r['position_decoders'][0]['events'][0]['turn'] = 3
+    elif case == 'nonfinite_gain': r['position_decoders'][0]['events'][0]['predicted_gain'] = float('nan')
+    elif case == 'threshold_boundary': r['position_decoders'][0]['events'][0]['predicted_gain'] = .025
+    elif case == 'missing_candidate_events': r['position_decoder']['events'] = []
+    elif case == 'counter_mismatch': r['position_decoders'][1]['statistics']['moves'] = 2
+    elif case == 'bot_autoreset_event': reports['bots-1.json']['position_decoder']['events'][0]['identity'] = 512
+    elif case == 'manifest_changed_decoder': m['role_decoding']['candidate']['ridge_sha256'] = '0'*64
+    elif case == 'missing_seed_history': m.pop('seed_history')
+    with pytest.raises((ValueError, KeyError)):
+        audit.verify_reports(m, reports)
+
+
+def test_position_runner_assigns_bundles_to_exact_roles(position_assessment, tmp_path, monkeypatch):
+    m, reports = position_assessment
+    path = tmp_path/'manifest.json'
+    audit.write_new(path, m)
+    monkeypatch.setattr(audit, 'load_audit', lambda _:copy.deepcopy(m))
+    commands = []
+    def execute(command, **kwargs):
+        commands.append(command)
+        target = Path(command[command.index('--out')+1])
+        audit.write_new(target, reports[target.name])
+    monkeypatch.setattr(audit.subprocess, 'run', execute)
+    audit.run_audit(path, device='cuda', threads=2)
+    assert len(commands) == 9
+    for command in commands:
+        assert command[command.index('--position-bundle')+1] == str(tmp_path/'candidate-position/position.json')
+    champion = str(tmp_path/'champion-position/position.json')
+    assert commands[3][commands[3].index('--opponent-position-bundles')+1:][:7] == [champion]*7
+    assert commands[6][commands[6].index('--opponent-position-bundles')+1:][:7] == [champion]*2+['none']*5
+
+
+def test_seed_history_includes_research_jsonl_and_extra_files(tmp_path):
+    history, root = tmp_path/'history', tmp_path/'audit'
+    history.mkdir(); root.mkdir()
+    research = history/'research'; research.mkdir()
+    audit.write_new(research/'plan.json', {'confirmation_seeds':[17, 29], 'dataset_seed':37})
+    (history/'metrics.jsonl').write_text('{"validation_seed":43}\n{"seed":59}\n')
+    extra = tmp_path/'extra.json'; audit.write_new(extra, {'reused_control_seeds':[61]})
+    used, record = audit.freeze_seed_history(root, history, [extra], {71}, {73}, required=True)
+    assert used == {17,29,37,43,59,61,71,73}
+    manifest = dict(format_version=2, seed_history=record, excluded_seeds=sorted(used),
+                    candidate={'train_seed':71}, champion={}, reference={})
+    audit.verify_seed_history(root, manifest)
+    (root/'seed-history.json').write_text('{}')
+    with pytest.raises(ValueError, match='history changed'):
+        audit.verify_seed_history(root, manifest)
+    (history/'metrics.jsonl').write_text('{broken')
+    with pytest.raises(json.JSONDecodeError):
+        audit.freeze_seed_history(root, history, [], set(), set(), required=True)
+
+
+def test_reference_identity_includes_position_components(position_assessment):
+    from training import audit_bundles as bundles
+    m, reports = position_assessment
+    report = reports['mixed-1.json']
+    expected = {bundles.policy_identity(m[k]['sha256'], m['role_decoding'][k]) for k in bundles.POLICY_KEYS}
+    assert bundles.evidence_identities(report) == expected
+    legacy = copy.deepcopy(report)
+    legacy['role_policies'] = legacy.pop('role_decoding')
+    for decoder in legacy['role_policies']:
+        if decoder['kind'] == bundles.POSITION_KIND:
+            decoder['kind'] = 'public_position_v1'
+            decoder.pop('bundle_sha256')
+            decoder.pop('position_version')
+    assert bundles.evidence_identities(legacy) == expected
+    report['role_decoding'][1]['ridge_sha256'] = '0'*64
+    assert bundles.evidence_identities(report) != expected
+
+
+def test_position_freeze_is_portable_binds_encoder_and_draws_seeds_last(tmp_path, monkeypatch):
+    torch = pytest.importorskip('torch')
+    import taverngym as tg
+    from training.entity import EntityPolicy
+    from training.position import freeze_bundle
+    from training.arena import frozen_checkpoint
+    from training import audit_bundles as bundles
+
+    sources, metadata = {}, {}
+    for i,key in enumerate((*bundles.POLICY_KEYS, 'encoder')):
+        torch.manual_seed(i+11)
+        model = EntityPolicy(width=8, layers=1, heads=2, text_dim=8)
+        sources[key] = tmp_path/f'{key}.pt'
+        torch.save(dict(engine_hash=tg.source_hash(), training_code_hash='test-only',
+                        architecture=model.architecture, model=model.state_dict(), update=0, steps=0,
+                        args=dict(seed=i+1, eval_seed=101+i*20, action_cap=128, hotfix_37_0_1=True)), sources[key])
+        _, metadata[key] = frozen_checkpoint(sources[key], torch.device('cpu'))
+    size = 6*model.architecture['width']+51+7*model.layout['MINION_F']
+    ridge = tmp_path/'ridge.pt'
+    torch.save(dict(family='frozen_tokens_plus_public_numeric_position_delta',
+                    encoder_sha256=metadata['encoder']['sha256'], intercept=.1,
+                    weight=torch.zeros(size,dtype=torch.float64), feature_mean=torch.zeros(size,dtype=torch.float64),
+                    feature_scale=torch.ones(size,dtype=torch.float64)), ridge)
+    bundle_paths = {}
+    for key in ('candidate','champion'):
+        directory = tmp_path/f'{key}-bundle'
+        freeze_bundle(Namespace(actor=sources[key], encoder=sources['encoder'], ridge=ridge, threshold=.025, directory=directory))
+        bundle_paths[key] = directory/'position.json'
+    evidence = tmp_path/'reference.json'
+    champion_config = json.loads(bundle_paths['champion'].read_text())
+    champion_decoder = bundles.expected_position_decoder(dict(config=champion_config, sha256=audit.checksum(bundle_paths['champion'])))
+    audit.write_new(evidence, dict(guards_checked=True, driver=audit.ARENA_DRIVER, seed=9001,
+        engine={'source_hash':tg.source_hash()}, rules={'turn_action_caps':[128],'hotfix_37_0_1':True},
+        truncated_combats=0, turn_limit_ends=0, rejected_actions=0, incomplete_lobbies=0,
+        role_models=[metadata['champion']]*4+[metadata['reference']]*4,
+        role_decoding=[champion_decoder]*4+[dict(bundles.GREEDY)]*4))
+    history = tmp_path/'history'; history.mkdir()
+    audit.write_new(history/'research.json', {'confirmation_seeds':[7001,8001]})
+    root = tmp_path/'audit'
+    def seeds(used):
+        assert {7001,8001,9001,4,161} <= used
+        assert (root/'seed-history.json').exists()
+        for key in bundle_paths:
+            assert audit.checksum(root/f'{key}-position/position.json') == audit.checksum(bundle_paths[key])
+            assert audit.checksum(root/f'{key}-position/encoder.pt') == metadata['encoder']['sha256']
+        return [910000001,910000101,910000201]
+    monkeypatch.setattr(audit, 'draw_seeds', seeds)
+    audit.freeze(Namespace(**{k:sources[k] for k in bundles.POLICY_KEYS},
+        candidate_position_bundle=bundle_paths['candidate'], champion_position_bundle=bundle_paths['champion'],
+        directory=root, history_root=history, reference_evidence=[evidence], reference_selection_note='Fixture only'))
+    manifest = audit.load_audit(root/'manifest.json')
+    assert manifest['format_version'] == 2
+    moved = tmp_path/'downloaded'; shutil.copytree(root, moved)
+    root.rename(tmp_path/'original')
+    assert audit.load_audit(moved/'manifest.json') == manifest
+    (moved/'candidate-position/encoder.pt').write_bytes(b'changed encoder')
+    with pytest.raises(ValueError, match='position encoder changed'):
+        audit.load_audit(moved/'manifest.json')

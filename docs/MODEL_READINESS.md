@@ -14,10 +14,9 @@ only then draw three new audit seeds. Run the entire protocol once on those seed
 If it fails and training is changed, retain the failure and use new audit seeds for the
 next candidate. Do not select the most flattering seed or report only the best matchup.
 
-The initial operating budget is the existing single GPU and the trainer's 24-hour
-cumulative limit, with a stop after 30 validation rounds without improvement. Review
-learning curves, opponent diversity and failed games before extending training. Extra
-compute alone is not a readiness criterion.
+Record a bounded training budget and an early-stop rule before each stage on the
+existing single GPU. Review learning curves, opponent diversity and failed games
+before extending training. Extra compute alone is not a readiness criterion.
 
 ## Simulator gates
 
@@ -99,7 +98,11 @@ candidate and two chosen references into a new audit directory. Choose the stron
 available prior-stage reference from the retained comparisons; the tool checks their
 identities, not the strategic judgment behind that choice. Supply those comparison
 reports and a short selection note. Only after the copies are hashed does it draw three
-random audit seeds, excluding recorded model-lineage and `runs` evaluation seeds.
+random audit seeds, excluding recorded model-lineage and history seeds. The freezer
+scans JSON and JSONL recursively under `--history-root` (default `runs`), including
+research plans, failed confirmations and training metrics. Use `--seed-history` for
+additional JSON/JSONL files outside that directory. A portable `seed-history.json`
+retains the source hashes and excluded seeds; malformed histories fail the freeze.
 
 ```bash
 .venv/bin/python -m training.readiness freeze runs/frozen/candidate.pt \
@@ -110,6 +113,23 @@ random audit seeds, excluding recorded model-lineage and `runs` evaluation seeds
 .venv/bin/python -m training.readiness run runs/audits/candidate-01/manifest.json
 .venv/bin/python -m training.readiness verify runs/audits/candidate-01/manifest.json
 ```
+
+For a policy with the public position decoder, add
+`--candidate-position-bundle path/to/position.json` to `freeze`. Freeze an enhanced
+champion or reference with `--champion-position-bundle` or
+`--reference-position-bundle` respectively. All three actor checkpoints remain
+required and distinct. Format 2 copies each bundle's exact manifest, actor, encoder
+and ridge components before drawing seeds, and includes the encoder's training
+lineage in the exclusions. Reference evidence must cover the selected policies'
+actor, encoder, ridge, threshold, precision and cancellation guard; an earlier
+plain-policy comparison alone does not justify selecting its enhanced version.
+
+The runner supplies the frozen bundles to their exact roles in both learned suites.
+The verifier checks per-role decoder identities and Move-event ownership, thresholds,
+turn eligibility and counters in addition to the existing gates. This changes the
+policy representation, not the performance thresholds or number of games. Plain
+format-1 audits remain supported. Copying a bundle or passing protocol tests does
+not establish model readiness.
 
 The one-shot runner executes all nine assessments (3,072 complete games), retains logs
 and raw reports, and stops on a failed assessment. It will not reuse an existing run.

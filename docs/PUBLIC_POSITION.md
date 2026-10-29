@@ -78,7 +78,9 @@ The normal arena resets terminal slots. The single-seat bot evaluator gives auto
 episodes new identities and only reports Move events from the first counted episode.
 
 A loadable bundle or a passing implementation test does not establish playing strength.
-The current `training.readiness` runner accepts the greedy cancellation protocol only;
-it rejects position-decoder reports. Final-audit support and client integration remain
-separate work. Keep the thresholds in [MODEL_READINESS.md](MODEL_READINESS.md) unchanged
-when adding a protocol for a frozen actor/encoder/ridge combination.
+`training.readiness freeze` accepts `--candidate-position-bundle`,
+`--champion-position-bundle` and `--reference-position-bundle`. Format 2 preserves all
+components and per-role decoders, checks reference-selection evidence and excludes
+encoder-lineage and research seeds before drawing the final seeds. The existing
+thresholds and 3,072-game protocol in [MODEL_READINESS.md](MODEL_READINESS.md) are
+unchanged. Client integration remains a separate check after simulator qualification.

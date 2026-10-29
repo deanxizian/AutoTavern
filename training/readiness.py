@@ -17,6 +17,8 @@ import statistics
 import subprocess
 import sys
 
+from . import audit_bundles
+
 
 SUITES = ("bots", "champion", "mixed")
 BOT_DRIVER = "single_seat_batch_v1"
@@ -54,9 +56,9 @@ def known_seeds(value):
     found = set()
     if isinstance(value, dict):
         for key, item in value.items():
-            if key in ("seed", "train_seed", "validation_seed", "eval_seed") and type(item) is int:
+            if (key == "seed" or key.endswith("_seed")) and type(item) is int:
                 found.add(item)
-            elif key == "seeds" and isinstance(item, list):
+            elif (key == "seeds" or key.endswith("_seeds")) and isinstance(item, list):
                 found.update(x for x in item if type(x) is int)
             found.update(known_seeds(item))
     elif isinstance(value, list):
@@ -74,8 +76,54 @@ def draw_seeds(used):
     return seeds
 
 
+def freeze_seed_history(root, history_root, extra_paths, lineage_seeds, evidence_seeds, *, required):
+    history_root = Path(history_root).resolve()
+    require(not required or history_root.is_dir(), "Position audits require an existing seed history directory")
+    paths = set(history_root.rglob("*.json")) | set(history_root.rglob("*.jsonl"))
+    paths = {p.resolve() for p in paths if not p.resolve().is_relative_to(root)}
+    paths.update(Path(p).resolve() for p in extra_paths)
+    records, used = [], set(lineage_seeds) | set(evidence_seeds)
+    for path in sorted(paths):
+        digest, found = hashlib.sha256(), set()
+        with path.open("rb") as handle:
+            if path.suffix == ".jsonl":
+                for raw in handle:
+                    digest.update(raw)
+                    if raw.strip():
+                        found.update(known_seeds(json.loads(raw)))
+            else:
+                raw = handle.read()
+                digest.update(raw)
+                found.update(known_seeds(json.loads(raw)))
+        records.append(dict(source_path=str(path), sha256=digest.hexdigest(), seeds=sorted(found)))
+        used.update(found)
+    index = dict(format_version=1, sources=records, model_lineage_seeds=sorted(lineage_seeds),
+                 reference_evidence_seeds=sorted(evidence_seeds), excluded_seeds=sorted(used))
+    target = root / "seed-history.json"
+    write_new(target, index)
+    return used, dict(path=target.name, sha256=checksum(target))
+
+
+def verify_seed_history(root, manifest):
+    record = manifest.get("seed_history")
+    if record is None:
+        require(manifest["format_version"] == 1, "Position audit omits seed history")
+        return
+    path = audit_bundles.inside(root, record["path"])
+    require(checksum(path) == record["sha256"], "Frozen seed history changed")
+    index = json.loads(path.read_text())
+    require(index["format_version"] == 1, "Unsupported seed history index")
+    used = set(index["model_lineage_seeds"]) | set(index["reference_evidence_seeds"])
+    for source in index["sources"]:
+        used.update(source["seeds"])
+    require(sorted(used) == index["excluded_seeds"] == manifest["excluded_seeds"],
+            "Frozen seed exclusion history differs")
+    require(known_seeds({k: manifest[k] for k in audit_bundles.POLICY_KEYS}) <= used,
+            "Seed history omits a model's lineage")
+
+
 def validate_manifest(m):
-    require(m.get("format_version") == 1 and m.get("purpose") == "final_simulator_audit",
+    require(m.get("format_version") in (1, 2) and m.get("purpose") == "final_simulator_audit",
             "Unsupported audit manifest")
     require(len(m["seeds"]) == 3 and all(type(s) is int and 0 <= s < 2**63 for s in m["seeds"]),
             "Three valid audit seeds are required")
@@ -86,8 +134,14 @@ def validate_manifest(m):
     identities = [m[k]["sha256"] for k in ("candidate", "champion", "reference")]
     require(len(set(identities)) == 3, "Candidate and the two references must be distinct")
     require(m["rules"].get("turn_action_caps") == [128], "Readiness requires the 128-action cap")
-    require(m["decoding"] == {"kind": "greedy", "cancel_retry_guard": True, "guard_version": 1},
-            "This protocol freezes the validated greedy cancellation decoder v1")
+    if m["format_version"] == 1:
+        require(m["decoding"] == audit_bundles.GREEDY,
+                "This protocol freezes the validated greedy cancellation decoder v1")
+        require(not any(m[k].get("position_bundle") for k in audit_bundles.POLICY_KEYS),
+                "Position bundles require audit format 2")
+    else:
+        require(bool(m.get("seed_history")), "Position audit omits seed history")
+        audit_bundles.validate_roles(m, known_seeds)
     for model in (m["candidate"], m["champion"], m["reference"]):
         require(model["engine_hash"] == m["engine_hash"] and model["action_cap"] == 128,
                 "Model engine or action cap differs from the audit")
@@ -135,8 +189,11 @@ def read_places(m, suite, seed, count, r):
     require(r.get("guards_checked") is True, "Assessment did not check simulator guards")
     for field in ("truncated_combats", "turn_limit_ends", "rejected_actions", "incomplete_lobbies"):
         require(type(r.get(field)) is int and r[field] == 0, f"Assessment has missing/nonzero {field}")
-    require(all(r["decoding"].get(k) == v for k, v in m["decoding"].items()),
-            "Assessment decoding differs")
+    if m["format_version"] == 2:
+        audit_bundles.verify_decoding(m, suite, r)
+    else:
+        require(all(r["decoding"].get(k) == v for k, v in m["decoding"].items()),
+                "Assessment decoding differs")
     started = datetime.fromisoformat(r["evaluation_started_at"])
     require(started.tzinfo is not None and started >= datetime.fromisoformat(m["created_at"]),
             "Assessment predates the model and seed freeze")
@@ -211,14 +268,21 @@ def freeze(args):
     require(tg.build_is_current() is True, "Build the native extension from the current source first")
     root = args.directory.resolve()
     root.mkdir(parents=True, exist_ok=False)
-    models = {}
+    models, decoders = {}, {}
+    version = 2 if any(getattr(args, f"{k}_position_bundle", None) for k in audit_bundles.POLICY_KEYS) else 1
     for key in ("candidate", "champion", "reference"):
         copied = root / f"{key}.pt"
         with Path(getattr(args, key)).open("rb") as source, copied.open("xb") as target:
             shutil.copyfileobj(source, target, 1024 * 1024)
         model, metadata = frozen_checkpoint(copied, torch.device("cpu"))
-        del model
         models[key] = {**metadata, "path": copied.name}
+        bundle = getattr(args, f"{key}_position_bundle", None)
+        if bundle:
+            models[key]["position_bundle"], decoders[key] = audit_bundles.freeze_bundle(
+                bundle, root, key, model, metadata)
+        else:
+            decoders[key] = dict(audit_bundles.GREEDY)
+        del model
     rules = {"turn_action_caps": [128]}
     if models["candidate"]["trained_hotfix_37_0_1"]:
         rules["hotfix_37_0_1"] = True
@@ -231,23 +295,29 @@ def freeze(args):
         require(data.get("guards_checked") is True and data.get("rules") == rules,
                 "Reference selection evidence must use the audited rules and guards")
         require(data.get("driver") == ARENA_DRIVER, "Reference evidence uses another driver")
-        seen_refs.update(x.get("sha256") for x in data["role_models"])
+        if version == 2:
+            require(data.get("passed") is not False and data["engine"]["source_hash"] == tg.source_hash(),
+                    "Reference evidence failed or uses another engine")
+            for field in ("truncated_combats", "turn_limit_ends", "rejected_actions", "incomplete_lobbies"):
+                require(type(data.get(field)) is int and data[field] == 0, "Reference evidence has missing/nonzero guards")
+            seen_refs.update(audit_bundles.evidence_identities(data))
+        else:
+            seen_refs.update(x.get("sha256") for x in data["role_models"])
         evidence_seeds.update(known_seeds(data))
         evidence.append(dict(path=copied.name, source_path=str(path.resolve()), sha256=checksum(copied)))
-    require({models[k]["sha256"] for k in ("champion", "reference")} <= seen_refs,
-            "Reference evidence does not cover both chosen models")
-    used = known_seeds(models) | evidence_seeds
-    history = set(args.history_root.glob("arena/*.json"))
-    history.update(args.history_root.glob("**/manifest.json"))
-    history.update(args.history_root.glob("**/resume_manifest.json"))
-    for path in sorted(history):
-        used.update(known_seeds(json.loads(path.read_text())))
-    manifest = dict(format_version=1, purpose="final_simulator_audit", **models,
+    references = {audit_bundles.policy_identity(models[k]["sha256"], decoders[k]) if version == 2
+                  else models[k]["sha256"] for k in ("champion", "reference")}
+    require(references <= seen_refs, "Reference evidence does not cover both chosen models and decoders")
+    used, history = freeze_seed_history(root, args.history_root, getattr(args, "seed_history", []),
+                                       known_seeds(models), evidence_seeds, required=version == 2)
+    manifest = dict(format_version=version, purpose="final_simulator_audit", **models,
                     created_at=datetime.now(timezone.utc).isoformat(),
                     engine_hash=tg.source_hash(), evaluation_code_hash=source_hash(), rules=rules,
-                    decoding=dict(kind="greedy", cancel_retry_guard=True, guard_version=1),
-                    excluded_seeds=sorted(used), reference_evidence=evidence,
+                    decoding=dict(audit_bundles.ROLE_DECODING if version == 2 else audit_bundles.GREEDY),
+                    excluded_seeds=sorted(used), seed_history=history, reference_evidence=evidence,
                     reference_selection_note=args.reference_selection_note)
+    if version == 2:
+        manifest["role_decoding"] = decoders
     manifest["seeds"] = draw_seeds(used)
     validate_manifest(manifest)
     write_new(root / "manifest.json", manifest)
@@ -259,9 +329,15 @@ def load_audit(path):
     validate_manifest(m)
     require(source_hash() == m["evaluation_code_hash"], "Audit code changed after the freeze")
     for key in ("candidate", "champion", "reference"):
-        require(checksum(path.parent / m[key]["path"]) == m[key]["sha256"], f"Frozen {key} changed")
+        model_path = (audit_bundles.inside(path.parent, m[key]["path"]) if m["format_version"] == 2
+                      else path.parent / m[key]["path"])
+        require(checksum(model_path) == m[key]["sha256"], f"Frozen {key} changed")
+        audit_bundles.verify_artifacts(path.parent, m[key])
     for evidence in m["reference_evidence"]:
-        require(checksum(path.parent / evidence["path"]) == evidence["sha256"], "Reference evidence changed")
+        evidence_path = (audit_bundles.inside(path.parent, evidence["path"]) if m["format_version"] == 2
+                         else path.parent / evidence["path"])
+        require(checksum(evidence_path) == evidence["sha256"], "Reference evidence changed")
+    verify_seed_history(path.parent, m)
     return m
 
 
@@ -279,10 +355,17 @@ def run_audit(path, *, device, threads):
                        "--threads", str(threads), "--device", device, "--cancel-guard",
                        "--hotfix-37-0-1" if m["rules"].get("hotfix_37_0_1") else "--no-hotfix-37-0-1",
                        "--out", str(root / name)]
+            if m["candidate"].get("position_bundle"):
+                command.extend(["--position-bundle", str(root / m["candidate"]["position_bundle"]["path"])])
             if suite != "bots":
                 champion, reference = (str(root / m[k]["path"]) for k in ("champion", "reference"))
                 roles = ([champion] * 7 if suite == "champion" else
                          [champion] * 2 + [reference] * 2 + ["bot"] * 3)
+                role_keys = audit_bundles.suite_roles(suite)[1:]
+                if any(k != "bot" and m[k].get("position_bundle") for k in role_keys):
+                    bundles = [str(root / m[k]["position_bundle"]["path"])
+                               if k != "bot" and m[k].get("position_bundle") else "none" for k in role_keys]
+                    command.extend(["--opponent-position-bundles", *bundles])
                 command.extend(["--opponents", *roles])
             with (root / name).with_suffix(".log").open("x") as log:
                 subprocess.run(command, stdout=log, stderr=subprocess.STDOUT,
@@ -323,6 +406,10 @@ def main():
     p.add_argument("--reference-evidence", type=Path, nargs="+", required=True)
     p.add_argument("--reference-selection-note", required=True)
     p.add_argument("--history-root", type=Path, default=Path("runs"))
+    p.add_argument("--seed-history", type=Path, nargs="*", default=[],
+                   help="Additional JSON/JSONL histories to exclude from final seed selection")
+    for key in audit_bundles.POLICY_KEYS:
+        p.add_argument(f"--{key}-position-bundle", type=Path)
     for name in ("run", "verify"):
         p = commands.add_parser(name)
         p.add_argument("manifest", type=Path)
