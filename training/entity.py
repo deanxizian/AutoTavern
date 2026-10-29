@@ -78,7 +78,8 @@ class EntityPolicy(nn.Module):
         # Ratios, categorical probabilities and losses must remain in float32.
         return logits.float(), value.float(), placement.float()
 
-    def _forward_aux(self, features, cards, masks):
+    def encode_tokens(self, features, cards, masks):
+        """Encode only the public observation, using the caller's precision context."""
         l, n = self.layout, len(features)
         f = features.sign() * torch.log1p(features.abs())
         c = self.card_repr(cards)
@@ -112,7 +113,11 @@ class EntityPolicy(nn.Module):
         present[:, 26:42] |= masks[:, l["A_CHOOSE"]:l["A_CHOOSE"] + 16]
         for block in self.transformer:
             x = block(x, present)
-        x = self.norm(x)
+        return self.norm(x)
+
+    def _forward_aux(self, features, cards, masks):
+        n = len(features)
+        x = self.encode_tokens(features, cards, masks)
         g, board, hand, shop, choices = x[:, 0], x[:, 1:8], x[:, 8:18], x[:, 18:26], x[:, 26:42]
         def pointer(i, objects):
             return (self.keys[i](objects) * self.queries[i](g)[:, None]).sum(-1) / self.scale

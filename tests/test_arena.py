@@ -73,3 +73,33 @@ def test_rate_intervals_remain_conservative_at_endpoints():
     assert 0 < wilson(0, 100)[1] < .05
     assert .95 < wilson(100, 100)[0] < 1
     assert wilson(100, 100)[1] == 1
+
+
+def test_stateful_candidate_receives_actual_ready_slot_ids_and_terminal_resets():
+    class IdentifiedEnv(UnequalDurationEnv):
+        def observe(self):
+            obs = super().observe()
+            obs["features"][:,0] = np.arange(self.n_slots)
+            return obs
+    class WithContext(EndTurn):
+        def __init__(self):
+            super().__init__()
+            self.ids = None
+            self.resets = []
+            self.seen = set()
+        def set_context(self, ids):
+            assert self.ids is None
+            self.ids = list(map(int,ids))
+        def reset_context(self, identity=None):
+            self.resets.append(identity)
+        def forward(self, features,cards,masks):
+            assert self.ids == features[:,0].long().tolist()
+            self.seen.update(self.ids)
+            self.ids = None
+            return super().forward(features,cards,masks)
+    model = WithContext()
+    play_arena([model]+[EndTurn()]*7,games=8,seed=17,threads=1,config={},
+               device=torch.device("cpu"),env_factory=IdentifiedEnv,audit_guards=False)
+    assert model.resets[0] is None
+    assert model.seen == {lane*8+lane for lane in range(8)}
+    assert model.seen <= set(model.resets[1:])

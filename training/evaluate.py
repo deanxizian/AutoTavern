@@ -20,20 +20,29 @@ def main():
     p.add_argument("--threads", type=int, default=18)
     p.add_argument("--device", default="cuda")
     p.add_argument("--cancel-guard", action="store_true")
+    p.add_argument("--position-bundle", type=Path,
+                   help="Frozen public position bundle for this candidate")
     p.add_argument("--hotfix-37-0-1", action=argparse.BooleanOptionalAction, default=None,
                    help="Defaults to the checkpoint's training profile")
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args()
+    if args.position_bundle and not args.cancel_guard:
+        p.error("A position bundle requires --cancel-guard")
     torch.set_num_threads(2)
-    torch.set_float32_matmul_precision("high")
+    torch.set_float32_matmul_precision("highest" if args.position_bundle else "high")
     device = torch.device(args.device)
     if args.out.exists() or args.out.with_suffix(".failed.json").exists():
         p.error("Use a new output path; preserve earlier evaluation evidence")
     if tg.build_is_current() is not True:
         p.error("Build the native extension from the current checkout first")
     model, metadata = frozen_checkpoint(args.checkpoint, device)
+    if args.position_bundle:
+        from .position import load_position_policy
+        model = load_position_policy(model, metadata, args.position_bundle, device)
     hotfix = (metadata["trained_hotfix_37_0_1"] if args.hotfix_37_0_1 is None
               else args.hotfix_37_0_1)
+    if args.position_bundle and hotfix != metadata["trained_hotfix_37_0_1"]:
+        p.error("Evaluation rules differ from the frozen position bundle")
     check_seed_range(args.seed, 8, metadata["train_seed"], metadata["validation_seed"])
     metadata["evaluation_code_hash"] = hashlib.sha256(b"".join(
         f.name.encode() + f.read_bytes() for f in sorted(Path(__file__).parent.glob("*.py")))).hexdigest()

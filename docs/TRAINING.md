@@ -212,6 +212,10 @@ as a protocol change and collect new evaluation evidence.
 
 ## Cancellation decoding
 
+An optional public position decoder can add one learned stationing decision after the
+actor selects End. See [PUBLIC_POSITION.md](PUBLIC_POSITION.md) for its separate frozen
+encoder, bundle format, history contract and development evaluation commands.
+
 Greedy policies can repeatedly open a target selector, cancel it and reopen it without
 changing the visible state. `--cancel-guard` retains cancellation but excludes that same
 opener after an exact return to the same player observation and native legal mask in

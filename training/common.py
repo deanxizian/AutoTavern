@@ -141,6 +141,10 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
         raise ValueError("Evaluation games must be a positive multiple of eight")
     was_training = model.training
     model.eval()
+    if getattr(model, "decoder_metadata", {}) and kind != "policy":
+        raise ValueError("A position decoder requires policy evaluation")
+    if hasattr(model, "reset_context"):
+        model.reset_context()
     places, per_seat, raw = [], {}, {}
     from .diagnostics import BehaviorAudit
     behavior = BehaviorAudit() if profile else None
@@ -152,6 +156,9 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
             env = tg.BatchEnv(games // 8, seed=seed + seat, controlled=(seat,),
                               threads=threads, config=config)
             first = np.zeros(env.n_games, dtype=np.uint8)
+            # Auto-reset games need new identities even when their visible turn
+            # repeats. IDs below `games` identify exactly the counted episodes.
+            identities = seat * env.n_games + np.arange(env.n_games)
             for _ in range(30_000):
                 obs = env.observe()
                 policy_obs = decoder.apply(obs) if decoder is not None else obs
@@ -164,6 +171,8 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
                     if kind == "random":
                         logits = torch.zeros(m.shape, device=device).masked_fill(~m, -1e9)
                     else:
+                        if hasattr(model, "set_context"):
+                            model.set_context(identities)
                         logits, value = model(f, c, m)
                         if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                             raise RuntimeError("Evaluation policy produced non-finite outputs")
@@ -189,6 +198,10 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
                 if decoder is not None:
                     for i in np.flatnonzero(done):
                         decoder.reset(i)
+                if hasattr(model, "reset_context"):
+                    for i in np.flatnonzero(done):
+                        model.reset_context(int(identities[i]))
+                    identities[done] += games
                 if first.all():
                     break
             else:
@@ -197,15 +210,21 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
             raw[str(seat)] = first.tolist()
             places.extend(first.tolist())
     model.train(was_training)
+    position_events = ([e for e in model.move_events if e["identity"] < games]
+                       if getattr(model, "decoder_metadata", {}) else None)
     return {**stats(places), "seed": seed, "kind": kind, "per_seat": per_seat,
             "opponents": "seven bundled heuristic bots", "rules": config,
             "placements_by_seat": raw, "guards_checked": audit_guards,
             "truncated_combats": 0 if audit_guards else None,
             "turn_limit_ends": 0 if audit_guards else None,
             "behavior": behavior.report() if behavior is not None else None,
+            **({"position_decoder": {"counted_episode_moves": len(position_events),
+                                       "events": position_events}}
+               if position_events is not None else {}),
             "decoding": {"kind": "greedy" if kind == "policy" else kind,
                          "cancel_retry_guard": bool(cancel_guard and kind != "bot"),
-                         "guard_version": CancelRetryGuard.version if cancel_guard else None}}
+                         "guard_version": CancelRetryGuard.version if cancel_guard else None,
+                         **getattr(model, "decoder_metadata", {})}}
 
 
 def atomic_json(path, data):

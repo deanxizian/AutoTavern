@@ -61,6 +61,8 @@ def play_arena(policies, *, games, seed, threads, config, device,
     """
     if len(policies) != 8 or inference_batch < 1:
         raise ValueError("Supply eight role policies and a positive inference batch")
+    if any(getattr(policy, "decoder_metadata", {}) for policy in policies[1:]):
+        raise ValueError("This arena position option applies to the candidate role only")
     roles = rotations(games)
     flat_roles = roles.reshape(-1)
     env = env_factory(games, seed=seed, controlled=tuple(range(8)), threads=threads,
@@ -78,6 +80,8 @@ def play_arena(policies, *, games, seed, threads, config, device,
     modes = [(policy, policy.training) for policy, _ in groups.values() if policy is not None]
     for policy, _ in modes:
         policy.eval()
+        if hasattr(policy, "reset_context"):
+            policy.reset_context()
     try:
         for driver_step in range(max_steps):
             active_lanes = ~first.all(axis=1)
@@ -105,6 +109,8 @@ def play_arena(policies, *, games, seed, threads, config, device,
                     for offset in range(0, len(slots), inference_batch):
                         subset = slots[offset:offset + inference_batch]
                         inputs = tensors({k: v[subset] for k, v in policy_obs.items()}, device)
+                        if hasattr(policy, "set_context"):
+                            policy.set_context(subset)
                         logits, value = policy(*inputs)
                         if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                             raise RuntimeError("Arena policy produced non-finite outputs")
@@ -136,6 +142,10 @@ def play_arena(policies, *, games, seed, threads, config, device,
             if decoder is not None:
                 for slot in np.flatnonzero(done):
                     decoder.reset(slot)
+            for slot in np.flatnonzero(done & relevant):
+                policy = policies[flat_roles[slot]]
+                if policy is not None and hasattr(policy, "reset_context"):
+                    policy.reset_context(int(slot))
             if first.all():
                 break
         else:
@@ -175,7 +185,11 @@ def play_arena(policies, *, games, seed, threads, config, device,
         "candidate_behavior": behavior.report(),
         "decoding": {"kind": "greedy", "cancel_retry_guard": cancel_guard,
                      "guard_version": CancelRetryGuard.version if cancel_guard else None,
-                     "scope": "all learned policies equally; heuristic unchanged"},
+                     "scope": "all learned policies equally; heuristic unchanged",
+                     **getattr(policies[0], "decoder_metadata", {})},
+        **({"position_decoder": {"statistics": dict(policies[0].counts),
+                                  "events": list(policies[0].move_events)}}
+           if getattr(policies[0], "decoder_metadata", {}) else {}),
         "lobbies": [{"lane": lane, "role_by_seat": roles[lane].tolist(),
                      "placement_by_seat": first[lane].tolist()}
                     for lane in range(games)],
@@ -219,19 +233,23 @@ def main():
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--cancel-guard", action="store_true")
+    parser.add_argument("--position-bundle", type=Path,
+                        help="Frozen public position bundle, applied only to the candidate")
     parser.add_argument("--hotfix-37-0-1", action=argparse.BooleanOptionalAction, default=None,
                         help="Defaults to the candidate's training profile; applies to every seat")
     parser.add_argument("--inference-batch", type=int, default=256)
     parser.add_argument("--action-cap", type=int, default=128)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
+    if args.position_bundle and (args.candidate == "bot" or not args.cancel_guard):
+        parser.error("A position bundle requires a learned candidate and --cancel-guard")
     if args.out.exists() or args.out.with_suffix(".failed.json").exists():
         parser.error("Use a new output path; preserve earlier evaluation evidence")
     if tg.build_is_current() is not True:
         parser.error("Build the native extension from the current checkout first")
     rotations(args.games)
     torch.set_num_threads(2)
-    torch.set_float32_matmul_precision("high")
+    torch.set_float32_matmul_precision("highest" if args.position_bundle else "high")
     device = torch.device(args.device)
     source_hash = hashlib.sha256(b"".join(
         p.name.encode() + p.read_bytes() for p in sorted(Path(__file__).parent.glob("*.py")))).hexdigest()
@@ -248,8 +266,13 @@ def main():
                 parser.error("Arena action cap differs from a checkpoint's training rules")
         policies.append(model)
         members.append(metadata)
+    if args.position_bundle:
+        from .position import load_position_policy
+        policies[0] = load_position_policy(policies[0], members[0], args.position_bundle, device)
     hotfix = (members[0].get("trained_hotfix_37_0_1", False) if args.hotfix_37_0_1 is None
               else args.hotfix_37_0_1)
+    if args.position_bundle and hotfix != members[0]["trained_hotfix_37_0_1"]:
+        parser.error("Evaluation rules differ from the frozen position bundle")
     metadata = dict(format_version=3, role_models=members, engine=tg.build_info(),
                     game_version=tg.game_version(), torch_version=torch.__version__,
                     evaluation_code_hash=source_hash,
