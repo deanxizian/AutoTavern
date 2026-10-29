@@ -54,6 +54,53 @@ def test_single_seat_audit_keeps_same_scores():
     assert audited["guards_checked"] and audited["truncated_combats"] == 0
 
 
+@pytest.mark.parametrize("failure", ["logits", "value", "masked"])
+def test_single_seat_rejects_invalid_policy_outputs(failure):
+    class InvalidPolicy(torch.nn.Module):
+        def forward(self, features, cards, masks):
+            logits = torch.zeros_like(masks, dtype=torch.float32).masked_fill(~masks, -1e9)
+            value = torch.zeros(len(features))
+            if failure == "logits":
+                logits[masks] = float("nan")
+            elif failure == "value":
+                value.fill_(float("inf"))
+            else:
+                logits = torch.where(masks, -1., 1.)
+            return logits, value
+
+    message = "masked action" if failure == "masked" else "non-finite outputs"
+    with pytest.raises(RuntimeError, match=message):
+        evaluate(InvalidPolicy(), games=8, seed=91, threads=1, config={},
+                 device=torch.device("cpu"), audit_guards=True)
+
+
+@pytest.mark.parametrize("module_name", ["training.evaluate", "training.arena"])
+def test_evaluation_commands_retain_non_guard_failures(module_name, tmp_path, monkeypatch):
+    import importlib
+    import sys
+
+    module = importlib.import_module(module_name)
+    output = tmp_path / "assessment.json"
+    model = Policy(hidden=8, embedding=2)
+    metadata = {"trained_hotfix_37_0_1": False, "action_cap": 128, "steps": 0,
+                "train_seed": 1, "validation_seed": 400, "sha256": "test-policy"}
+    monkeypatch.setattr(module, "frozen_checkpoint", lambda *args: (model, dict(metadata)))
+    monkeypatch.setattr(sys, "argv", ["assessment", "test.pt", "--device", "cpu",
+                                     "--games", "8", "--seed", "701", "--out", str(output)])
+
+    def failed_run(*args, **kwargs):
+        raise RuntimeError("non-finite outputs")
+
+    monkeypatch.setattr(module, "evaluate" if module_name.endswith("evaluate") else "play_arena",
+                        failed_run)
+    with pytest.raises(RuntimeError, match="non-finite outputs"):
+        module.main()
+    assert not output.exists()
+    evidence = json.loads(output.with_suffix(".failed.json").read_text())
+    assert evidence["passed"] is False and "non-finite outputs" in evidence["error"]
+    assert (evidence["seed"], evidence["games"]) == (701, 8)
+
+
 def test_seed_ranges_cannot_partially_overlap():
     check_seed_range(100, 8, 10, 20)
     for base in [3, 10, 13, 20, 27]:

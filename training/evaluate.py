@@ -4,6 +4,7 @@ import argparse
 import hashlib
 from pathlib import Path
 import torch
+import taverngym as tg
 
 from .common import atomic_json, evaluate
 from .arena import frozen_checkpoint
@@ -27,6 +28,8 @@ def main():
     device = torch.device(args.device)
     if args.out.exists() or args.out.with_suffix(".failed.json").exists():
         p.error("Use a new output path; preserve earlier evaluation evidence")
+    if tg.build_is_current() is not True:
+        p.error("Build the native extension from the current checkout first")
     model, metadata = frozen_checkpoint(args.checkpoint, device)
     hotfix = (metadata["trained_hotfix_37_0_1"] if args.hotfix_37_0_1 is None
               else args.hotfix_37_0_1)
@@ -39,9 +42,13 @@ def main():
                          config={"turn_action_caps": [metadata["action_cap"]],
                                  **({"hotfix_37_0_1": True} if hotfix else {})}, device=device,
                          audit_guards=True, profile=True, cancel_guard=args.cancel_guard)
-    except SimulatorGuardError as exc:
+    except Exception as exc:
+        failure = {"checkpoint": metadata, "passed": False, "error": repr(exc),
+                   "seed": args.seed, "games": args.games}
+        if isinstance(exc, SimulatorGuardError):
+            failure["guard"] = exc.evidence
         atomic_json(args.out.with_suffix(".failed.json"),
-                    {"checkpoint": metadata, "passed": False, "guard": exc.evidence})
+                    failure)
         raise
     score.update(checkpoint=metadata, training_steps=metadata["steps"])
     atomic_json(args.out, score)

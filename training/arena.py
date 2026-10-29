@@ -259,9 +259,13 @@ def main():
                             config={"turn_action_caps": [args.action_cap],
                                     **({"hotfix_37_0_1": True} if hotfix else {})}, device=device,
                             inference_batch=args.inference_batch, cancel_guard=args.cancel_guard)
-    except SimulatorGuardError as exc:
+    except Exception as exc:
+        failure = {**metadata, "passed": False, "error": repr(exc),
+                   "seed": args.seed, "games": args.games}
+        if isinstance(exc, SimulatorGuardError):
+            failure["guard"] = exc.evidence
         atomic_json(args.out.with_suffix(".failed.json"),
-                    {**metadata, "passed": False, "guard": exc.evidence})
+                    failure)
         raise
     result.update(metadata)
     atomic_json(args.out, result)

@@ -66,6 +66,11 @@ reject combat truncation, turn-limit endings and driver stops. A report without
 operation types and decisions per recruit turn; review these together with inference
 latency before expecting a person to execute the recommendations.
 
+Both evaluation commands retain other runtime failures (including non-finite policy
+outputs, masked actions and driver stops) in `.failed.json` too, with requested seed,
+game count and checkpoint provenance. A failed run has no successful score report;
+do not reuse its output path or treat the absence of a result as a completed test.
+
 When assessing a history-aware cancellation decoder, freeze its version along with the
 weights. Apply it equally to candidate and learned references in arena matches, retain
 its mode in every report, and validate its state restoration. A decoder change requires

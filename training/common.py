@@ -164,9 +164,14 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
                     if kind == "random":
                         logits = torch.zeros(m.shape, device=device).masked_fill(~m, -1e9)
                     else:
-                        logits, _ = model(f, c, m)
-                    actions = (Categorical(logits=logits).sample() if kind == "random"
-                               else logits.argmax(-1)).cpu().numpy()
+                        logits, value = model(f, c, m)
+                        if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
+                            raise RuntimeError("Evaluation policy produced non-finite outputs")
+                    selected = (Categorical(logits=logits).sample() if kind == "random"
+                                else logits.argmax(-1))
+                    if not m.gather(1, selected[:, None]).all():
+                        raise RuntimeError("Evaluation policy chose a masked action")
+                    actions = selected.cpu().numpy()
                 if behavior is not None:
                     behavior.record(obs, actions, np.flatnonzero(first == 0), seat * env.n_games)
                 if decoder is not None:
