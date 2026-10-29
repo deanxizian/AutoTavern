@@ -7,6 +7,7 @@ selected by how quickly it finishes. This is simulator evaluation, not human MMR
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import hashlib
 from pathlib import Path
 import time
@@ -252,6 +253,7 @@ def main():
     metadata = dict(format_version=3, role_models=members, engine=tg.build_info(),
                     game_version=tg.game_version(), torch_version=torch.__version__,
                     evaluation_code_hash=source_hash,
+                    evaluation_started_at=datetime.now(timezone.utc).isoformat(),
                     protocol="one first episode per lane; one candidate per lobby; seat-ordered player views")
     args.out.parent.mkdir(parents=True, exist_ok=True)
     try:

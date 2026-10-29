@@ -2,6 +2,7 @@
 
 import argparse
 import hashlib
+from datetime import datetime, timezone
 from pathlib import Path
 import torch
 import taverngym as tg
@@ -37,6 +38,7 @@ def main():
     metadata["evaluation_code_hash"] = hashlib.sha256(b"".join(
         f.name.encode() + f.read_bytes() for f in sorted(Path(__file__).parent.glob("*.py")))).hexdigest()
     args.out.parent.mkdir(parents=True, exist_ok=True)
+    started_at = datetime.now(timezone.utc).isoformat()
     try:
         score = evaluate(model, games=args.games, seed=args.seed, threads=args.threads,
                          config={"turn_action_caps": [metadata["action_cap"]],
@@ -50,7 +52,11 @@ def main():
         atomic_json(args.out.with_suffix(".failed.json"),
                     failure)
         raise
-    score.update(checkpoint=metadata, training_steps=metadata["steps"])
+    score.update(checkpoint=metadata, training_steps=metadata["steps"],
+                 evaluation_started_at=started_at,
+                 evaluation_code_hash=metadata["evaluation_code_hash"],
+                 engine=tg.build_info(), driver="single_seat_batch_v1",
+                 rejected_actions=0, incomplete_lobbies=0)
     atomic_json(args.out, score)
     print(score)
 

@@ -92,6 +92,39 @@ Example development match (use immutable copies of checkpoints):
   --games 256 --seed 920000001 --out runs/arena/development-01.json
 ```
 
+## Frozen final audit
+
+After development evidence supports a candidate, use `training.readiness` to copy the
+candidate and two chosen references into a new audit directory. Choose the strongest
+available prior-stage reference from the retained comparisons; the tool checks their
+identities, not the strategic judgment behind that choice. Supply those comparison
+reports and a short selection note. Only after the copies are hashed does it draw three
+random audit seeds, excluding recorded model-lineage and `runs` evaluation seeds.
+
+```bash
+.venv/bin/python -m training.readiness freeze runs/frozen/candidate.pt \
+  --champion runs/frozen/prior-champion.pt --reference runs/frozen/second-reference.pt \
+  --reference-evidence runs/arena/reference-comparison.json \
+  --reference-selection-note "Strongest prior stage and its strongest earlier reference" \
+  --directory runs/audits/candidate-01
+.venv/bin/python -m training.readiness run runs/audits/candidate-01/manifest.json
+.venv/bin/python -m training.readiness verify runs/audits/candidate-01/manifest.json
+```
+
+The one-shot runner executes all nine assessments (3,072 complete games), retains logs
+and raw reports, and stops on a failed assessment. It will not reuse an existing run.
+After an interrupted or failed audit, preserve its directory and freeze a new audit
+after resolving the cause; do not replace only the unfavorable seed. A valid set of
+nine completed assessments can still fail the performance thresholds.
+
+The verifier recomputes scores and confidence bounds from raw placements. It rejects
+missing or duplicated lobbies, unbalanced seats, changed models/opponents/rules/decoder,
+unchecked guards, changed source, evaluations predating the freeze, and mismatched
+reported scores. It checks every seed as well as the combined results. `readiness.json`
+records the manifest and report hashes. A result with `performance_gates_passed: true` establishes the numerical performance
+and complete-game checks. Deployment loading/latency still need verification before a
+trial notification, and `live_ready` remains false until the separate checks below.
+
 ## Live-state and manual-action gates
 
 The released repository exposes simulator state and action APIs. It does not include
