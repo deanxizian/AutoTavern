@@ -83,7 +83,9 @@ def arguments():
     p.add_argument("--strategy-bundle", type=Path,
                    help="Private, versioned expert knowledge JSON; copied into each checkpoint")
     p.add_argument("--strategy-coef", type=float, default=0.02,
-                   help="Soft teaching loss for the base actor, only when expert advice is enabled")
+                   help="Teaching loss weight for the base actor, only when expert advice is enabled")
+    p.add_argument("--strategy-loss", choices=("priority-margin-v1", "soft-ce-v1"),
+                   default="priority-margin-v1", help="Versioned objective for partial expert preferences")
     p.add_argument("--warmup-samples", type=int, default=262144)
     p.add_argument("--eval-games", type=int, default=256)
     p.add_argument("--eval-every", type=int, default=20)
@@ -221,7 +223,8 @@ def main():
         model, ckpt = load_checkpoint(args.resume, device)
         if ckpt.get("strategy_bundle") != strategy_bundle:
             raise ValueError("Resume changes frozen expert knowledge; start a new stage")
-        if strategy_bundle and args.strategy_coef != ckpt["args"].get("strategy_coef"):
+        if strategy_bundle and (args.strategy_coef != ckpt["args"].get("strategy_coef")
+                                or args.strategy_loss != ckpt["args"].get("strategy_loss", "soft-ce-v1")):
             raise ValueError("Resume changes the strategy teaching loss")
         if strategy_bundle:
             model.teacher.counts.update(ckpt.get("strategy_rule_applications", {}))
@@ -508,6 +511,7 @@ def main():
             labels = labels.flatten()
             adv = (adv - adv.mean()) / (adv.std(unbiased=False) + 1e-8)
             losses, kls, entropies, clips = [], [], [], []
+            teaching_losses = []
             early_stop = False
             for epoch in range(args.epochs):
                 epoch_kls = []
@@ -547,7 +551,8 @@ def main():
                         anchored = torch.distributions.kl_divergence(reference, dist).mean()
                     # Categorical normalizes by a row-wise constant; subtracting
                     # the exact saved prior still recovers base log probabilities.
-                    taught = (teaching_loss(dist.logits, kwargs["strategy_bias"], b["masks"][idx])
+                    taught = (teaching_loss(dist.logits, kwargs["strategy_bias"], b["masks"][idx],
+                                            mode=args.strategy_loss)
                               if strategy_bundle else value.sum() * 0)
                     loss = (pg + args.value_coef * vf - args.entropy * entropy
                             + args.aux_coef * auxiliary + args.anchor_coef * anchored
@@ -560,6 +565,8 @@ def main():
                     optimizer.step()
                     epoch_kls.append(kl); kls.append(kl)
                     losses.append(loss.item()); entropies.append(entropy.item())
+                    if strategy_bundle:
+                        teaching_losses.append(taught.item())
                     clips.append(((ratio.detach() - 1).abs() > args.clip).float().mean().item())
                 if early_stop:
                     break
@@ -580,6 +587,8 @@ def main():
             if strategy_bundle:
                 report["strategy_rule_applications"] = dict(model.teacher.counts)
                 report["strategy_sha256"] = model.teacher.sha256
+                report["strategy_loss_kind"] = args.strategy_loss
+                report["strategy_loss_mean"] = float(np.mean(teaching_losses))
             if args.opponents:
                 report["opponent_decisions"] = sum(env.opponent_decisions)
                 report["truncated_training_episodes"] = sum(env.truncated_episodes)

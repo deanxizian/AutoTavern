@@ -57,11 +57,18 @@ cancellation guard retain authority. The same prior is stored with each sampled
 transition and reused after rollout flattening and minibatch shuffling, so PPO's
 old and new likelihoods refer to the same advised policy. A small auxiliary loss
 teaches the underlying actor the relative preferences; only completed placements
-train the placement head, and the usual returns train the critic.
+train the placement head, and the usual returns train the critic. The default
+`--strategy-loss priority-margin-v1` stops teaching once the best actor choice in
+the highest-priority group beats lower-priority choices by the suggested margin.
+It does not require equal-scored choices to be equally likely. This matters for
+partial advice such as keeping a core minion: the other actions retain their
+learned distinctions. `soft-ce-v1` preserves the original probability-target loss
+for controlled comparisons and resuming old checkpoints. Neither objective has a
+guarantee of improved playing strength.
 
 Checkpoints embed the entire immutable bundle and its canonical checksum. Loading
 checks the checksum and native card table. Resume rejects changed knowledge or a
-changed teaching coefficient; optimizer, games, RNG and rule application counts
+changed teaching coefficient or loss version; optimizer, games, RNG and rule application counts
 are restored. A model requiring advice fails if the input prior is absent. Legacy
 policies receive no extra inputs and retain their previous behavior. Position
 wrappers pass advice to the actor while their frozen encoder remains unchanged.

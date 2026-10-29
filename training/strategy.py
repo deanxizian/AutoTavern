@@ -490,17 +490,28 @@ def add_strategy_observation(policy, observation, env, rows):
         observation["strategy_bias"] = policy.teacher.from_env(env, rows, observation["action_mask"])
 
 
-def teaching_loss(advised_logits, prior, masks):
-    """Soft imitation on informative rows; teach the base actor without a second forward.
+def teaching_loss(advised_logits, prior, masks, *, mode="priority-margin-v1"):
+    """Teach partial preferences without assigning probabilities to unadvised actions.
 
-    Relative advice values express preferences only. Equal advice on all legal
-    choices supplies no teaching signal. These targets never affect value labels.
+    The priority margin compares the best actor choice in the highest-priority set
+    with its strongest lower-priority competitor. Satisfied advice has zero loss;
+    tied recommendations need not become equally likely. The old soft target is
+    retained explicitly for reproducible comparisons and checkpoint resumption.
     """
+    if mode not in ("priority-margin-v1", "soft-ce-v1"):
+        raise ValueError("Unknown strategy teaching loss")
     base = (advised_logits - prior).masked_fill(~masks, -1e9)
     positive = prior.masked_fill(~masks, -1e9).amax(-1)
     negative = prior.masked_fill(~masks, 1e9).amin(-1)
     informative = (positive - negative > .25) & (masks.sum(-1) > 1)
     if not informative.any():
         return base.sum() * 0
-    target = prior[informative].masked_fill(~masks[informative], -1e9).softmax(-1).detach()
-    return -(target * base[informative].log_softmax(-1)).sum(-1).mean()
+    base, prior, masks = base[informative], prior[informative], masks[informative]
+    if mode == "soft-ce-v1":
+        target = prior.masked_fill(~masks, -1e9).softmax(-1).detach()
+        return -(target * base.log_softmax(-1)).sum(-1).mean()
+    best_score = positive[informative, None]
+    preferred = masks & (prior >= best_score - .25)
+    best = base.masked_fill(~preferred, -1e9).amax(-1)
+    rival = (base + best_score - prior).masked_fill(~(masks & ~preferred), -1e9).amax(-1)
+    return (rival - best).clamp_min(0).mean()

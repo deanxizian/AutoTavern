@@ -180,7 +180,40 @@ def test_teacher_loss_no_advice_no_signal():
     loss.backward();assert logits.grad.abs().sum()==0
 
 
-def test_real_strategy_ppo_checkpoint_resume_is_exact(tmp_path):
+def test_partial_advice_does_not_flatten_allowed_actions():
+    base=torch.tensor([[10.,5.,-6.]],requires_grad=True)
+    prior=torch.tensor([[0.,0.,-3.]])
+    mask=torch.ones_like(prior,dtype=torch.bool)
+    loss=teaching_loss(base+prior,prior,mask)
+    assert loss.item()==0
+    loss.backward();assert torch.equal(base.grad,torch.zeros_like(base))
+    assert teaching_loss(base+prior,prior,mask,mode='soft-ce-v1').item()>0
+
+
+def test_tied_recommendations_need_not_be_equally_likely():
+    base=torch.tensor([[8.,-10.,0.]],requires_grad=True)
+    prior=torch.tensor([[2.,2.,0.]])
+    mask=torch.ones_like(prior,dtype=torch.bool)
+    loss=teaching_loss(base+prior,prior,mask)
+    assert loss.item()==0
+    loss.backward();assert base.grad.abs().sum()==0
+
+
+def test_priority_margin_teaches_the_competing_preference_only():
+    base=torch.tensor([[0.,4.,-8.,100.]],requires_grad=True)
+    prior=torch.tensor([[6.,0.,0.,0.]])
+    mask=torch.tensor([[True,True,True,False]])
+    loss=teaching_loss(base+prior,prior,mask)
+    assert loss.item()==10
+    loss.backward()
+    torch.testing.assert_close(base.grad,torch.tensor([[-1.,1.,0.,0.]]),rtol=0,atol=0)
+    torch.testing.assert_close(teaching_loss(base+prior-57,prior,mask),loss,rtol=0,atol=0)
+    with pytest.raises(ValueError,match='Unknown'):
+        teaching_loss(base+prior,prior,mask,mode='missing')
+
+
+@pytest.mark.parametrize('loss_kind',['priority-margin-v1','soft-ce-v1'])
+def test_real_strategy_ppo_checkpoint_resume_is_exact(tmp_path,loss_kind):
     import gzip
     import subprocess
     import sys
@@ -198,10 +231,16 @@ def test_real_strategy_ppo_checkpoint_resume_is_exact(tmp_path):
         '--warmup-samples','0','--opponents','bot','--cancel-guard','--hotfix-37-0-1',
         '--public-attachments','--league-turn-limit','100','--attachment-lr','0.0001',
         '--strategy-bundle',str(knowledge),'--strategy-coef','0.02','--skip-baselines',
+        '--strategy-loss',loss_kind,
         '--checkpoint-seconds','999999','--max-hours','0']
     for name,count,initialization in [('whole',2,['--init-from',str(initial)]),
             ('split',1,['--init-from',str(initial)]),
             ('split',2,['--resume',str(tmp_path/'split/latest.pt')])]:
+        if name=='split' and count==2 and loss_kind=='soft-ce-v1':
+            legacy=torch.load(tmp_path/'split/latest.pt',map_location='cpu',weights_only=False)
+            del legacy['args']['strategy_loss']
+            torch.save(legacy,tmp_path/'split/legacy.pt')
+            initialization=['--resume',str(tmp_path/'split/legacy.pt')]
         result=subprocess.run(base+['--run-dir',str(tmp_path/name),'--max-updates',str(count)]+initialization,
             cwd=Path(__file__).resolve().parents[1],text=True,stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,timeout=180)
@@ -209,6 +248,7 @@ def test_real_strategy_ppo_checkpoint_resume_is_exact(tmp_path):
         assert result.returncode==0,result.stdout[-6000:]
     _,whole=load_checkpoint(tmp_path/'whole/latest.pt');_,split=load_checkpoint(tmp_path/'split/latest.pt')
     assert whole['strategy_sha256']==split['strategy_sha256']==digest(book())
+    assert whole['args']['strategy_loss']==split['args']['strategy_loss']==loss_kind
     assert whole['steps']==split['steps']==2048
     for key in whole['model']:
         assert torch.equal(whole['model'][key],split['model'][key]),key
@@ -221,3 +261,11 @@ def test_real_strategy_ppo_checkpoint_resume_is_exact(tmp_path):
     assert any(not torch.equal(actor.state_dict()[k],whole['model']['actor.'+k]) for k in actor.state_dict())
     metrics=[json.loads(line) for line in (tmp_path/'whole/metrics.jsonl').read_text().splitlines()]
     assert any(row.get('strategy_rule_applications',{}).get('user_curve',0)>0 for row in metrics)
+    assert all(row['strategy_loss_kind']==loss_kind and np.isfinite(row['strategy_loss_mean'])
+               for row in metrics if row['event']=='update')
+    other='soft-ce-v1' if loss_kind=='priority-margin-v1' else 'priority-margin-v1'
+    rejected=subprocess.run(base+['--run-dir',str(tmp_path/'rejected'),'--max-updates','3',
+        '--resume',str(tmp_path/'split/latest.pt'),'--strategy-loss',other],
+        cwd=Path(__file__).resolve().parents[1],text=True,stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,timeout=30)
+    assert rejected.returncode!=0 and 'Resume changes the strategy teaching loss' in rejected.stdout
