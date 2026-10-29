@@ -32,6 +32,17 @@ starting components and any specified economy, health, timing or growth conditio
 It does not activate just because a core card appears in the shop. Source passages
 with no actionable advice or unresolved ambiguity remain marked in the bundle.
 
+An optional `composition_entry_preference` version 1 with scope
+`last_missing_entry_group_buy` supplies a bounded purchase preference when one
+legal minion offer fills the last missing entry group. A public-state preview
+adds only that card to the hand, then reuses the existing economy, statistics,
+timing, growth and top-two direction checks. It neither activates the composition
+before acquisition nor changes ownership, masks or rewards. The frozen `bonus`
+applies once even when a card enables multiple directions, and learned values can
+outweigh it. This preview does not model purchase-trigger effects, pivot costs,
+multi-card setup sequences or Discover choices. Bundles without the field keep
+their existing behavior; the numeric weight remains an engineering hypothesis.
+
 HSReplay hero averages provide bounded selection priors. Missing Top1 measurements
 remain missing; the available Top50 and Top1 averages have equal weight when both
 exist. Tribe averages are only small tie breakers after composition entry. These

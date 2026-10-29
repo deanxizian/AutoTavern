@@ -76,6 +76,92 @@ def test_composition_requires_owned_entry_and_does_not_chase_shop_offer():
     assert scores[8]>0 and scores[16]<0 and scores[46]>0
 
 
+def entry_book():
+    b=book()
+    b['composition_entry_preference']=dict(format_version=1,scope='last_missing_entry_group_buy',bonus=1.8)
+    return b
+
+
+def test_entry_purchase_prefers_last_missing_component_without_claiming_ownership():
+    teacher=StrategyTeacher(entry_book());v=view(8,4)
+    v['me']['shop']=[dict(id='BG36_700',type='minion'),dict(id='BG36_345',type='minion')]
+    assert teacher.advise(v)[8]==0  # Two missing components: no speculative entry.
+    v['me']['board']=[dict(id='BG_LOE_077',type='minion')];before=deepcopy(v)
+    scores,why=teacher.advise(v,explain=True)
+    assert scores[8]==pytest.approx(1.8) and scores[9]==0
+    assert v==before and teacher.active_compositions(v)==[] and why['compositions']==[]
+    reason=next(r for r in why['rules'] if r['rule']=='composition_entry')
+    assert reason['compositions']==['Synthetic two-card engine']
+    assert StrategyTeacher(book()).advise(v)[8]==0  # Legacy bundles remain unchanged.
+    base=np.zeros(tg.N_ACTIONS);base[9]=2.5
+    assert (base+scores).argmax()==9  # A stronger learned choice can outweigh entry.
+    v['me']['hand']=[v['me']['shop'][0]]
+    scores,why=teacher.advise(v,explain=True)
+    assert len(why['compositions'])==1 and scores[8]==pytest.approx(2.6)
+    assert not any(r['rule']=='composition_entry' for r in why['rules'])
+
+
+def test_entry_purchase_keeps_growth_economy_and_stat_requirements():
+    b=entry_book();comp=b['compositions'][0]
+    comp.update(latest_entry_turn=5,growth_ids=['BG_LOE_077'],economy_engines=1,stat_min={'gem_atk':3})
+    b['cards']['BG36_345']['tags'].append('economy_engine')
+    v=view(5,4);v['me']['board']=[dict(id='BG_LOE_077',type='minion')]
+    v['me']['shop']=[dict(id='BG36_700',type='minion')];teacher=StrategyTeacher(b)
+    assert teacher.advise(v)[8]==0
+    v['me']['board'].append(dict(id='BG36_345',type='minion'))
+    assert teacher.advise(v)[8]==0
+    v['me']['stats']['gem_atk']=3
+    assert teacher.advise(v)[8]==pytest.approx(1.8)
+    v['turn']=6
+    assert teacher.advise(v)[8]==0
+    v['me']['board'][0]['counter']=1
+    assert teacher.advise(v)[8]==pytest.approx(1.8)
+
+
+def test_entry_purchase_handles_golden_ids_and_does_not_stack_shared_directions():
+    b=entry_book();b['cards']['golden-fixture']={'normal_id':'BG36_700','tags':[]}
+    second=deepcopy(b['compositions'][0]);second['name']='Another shared engine';b['compositions'].append(second)
+    v=view(8,4);v['me']['board']=[dict(id='BG_LOE_077',type='minion')]
+    v['me']['shop']=[dict(id='golden-fixture',type='minion')]
+    score,why=StrategyTeacher(b).advise(v,explain=True)
+    assert score[8]==pytest.approx(1.8)
+    entry=[r for r in why['rules'] if r['rule']=='composition_entry']
+    assert len(entry)==1 and len(entry[0]['compositions'])==2
+
+
+def test_entry_purchase_respects_legal_mask_capacity_and_decision_kind():
+    teacher=StrategyTeacher(entry_book());v=view(8,4)
+    v['me']['board']=[dict(id='BG_LOE_077',type='minion')]
+    v['me']['shop']=[dict(id='BG36_700',type='minion')]
+    mask=np.array(v['mask'],bool);mask[8]=False
+    assert teacher.advise(v,mask)[8]==0
+    v['me']['hand_limit']=0
+    assert teacher.advise(v)[8]==0
+    v['me']['hand_limit']=10;v['me']['shop'][0]['type']='spell'
+    assert teacher.advise(v)[8]==0
+    v['me']['shop'][0]['type']='minion'
+    v['me']['pending']=dict(kind='discover',options=[v['me']['shop'][0]])
+    assert teacher.advise(v)[30]==0  # This version is scoped to purchases only.
+
+
+@pytest.mark.parametrize('bonus',[float('nan'),float('inf'),-1,6.1,True,'2'])
+def test_entry_preference_rejects_invalid_weight(bonus):
+    b=entry_book();b['composition_entry_preference']['bonus']=bonus
+    with pytest.raises(ValueError,match='composition entry'):StrategyTeacher(b)
+
+
+def test_entry_preference_is_bound_to_checkpoint_knowledge(tmp_path):
+    b=entry_book();model=ExpertStrategyPolicy(EntityPolicy(width=16,layers=1,heads=2,text_dim=8),b)
+    ckpt=dict(architecture=model.architecture,engine_hash=tg.source_hash(),model=model.state_dict(),
+              strategy_bundle=b,strategy_sha256=digest(b))
+    path=tmp_path/'entry.pt';torch.save(ckpt,path);loaded,_=load_checkpoint(path)
+    v=view(8,4);v['me']['board']=[dict(id='BG_LOE_077',type='minion')]
+    v['me']['shop']=[dict(id='BG36_700',type='minion')]
+    np.testing.assert_array_equal(loaded.teacher.advise(v),model.teacher.advise(v))
+    ckpt['strategy_bundle']['composition_entry_preference']['bonus']=.5;torch.save(ckpt,path)
+    with pytest.raises(ValueError,match='checksum'):load_checkpoint(path)
+
+
 def test_fresh_choice_reads_attached_effect_only_in_gift_discover():
     teacher=StrategyTeacher(book());v=view(3,2)
     v['me']['pending']=dict(kind='discover',source={'id':'BG36_MidGameEffect_000t52'},

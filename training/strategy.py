@@ -49,6 +49,14 @@ class StrategyTeacher:
         self.heroes = bundle["heroes"]
         self.powers = {h["power_id"]: h for h in self.heroes.values()}
         self.comps = bundle["compositions"]
+        self.entry_preference = bundle.get("composition_entry_preference")
+        if self.entry_preference is not None:
+            pref = self.entry_preference
+            if (not isinstance(pref, dict) or pref.get("format_version") != 1
+                    or pref.get("scope") != "last_missing_entry_group_buy"
+                    or type(pref.get("bonus")) not in (int, float)
+                    or not math.isfinite(pref["bonus"]) or not 0 <= pref["bonus"] <= 6):
+                raise ValueError("Invalid composition entry preference")
         self.fresh_preference = bundle.get("fresh_perspective_preference")
         if self.fresh_preference is not None:
             pref = self.fresh_preference
@@ -126,6 +134,35 @@ class StrategyTeacher:
             result.append((score, comp))
         result.sort(key=lambda x: (-x[0], x[1]["name"]))
         return [c for _, c in result[:2]]
+
+    def purchase_entry_compositions(self, view, card, active):
+        """Directions enabled by owning this last missing entry component.
+
+        This public-state preview grants no ownership and mutates nothing. It
+        reuses existing timing, growth, economy, statistics and ranking checks;
+        it does not simulate purchase effects or estimate the cost of a pivot.
+        """
+        me = view["me"]
+        if (self.entry_preference is None or not self.entry_preference["bonus"]
+                or me.get("pending") or card.get("type") != "minion"
+                or len(me["hand"]) >= me["hand_limit"]):
+            return []
+        owned = {self.cid(c) for c in me["board"] + me["hand"]}
+        cid = self.cid(card)
+        current = {c["name"] for c in active}
+        candidates = set()
+        for comp in self.comps:
+            if comp.get("emergency") or comp["name"] in current:
+                continue
+            missing = [group for group in comp["entry_groups"] if not owned.intersection(group)]
+            if len(missing) == 1 and cid in missing[0]:
+                candidates.add(comp["name"])
+        if not candidates:
+            return []
+        # A missing ID is not already owned, so acquiring it cannot triple
+        # existing copies of itself and remove another entry component.
+        preview = dict(view, me=dict(me, hand=me["hand"] + [card]))
+        return [c for c in self.active_compositions(preview) if c["name"] in candidates]
 
     def effective_profile(self, view):
         me = view["me"]
@@ -358,6 +395,14 @@ class StrategyTeacher:
                 add(power["action"], -2., "hero_power_limit")
         for i, card in enumerate(shop):
             value = worth(card)
+            if mask[8 + i]:
+                entries = self.purchase_entry_compositions(view, card, comps)
+                if entries:
+                    # One bounded acquisition preference, even if several
+                    # directions share this enabling card. No forced purchase.
+                    add(8 + i, self.entry_preference["bonus"], "composition_entry")
+                    if explain:
+                        reasons[-1]["compositions"] = [c["name"] for c in entries]
             if profile.get("timewarp_triple_type") and turn in (4, 5):
                 counts = Counter(r for c in board for r in c.get("races", []) if r != "ALL")
                 if any(counts[r] == 2 for r in card.get("races", [])):
