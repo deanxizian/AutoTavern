@@ -44,8 +44,19 @@ If actor and encoder use the same input file, the bundle shares its copy.
 ```
 
 Choose seeds unused for training when assessing strength. These are development commands,
-not a final audit. Reports identify the decoder and all component hashes. The position
-option applies only to the candidate; learned opponents retain their cancellation guard.
+not a final audit. Reports identify the decoder and all component hashes. The
+`--position-bundle` option applies to the candidate. To preserve an enhanced reference,
+pass `--opponent-position-bundles` with exactly seven bundle paths or `none`, aligned
+with the seven `--opponents` entries. A bundle requires a learned actor in that role;
+all learned roles use the cancellation guard. Each bundle's actor, encoder, ridge and
+threshold are checked independently. Plain and enhanced roles can share actor weights
+without sharing their decoding behavior.
+
+Arena format 4 reports include `role_decoding` in candidate/opponent order, alongside
+`role_models`. `position_decoders` records the roles covered by each shared decoder,
+its aggregate counters and events with stable slot IDs. Candidate-only events remain
+in `position_decoder`; aggregate counters are omitted there when the same decoder
+also controls opponents, so opponent actions are not counted as candidate actions.
 The two commands use different decision drivers, so compare policies within one driver.
 The bundle's rule profile cannot be overridden by the evaluation flags.
 

@@ -253,7 +253,7 @@ def load_position_policy(actor, actor_metadata, bundle, device):
         actor_sha256=actor_metadata["sha256"], encoder_sha256=encoder_metadata["sha256"],
         ridge_sha256=config["ridge"]["sha256"], threshold=model.threshold,
         encoder_precision="float32_highest", bundle_sha256=hashlib.sha256(raw).hexdigest(),
-        scope="public position for candidate only")
+        scope="public position for explicitly assigned policy roles")
     return model
 
 

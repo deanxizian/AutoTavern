@@ -61,8 +61,10 @@ def play_arena(policies, *, games, seed, threads, config, device,
     """
     if len(policies) != 8 or inference_batch < 1:
         raise ValueError("Supply eight role policies and a positive inference batch")
-    if any(getattr(policy, "decoder_metadata", {}) for policy in policies[1:]):
-        raise ValueError("This arena position option applies to the candidate role only")
+    position_roles = [role for role, policy in enumerate(policies)
+                      if getattr(policy, "decoder_metadata", {})]
+    if position_roles and not cancel_guard:
+        raise ValueError("Position policies require the cancellation guard for all learned roles")
     roles = rotations(games)
     flat_roles = roles.reshape(-1)
     env = env_factory(games, seed=seed, controlled=tuple(range(8)), threads=threads,
@@ -167,6 +169,35 @@ def play_arena(policies, *, games, seed, threads, config, device,
             "candidate_beats_role_rate": wins / games,
             "candidate_beats_role_ci95": wilson(wins, games),
         }
+    role_decoding = [
+        ({"kind": "bundled_heuristic"} if policy is None else
+         {"kind": "greedy", "cancel_retry_guard": cancel_guard,
+          "guard_version": CancelRetryGuard.version if cancel_guard else None,
+          **getattr(policy, "decoder_metadata", {})})
+        for policy in policies
+    ]
+    position_decoders = [
+        {"roles": members, "statistics": dict(policy.counts),
+         "events": list(policy.move_events)}
+        for policy, members in groups.values() if getattr(policy, "decoder_metadata", {})
+    ]
+    candidate_position = {}
+    if 0 in position_roles:
+        events = [event for event in policies[0].move_events
+                  if flat_roles[event["identity"]] == 0]
+        candidate_position = {"counted_episode_moves": len(events), "events": events}
+        if all(policy is not policies[0] for policy in policies[1:]):
+            candidate_position["statistics"] = dict(policies[0].counts)
+    decoding = {"kind": "greedy", "cancel_retry_guard": cancel_guard,
+                "guard_version": CancelRetryGuard.version if cancel_guard else None,
+                "scope": "all learned policies equally; heuristic unchanged",
+                **getattr(policies[0], "decoder_metadata", {})}
+    if any(role != 0 for role in position_roles):
+        decoding.update(kind="role_specific_public_position_v1",
+                        scope="position decoder frozen separately for each role; cancellation guard for all learned roles")
+        # The shared header must not attribute the candidate's components to
+        # references with a different actor, encoder, ridge or threshold.
+        decoding = {k: decoding[k] for k in ("kind", "cancel_retry_guard", "guard_version", "scope")}
     return {
         "candidate": placement_stats(candidate), "opponents": opponents,
         "per_candidate_seat": {
@@ -183,13 +214,9 @@ def play_arena(policies, *, games, seed, threads, config, device,
         "truncated_combats": 0 if audit_guards else None,
         "turn_limit_ends": 0 if audit_guards else None,
         "candidate_behavior": behavior.report(),
-        "decoding": {"kind": "greedy", "cancel_retry_guard": cancel_guard,
-                     "guard_version": CancelRetryGuard.version if cancel_guard else None,
-                     "scope": "all learned policies equally; heuristic unchanged",
-                     **getattr(policies[0], "decoder_metadata", {})},
-        **({"position_decoder": {"statistics": dict(policies[0].counts),
-                                  "events": list(policies[0].move_events)}}
-           if getattr(policies[0], "decoder_metadata", {}) else {}),
+        "decoding": decoding, "role_decoding": role_decoding,
+        **({"position_decoder": candidate_position} if candidate_position else {}),
+        **({"position_decoders": position_decoders} if position_decoders else {}),
         "lobbies": [{"lane": lane, "role_by_seat": roles[lane].tolist(),
                      "placement_by_seat": first[lane].tolist()}
                     for lane in range(games)],
@@ -235,26 +262,33 @@ def main():
     parser.add_argument("--cancel-guard", action="store_true")
     parser.add_argument("--position-bundle", type=Path,
                         help="Frozen public position bundle, applied only to the candidate")
+    parser.add_argument("--opponent-position-bundles", nargs=7, default=["none"] * 7,
+                        help="Seven frozen position bundle paths or none, aligned with --opponents")
     parser.add_argument("--hotfix-37-0-1", action=argparse.BooleanOptionalAction, default=None,
                         help="Defaults to the candidate's training profile; applies to every seat")
     parser.add_argument("--inference-batch", type=int, default=256)
     parser.add_argument("--action-cap", type=int, default=128)
     parser.add_argument("--out", type=Path, required=True)
     args = parser.parse_args()
-    if args.position_bundle and (args.candidate == "bot" or not args.cancel_guard):
-        parser.error("A position bundle requires a learned candidate and --cancel-guard")
+    bundle_names = [args.position_bundle, *[None if name == "none" else Path(name)
+                                          for name in args.opponent_position_bundles]]
+    policy_names = [args.candidate, *args.opponents]
+    if any(bundle_names) and not args.cancel_guard:
+        parser.error("Position bundles require --cancel-guard for all learned policies")
+    if any(bundle and name == "bot" for name, bundle in zip(policy_names, bundle_names)):
+        parser.error("A position bundle requires a learned policy in its assigned role")
     if args.out.exists() or args.out.with_suffix(".failed.json").exists():
         parser.error("Use a new output path; preserve earlier evaluation evidence")
     if tg.build_is_current() is not True:
         parser.error("Build the native extension from the current checkout first")
     rotations(args.games)
     torch.set_num_threads(2)
-    torch.set_float32_matmul_precision("highest" if args.position_bundle else "high")
+    torch.set_float32_matmul_precision("highest" if any(bundle_names) else "high")
     device = torch.device(args.device)
     source_hash = hashlib.sha256(b"".join(
         p.name.encode() + p.read_bytes() for p in sorted(Path(__file__).parent.glob("*.py")))).hexdigest()
     cache, policies, members = {}, [], []
-    for name in [args.candidate, *args.opponents]:
+    for name in policy_names:
         key = "bot" if name == "bot" else str(Path(name).resolve())
         if key not in cache:
             cache[key] = ((None, {"kind": "bundled_heuristic"}) if name == "bot"
@@ -266,14 +300,22 @@ def main():
                 parser.error("Arena action cap differs from a checkpoint's training rules")
         policies.append(model)
         members.append(metadata)
-    if args.position_bundle:
-        from .position import load_position_policy
-        policies[0] = load_position_policy(policies[0], members[0], args.position_bundle, device)
     hotfix = (members[0].get("trained_hotfix_37_0_1", False) if args.hotfix_37_0_1 is None
               else args.hotfix_37_0_1)
-    if args.position_bundle and hotfix != members[0]["trained_hotfix_37_0_1"]:
-        parser.error("Evaluation rules differ from the frozen position bundle")
-    metadata = dict(format_version=3, role_models=members, engine=tg.build_info(),
+    wrappers = {}
+    for role, bundle in enumerate(bundle_names):
+        if bundle is None:
+            continue
+        if hotfix != members[role]["trained_hotfix_37_0_1"]:
+            parser.error("Evaluation rules differ from a frozen position bundle")
+        from .position import load_position_policy
+        # Keep the candidate's inference batches separate from its references,
+        # including self-comparisons. Repeated opponent roles still share work.
+        key = (role == 0, id(policies[role]), str(bundle.resolve()))
+        if key not in wrappers:
+            wrappers[key] = load_position_policy(policies[role], members[role], bundle, device)
+        policies[role] = wrappers[key]
+    metadata = dict(format_version=4, role_models=members, engine=tg.build_info(),
                     game_version=tg.game_version(), torch_version=torch.__version__,
                     evaluation_code_hash=source_hash,
                     evaluation_started_at=datetime.now(timezone.utc).isoformat(),
