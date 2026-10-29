@@ -42,6 +42,8 @@ def arguments():
     p.add_argument("--hotfix-37-0-1", action="store_true",
                    help="Enable the audited hotfix rules; see docs/PATCH_COMPATIBILITY.md")
     p.add_argument("--opponent-batch", type=int, default=256)
+    p.add_argument("--opponent-graph-max-batch", type=int, default=0,
+                   help="Cache exact-shape frozen-opponent CUDA graphs up to this size (0 disables)")
     p.add_argument("--league-turn-limit", type=int, default=0,
                    help="Training-only horizon: retain and bootstrap unfinished lobbies; 0 is strict")
     p.add_argument("--model", choices=("entity", "mlp"), default="entity")
@@ -92,6 +94,10 @@ def arguments():
         p.error("History-aware training requires the league environment (--opponents)")
     if args.league_turn_limit < 0 or (args.league_turn_limit and not args.opponents):
         p.error("--league-turn-limit requires league opponents and a nonnegative turn count")
+    if not 0 <= args.opponent_graph_max_batch <= 64:
+        p.error("--opponent-graph-max-batch must be in 0..64")
+    if args.opponent_graph_max_batch and (not args.opponents or torch.device(args.device).type != "cuda"):
+        p.error("--opponent-graph-max-batch requires CUDA league opponents")
     if min(args.envs, args.rollout, args.minibatch, args.epochs, args.eval_every) < 1:
         p.error("Batch sizes, epochs and evaluation interval must be positive")
     if args.eval_games < 8 or args.eval_games % 8:
@@ -129,7 +135,8 @@ def main():
                         opponent_ids=[m["sha256"] for m in opponent_manifest], device=device,
                         threads=args.threads, config=config, inference_batch=args.opponent_batch,
                         cancel_guard=args.cancel_guard, training_turn_limit=args.league_turn_limit,
-                        truncation_dir=run / "truncations")
+                        truncation_dir=run / "truncations",
+                        opponent_graph_max_batch=args.opponent_graph_max_batch)
     else:
         env = tg.BatchEnv(args.envs, seed=args.seed, controlled=(0,), threads=args.threads,
                           config=config)
@@ -468,6 +475,7 @@ def main():
             if args.opponents:
                 report["opponent_decisions"] = sum(env.opponent_decisions)
                 report["truncated_training_episodes"] = sum(env.truncated_episodes)
+                report["opponent_inference"] = env.inference_stats()
             for key, value in report.items():
                 if isinstance(value, (int, float)):
                     writer.add_scalar("train/" + key, value, steps)

@@ -49,6 +49,17 @@ rollout. Later stages can use `--init-from best.pt --warmup-samples 0 --lr 0.000
 copy of the initial policy supplies a KL anchor (coefficient 0.1, first 100 updates).
 Exact continuation instead uses `--resume`; it restores the optimizer, games and RNGs.
 
+CUDA league runs may opt into `--opponent-graph-max-batch 16` to reduce CPU launch
+overhead for small frozen-opponent batches. The default is 0 (disabled). Each batch
+size gets its own graph, with no padding, and capture must reproduce eager logits
+and values exactly without consuming CUDA RNG. Larger batches remain eager. The
+learner, PPO update, rule profile and evaluation path are unchanged. Graph caches
+are rebuilt after resume; `opponent_inference` in update logs records their usage.
+The option can change at resume as a performance setting after equivalence checks.
+Graph storage increases GPU memory use; it is bounded by the selected batch limit
+and number of distinct frozen opponents. See the matching
+[PyTorch CUDA graph semantics](https://docs.pytorch.org/docs/2.12/notes/cuda.html#cuda-graphs).
+
 The PPO update structure follows the clipped objective described in
 [CleanRL's PPO implementation](https://github.com/vwxyzjn/cleanrl/blob/master/cleanrl/ppo.py).
 For action-mask semantics, see

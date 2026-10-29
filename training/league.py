@@ -53,7 +53,7 @@ def load_opponents(specifications, device):
 class LeagueEnv:
     def __init__(self, n_games, *, seed, opponents, opponent_ids, device,
                  config=None, threads=1, inference_batch=256, cancel_guard=False,
-                 training_turn_limit=0, truncation_dir=None):
+                 training_turn_limit=0, truncation_dir=None, opponent_graph_max_batch=0):
         if n_games < 1 or not opponents or len(opponents) != len(opponent_ids):
             raise ValueError("Supply positive lanes and a nonempty, identified opponent pool")
         if inference_batch < 1 or not 0 <= seed < 2**64:
@@ -62,12 +62,23 @@ class LeagueEnv:
             raise ValueError("The training turn limit must be a nonnegative integer")
         if training_turn_limit and truncation_dir is None:
             raise ValueError("Time-limited training must retain truncation evidence")
+        if type(opponent_graph_max_batch) is not int or not 0 <= opponent_graph_max_batch <= 64:
+            raise ValueError("Opponent graph batch limit must be an integer in 0..64")
+        if opponent_graph_max_batch and torch.device(device).type != "cuda":
+            raise ValueError("Opponent graphs require a CUDA device")
         self.n_games = self.n_slots = n_games
         self.seed, self.config = seed, config or {}
         self.training_turn_limit = training_turn_limit
         self.truncation_dir = Path(truncation_dir) if truncation_dir is not None else None
         self.truncated_episodes = [0] * n_games
         self.opponents, self.opponent_ids = list(opponents), list(opponent_ids)
+        if opponent_graph_max_batch:
+            from .inference import FrozenOpponentGraphs
+            cache = {}
+            for model in opponents:
+                if model is not None and id(model) not in cache:
+                    cache[id(model)] = FrozenOpponentGraphs(model, opponent_graph_max_batch)
+            self.opponents = [cache[id(model)] if model is not None else None for model in opponents]
         self.device, self.inference_batch = torch.device(device), inference_batch
         self.threads = min(n_games, max(1, threads))
         self.executor = ThreadPoolExecutor(self.threads) if self.threads > 1 else None
@@ -79,7 +90,7 @@ class LeagueEnv:
         self.opponent_decisions = [0] * n_games
         self.cursors = [0] * n_games
         self.games = [None] * n_games
-        for model in opponents:
+        for model in self.opponents:
             if model is not None:
                 model.eval()
         for lane in range(n_games):
@@ -289,3 +300,8 @@ class LeagueEnv:
         if self.executor is not None:
             self.executor.shutdown(wait=True)
             self.executor = None
+
+    def inference_stats(self):
+        models = {id(model): model for model in self.opponents if model is not None}
+        return [model.inference_stats() for model in models.values()
+                if hasattr(model, "inference_stats")]
