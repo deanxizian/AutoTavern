@@ -5,7 +5,8 @@ import pytest
 
 torch = pytest.importorskip("torch")
 import taverngym as tg
-from training.common import Policy, check_step, generalized_advantage, tensors
+from training.common import (Policy, bootstrap_time_limits, check_step,
+                             generalized_advantage, tensors)
 from training.entity import EntityPolicy
 
 
@@ -35,6 +36,40 @@ def test_masking_excludes_invalid_actions_and_backpropagates():
 def test_incomplete_simulations_are_rejected():
     with pytest.raises(RuntimeError, match="valid placement"):
         check_step(np.array([True]), {"rejected": np.array([False]), "placement": np.array([0])})
+
+
+def test_time_limit_uses_final_value_and_cuts_the_reset_trajectory():
+    class ValueFromObservation(torch.nn.Module):
+        def forward(self, features, cards, masks):
+            return torch.zeros_like(masks, dtype=torch.float32), features[:, 0]
+
+    done = np.array([True])
+    info = {"rejected": np.array([False]), "placement": np.array([0]),
+            "truncated": np.array([True]), "truncated_lanes": np.array([0]),
+            "final_observation": {"features": np.array([[7.]], np.float32),
+                                  "cards": np.zeros((1, 1), np.int32),
+                                  "action_mask": np.ones((1, 1), bool),
+                                  "ready": np.ones(1, bool)}}
+    with pytest.raises(RuntimeError, match="not a completed evaluation"):
+        check_step(done, info)
+    check_step(done, info, allow_truncation=True)
+    original = np.array([0.], np.float32)
+    reward = bootstrap_time_limits(ValueFromObservation(), original, info, .9, torch.device("cpu"))
+    np.testing.assert_array_equal(original, [0.])
+    np.testing.assert_allclose(reward, [6.3])
+    rewards = torch.tensor([[0.], [float(reward[0])], [100.]])
+    dones = torch.tensor([[False], [True], [False]])
+    _, returns = generalized_advantage(rewards, dones, torch.zeros_like(rewards),
+                                      torch.tensor([999.]), .9, 1.)
+    torch.testing.assert_close(returns[:2], torch.tensor([[5.67], [6.3]]))
+    assert returns[2, 0] > 900  # This unrelated reset value must not cross the cut.
+    for invalid in (dict(info, placement=np.array([1])), dict(info, truncated=np.array([1]))):
+        with pytest.raises(RuntimeError):
+            check_step(done, invalid, allow_truncation=True)
+    with pytest.raises(RuntimeError, match="final observation"):
+        bootstrap_time_limits(ValueFromObservation(), original,
+                              {k: v for k, v in info.items() if k != "final_observation"},
+                              .9, torch.device("cpu"))
 
 
 def test_single_seat_always_ready_and_legal_through_resets():

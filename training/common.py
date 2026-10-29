@@ -76,11 +76,44 @@ def generalized_advantage(rewards, dones, values, next_value, gamma, lam):
     return advantages, advantages + values
 
 
-def check_step(dones, info):
+def check_step(dones, info, *, allow_truncation=False):
     if info["rejected"].any():
         raise RuntimeError("A masked action was rejected by the simulator")
-    if np.any(dones & ((info["placement"] < 1) | (info["placement"] > 8))):
+    truncated = info.get("truncated", np.zeros_like(dones))
+    if truncated.dtype != np.bool_ or truncated.shape != dones.shape:
+        raise RuntimeError("Invalid training truncation flags")
+    if truncated.any() and not allow_truncation:
+        raise RuntimeError("A training truncation is not a completed evaluation episode")
+    if np.any(truncated & (~dones | (info["placement"] != 0))):
+        raise RuntimeError("A training truncation must reset without assigning a placement")
+    if np.any(dones & ~truncated & ((info["placement"] < 1) | (info["placement"] > 8))):
         raise RuntimeError("Simulator stopped without a valid placement; refusing to train on it")
+
+
+@torch.no_grad()
+def bootstrap_time_limits(model, rewards, info, gamma, device):
+    """Bootstrap truncated transitions from their final view, never the reset game.
+
+    dones stays true for GAE so neither values nor advantages cross a reset. Adding
+    gamma * V(final_observation) to the zero transition reward supplies exactly the
+    missing one-step bootstrap. Truncations keep placement 0 (no auxiliary label).
+    """
+    lanes = np.flatnonzero(info.get("truncated", np.zeros(len(rewards), bool)))
+    if not len(lanes):
+        return rewards
+    if not np.array_equal(lanes, info.get("truncated_lanes")) or np.any(rewards[lanes] != 0):
+        raise RuntimeError("Truncation bootstrap lanes or rewards are inconsistent")
+    obs = info.get("final_observation")
+    if obs is None or len(obs["ready"]) != len(lanes):
+        raise RuntimeError("Truncation is missing its final observation")
+    logits, values = model(*tensors(obs, device))
+    if not torch.isfinite(logits).all() or not torch.isfinite(values).all():
+        raise RuntimeError("Non-finite truncation bootstrap")
+    if values.shape != (len(lanes),):
+        raise RuntimeError("Truncation value shape differs from its lanes")
+    rewards = rewards.copy()
+    rewards[lanes] += np.float32(gamma) * values.float().cpu().numpy()
+    return rewards
 
 
 def stats(places):

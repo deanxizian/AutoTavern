@@ -174,3 +174,68 @@ def test_changed_opponent_pool_and_invalid_actions_are_rejected():
         assert [json.loads(a.save(i))["game"] for i in range(4)] == [json.loads(s)["game"] for s in before]
     finally:
         a.close(); b.close()
+
+
+def capped_league(tmp_path, *, limit=2):
+    return LeagueEnv(1, seed=17, opponents=[VisibleEndTurn()], opponent_ids=["wait"],
+                     device="cpu", config={"max_turns": 2, "hero_pool": ["TB_BaconShop_HERO_35"]},
+                     cancel_guard=True, training_turn_limit=limit, truncation_dir=tmp_path)
+
+
+def test_legitimate_draw_lobby_is_preserved_and_bootstrapped_before_native_ranking(tmp_path):
+    import json
+    from training.common import check_step
+    a, b = capped_league(tmp_path / "a"), capped_league(tmp_path / "b")
+    try:
+        for _ in range(20):
+            action = int(np.flatnonzero(a.observe()["action_mask"][0])[0])
+            reward, done, info = a.step([action])
+            check_step(done, info, allow_truncation=True)
+            if done[0]:
+                break
+        else:
+            pytest.fail("The two-round empty-board draw was not truncated")
+        assert info["truncated"][0] and info["placement"][0] == 0 and reward[0] == 0
+        assert a.truncated_episodes == [1] and a.indices == [1]
+        files = list((tmp_path / "a").glob("*.json"))
+        assert len(files) == 1
+        evidence = json.loads(files[0].read_text())
+        assert evidence["turn"] == 2 and evidence["reason"] == "training_turn_limit"
+        b.load(0, json.dumps(evidence["environment"]))
+        assert b.game(0).turn == 2 and not b.game(0).is_over()
+        assert not b.game(0).turn_limit_end and b.game(0).placements()[b.learners[0]] == 0
+        for key, value in info["final_observation"].items():
+            np.testing.assert_array_equal(b.observe()[key], value)
+        assert a.game(0).turn == 0  # Returned observations belong to the reset game.
+        assert info["final_observation"]["features"][0, 0] > a.observe()["features"][0, 0]
+        b.load(0, a.save(0))
+        assert b.truncated_episodes == [1]
+        for _ in range(8):
+            actions = [int(np.flatnonzero(a.observe()["action_mask"][0])[0])]
+            ar, ad, ai = a.step(actions)
+            br, bd, bi = b.step(actions)
+            for x, y in ((ar, br), (ad, bd), (ai["truncated"], bi["truncated"])):
+                np.testing.assert_array_equal(x, y)
+            assert a.save(0) == b.save(0)
+    finally:
+        a.close(); b.close()
+
+
+def test_training_horizon_cannot_hide_native_guard_failures_or_change_on_resume(tmp_path):
+    import json
+    from training.diagnostics import SimulatorGuardError
+    a, strict = capped_league(tmp_path / "a"), capped_league(tmp_path / "strict", limit=0)
+    try:
+        with pytest.raises(ValueError, match="training_turn_limit"):
+            strict.load(0, a.save(0))
+        state = json.loads(a.game(0).state_json())
+        state["truncated_combats"] = 1
+        a.games[0] = tg.Game.from_json(json.dumps(state))
+        for env in (a, strict):
+            with pytest.raises(SimulatorGuardError):
+                for _ in range(20):
+                    action = int(np.flatnonzero(env.observe()["action_mask"][0])[0])
+                    env.step([action])
+        assert not list((tmp_path / "a").glob("*.json"))
+    finally:
+        a.close(); strict.close()

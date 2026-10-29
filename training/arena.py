@@ -202,6 +202,8 @@ def frozen_checkpoint(path, device):
     if checkpoint.get("initial_policy"):
         metadata["initial_policy"] = checkpoint["initial_policy"]
     metadata["trained_hotfix_37_0_1"] = checkpoint["args"].get("hotfix_37_0_1", False)
+    metadata["training_turn_limit"] = checkpoint["args"].get("league_turn_limit", 0)
+    metadata["truncated_training_episodes"] = checkpoint.get("truncated_training_episodes", 0)
     del checkpoint
     return model.to(device), metadata
 

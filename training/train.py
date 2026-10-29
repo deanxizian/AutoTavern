@@ -26,7 +26,7 @@ from torch import nn
 from torch.utils.tensorboard import SummaryWriter
 
 import taverngym as tg
-from .common import (atomic_json, check_step, evaluate, generalized_advantage,
+from .common import (atomic_json, bootstrap_time_limits, check_step, evaluate, generalized_advantage,
                      load_checkpoint, make_policy, stats, tensors)
 
 
@@ -42,6 +42,8 @@ def arguments():
     p.add_argument("--hotfix-37-0-1", action="store_true",
                    help="Enable the audited hotfix rules; see docs/PATCH_COMPATIBILITY.md")
     p.add_argument("--opponent-batch", type=int, default=256)
+    p.add_argument("--league-turn-limit", type=int, default=0,
+                   help="Training-only horizon: retain and bootstrap unfinished lobbies; 0 is strict")
     p.add_argument("--model", choices=("entity", "mlp"), default="entity")
     p.add_argument("--width", type=int, default=384)
     p.add_argument("--layers", type=int, default=8)
@@ -88,6 +90,8 @@ def arguments():
         p.error("League training requires --warmup-samples 0")
     if args.cancel_guard and not args.opponents:
         p.error("History-aware training requires the league environment (--opponents)")
+    if args.league_turn_limit < 0 or (args.league_turn_limit and not args.opponents):
+        p.error("--league-turn-limit requires league opponents and a nonnegative turn count")
     if min(args.envs, args.rollout, args.minibatch, args.epochs, args.eval_every) < 1:
         p.error("Batch sizes, epochs and evaluation interval must be positive")
     if args.eval_games < 8 or args.eval_games % 8:
@@ -124,7 +128,8 @@ def main():
         env = LeagueEnv(args.envs, seed=args.seed, opponents=opponent_models,
                         opponent_ids=[m["sha256"] for m in opponent_manifest], device=device,
                         threads=args.threads, config=config, inference_batch=args.opponent_batch,
-                        cancel_guard=args.cancel_guard)
+                        cancel_guard=args.cancel_guard, training_turn_limit=args.league_turn_limit,
+                        truncation_dir=run / "truncations")
     else:
         env = tg.BatchEnv(args.envs, seed=args.seed, controlled=(0,), threads=args.threads,
                           config=config)
@@ -167,6 +172,8 @@ def main():
             raise ValueError("Resume changes environment type; use --init-from for a new stage")
         if args.cancel_guard != ckpt["args"].get("cancel_guard", False):
             raise ValueError("Resume changes cancellation decoding")
+        if args.league_turn_limit != ckpt["args"].get("league_turn_limit", 0):
+            raise ValueError("Resume changes training time limit; use --init-from for a new stage")
         if [m["sha256"] for m in opponent_manifest] != [m["sha256"] for m in ckpt.get("opponent_manifest", [])]:
             raise ValueError("Resume changes the frozen opponent pool")
         optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, eps=1e-5)
@@ -223,6 +230,7 @@ def main():
             "args": {k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()},
             "model": model.state_dict(), "optimizer": optimizer.state_dict(),
             "update": update, "steps": steps, "warmup_done": warmup_done, "phase": phase,
+            "truncated_training_episodes": sum(env.truncated_episodes) if args.opponents else 0,
             "best_placement": best, "stale_evals": stale, "elapsed_seconds": elapsed(),
             "environment": gzip.compress(json.dumps([env.save(i) for i in range(args.envs)]).encode()),
             "torch_rng": torch.get_rng_state(), "numpy_rng": np.random.get_state(),
@@ -299,6 +307,10 @@ def main():
         "opponent_manifest": opponent_manifest,
         "initial_policy": initial_policy,
         "decoding": {"cancel_retry_guard": args.cancel_guard},
+        "training_time_limit": {"turn": args.league_turn_limit,
+                                "bootstrap": "final_player_observation",
+                                "evidence": str(run / "truncations"),
+                                "applies_to_evaluation": False},
     }
     atomic_json(run / ("resume_manifest.json" if args.resume else "manifest.json"), manifest)
     emit("started", parameters=manifest["parameters"], device=str(device), resumed=bool(args.resume))
@@ -375,8 +387,10 @@ def main():
                                ("actions", action), ("logprobs", logprob), ("values", val)):
                     buffers[key][t].copy_(x)
                 rewards, done, info = env.step(action.cpu().numpy())
-                check_step(done, info)
-                recent.extend(info["placement"][done].tolist())
+                check_step(done, info, allow_truncation=bool(args.league_turn_limit))
+                rewards = bootstrap_time_limits(model, rewards, info, args.gamma, device)
+                completed = done & ~info.get("truncated", np.zeros_like(done))
+                recent.extend(info["placement"][completed].tolist())
                 buffers["rewards"][t].copy_(torch.as_tensor(rewards, device=device))
                 buffers["dones"][t].copy_(torch.as_tensor(done, device=device))
                 buffers["placements"][t].copy_(torch.as_tensor(info["placement"].astype(np.int64), device=device))
@@ -453,6 +467,7 @@ def main():
             }
             if args.opponents:
                 report["opponent_decisions"] = sum(env.opponent_decisions)
+                report["truncated_training_episodes"] = sum(env.truncated_episodes)
             for key, value in report.items():
                 if isinstance(value, (int, float)):
                     writer.add_scalar("train/" + key, value, steps)
@@ -466,7 +481,10 @@ def main():
         emit("stopped", reason=stop_reason, checkpoint=str(run / "latest.pt"))
     except BaseException as exc:
         # Do not serialize partially updated optimizer state as an apparently good run.
-        emit("failed", error=repr(exc), last_good_checkpoint=str(run / "latest.pt"))
+        last_good = run / "latest.pt"
+        if not last_good.exists():
+            last_good = args.resume
+        emit("failed", error=repr(exc), last_good_checkpoint=str(last_good) if last_good else None)
         raise
     finally:
         writer.close()

@@ -45,6 +45,11 @@ Legacy-rule scores do not certify a candidate under a new profile.
    exact opponent identities and per-lobby placements. Verify loading and inference on
    the intended deployment device, including measured latency on representative states.
 
+Training may use an explicit external turn horizon to bootstrap and archive unfinished
+games (see [TRAINING.md](TRAINING.md)). This does not change any gate above: validation
+and final evaluation retain complete lobbies, and any native guard ending fails the
+assessment. Training truncation counts must remain visible alongside placement scores.
+
 `training.arena` controls all eight seats and rotates every role through every seat.
 This uses a different action interleaving from the single-seat built-in-bot benchmark;
 compare policies within the same protocol, not scores from the two drivers directly.

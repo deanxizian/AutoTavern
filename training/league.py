@@ -16,7 +16,7 @@ import numpy as np
 import torch
 
 import taverngym as tg
-from .common import tensors
+from .common import atomic_json, tensors
 from .decoding import CancelRetryGuard
 from .diagnostics import check_game_guards
 from .turns import DRIVER, next_ready, splitmix64
@@ -52,13 +52,21 @@ def load_opponents(specifications, device):
 
 class LeagueEnv:
     def __init__(self, n_games, *, seed, opponents, opponent_ids, device,
-                 config=None, threads=1, inference_batch=256, cancel_guard=False):
+                 config=None, threads=1, inference_batch=256, cancel_guard=False,
+                 training_turn_limit=0, truncation_dir=None):
         if n_games < 1 or not opponents or len(opponents) != len(opponent_ids):
             raise ValueError("Supply positive lanes and a nonempty, identified opponent pool")
         if inference_batch < 1 or not 0 <= seed < 2**64:
             raise ValueError("Invalid inference batch or seed")
+        if type(training_turn_limit) is not int or training_turn_limit < 0:
+            raise ValueError("The training turn limit must be a nonnegative integer")
+        if training_turn_limit and truncation_dir is None:
+            raise ValueError("Time-limited training must retain truncation evidence")
         self.n_games = self.n_slots = n_games
         self.seed, self.config = seed, config or {}
+        self.training_turn_limit = training_turn_limit
+        self.truncation_dir = Path(truncation_dir) if truncation_dir is not None else None
+        self.truncated_episodes = [0] * n_games
         self.opponents, self.opponent_ids = list(opponents), list(opponent_ids)
         self.device, self.inference_batch = torch.device(device), inference_batch
         self.threads = min(n_games, max(1, threads))
@@ -76,6 +84,11 @@ class LeagueEnv:
                 model.eval()
         for lane in range(n_games):
             self._fresh(lane)
+        if training_turn_limit:
+            native_limit = json.loads(self.games[0].state_json())["cfg"]["max_turns"]
+            if native_limit and training_turn_limit > native_limit:
+                self.close()
+                raise ValueError("Training turn limit exceeds the native safety limit")
         self._drive(list(range(n_games)))
 
     def _fresh(self, lane):
@@ -180,6 +193,7 @@ class LeagueEnv:
         self._drive(list(range(self.n_games)))
         rewards = np.zeros(self.n_games, np.float32)
         done = np.zeros(self.n_games, bool)
+        truncated = np.zeros(self.n_games, bool)
         placement = np.zeros(self.n_games, np.uint8)
         reset = []
         for lane in range(self.n_games):
@@ -191,13 +205,41 @@ class LeagueEnv:
                     raise RuntimeError("Invalid league placement")
                 rewards[lane] = np.float32(1) - np.float32(2) * np.float32(place - 1) / np.float32(7)
                 done[lane], placement[lane] = True, place
-                self.indices[lane] += 1
-                self._fresh(lane)
                 reset.append(lane)
             elif game.is_over():
                 raise RuntimeError("League game ended without the learner's placement")
+            elif self.training_turn_limit and game.turn >= self.training_turn_limit:
+                # Stop at an actual ready-player observation BEFORE the native end-of-
+                # round guard invents placements by Health. This is a training horizon,
+                # not a game outcome; its value bootstrap is handled by the PPO caller.
+                check_game_guards(game, context={"lane": lane, "episode": self.indices[lane]})
+                evidence = {"reason": "training_turn_limit", "turn": game.turn,
+                            "environment": json.loads(self.save(lane))}
+                self.truncation_dir.mkdir(parents=True, exist_ok=True)
+                path = self.truncation_dir / f"lane{lane:05d}-episode{self.indices[lane]:08d}.json"
+                if path.exists():
+                    if json.loads(path.read_text()) != evidence:
+                        raise RuntimeError("Truncation evidence would overwrite a different state")
+                else:
+                    atomic_json(path, evidence)
+                self.truncated_episodes[lane] += 1
+                done[lane] = truncated[lane] = True
+                reset.append(lane)
+        info = {"placement": placement, "rejected": np.zeros(self.n_games, bool),
+                "truncated": truncated}
+        lanes = np.flatnonzero(truncated)
+        if len(lanes):
+            info["truncated_lanes"] = lanes
+            rows = [(int(lane), self.learners[lane]) for lane in lanes]
+            info["final_observation"] = observation_rows(self.games, rows)
+            if self.decoder is not None:
+                info["final_observation"] = self.decoder.apply(
+                    info["final_observation"], [lane * 8 + seat for lane, seat in rows])
+        for lane in reset:
+            self.indices[lane] += 1
+            self._fresh(lane)
         self._drive(reset)
-        return rewards, done, {"placement": placement, "rejected": np.zeros(self.n_games, bool)}
+        return rewards, done, info
 
     def game(self, lane):
         return self.games[lane].copy()
@@ -211,6 +253,8 @@ class LeagueEnv:
             "engine_hash": self.engine_hash,
             "seed": self.seed, "n_games": self.n_games, "lane": lane,
             "config": self.config, "opponent_ids": self.opponent_ids,
+            "training_turn_limit": self.training_turn_limit,
+            "truncated_episodes": self.truncated_episodes[lane],
             "episode": self.indices[lane], "learner": self.learners[lane],
             "assignments": self.assignments[lane],
             "opponent_decisions": self.opponent_decisions[lane],
@@ -227,12 +271,15 @@ class LeagueEnv:
         for key, value in required.items():
             if data[key] != value:
                 raise ValueError(f"League resume changes {key}")
+        if data.get("training_turn_limit", 0) != self.training_turn_limit:
+            raise ValueError("League resume changes training_turn_limit; start a new stage")
         if (data["decoder"] is not None) != (self.decoder is not None):
             raise ValueError("League resume changes cancellation decoding")
         self.indices[lane], self.learners[lane] = data["episode"], data["learner"]
         self.cursors[lane] = data["cursor"]
         self.assignments[lane] = data["assignments"]
         self.opponent_decisions[lane] = data["opponent_decisions"]
+        self.truncated_episodes[lane] = data.get("truncated_episodes", 0)
         self.games[lane] = tg.Game.from_json(data["game"])
         if self.decoder is not None:
             for seat, decoder in enumerate(data["decoder"]):

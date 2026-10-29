@@ -28,7 +28,8 @@ and `taverngym.build_is_current()` before training.
 - Default discount 1.0 and GAE lambda 0.995. Only the environment's placement reward is
   optimized; no invented reward for buying, upgrading or high minion stats is added.
 - The simulator's legal-action mask applies during both collection and optimization.
-  Rejected actions or a game stopped without a valid placement fail the run explicitly.
+  Rejected actions and native simulator guard failures stop the run explicitly. League
+  training can separately truncate and bootstrap unfinished games as described below.
 - A cap of 128 actions per recruit turn prevents infinite rearrangement/freezing loops.
   This is a training/evaluation convention, not an official game rule. All reported
   comparisons use the same cap. The other simulator settings remain at their defaults.
@@ -80,6 +81,7 @@ Artifacts in each run directory:
 | `random_baseline.json`, `bot_baseline.json` | Reference policies on validation seeds |
 | `latest.pt` | Model, optimizer, all live games, RNG states, counters and elapsed time |
 | `best.pt`, `best_eval.json` | Checkpoint selected by validation mean placement |
+| `truncations/*.json` | Full unfinished league states retained at an explicit training horizon |
 | `tensorboard/` | TensorBoard scalar logs |
 
 Checkpoints are written atomically, every five minutes and at evaluation or graceful stop.
@@ -158,6 +160,33 @@ This is a fixed opponent pool, not the report's human-calibrated opponent librar
 not a continuously updated self-play population. It uses Python Game lanes and batches
 frozen-policy inference, so measure its throughput before scaling the run. Native game
 guards remain active and a guard failure stops the run with its last good checkpoint.
+
+Long-running draws can be legitimate: if both boards always deal lethal damage in one
+hit and have equal total body/shield hit counts, repeated combats can destroy both
+warbands indefinitely. The native 100-turn safety limit ranks survivors by Health;
+that ranking is not a game result and must not become a placement reward.
+
+For league training, `--league-turn-limit 100` sets an explicit external horizon.
+At the first ready learner observation on or after that turn, an unfinished lobby is
+saved to `truncations/`, counted in `truncated_training_episodes`, and reset. The final
+player-visible observation is retained separately from the reset observation. PPO adds
+`gamma * V(final_observation)` to that transition's zero reward and cuts GAE at the
+reset. No placement is assigned, no auxiliary placement label is generated, and the
+episode is excluded from placement statistics while remaining in the truncation count.
+This follows the termination/truncation distinction in
+[Gymnasium's time-limit guidance](https://gymnasium.farama.org/tutorials/gymnasium_basics/handling_time_limits/).
+It adds no reward for the invented Health ranking or for a particular in-game action.
+
+The default `--league-turn-limit 0` retains the original strict behavior. A positive
+limit must not exceed the native safety limit. Its setting and cumulative per-lane
+counts are checkpointed; changing the horizon requires `--init-from` and a new stage,
+not an exact resume. Native combat truncation or a pre-existing guard failure is still
+fatal even when this training horizon is enabled.
+
+Validation and final arena evaluation do **not** use the training horizon or its reset
+path. They still require complete games and reject native guard endings under the
+unchanged readiness protocol. A successful training truncation is never a successful
+evaluation episode.
 
 In this stage, `best.pt` is selected by mean placement against the fixed validation pool,
 not by the earlier bot benchmark. Each validation writes `league_eval_XXXXXX.json` with
