@@ -153,6 +153,43 @@ class GrowthEnd(torch.nn.Module):
                 growth[:, 0] / 100)
 
 
+def test_action_validation_does_not_repeat_the_learners_public_projection():
+    class Counted:
+        def __init__(self, game):
+            self.game, self.calls = game, 0
+        def __getattr__(self, name):
+            return getattr(self.game, name)
+        def strategy_view(self, seat):
+            self.calls += 1
+            return self.game.strategy_view(seat)
+
+    env = LeagueEnv(1, seed=541, opponents=[None], opponent_ids=["bot"], device="cpu",
+                    config={"turn_action_caps": [128]}, cancel_guard=True,
+                    public_attachments=True, public_growth=True)
+    try:
+        game = Counted(env.games[0])
+        env.games[0] = game
+        env.strategy_teacher = StrategyTeacher(book())
+        policy_obs = env.observe()
+        assert game.calls == 1 and policy_obs["growth"].shape == (1, N_FEATURES)
+        assert "strategy_bias" in policy_obs
+        counts = dict(env.strategy_teacher.counts)
+        validation_obs = env.observe(include_strategy=False, include_growth=False)
+        assert game.calls == 1 and "growth" not in validation_obs
+        assert "strategy_bias" not in validation_obs
+        for key in ("features", "cards", "action_mask", "ready"):
+            np.testing.assert_array_equal(validation_obs[key], policy_obs[key])
+        action = int(np.flatnonzero(policy_obs["action_mask"][0])[0])
+        env.step([action])
+        assert game.calls == 1 and dict(env.strategy_teacher.counts) == counts
+        # Suppressing advice alone must still supply growth to policy callers.
+        next_obs = env.observe(include_strategy=False)
+        assert game.calls == 2 and next_obs["growth"].shape == (1, N_FEATURES)
+        assert "strategy_bias" not in next_obs
+    finally:
+        env.close()
+
+
 def test_league_preserves_growth_at_decision_time_and_restore_rejects_contract_changes():
     model = GrowthEnd().eval()
     kwargs = dict(seed=541, opponents=[model], opponent_ids=["test"], device="cpu",
