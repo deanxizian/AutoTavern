@@ -57,6 +57,10 @@ class PublicPositionPolicy(torch.nn.Module):
         return self.actor.requires_attachments
 
     @property
+    def requires_growth(self):
+        return getattr(self.actor, "requires_growth", False)
+
+    @property
     def requires_strategy(self):
         return getattr(self.actor, "requires_strategy", False)
 
@@ -70,7 +74,7 @@ class PublicPositionPolicy(torch.nn.Module):
         underlying = actor.actor if isinstance(actor, ExpertStrategyPolicy) else actor
         require(isinstance(underlying, EntityPolicy) and isinstance(encoder, EntityPolicy),
                 "Position decoding requires entity actor and encoder policies")
-        require(not encoder.requires_attachments,
+        require(not encoder.requires_attachments and not encoder.requires_growth,
                 "This frozen position feature family requires its legacy observation encoder")
         require(ridge.get("family") == FAMILY, "Unsupported position feature family")
         require(type(threshold) in (float, int) and math.isfinite(threshold) and threshold >= 0,
@@ -192,11 +196,15 @@ class PublicPositionPolicy(torch.nn.Module):
         return scores
 
     @torch.inference_mode()
-    def forward(self, features, cards, masks, attachments=None, strategy_bias=None):
+    def forward(self, features, cards, masks, attachments=None, strategy_bias=None, growth=None):
         require(self.context is not None and len(self.context) == len(features),
                 "One stable position identity is required per observation")
         ids, self.context = self.context, None
         kwargs = {"attachments": attachments} if self.requires_attachments else {}
+        if self.requires_growth:
+            kwargs["growth"] = growth
+        elif growth is not None:
+            raise ValueError("A legacy position actor does not accept growth inputs")
         if self.requires_strategy:
             kwargs["strategy_bias"] = strategy_bias
         elif strategy_bias is not None:

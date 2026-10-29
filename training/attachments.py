@@ -119,4 +119,12 @@ def policy_kwargs(policy, observation, device):
                 or not np.isfinite(prior).all() or np.any(np.abs(prior) > 6)):
             raise ValueError("An expert policy needs aligned bounded strategy priors")
         result["strategy_bias"] = torch.as_tensor(prior, device=device)
+    if getattr(policy, "requires_growth", False):
+        from .growth import N_FEATURES
+        growth = observation.get("growth")
+        if (not isinstance(growth, np.ndarray) or growth.dtype != np.float32
+                or growth.shape != (len(observation["features"]), N_FEATURES)
+                or not np.isfinite(growth).all()):
+            raise ValueError("A growth policy needs aligned finite public growth observations")
+        result["growth"] = torch.as_tensor(growth, device=device)
     return result

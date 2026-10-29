@@ -36,8 +36,9 @@ and `taverngym.build_is_current()` before training.
 
 Differences from the report are explicit: the public observation produces 49 tokens here.
 The legacy model omits attachment identities; an optional
-[public attachment residual](PUBLIC_ATTACHMENTS.md) adds them while persistent-effect
-details remain incomplete. Text features use the
+[public attachment residual](PUBLIC_ATTACHMENTS.md) adds them. A separate optional
+[own-player growth residual](PUBLIC_GROWTH.md) adds 16 accumulated counters, while
+other persistent-effect details remain incomplete. Text features use the
 public `sentence-transformers/all-MiniLM-L6-v2`; the report does not specify its text encoder.
 Stage one uses heuristic opponents and a supervised operation warm-up, not the authors'
 private human-calibrated libraries or their simplified-rule curriculum. It starts at learning

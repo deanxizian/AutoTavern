@@ -1,7 +1,7 @@
 """Paper-informed entity transformer over the public observation contract.
 
-The legacy model has 49 tokens, including global. An opt-in residual adds public
-attachment identities; internal counters remain outside this observation contract.
+The legacy model has 49 tokens, including global. Opt-in residuals add public
+attachment identities and a fixed allowlist of own-player growth counters.
 This is an independently trained baseline, not a replica of the paper's model.
 """
 
@@ -34,14 +34,20 @@ class Block(nn.Module):
 
 
 class EntityPolicy(nn.Module):
-    def __init__(self, width=384, layers=8, heads=8, text_dim=384, attachment_version=0):
+    def __init__(self, width=384, layers=8, heads=8, text_dim=384, attachment_version=0,
+                 growth_version=0):
         super().__init__()
         if type(attachment_version) is not int or attachment_version not in (0, 1):
             raise ValueError("Unsupported public attachment observation version")
+        if type(growth_version) is not int or growth_version not in (0, 1):
+            raise ValueError("Unsupported public growth observation version")
         self.attachment_version = attachment_version
+        self.growth_version = growth_version
         self.architecture = dict(kind="entity", width=width, layers=layers, heads=heads, text_dim=text_dim)
         if attachment_version:
             self.architecture["attachment_version"] = attachment_version
+        if growth_version:
+            self.architecture["growth_version"] = growth_version
         self.layout = dict(tg.layout())
         l = self.layout
         self.header = l["GLOBAL_F"] + l["N_QUESTS"] * l["QUEST_F"] + l["PENDING_KINDS"]
@@ -72,10 +78,18 @@ class EntityPolicy(nn.Module):
         if self.requires_attachments:
             self.attachment_proj = nn.Linear(width, width, bias=False)
             nn.init.zeros_(self.attachment_proj.weight)
+        if self.requires_growth:
+            from .growth import N_FEATURES
+            self.growth_proj = nn.Linear(N_FEATURES, width, bias=False)
+            nn.init.zeros_(self.growth_proj.weight)
 
     @property
     def requires_attachments(self):
         return self.attachment_version == 1
+
+    @property
+    def requires_growth(self):
+        return self.growth_version == 1
 
     def card_repr(self, indices):
         indices = indices.long()
@@ -87,9 +101,9 @@ class EntityPolicy(nn.Module):
         weights = present.to(vectors.dtype).unsqueeze(-1)
         return (vectors * weights).sum(-2) / weights.sum(-2).clamp_min(1.)
 
-    def forward_aux(self, features, cards, masks, attachments=None):
+    def forward_aux(self, features, cards, masks, attachments=None, growth=None):
         with torch.autocast(features.device.type, dtype=torch.bfloat16, enabled=features.is_cuda):
-            logits, value, placement = self._forward_aux(features, cards, masks, attachments)
+            logits, value, placement = self._forward_aux(features, cards, masks, attachments, growth)
         # Ratios, categorical probabilities and losses must remain in float32.
         return logits.float(), value.float(), placement.float()
 
@@ -110,7 +124,7 @@ class EntityPolicy(nn.Module):
                                              include_last_offset=True)
         return pooled.reshape(*cards.shape, -1)
 
-    def encode_tokens(self, features, cards, masks, attachments=None):
+    def encode_tokens(self, features, cards, masks, attachments=None, growth=None):
         """Encode only the public observation, using the caller's precision context."""
         l, n = self.layout, len(features)
         f = features.sign() * torch.log1p(features.abs())
@@ -130,6 +144,14 @@ class EntityPolicy(nn.Module):
         global_cards = torch.cat((c[:, :self.prefix], c[:, ci:ci + 8]), 1)
         global_ids = torch.cat((cards[:, :self.prefix], cards[:, ci:ci + 8]), 1)
         global_token = self.global_proj(f[:, :self.header]) + self.pool(global_cards, global_ids != 0)
+        if self.requires_growth:
+            from .growth import N_FEATURES
+            if (growth is None or growth.shape != (n, N_FEATURES)
+                    or growth.dtype != torch.float32 or growth.device != features.device):
+                raise ValueError("This policy requires aligned float32 public growth observations")
+            global_token = global_token + self.growth_proj(growth.sign() * torch.log1p(growth.abs()))
+        elif growth is not None:
+            raise ValueError("A legacy policy does not accept growth inputs")
         ci += 8
         opp_public = f[:, fi:fi + 7 * l["OPP_F"]].reshape(n, 7, l["OPP_F"])
         fi += 7 * l["OPP_F"]
@@ -151,9 +173,9 @@ class EntityPolicy(nn.Module):
             x = block(x, present)
         return self.norm(x)
 
-    def _forward_aux(self, features, cards, masks, attachments=None):
+    def _forward_aux(self, features, cards, masks, attachments=None, growth=None):
         n = len(features)
-        x = self.encode_tokens(features, cards, masks, attachments)
+        x = self.encode_tokens(features, cards, masks, attachments, growth)
         g, board, hand, shop, choices = x[:, 0], x[:, 1:8], x[:, 8:18], x[:, 18:26], x[:, 26:42]
         def pointer(i, objects):
             return (self.keys[i](objects) * self.queries[i](g)[:, None]).sum(-1) / self.scale
@@ -166,11 +188,11 @@ class EntityPolicy(nn.Module):
                             pair(5, hand, board), pair(6, board, board)), 1)
         return logits.masked_fill(~masks, -1e9), self.value(g).squeeze(-1), self.placement(g)
 
-    def forward(self, features, cards, masks, attachments=None):
-        logits, value, _ = self.forward_aux(features, cards, masks, attachments)
+    def forward(self, features, cards, masks, attachments=None, growth=None):
+        logits, value, _ = self.forward_aux(features, cards, masks, attachments, growth)
         return logits, value
 
-    def distribution(self, features, cards, masks, auxiliary=False, *, attachments=None):
-        logits, value, placement = self.forward_aux(features, cards, masks, attachments)
+    def distribution(self, features, cards, masks, auxiliary=False, *, attachments=None, growth=None):
+        logits, value, placement = self.forward_aux(features, cards, masks, attachments, growth)
         result = (Categorical(logits=logits, validate_args=False), value)
         return (*result, placement) if auxiliary else result

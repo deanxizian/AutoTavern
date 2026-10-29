@@ -53,6 +53,8 @@ def arguments():
     p.add_argument("--model", choices=("entity", "mlp"), default="entity")
     p.add_argument("--public-attachments", action="store_true",
                    help="Use the optional public attachment identity encoder in entity league training")
+    p.add_argument("--public-growth", action="store_true",
+                   help="Encode the versioned own-player growth counters in entity league training")
     p.add_argument("--width", type=int, default=384)
     p.add_argument("--layers", type=int, default=8)
     p.add_argument("--heads", type=int, default=8)
@@ -69,6 +71,8 @@ def arguments():
     p.add_argument("--lr", type=float, default=0.00002)
     p.add_argument("--attachment-lr", type=float,
                    help="Optional separate learning rate for the new attachment projection")
+    p.add_argument("--growth-lr", type=float,
+                   help="Optional separate learning rate for the new public growth projection")
     p.add_argument("--warmup-lr", type=float, default=0.0001)
     p.add_argument("--gamma", type=float, default=1.0)
     p.add_argument("--gae-lambda", type=float, default=0.995)
@@ -113,6 +117,11 @@ def arguments():
     if args.attachment_lr is not None and (not args.public_attachments
             or not math.isfinite(args.attachment_lr) or args.attachment_lr <= 0):
         p.error("--attachment-lr requires public attachments and a finite positive rate")
+    if args.public_growth and (args.model != "entity" or not args.opponents or args.warmup_samples):
+        p.error("--public-growth requires an entity league and --warmup-samples 0")
+    if args.growth_lr is not None and (not args.public_growth
+            or not math.isfinite(args.growth_lr) or args.growth_lr <= 0):
+        p.error("--growth-lr requires public growth inputs and a finite positive rate")
     if args.cancel_guard and not args.opponents:
         p.error("History-aware training requires the league environment (--opponents)")
     if args.opponent_position_bundles is not None:
@@ -135,16 +144,26 @@ def arguments():
     return args
 
 
-def make_optimizer(model, learning_rate, attachment_lr=None):
-    parameters = model.parameters()
-    if attachment_lr is not None:
-        if not getattr(model, "requires_attachments", False):
-            raise ValueError("A separate attachment learning rate needs an attachment policy")
-        projection = list(model.attachment_proj.parameters())
-        ids = {id(parameter) for parameter in projection}
-        parameters = [{"params": [p for p in parameters if id(p) not in ids]},
-                      {"params": projection, "lr": attachment_lr}]
+def make_optimizer(model, learning_rate, attachment_lr=None, growth_lr=None):
+    parameters = list(model.parameters())
+    groups, separated = [], set()
+    for flag, projection_name, rate in (("requires_attachments", "attachment_proj", attachment_lr),
+                                        ("requires_growth", "growth_proj", growth_lr)):
+        if rate is None:
+            continue
+        if not getattr(model, flag, False):
+            raise ValueError(f"A separate {projection_name} learning rate needs its matching policy")
+        projection = list(getattr(model, projection_name).parameters())
+        separated.update(id(parameter) for parameter in projection)
+        groups.append({"params": projection, "lr": rate})
+    if groups:
+        parameters = [{"params": [p for p in parameters if id(p) not in separated]}, *groups]
     return torch.optim.Adam(parameters, lr=learning_rate, eps=1e-5)
+
+
+def parameter_learning_rate(optimizer, parameter):
+    return next(group["lr"] for group in optimizer.param_groups
+                if any(item is parameter for item in group["params"]))
 
 
 def main():
@@ -178,7 +197,7 @@ def main():
                         cancel_guard=args.cancel_guard, training_turn_limit=args.league_turn_limit,
                         truncation_dir=run / "truncations",
                         opponent_graph_max_batch=args.opponent_graph_max_batch,
-                        public_attachments=args.public_attachments)
+                        public_attachments=args.public_attachments, public_growth=args.public_growth)
     else:
         env = tg.BatchEnv(args.envs, seed=args.seed, controlled=(0,), threads=args.threads,
                           config=config)
@@ -186,6 +205,8 @@ def main():
                     if args.model == "entity" else dict(kind="mlp", hidden=args.hidden, embedding=args.embedding))
     if args.public_attachments:
         architecture["attachment_version"] = 1
+    if args.public_growth:
+        architecture["growth_version"] = 1
     model = make_policy(architecture).to(device)
     anchor = None
     initial_policy = None
@@ -203,6 +224,8 @@ def main():
         raise ValueError("Prepare rule-text embeddings and pass --text-embeddings")
     if not args.resume and args.public_attachments != getattr(model, "requires_attachments", False):
         raise ValueError("The initialized policy and --public-attachments disagree")
+    if not args.resume and args.public_growth != getattr(model, "requires_growth", False):
+        raise ValueError("The initialized policy and --public-growth disagree")
     from .strategy import ExpertStrategyPolicy, digest, teaching_loss
     strategy_bundle = json.loads(args.strategy_bundle.read_text()) if args.strategy_bundle else None
     if not args.resume and getattr(model, "requires_strategy", False) and strategy_bundle is None:
@@ -213,7 +236,8 @@ def main():
                 raise ValueError("Initialize a new advice lineage from the underlying actor")
         else:
             model = ExpertStrategyPolicy(model, strategy_bundle).to(device)
-    optimizer = make_optimizer(model, args.warmup_lr if args.warmup_samples else args.lr, args.attachment_lr)
+    optimizer = make_optimizer(model, args.warmup_lr if args.warmup_samples else args.lr,
+                               args.attachment_lr, args.growth_lr)
     update = steps = warmup_done = 0
     best = float("inf")
     stale = 0
@@ -235,6 +259,11 @@ def main():
             raise ValueError("Resume changes the public attachment observation contract")
         if args.attachment_lr != ckpt["args"].get("attachment_lr"):
             raise ValueError("Resume changes the attachment optimizer groups or learning rate")
+        if (args.public_growth != ckpt["args"].get("public_growth", False)
+                or args.public_growth != getattr(model, "requires_growth", False)):
+            raise ValueError("Resume changes the public growth observation contract")
+        if args.growth_lr != ckpt["args"].get("growth_lr"):
+            raise ValueError("Resume changes the growth optimizer groups or learning rate")
         if args.hotfix_37_0_1 != ckpt["args"].get("hotfix_37_0_1", False):
             raise ValueError("Resume changes the hotfix rules; start a new stage")
         initial_policy = ckpt.get("initial_policy")
@@ -255,7 +284,7 @@ def main():
             if ([opponent_identity(m) for m in opponent_manifest]
                     != [opponent_identity(m) for m in ckpt.get("opponent_manifest", [])]):
                 raise ValueError("Resume changes the frozen opponent pool or position decoder")
-        optimizer = make_optimizer(model, args.lr, args.attachment_lr)
+        optimizer = make_optimizer(model, args.lr, args.attachment_lr, args.growth_lr)
         optimizer.load_state_dict(ckpt["optimizer"])
         update, steps = ckpt["update"], ckpt["steps"]
         warmup_done, phase = ckpt["warmup_done"], ckpt["phase"]
@@ -395,12 +424,16 @@ def main():
         "strategy_sha256": model.teacher.sha256 if strategy_bundle else None,
         "decoding": {"cancel_retry_guard": args.cancel_guard},
         "observation_contract": {"public_attachment_version": int(args.public_attachments),
+                                 "public_growth_version": int(args.public_growth),
                                  "legacy_floats": tg.OBS_FLOATS, "legacy_cards": tg.OBS_CARDS},
         "training_time_limit": {"turn": args.league_turn_limit,
                                 "bootstrap": "final_player_observation",
                                 "evidence": str(run / "truncations"),
                                 "applies_to_evaluation": False},
     }
+    if args.public_growth:
+        from .growth import FEATURE_NAMES
+        manifest["observation_contract"]["public_growth_features"] = list(FEATURE_NAMES)
     atomic_json(run / ("resume_manifest.json" if args.resume else "manifest.json"), manifest)
     emit("started", parameters=manifest["parameters"], device=str(device), resumed=bool(args.resume))
     try:
@@ -465,6 +498,9 @@ def main():
         }
         if strategy_bundle:
             buffers["strategy_bias"] = torch.empty((h, n, tg.N_ACTIONS), device=device)
+        if args.public_growth:
+            from .growth import N_FEATURES
+            buffers["growth"] = torch.empty((h, n, N_FEATURES), device=device)
         obs = env.observe()
         while phase == "ppo" and not should_stop():
             iteration_start = time.monotonic()
@@ -474,6 +510,8 @@ def main():
                 kwargs = policy_kwargs(model, obs, device)
                 if strategy_bundle:
                     buffers["strategy_bias"][t].copy_(kwargs["strategy_bias"])
+                if args.public_growth:
+                    buffers["growth"][t].copy_(kwargs["growth"])
                 if args.public_attachments:
                     attachment_rollout.append(obs["attachments"])
                 with torch.no_grad():
@@ -520,6 +558,8 @@ def main():
                               if attachment_batch is not None else {})
                     if strategy_bundle:
                         kwargs["strategy_bias"] = b["strategy_bias"][idx]
+                    if args.public_growth:
+                        kwargs["growth"] = b["growth"][idx]
                     dist, value, place_logits = model.distribution(
                         b["features"][idx], b["cards"][idx], b["masks"][idx], auxiliary=True, **kwargs)
                     logratio = dist.log_prob(b["actions"][idx]) - b["logprobs"][idx]
@@ -544,10 +584,14 @@ def main():
                     anchored = value.sum() * 0
                     if anchor is not None and update < args.anchor_updates:
                         with torch.no_grad():
+                            anchor_kwargs = {}
+                            if getattr(anchor, "requires_attachments", False):
+                                anchor_kwargs["attachments"] = kwargs["attachments"]
+                            if getattr(anchor, "requires_growth", False):
+                                anchor_kwargs["growth"] = kwargs["growth"]
                             reference, _ = anchor.distribution(
                                 b["features"][idx], b["cards"][idx], b["masks"][idx],
-                                **({"attachments": kwargs["attachments"]}
-                                   if getattr(anchor, "requires_attachments", False) else {}))
+                                **anchor_kwargs)
                         anchored = torch.distributions.kl_divergence(reference, dist).mean()
                     # Categorical normalizes by a row-wise constant; subtracting
                     # the exact saved prior still recovers base log probabilities.
@@ -596,7 +640,10 @@ def main():
             if attachment_batch is not None:
                 report["attachment_buffer_cpu_bytes"] = attachment_batch.nbytes
                 report["attachment_occurrences"] = len(attachment_batch.cards)
-                report["attachment_learning_rate"] = optimizer.param_groups[-1]["lr"]
+                report["attachment_learning_rate"] = parameter_learning_rate(optimizer, model.attachment_proj.weight)
+            if args.public_growth:
+                report["growth_buffer_bytes"] = buffers["growth"].numel() * buffers["growth"].element_size()
+                report["growth_learning_rate"] = parameter_learning_rate(optimizer, model.growth_proj.weight)
             if device.type == "cuda":
                 report["process_cuda_peak_allocated_bytes"] = torch.cuda.max_memory_allocated(device)
                 report["process_cuda_peak_reserved_bytes"] = torch.cuda.max_memory_reserved(device)

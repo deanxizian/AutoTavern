@@ -261,6 +261,10 @@ def frozen_checkpoint(path, device):
     metadata["training_turn_limit"] = checkpoint["args"].get("league_turn_limit", 0)
     metadata["truncated_training_episodes"] = checkpoint.get("truncated_training_episodes", 0)
     metadata["public_attachment_version"] = int(getattr(model, "requires_attachments", False))
+    if getattr(model, "requires_growth", False):
+        from .growth import FEATURE_NAMES, VERSION
+        metadata["public_growth_version"] = VERSION
+        metadata["public_growth_features"] = list(FEATURE_NAMES)
     if getattr(model, "requires_strategy", False):
         metadata["strategy_sha256"] = model.teacher.sha256
     del checkpoint

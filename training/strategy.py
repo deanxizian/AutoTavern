@@ -560,30 +560,63 @@ class ExpertStrategyPolicy(nn.Module):
         return self.actor.requires_attachments
 
     @property
+    def requires_growth(self):
+        return getattr(self.actor, "requires_growth", False)
+
+    @property
     def attachment_proj(self):
         return self.actor.attachment_proj
 
-    def forward_aux(self, features, cards, masks, attachments=None, strategy_bias=None):
+    @property
+    def growth_proj(self):
+        return self.actor.growth_proj
+
+    def forward_aux(self, features, cards, masks, attachments=None, strategy_bias=None, growth=None):
         if (strategy_bias is None or strategy_bias.shape != masks.shape or
                 strategy_bias.device != features.device or strategy_bias.dtype != torch.float32):
             raise ValueError("Expert policy requires aligned float32 strategy priors")
         kwargs = {"attachments": attachments} if self.requires_attachments else {}
+        if self.requires_growth:
+            kwargs["growth"] = growth
+        elif growth is not None:
+            raise ValueError("A legacy expert policy does not accept growth inputs")
         logits, value, placement = self.actor.forward_aux(features, cards, masks, **kwargs)
         return (logits + strategy_bias).masked_fill(~masks, -1e9), value, placement
 
-    def forward(self, features, cards, masks, attachments=None, strategy_bias=None):
-        logits, value, _ = self.forward_aux(features, cards, masks, attachments, strategy_bias)
+    def forward(self, features, cards, masks, attachments=None, strategy_bias=None, growth=None):
+        logits, value, _ = self.forward_aux(features, cards, masks, attachments, strategy_bias, growth)
         return logits, value
 
-    def distribution(self, features, cards, masks, auxiliary=False, *, attachments=None, strategy_bias=None):
-        logits, value, placement = self.forward_aux(features, cards, masks, attachments, strategy_bias)
+    def distribution(self, features, cards, masks, auxiliary=False, *, attachments=None, strategy_bias=None, growth=None):
+        logits, value, placement = self.forward_aux(features, cards, masks, attachments, strategy_bias, growth)
         result = Categorical(logits=logits, validate_args=False), value
         return (*result, placement) if auxiliary else result
 
 
 def add_strategy_observation(policy, observation, env, rows):
-    if getattr(policy, "requires_strategy", False):
-        observation["strategy_bias"] = policy.teacher.from_env(env, rows, observation["action_mask"])
+    teacher = policy.teacher if getattr(policy, "requires_strategy", False) else None
+    add_public_context(observation, env, rows, teacher=teacher,
+                       public_growth=getattr(policy, "requires_growth", False))
+
+
+def add_public_context(observation, env, rows, *, teacher=None, public_growth=False):
+    """Share one public projection when both advice and growth inputs are needed."""
+    if not public_growth:
+        if teacher is not None:
+            observation["strategy_bias"] = teacher.from_env(env, rows, observation["action_mask"])
+        return
+    from .growth import from_views
+    rows = list(rows)
+    if len(rows) != len(observation["action_mask"]):
+        raise ValueError("Public context game rows and masks differ in length")
+    games = getattr(env, "games", None)
+    if games is None:
+        games = {lane: env.game(lane) for lane, _ in rows}
+    views = [json.loads(games[lane].strategy_view(seat)) for lane, seat in rows]
+    observation["growth"] = from_views(views)
+    if teacher is not None:
+        observation["strategy_bias"] = np.stack([
+            teacher.advise(view, mask) for view, mask in zip(views, observation["action_mask"])])
 
 
 def teaching_loss(advised_logits, prior, masks, *, mode="priority-margin-v1"):

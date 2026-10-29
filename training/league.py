@@ -81,12 +81,17 @@ class LeagueEnv:
     def __init__(self, n_games, *, seed, opponents, opponent_ids, device,
                  config=None, threads=1, inference_batch=256, cancel_guard=False,
                  training_turn_limit=0, truncation_dir=None, opponent_graph_max_batch=0,
-                 public_attachments=False):
+                 public_attachments=False, public_growth=False):
         if type(public_attachments) is not bool:
             raise ValueError("Public attachment observations must be explicitly enabled or disabled")
         if public_attachments and not hasattr(tg.Game, "attachment_observation"):
             raise ValueError("The native build has no public attachment observation API")
         self.public_attachments = public_attachments
+        if type(public_growth) is not bool:
+            raise ValueError("Public growth observations must be explicitly enabled or disabled")
+        if public_growth and not hasattr(tg.Game, "strategy_view"):
+            raise ValueError("The native build has no public strategy observation API")
+        self.public_growth = public_growth
         self.strategy_teacher = None
         if n_games < 1 or not opponents or len(opponents) != len(opponent_ids):
             raise ValueError("Supply positive lanes and a nonempty, identified opponent pool")
@@ -130,6 +135,7 @@ class LeagueEnv:
                 if model is not None and id(model) not in cache:
                     cache[id(model)] = (model if (getattr(model, "requires_attachments", False)
                                                  or getattr(model, "requires_strategy", False)
+                                                 or getattr(model, "requires_growth", False)
                                                  or getattr(model, "decoder_metadata", {}))
                                         else FrozenOpponentGraphs(model, opponent_graph_max_batch))
             self.opponents = [cache[id(model)] if model is not None else None for model in opponents]
@@ -183,8 +189,10 @@ class LeagueEnv:
         obs = observation_rows(self.games, rows, public_attachments=self.public_attachments)
         obs = (self.decoder.apply(obs, [lane * 8 + seat for lane, seat in rows])
                if self.decoder is not None else obs)
-        if include_strategy and self.strategy_teacher is not None:
-            obs["strategy_bias"] = self.strategy_teacher.from_env(self, rows, obs["action_mask"])
+        from .strategy import add_public_context
+        add_public_context(obs, self, rows,
+                           teacher=self.strategy_teacher if include_strategy else None,
+                           public_growth=self.public_growth)
         return obs
 
     def _apply_chunk(self, chunk):
@@ -314,9 +322,9 @@ class LeagueEnv:
             if self.decoder is not None:
                 info["final_observation"] = self.decoder.apply(
                     info["final_observation"], [lane * 8 + seat for lane, seat in rows])
-            if self.strategy_teacher is not None:
-                final = info["final_observation"]
-                final["strategy_bias"] = self.strategy_teacher.from_env(self, rows, final["action_mask"])
+            from .strategy import add_public_context
+            add_public_context(info["final_observation"], self, rows,
+                               teacher=self.strategy_teacher, public_growth=self.public_growth)
         for lane in reset:
             self.indices[lane] += 1
             self._fresh(lane)
@@ -346,6 +354,8 @@ class LeagueEnv:
         }
         if self.public_attachments:
             data["attachment_version"] = 1
+        if self.public_growth:
+            data["growth_version"] = 1
         if self.position_opponents:
             data["position_history"] = [
                 dict(opponent_index=index, decoder=model.decoder_metadata,
@@ -358,6 +368,8 @@ class LeagueEnv:
         data = json.loads(state)
         if data.get("attachment_version", 0) != int(self.public_attachments):
             raise ValueError("League resume changes the public attachment observation version")
+        if data.get("growth_version", 0) != int(self.public_growth):
+            raise ValueError("League resume changes the public growth observation version")
         required = {"format": "league-v2", "driver": DRIVER, "engine_hash": self.engine_hash,
                     "seed": self.seed, "n_games": self.n_games, "lane": lane,
                     "config": self.config, "opponent_ids": self.opponent_ids}
