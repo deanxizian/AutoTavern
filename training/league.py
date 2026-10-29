@@ -20,17 +20,22 @@ from .common import atomic_json, tensors
 from .decoding import CancelRetryGuard
 from .diagnostics import check_game_guards
 from .turns import DRIVER, next_ready, splitmix64
+from .attachments import AttachmentRows, policy_kwargs
 
 
-def observation_rows(games, rows):
+def observation_rows(games, rows, *, public_attachments=False):
+    rows = list(rows)
     features, cards, masks = [], [], []
     for lane, seat in rows:
         f, c = games[lane].observe(seat)
         features.append(np.frombuffer(f, dtype="<f4"))
         cards.append(np.frombuffer(c, dtype="<i4"))
         masks.append(np.frombuffer(games[lane].legal_mask(seat), np.uint8).astype(bool))
-    return {"features": np.stack(features), "cards": np.stack(cards),
-            "action_mask": np.stack(masks), "ready": np.ones(len(rows), bool)}
+    result = {"features": np.stack(features), "cards": np.stack(cards),
+              "action_mask": np.stack(masks), "ready": np.ones(len(rows), bool)}
+    if public_attachments:
+        result["attachments"] = AttachmentRows.from_games(games, rows)
+    return result
 
 
 def load_opponents(specifications, device):
@@ -53,7 +58,13 @@ def load_opponents(specifications, device):
 class LeagueEnv:
     def __init__(self, n_games, *, seed, opponents, opponent_ids, device,
                  config=None, threads=1, inference_batch=256, cancel_guard=False,
-                 training_turn_limit=0, truncation_dir=None, opponent_graph_max_batch=0):
+                 training_turn_limit=0, truncation_dir=None, opponent_graph_max_batch=0,
+                 public_attachments=False):
+        if type(public_attachments) is not bool:
+            raise ValueError("Public attachment observations must be explicitly enabled or disabled")
+        if public_attachments and not hasattr(tg.Game, "attachment_observation"):
+            raise ValueError("The native build has no public attachment observation API")
+        self.public_attachments = public_attachments
         if n_games < 1 or not opponents or len(opponents) != len(opponent_ids):
             raise ValueError("Supply positive lanes and a nonempty, identified opponent pool")
         if inference_batch < 1 or not 0 <= seed < 2**64:
@@ -77,7 +88,8 @@ class LeagueEnv:
             cache = {}
             for model in opponents:
                 if model is not None and id(model) not in cache:
-                    cache[id(model)] = FrozenOpponentGraphs(model, opponent_graph_max_batch)
+                    cache[id(model)] = (model if getattr(model, "requires_attachments", False)
+                                        else FrozenOpponentGraphs(model, opponent_graph_max_batch))
             self.opponents = [cache[id(model)] if model is not None else None for model in opponents]
         self.device, self.inference_batch = torch.device(device), inference_batch
         self.threads = min(n_games, max(1, threads))
@@ -123,7 +135,7 @@ class LeagueEnv:
         if any(self.cursors[lane] != seat or not self.games[lane].needs_action(seat)
                for lane, seat in rows):
             raise RuntimeError("A waiting learner escaped the league transition driver")
-        obs = observation_rows(self.games, rows)
+        obs = observation_rows(self.games, rows, public_attachments=self.public_attachments)
         return (self.decoder.apply(obs, [lane * 8 + seat for lane, seat in rows])
                 if self.decoder is not None else obs)
 
@@ -163,11 +175,12 @@ class LeagueEnv:
         for model, rows in groups.values():
             for start in range(0, len(rows), self.inference_batch):
                 batch = rows[start:start + self.inference_batch]
-                obs = observation_rows(self.games, batch)
+                obs = observation_rows(self.games, batch,
+                                       public_attachments=getattr(model, "requires_attachments", False))
                 identities = [lane * 8 + seat for lane, seat in batch]
                 if self.decoder is not None:
                     obs = self.decoder.apply(obs, identities)
-                logits, value = model(*tensors(obs, self.device))
+                logits, value = model(*tensors(obs, self.device), **policy_kwargs(model, obs, self.device))
                 if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                     raise RuntimeError("Frozen opponent produced non-finite outputs")
                 selected = logits.argmax(-1).cpu().numpy()
@@ -242,7 +255,8 @@ class LeagueEnv:
         if len(lanes):
             info["truncated_lanes"] = lanes
             rows = [(int(lane), self.learners[lane]) for lane in lanes]
-            info["final_observation"] = observation_rows(self.games, rows)
+            info["final_observation"] = observation_rows(self.games, rows,
+                                                       public_attachments=self.public_attachments)
             if self.decoder is not None:
                 info["final_observation"] = self.decoder.apply(
                     info["final_observation"], [lane * 8 + seat for lane, seat in rows])
@@ -259,7 +273,7 @@ class LeagueEnv:
         return self.indices[lane]
 
     def save(self, lane):
-        return json.dumps({
+        data = {
             "format": "league-v2", "driver": DRIVER, "cursor": self.cursors[lane],
             "engine_hash": self.engine_hash,
             "seed": self.seed, "n_games": self.n_games, "lane": lane,
@@ -272,10 +286,15 @@ class LeagueEnv:
             "game": self.games[lane].state_json(),
             "decoder": ([self.decoder.save(lane * 8 + seat) for seat in range(8)]
                         if self.decoder is not None else None),
-        }, sort_keys=True)
+        }
+        if self.public_attachments:
+            data["attachment_version"] = 1
+        return json.dumps(data, sort_keys=True)
 
     def load(self, lane, state):
         data = json.loads(state)
+        if data.get("attachment_version", 0) != int(self.public_attachments):
+            raise ValueError("League resume changes the public attachment observation version")
         required = {"format": "league-v2", "driver": DRIVER, "engine_hash": self.engine_hash,
                     "seed": self.seed, "n_games": self.n_games, "lane": lane,
                     "config": self.config, "opponent_ids": self.opponent_ids}

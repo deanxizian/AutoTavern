@@ -21,6 +21,7 @@ from .diagnostics import BehaviorAudit, SimulatorGuardError, check_seed_range, r
 from .decoding import CancelRetryGuard
 from .turns import RoundRobinArena
 from .diagnostics import check_game_guards
+from .attachments import AttachmentRows, policy_kwargs
 
 
 def wilson(successes, total):
@@ -110,10 +111,14 @@ def play_arena(policies, *, games, seed, threads, config, device,
                 else:
                     for offset in range(0, len(slots), inference_batch):
                         subset = slots[offset:offset + inference_batch]
-                        inputs = tensors({k: v[subset] for k, v in policy_obs.items()}, device)
+                        selected_obs = {k: v[subset] for k, v in policy_obs.items()}
+                        if getattr(policy, "requires_attachments", False):
+                            selected_obs["attachments"] = AttachmentRows.from_env(
+                                env, [divmod(int(slot), 8) for slot in subset])
+                        inputs = tensors(selected_obs, device)
                         if hasattr(policy, "set_context"):
                             policy.set_context(subset)
-                        logits, value = policy(*inputs)
+                        logits, value = policy(*inputs, **policy_kwargs(policy, selected_obs, device))
                         if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                             raise RuntimeError("Arena policy produced non-finite outputs")
                         chosen = logits.argmax(-1)
@@ -246,6 +251,7 @@ def frozen_checkpoint(path, device):
     metadata["trained_hotfix_37_0_1"] = checkpoint["args"].get("hotfix_37_0_1", False)
     metadata["training_turn_limit"] = checkpoint["args"].get("league_turn_limit", 0)
     metadata["truncated_training_episodes"] = checkpoint.get("truncated_training_episodes", 0)
+    metadata["public_attachment_version"] = int(getattr(model, "requires_attachments", False))
     del checkpoint
     return model.to(device), metadata
 

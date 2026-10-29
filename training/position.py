@@ -51,10 +51,16 @@ class PublicPositionPolicy(torch.nn.Module):
     """
     version = 1
 
+    @property
+    def requires_attachments(self):
+        return self.actor.requires_attachments
+
     def __init__(self, actor, encoder, ridge, threshold=.025):
         super().__init__()
         require(isinstance(actor, EntityPolicy) and isinstance(encoder, EntityPolicy),
                 "Position decoding requires entity actor and encoder policies")
+        require(not encoder.requires_attachments,
+                "This frozen position feature family requires its legacy observation encoder")
         require(ridge.get("family") == FAMILY, "Unsupported position feature family")
         require(type(threshold) in (float, int) and math.isfinite(threshold) and threshold >= 0,
                 "Position threshold must be finite and nonnegative")
@@ -163,11 +169,14 @@ class PublicPositionPolicy(torch.nn.Module):
         return scores
 
     @torch.inference_mode()
-    def forward(self, features, cards, masks):
+    def forward(self, features, cards, masks, attachments=None):
         require(self.context is not None and len(self.context) == len(features),
                 "One stable position identity is required per observation")
         ids, self.context = self.context, None
-        logits, value = self.actor(features, cards, masks)
+        kwargs = {"attachments": attachments} if self.requires_attachments else {}
+        if attachments is not None and not self.requires_attachments:
+            raise ValueError("A legacy position actor does not accept attachment inputs")
+        logits, value = self.actor(features, cards, masks, **kwargs)
         if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
             raise RuntimeError("Position actor produced non-finite outputs")
         self.counts["forward_calls"] += 1

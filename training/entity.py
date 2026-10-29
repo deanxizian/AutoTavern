@@ -1,7 +1,8 @@
 """Paper-informed entity transformer over the public observation contract.
 
-This implementation has 49 tokens, including global, and cannot represent attachment
-identities or hidden counters absent from the released observation. It is not a replica.
+The legacy model has 49 tokens, including global. An opt-in residual adds public
+attachment identities; internal counters remain outside this observation contract.
+This is an independently trained baseline, not a replica of the paper's model.
 """
 
 import math
@@ -33,9 +34,14 @@ class Block(nn.Module):
 
 
 class EntityPolicy(nn.Module):
-    def __init__(self, width=384, layers=8, heads=8, text_dim=384):
+    def __init__(self, width=384, layers=8, heads=8, text_dim=384, attachment_version=0):
         super().__init__()
+        if type(attachment_version) is not int or attachment_version not in (0, 1):
+            raise ValueError("Unsupported public attachment observation version")
+        self.attachment_version = attachment_version
         self.architecture = dict(kind="entity", width=width, layers=layers, heads=heads, text_dim=text_dim)
+        if attachment_version:
+            self.architecture["attachment_version"] = attachment_version
         self.layout = dict(tg.layout())
         l = self.layout
         self.header = l["GLOBAL_F"] + l["N_QUESTS"] * l["QUEST_F"] + l["PENDING_KINDS"]
@@ -61,6 +67,15 @@ class EntityPolicy(nn.Module):
         self.value = nn.Sequential(nn.Linear(width, width), nn.GELU(), nn.Linear(width, 1))
         self.placement = nn.Linear(width, 8)
         self.scale = math.sqrt(width)
+        # Added after every legacy parameter so the legacy initialization is unchanged.
+        # The bias-free zero output preserves old actor/value predictions at warm start.
+        if self.requires_attachments:
+            self.attachment_proj = nn.Linear(width, width, bias=False)
+            nn.init.zeros_(self.attachment_proj.weight)
+
+    @property
+    def requires_attachments(self):
+        return self.attachment_version == 1
 
     def card_repr(self, indices):
         indices = indices.long()
@@ -72,17 +87,38 @@ class EntityPolicy(nn.Module):
         weights = present.to(vectors.dtype).unsqueeze(-1)
         return (vectors * weights).sum(-2) / weights.sum(-2).clamp_min(1.)
 
-    def forward_aux(self, features, cards, masks):
+    def forward_aux(self, features, cards, masks, attachments=None):
         with torch.autocast(features.device.type, dtype=torch.bfloat16, enabled=features.is_cuda):
-            logits, value, placement = self._forward_aux(features, cards, masks)
+            logits, value, placement = self._forward_aux(features, cards, masks, attachments)
         # Ratios, categorical probabilities and losses must remain in float32.
         return logits.float(), value.float(), placement.float()
 
-    def encode_tokens(self, features, cards, masks):
+    def attachment_repr(self, attachments, cards):
+        if attachments is None:
+            raise ValueError("This policy requires public attachment observations")
+        ids, offsets = attachments
+        if (ids.ndim != 1 or offsets.ndim != 1 or len(offsets) != cards.numel() + 1
+                or ids.dtype != torch.int64 or offsets.dtype != torch.int64
+                or ids.device != cards.device or offsets.device != cards.device):
+            raise ValueError("Attachment tensors do not align with the legacy card slots")
+        # Project the small card table once. Linear projection commutes with bag
+        # averaging, avoiding an intermediate [all occurrences, width] allocation.
+        table = (self.identity.weight + self.static_proj(self.static)
+                 + self.text_proj(self.text_vectors))
+        table = self.attachment_proj(table)
+        pooled = nn.functional.embedding_bag(ids, table, offsets, mode="mean",
+                                             include_last_offset=True)
+        return pooled.reshape(*cards.shape, -1)
+
+    def encode_tokens(self, features, cards, masks, attachments=None):
         """Encode only the public observation, using the caller's precision context."""
         l, n = self.layout, len(features)
         f = features.sign() * torch.log1p(features.abs())
         c = self.card_repr(cards)
+        if self.requires_attachments:
+            c = c + self.attachment_repr(attachments, cards)
+        elif attachments is not None:
+            raise ValueError("A legacy policy does not accept attachment inputs")
         fi, ci = self.header, self.prefix
         numeric, card_groups = [], []
         for count, size in ((7, l["MINION_F"]), (10, l["ITEM_F"]),
@@ -115,9 +151,9 @@ class EntityPolicy(nn.Module):
             x = block(x, present)
         return self.norm(x)
 
-    def _forward_aux(self, features, cards, masks):
+    def _forward_aux(self, features, cards, masks, attachments=None):
         n = len(features)
-        x = self.encode_tokens(features, cards, masks)
+        x = self.encode_tokens(features, cards, masks, attachments)
         g, board, hand, shop, choices = x[:, 0], x[:, 1:8], x[:, 8:18], x[:, 18:26], x[:, 26:42]
         def pointer(i, objects):
             return (self.keys[i](objects) * self.queries[i](g)[:, None]).sum(-1) / self.scale
@@ -130,11 +166,11 @@ class EntityPolicy(nn.Module):
                             pair(5, hand, board), pair(6, board, board)), 1)
         return logits.masked_fill(~masks, -1e9), self.value(g).squeeze(-1), self.placement(g)
 
-    def forward(self, features, cards, masks):
-        logits, value, _ = self.forward_aux(features, cards, masks)
+    def forward(self, features, cards, masks, attachments=None):
+        logits, value, _ = self.forward_aux(features, cards, masks, attachments)
         return logits, value
 
-    def distribution(self, features, cards, masks, auxiliary=False):
-        logits, value, placement = self.forward_aux(features, cards, masks)
+    def distribution(self, features, cards, masks, auxiliary=False, *, attachments=None):
+        logits, value, placement = self.forward_aux(features, cards, masks, attachments)
         result = (Categorical(logits=logits, validate_args=False), value)
         return (*result, placement) if auxiliary else result

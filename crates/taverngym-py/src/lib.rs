@@ -54,6 +54,91 @@ fn obs_bytes<'py>(py: Python<'py>, o: &taverngym::obs::Observation) -> ObsBytes<
     (f32_bytes(py, &o.floats), i32_bytes(py, &o.cards))
 }
 
+// BEGIN PUBLIC_ATTACHMENT_OBSERVATION_V1_HELPER
+/// Supplementary identities grouped by the unchanged observation's card slots.
+/// Empty/non-minion slots have empty bags. Repeated attachments are retained without
+/// a fixed-size cap; no per-effect counters or hidden game state cross this boundary.
+fn attachment_observation(g: &Game, p: usize) -> PyResult<(Vec<i32>, Vec<i32>)> {
+    use taverngym::actions::{N_BOARD, N_CHOICE, N_HAND, N_POWERS, N_SHOP};
+    use taverngym::obs::{N_OPP, N_QUESTS, N_SECRETS};
+    use taverngym::state::{Minion, Pending};
+
+    check_seat(g, p)?;
+    let pl = &g.players[p];
+    if pl.sees_all_boards {
+        return Err(PyValueError::new_err(
+            "Attachment observations refuse the privileged diagnostic board view",
+        ));
+    }
+    let mut slots: Vec<Option<&Minion>> = vec![None; OBS_CARDS];
+    let prefix = 1 + N_POWERS + 2 + 3 * N_QUESTS + N_SECRETS;
+    for i in 0..N_BOARD {
+        slots[prefix + i] = pl.board.get(i);
+    }
+    let hand = prefix + N_BOARD;
+    for i in 0..N_HAND {
+        slots[hand + i] = pl.hand.get(i).and_then(|h| h.item.as_minion());
+    }
+    let shop = hand + N_HAND;
+    for i in 0..N_SHOP {
+        slots[shop + i] = pl.shop.get(i).and_then(|s| s.item.as_minion());
+    }
+    let choices = shop + N_SHOP;
+    for i in 0..N_CHOICE {
+        slots[choices + i] = match pl.pending.last() {
+            Some(Pending::Discover { options, .. }) => {
+                options.get(i).and_then(|it| it.as_minion())
+            }
+            Some(Pending::Timewarp { options, .. }) => {
+                options.get(i).and_then(|(it, _)| it.as_minion())
+            }
+            Some(Pending::Target { options, .. }) => options.get(i).and_then(|eid| {
+                pl.board
+                    .iter()
+                    .find(|m| m.eid == *eid)
+                    .or_else(|| {
+                        pl.shop
+                            .iter()
+                            .find(|s| s.sid == *eid)
+                            .and_then(|s| s.item.as_minion())
+                    })
+                    .or_else(|| {
+                        pl.hand
+                            .iter()
+                            .find(|h| h.hid == *eid)
+                            .and_then(|h| h.item.as_minion())
+                    })
+            }),
+            _ => None,
+        };
+    }
+    // Same rotation and remembered boards as obs::observe_view(..., false).
+    let opponents = choices + N_CHOICE + 8 + N_OPP;
+    for (i, other) in (1..g.players.len())
+        .map(|k| (p + k) % g.players.len())
+        .take(N_OPP)
+        .enumerate()
+    {
+        let board = g.board_shown(p, other, false).0;
+        for j in 0..N_BOARD {
+            slots[opponents + i * N_BOARD + j] = board.get(j);
+        }
+    }
+    let mut offsets = Vec::with_capacity(OBS_CARDS + 1);
+    let mut cards = Vec::new();
+    offsets.push(0);
+    for minion in slots {
+        if let Some(m) = minion {
+            cards.extend(m.attached.iter().map(|card| card.idx() as i32 + 1));
+        }
+        offsets.push(i32::try_from(cards.len()).map_err(|_| {
+            PyValueError::new_err("Too many attachments for the signed32-bit observation contract")
+        })?);
+    }
+    Ok((offsets, cards))
+}
+// END PUBLIC_ATTACHMENT_OBSERVATION_V1_HELPER
+
 /// A full eight-player game; every seat is driven explicitly (self-play, search, tests).
 #[pyclass(name = "Game", skip_from_py_object)]
 #[derive(Clone)]
@@ -102,6 +187,15 @@ impl PyGame {
         check_seat(&self.g, p)?;
         Ok(obs_bytes(py, &taverngym::obs::observe(&self.g, p)))
     }
+    // BEGIN PUBLIC_ATTACHMENT_OBSERVATION_V1_GAME
+    /// Public attachment identities, version1: (int32 offsets, int32 card indices).
+    /// Offsets has OBS_CARDS+1 entries; bag i belongs to card slot i of observe(p).
+    /// All occurrences retain source order. This call never advances RNG or state.
+    fn attachment_observation<'py>(&self, py: Python<'py>, p: usize) -> PyResult<ObsBytes<'py>> {
+        let (offsets, cards) = attachment_observation(&self.g, p)?;
+        Ok((i32_bytes(py, &offsets), i32_bytes(py, &cards)))
+    }
+    // END PUBLIC_ATTACHMENT_OBSERVATION_V1_GAME
     /// The scripted bot's choice for seat `p` (the game's random stream is not moved).
     fn bot_action(&mut self, p: usize) -> PyResult<usize> {
         check_seat(&self.g, p)?;

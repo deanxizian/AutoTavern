@@ -34,8 +34,10 @@ and `taverngym.build_is_current()` before training.
   This is a training/evaluation convention, not an official game rule. All reported
   comparisons use the same cap. The other simulator settings remain at their defaults.
 
-Differences from the report are explicit: the public observation produces 49 tokens here,
-and omits attachment identities and some persistent-effect details. Text features use the
+Differences from the report are explicit: the public observation produces 49 tokens here.
+The legacy model omits attachment identities; an optional
+[public attachment residual](PUBLIC_ATTACHMENTS.md) adds them while persistent-effect
+details remain incomplete. Text features use the
 public `sentence-transformers/all-MiniLM-L6-v2`; the report does not specify its text encoder.
 Stage one uses heuristic opponents and a supervised operation warm-up, not the authors'
 private human-calibrated libraries or their simplified-rule curriculum. It starts at learning

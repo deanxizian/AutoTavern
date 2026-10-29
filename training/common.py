@@ -12,6 +12,7 @@ from torch import nn
 from torch.distributions import Categorical
 
 import taverngym as tg
+from .attachments import AttachmentRows, policy_kwargs
 
 
 class Policy(nn.Module):
@@ -106,7 +107,7 @@ def bootstrap_time_limits(model, rewards, info, gamma, device):
     obs = info.get("final_observation")
     if obs is None or len(obs["ready"]) != len(lanes):
         raise RuntimeError("Truncation is missing its final observation")
-    logits, values = model(*tensors(obs, device))
+    logits, values = model(*tensors(obs, device), **policy_kwargs(model, obs, device))
     if not torch.isfinite(logits).all() or not torch.isfinite(values).all():
         raise RuntimeError("Non-finite truncation bootstrap")
     if values.shape != (len(lanes),):
@@ -173,7 +174,10 @@ def evaluate(model, *, games, seed, threads, config, device, kind="policy",
                     else:
                         if hasattr(model, "set_context"):
                             model.set_context(identities)
-                        logits, value = model(f, c, m)
+                        if getattr(model, "requires_attachments", False):
+                            policy_obs["attachments"] = AttachmentRows.from_env(
+                                env, [(lane, seat) for lane in range(env.n_games)])
+                        logits, value = model(f, c, m, **policy_kwargs(model, policy_obs, device))
                         if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                             raise RuntimeError("Evaluation policy produced non-finite outputs")
                     selected = (Categorical(logits=logits).sample() if kind == "random"

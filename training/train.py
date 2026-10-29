@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 import gzip
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import signal
@@ -28,6 +29,7 @@ from torch.utils.tensorboard import SummaryWriter
 import taverngym as tg
 from .common import (atomic_json, bootstrap_time_limits, check_step, evaluate, generalized_advantage,
                      load_checkpoint, make_policy, stats, tensors)
+from .attachments import AttachmentRows, policy_kwargs
 
 
 def arguments():
@@ -47,6 +49,8 @@ def arguments():
     p.add_argument("--league-turn-limit", type=int, default=0,
                    help="Training-only horizon: retain and bootstrap unfinished lobbies; 0 is strict")
     p.add_argument("--model", choices=("entity", "mlp"), default="entity")
+    p.add_argument("--public-attachments", action="store_true",
+                   help="Use the optional public attachment identity encoder in entity league training")
     p.add_argument("--width", type=int, default=384)
     p.add_argument("--layers", type=int, default=8)
     p.add_argument("--heads", type=int, default=8)
@@ -61,6 +65,8 @@ def arguments():
     p.add_argument("--hidden", type=int, default=768)
     p.add_argument("--embedding", type=int, default=32)
     p.add_argument("--lr", type=float, default=0.00002)
+    p.add_argument("--attachment-lr", type=float,
+                   help="Optional separate learning rate for the new attachment projection")
     p.add_argument("--warmup-lr", type=float, default=0.0001)
     p.add_argument("--gamma", type=float, default=1.0)
     p.add_argument("--gae-lambda", type=float, default=0.995)
@@ -90,6 +96,11 @@ def arguments():
         p.error("A new stage requires --warmup-samples 0")
     if args.opponents and args.warmup_samples:
         p.error("League training requires --warmup-samples 0")
+    if args.public_attachments and (args.model != "entity" or not args.opponents or args.warmup_samples):
+        p.error("--public-attachments requires an entity league and --warmup-samples 0")
+    if args.attachment_lr is not None and (not args.public_attachments
+            or not math.isfinite(args.attachment_lr) or args.attachment_lr <= 0):
+        p.error("--attachment-lr requires public attachments and a finite positive rate")
     if args.cancel_guard and not args.opponents:
         p.error("History-aware training requires the league environment (--opponents)")
     if args.league_turn_limit < 0 or (args.league_turn_limit and not args.opponents):
@@ -105,6 +116,18 @@ def arguments():
     if args.seed == args.eval_seed:
         p.error("Training and validation seeds must differ")
     return args
+
+
+def make_optimizer(model, learning_rate, attachment_lr=None):
+    parameters = model.parameters()
+    if attachment_lr is not None:
+        if not getattr(model, "requires_attachments", False):
+            raise ValueError("A separate attachment learning rate needs an attachment policy")
+        projection = list(model.attachment_proj.parameters())
+        ids = {id(parameter) for parameter in projection}
+        parameters = [{"params": [p for p in parameters if id(p) not in ids]},
+                      {"params": projection, "lr": attachment_lr}]
+    return torch.optim.Adam(parameters, lr=learning_rate, eps=1e-5)
 
 
 def main():
@@ -136,12 +159,15 @@ def main():
                         threads=args.threads, config=config, inference_batch=args.opponent_batch,
                         cancel_guard=args.cancel_guard, training_turn_limit=args.league_turn_limit,
                         truncation_dir=run / "truncations",
-                        opponent_graph_max_batch=args.opponent_graph_max_batch)
+                        opponent_graph_max_batch=args.opponent_graph_max_batch,
+                        public_attachments=args.public_attachments)
     else:
         env = tg.BatchEnv(args.envs, seed=args.seed, controlled=(0,), threads=args.threads,
                           config=config)
     architecture = (dict(kind="entity", width=args.width, layers=args.layers, heads=args.heads)
                     if args.model == "entity" else dict(kind="mlp", hidden=args.hidden, embedding=args.embedding))
+    if args.public_attachments:
+        architecture["attachment_version"] = 1
     model = make_policy(architecture).to(device)
     anchor = None
     initial_policy = None
@@ -156,7 +182,9 @@ def main():
         model.text_vectors.copy_(text_data["vectors"].to(device))
     elif args.model == "entity" and not args.resume:
         raise ValueError("Prepare rule-text embeddings and pass --text-embeddings")
-    optimizer = torch.optim.Adam(model.parameters(), lr=args.warmup_lr if args.warmup_samples else args.lr, eps=1e-5)
+    if not args.resume and args.public_attachments != getattr(model, "requires_attachments", False):
+        raise ValueError("The initialized policy and --public-attachments disagree")
+    optimizer = make_optimizer(model, args.warmup_lr if args.warmup_samples else args.lr, args.attachment_lr)
     update = steps = warmup_done = 0
     best = float("inf")
     stale = 0
@@ -166,6 +194,11 @@ def main():
         model, ckpt = load_checkpoint(args.resume, device)
         if ckpt.get("weights_only"):
             raise ValueError("Transferred policy has no training state; use --init-from")
+        if (args.public_attachments != ckpt["args"].get("public_attachments", False)
+                or args.public_attachments != getattr(model, "requires_attachments", False)):
+            raise ValueError("Resume changes the public attachment observation contract")
+        if args.attachment_lr != ckpt["args"].get("attachment_lr"):
+            raise ValueError("Resume changes the attachment optimizer groups or learning rate")
         if args.hotfix_37_0_1 != ckpt["args"].get("hotfix_37_0_1", False):
             raise ValueError("Resume changes the hotfix rules; start a new stage")
         initial_policy = ckpt.get("initial_policy")
@@ -183,7 +216,7 @@ def main():
             raise ValueError("Resume changes training time limit; use --init-from for a new stage")
         if [m["sha256"] for m in opponent_manifest] != [m["sha256"] for m in ckpt.get("opponent_manifest", [])]:
             raise ValueError("Resume changes the frozen opponent pool")
-        optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, eps=1e-5)
+        optimizer = make_optimizer(model, args.lr, args.attachment_lr)
         optimizer.load_state_dict(ckpt["optimizer"])
         update, steps = ckpt["update"], ckpt["steps"]
         warmup_done, phase = ckpt["warmup_done"], ckpt["phase"]
@@ -314,6 +347,8 @@ def main():
         "opponent_manifest": opponent_manifest,
         "initial_policy": initial_policy,
         "decoding": {"cancel_retry_guard": args.cancel_guard},
+        "observation_contract": {"public_attachment_version": int(args.public_attachments),
+                                 "legacy_floats": tg.OBS_FLOATS, "legacy_cards": tg.OBS_CARDS},
         "training_time_limit": {"turn": args.league_turn_limit,
                                 "bootstrap": "final_player_observation",
                                 "evidence": str(run / "truncations"),
@@ -384,10 +419,14 @@ def main():
         obs = env.observe()
         while phase == "ppo" and not should_stop():
             iteration_start = time.monotonic()
+            attachment_rollout = []
             for t in range(h):
                 f, c, m = tensors(obs, device)
+                kwargs = policy_kwargs(model, obs, device)
+                if args.public_attachments:
+                    attachment_rollout.append(obs["attachments"])
                 with torch.no_grad():
-                    dist, val = model.distribution(f, c, m)
+                    dist, val = model.distribution(f, c, m, **kwargs)
                     action = dist.sample()
                     logprob = dist.log_prob(action)
                 for key, x in (("features", f), ("cards", c), ("masks", m),
@@ -404,11 +443,14 @@ def main():
                 obs = env.observe()
                 steps += n
             with torch.no_grad():
-                _, bootstrap = model(*tensors(obs, device))
+                _, bootstrap = model(*tensors(obs, device), **policy_kwargs(model, obs, device))
                 advantages, returns = generalized_advantage(
                     buffers["rewards"], buffers["dones"], buffers["values"], bootstrap,
                     args.gamma, args.gae_lambda)
             b = {k: v.flatten(0, 1) for k, v in buffers.items()}
+            attachment_batch = (AttachmentRows.concatenate(attachment_rollout)
+                                if args.public_attachments else None)
+            attachment_rollout.clear()
             adv, ret = advantages.flatten(), returns.flatten()
             labels = torch.full((h, n), -1, dtype=torch.long, device=device)
             future = torch.full((n,), -1, dtype=torch.long, device=device)
@@ -422,8 +464,10 @@ def main():
             for epoch in range(args.epochs):
                 epoch_kls = []
                 for idx in torch.randperm(n * h, device=device).split(args.minibatch):
+                    kwargs = ({"attachments": attachment_batch[idx.cpu().numpy()].tensors(device)}
+                              if attachment_batch is not None else {})
                     dist, value, place_logits = model.distribution(
-                        b["features"][idx], b["cards"][idx], b["masks"][idx], auxiliary=True)
+                        b["features"][idx], b["cards"][idx], b["masks"][idx], auxiliary=True, **kwargs)
                     logratio = dist.log_prob(b["actions"][idx]) - b["logprobs"][idx]
                     ratio = logratio.exp()
                     kl = ((ratio.detach() - 1) - logratio.detach()).mean().item()
@@ -443,7 +487,8 @@ def main():
                     if anchor is not None and update < args.anchor_updates:
                         with torch.no_grad():
                             reference, _ = anchor.distribution(
-                                b["features"][idx], b["cards"][idx], b["masks"][idx])
+                                b["features"][idx], b["cards"][idx], b["masks"][idx],
+                                **(kwargs if getattr(anchor, "requires_attachments", False) else {}))
                         anchored = torch.distributions.kl_divergence(reference, dist).mean()
                     loss = (pg + args.value_coef * vf - args.entropy * entropy
                             + args.aux_coef * auxiliary + args.anchor_coef * anchored)
@@ -476,6 +521,13 @@ def main():
                 report["opponent_decisions"] = sum(env.opponent_decisions)
                 report["truncated_training_episodes"] = sum(env.truncated_episodes)
                 report["opponent_inference"] = env.inference_stats()
+            if attachment_batch is not None:
+                report["attachment_buffer_cpu_bytes"] = attachment_batch.nbytes
+                report["attachment_occurrences"] = len(attachment_batch.cards)
+                report["attachment_learning_rate"] = optimizer.param_groups[-1]["lr"]
+            if device.type == "cuda":
+                report["process_cuda_peak_allocated_bytes"] = torch.cuda.max_memory_allocated(device)
+                report["process_cuda_peak_reserved_bytes"] = torch.cuda.max_memory_reserved(device)
             for key, value in report.items():
                 if isinstance(value, (int, float)):
                     writer.add_scalar("train/" + key, value, steps)

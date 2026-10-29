@@ -16,6 +16,8 @@ class FrozenOpponentGraphs(torch.nn.Module):
             raise ValueError("Frozen graph batch limit must be an integer in 1..64")
         if policy.training or any(p.requires_grad for p in policy.parameters()):
             raise ValueError("CUDA graphs require an already frozen evaluation policy")
+        if getattr(policy, "requires_attachments", False):
+            raise ValueError("Variable-length attachment inputs currently require eager inference")
         self.policy = policy
         self.max_batch = max_batch
         self.graphs = {}
