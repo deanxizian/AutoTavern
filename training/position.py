@@ -7,6 +7,7 @@ artifact, not a readiness certificate or a claim about human playing strength.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -83,6 +84,7 @@ class PublicPositionPolicy(torch.nn.Module):
         self.context = None
         self.states = {}
         self.decoder_metadata = {}
+        self.record_events = True
         self.reset_context()
 
     def reset_context(self, identity=None):
@@ -102,12 +104,17 @@ class PublicPositionPolicy(torch.nn.Module):
                 "Position identities must be distinct nonnegative integers")
         self.context = values
 
-    def save_context(self):
+    def save_context(self, *, identities=None):
         require(self.context is None, "Save position history after completing a decision")
-        return dict(version=self.version, states=[dict(identity=k, **v) for k, v in sorted(self.states.items())])
+        selected = None if identities is None else set(identities)
+        keys = self.states if selected is None else selected
+        return dict(version=self.version, states=[dict(identity=k, **self.states[k]) for k in sorted(keys)
+                    if k in self.states])
 
-    def load_context(self, data):
+    def load_context(self, data, *, identities=None):
+        require(self.context is None, "Restore position history after completing a decision")
         require(data.get("version") == self.version, "Unsupported position history version")
+        selected = None if identities is None else set(identities)
         states = {}
         for row in data["states"]:
             identity, turn, moved = row["identity"], row["turn"], row["moved"]
@@ -115,8 +122,14 @@ class PublicPositionPolicy(torch.nn.Module):
                     "Invalid or duplicate position history identity")
             require(type(turn) is int and turn >= 0 and type(moved) is bool,
                     "Invalid position history turn or moved flag")
+            require(selected is None or identity in selected, "Position history escapes its lane")
             states[identity] = dict(turn=turn, moved=moved)
-        self.states, self.context = states, None
+        if selected is None:
+            self.states = states
+        else:
+            for identity in selected:
+                self.states.pop(identity, None)
+            self.states.update(states)
 
     def eligible(self, features, masks):
         f, m = features.detach().cpu().numpy(), masks.detach().cpu().numpy()
@@ -205,8 +218,9 @@ class PublicPositionPolicy(torch.nn.Module):
                     override[i] = action
                     self.states[ids[i]]["moved"] = True
                     self.counts["moves"] += 1
-                    self.move_events.append(dict(identity=ids[i], turn=int(turns[i]),
-                                                 action=action, predicted_gain=gain))
+                    if self.record_events:
+                        self.move_events.append(dict(identity=ids[i], turn=int(turns[i]),
+                                                     action=action, predicted_gain=gain))
         if override:
             logits = logits.clone()
             for i, action in override.items():
@@ -263,7 +277,27 @@ def load_position_policy(actor, actor_metadata, bundle, device):
         ridge_sha256=config["ridge"]["sha256"], threshold=model.threshold,
         encoder_precision="float32_highest", bundle_sha256=hashlib.sha256(raw).hexdigest(),
         scope="public position for explicitly assigned policy roles")
+    model.encoder_metadata = encoder_metadata
     return model
+
+
+@contextmanager
+def preserve_position_context(policies):
+    """Let validation reuse frozen weights without consuming training history."""
+    unique = {id(p): p for p in policies if isinstance(p, PublicPositionPolicy)}
+    saved = [(p, p.save_context(), dict(p.counts), p.move_events, p.record_events)
+             for p in unique.values()]
+    try:
+        for p in unique.values():
+            p.record_events = True
+        yield
+    finally:
+        for p, history, counts, events, record in saved:
+            # A failed inference may leave a pending context. Discard only the
+            # validation state, then restore the untouched training snapshot.
+            p.reset_context()
+            p.load_context(history)
+            p.counts, p.move_events, p.record_events = counts, events, record
 
 
 def freeze_bundle(args):

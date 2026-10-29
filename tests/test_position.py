@@ -68,6 +68,28 @@ def test_one_move_then_end_survives_json_restore_and_pending_choices(fixture):
     assert not policy.encoder.norm._forward_hooks
 
 
+def test_lane_history_restore_and_validation_do_not_consume_other_slots(fixture):
+    from training.position import preserve_position_context
+    policy, inputs = fixture
+    assert choose(policy, inputs, 1) == choose(policy, inputs, 9) == 197
+    lane = policy.save_context(identities=range(8))
+    policy.reset_context(1)
+    policy.load_context(lane, identities=range(8))
+    assert choose(policy, inputs, 1) == choose(policy, inputs, 9) == 0
+    with pytest.raises(ValueError, match="escapes"):
+        policy.load_context(lane, identities=range(8, 16))
+    history, counts, events = policy.save_context(), dict(policy.counts), list(policy.move_events)
+    policy.record_events = False
+    with pytest.raises(RuntimeError, match="test validation error"):
+        with preserve_position_context([policy, policy]):
+            policy.reset_context()
+            assert choose(policy, inputs, 1) == 197
+            policy.set_context([99])  # Failure before this request consumes context.
+            raise RuntimeError("test validation error")
+    assert policy.save_context() == history and policy.counts == counts
+    assert policy.move_events == events and not policy.record_events
+
+
 @pytest.mark.parametrize("change", ["early", "late", "ghost", "unknown", "dead", "small", "few_moves"])
 def test_public_eligibility_preserves_the_original_end(fixture, change):
     policy, (f,c,m) = fixture

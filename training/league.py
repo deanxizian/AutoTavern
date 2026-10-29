@@ -8,6 +8,7 @@ are introduced. Each step ends at that learner's next decision or terminal place
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -38,11 +39,22 @@ def observation_rows(games, rows, *, public_attachments=False):
     return result
 
 
-def load_opponents(specifications, device):
+def opponent_identity(metadata):
+    """Keep legacy pool identities stable; bind enhanced actors to their decoder."""
+    if "position_decoder" not in metadata:
+        return metadata["sha256"]
+    data = dict(actor=metadata["sha256"], position=metadata["position_decoder"])
+    return hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
+
+
+def load_opponents(specifications, device, position_bundles=None):
     """Repeated entries weight the fixed pool; identical paths share one frozen model."""
     from .arena import frozen_checkpoint
-    cache, models, metadata = {}, [], []
-    for specification in specifications:
+    bundles = [None] * len(specifications) if position_bundles is None else position_bundles
+    if len(bundles) != len(specifications):
+        raise ValueError("Position bundles must align with the frozen opponent pool")
+    cache, wrappers, models, metadata = {}, {}, [], []
+    for specification, bundle in zip(specifications, bundles):
         key = "bot" if specification == "bot" else str(Path(specification).resolve())
         if key not in cache:
             cache[key] = ((None, {"kind": "bundled_heuristic", "sha256": "bot"})
@@ -50,6 +62,16 @@ def load_opponents(specifications, device):
             if cache[key][0] is not None:
                 cache[key][0].eval().requires_grad_(False)
         model, meta = cache[key]
+        if bundle is not None:
+            if model is None:
+                raise ValueError("A heuristic opponent cannot have a position bundle")
+            from .position import load_position_policy
+            wrapper_key = (key, str(Path(bundle).resolve()))
+            if wrapper_key not in wrappers:
+                wrapped = load_position_policy(model, meta, bundle, device)
+                wrappers[wrapper_key] = (wrapped, dict(meta, position_decoder=wrapped.decoder_metadata,
+                                                       position_encoder=wrapped.encoder_metadata))
+            model, meta = wrappers[wrapper_key]
         models.append(model)
         metadata.append(meta)
     return models, metadata
@@ -83,12 +105,30 @@ class LeagueEnv:
         self.truncation_dir = Path(truncation_dir) if truncation_dir is not None else None
         self.truncated_episodes = [0] * n_games
         self.opponents, self.opponent_ids = list(opponents), list(opponent_ids)
+        self.position_opponents = {}
+        seen = set()
+        for index, model in enumerate(self.opponents):
+            if getattr(model, "decoder_metadata", {}) and id(model) not in seen:
+                seen.add(id(model))
+                self.position_opponents[index] = model
+                if not cancel_guard:
+                    raise ValueError("Position opponents require the cancellation guard")
+                if (self.config.get("turn_action_caps") != [128]
+                        or bool(self.config.get("hotfix_37_0_1")) != bool(
+                            model.encoder_metadata["trained_hotfix_37_0_1"])):
+                    raise ValueError("League rules differ from the position bundle")
+                if torch.device(device).type == "cuda" and torch.get_float32_matmul_precision() != "highest":
+                    raise ValueError("Position opponents require float32 precision highest")
+                # Training needs bounded per-slot history, not an ever-growing
+                # list of Move events. Validation temporarily restores recording.
+                model.record_events = False
         if opponent_graph_max_batch:
             from .inference import FrozenOpponentGraphs
             cache = {}
             for model in opponents:
                 if model is not None and id(model) not in cache:
-                    cache[id(model)] = (model if getattr(model, "requires_attachments", False)
+                    cache[id(model)] = (model if (getattr(model, "requires_attachments", False)
+                                                 or getattr(model, "decoder_metadata", {}))
                                         else FrozenOpponentGraphs(model, opponent_graph_max_batch))
             self.opponents = [cache[id(model)] if model is not None else None for model in opponents]
         self.device, self.inference_batch = torch.device(device), inference_batch
@@ -129,6 +169,9 @@ class LeagueEnv:
         if self.decoder is not None:
             for seat in range(8):
                 self.decoder.reset(lane * 8 + seat)
+        for model in self.position_opponents.values():
+            for seat in range(8):
+                model.reset_context(lane * 8 + seat)
 
     def observe(self):
         rows = [(lane, self.learners[lane]) for lane in range(self.n_games)]
@@ -180,6 +223,8 @@ class LeagueEnv:
                 identities = [lane * 8 + seat for lane, seat in batch]
                 if self.decoder is not None:
                     obs = self.decoder.apply(obs, identities)
+                if hasattr(model, "set_context"):
+                    model.set_context(identities)
                 logits, value = model(*tensors(obs, self.device), **policy_kwargs(model, obs, self.device))
                 if not torch.isfinite(logits).all() or not torch.isfinite(value).all():
                     raise RuntimeError("Frozen opponent produced non-finite outputs")
@@ -289,6 +334,12 @@ class LeagueEnv:
         }
         if self.public_attachments:
             data["attachment_version"] = 1
+        if self.position_opponents:
+            data["position_history"] = [
+                dict(opponent_index=index, decoder=model.decoder_metadata,
+                     history=model.save_context(identities=range(lane * 8, lane * 8 + 8)),
+                     **({"counts": dict(model.counts)} if lane == 0 else {}))
+                for index, model in self.position_opponents.items()]
         return json.dumps(data, sort_keys=True)
 
     def load(self, lane, state):
@@ -305,6 +356,17 @@ class LeagueEnv:
             raise ValueError("League resume changes training_turn_limit; start a new stage")
         if (data["decoder"] is not None) != (self.decoder is not None):
             raise ValueError("League resume changes cancellation decoding")
+        position = data.get("position_history", [])
+        expected = [(index, model.decoder_metadata) for index, model in self.position_opponents.items()]
+        if [(row["opponent_index"], row["decoder"]) for row in position] != expected:
+            raise ValueError("League resume changes position decoding")
+        for row, model in zip(position, self.position_opponents.values()):
+            model.load_context(row["history"], identities=range(lane * 8, lane * 8 + 8))
+            if lane == 0:
+                counts = row["counts"]
+                if set(counts) != set(model.counts) or any(type(v) is not int or v < 0 for v in counts.values()):
+                    raise ValueError("Invalid position decoder counts")
+                model.counts = dict(counts)
         self.indices[lane], self.learners[lane] = data["episode"], data["learner"]
         self.cursors[lane] = data["cursor"]
         self.assignments[lane] = data["assignments"]

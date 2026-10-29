@@ -40,6 +40,8 @@ def arguments():
     p.add_argument("--text-embeddings", type=Path)
     p.add_argument("--opponents", nargs="+", default=[],
                    help="Frozen checkpoint paths or bot; repeated entries weight the league pool")
+    p.add_argument("--opponent-position-bundles", nargs="+",
+                   help="Bundle paths or none, aligned with every entry in --opponents")
     p.add_argument("--cancel-guard", action="store_true")
     p.add_argument("--hotfix-37-0-1", action="store_true",
                    help="Enable the audited hotfix rules; see docs/PATCH_COMPATIBILITY.md")
@@ -103,6 +105,11 @@ def arguments():
         p.error("--attachment-lr requires public attachments and a finite positive rate")
     if args.cancel_guard and not args.opponents:
         p.error("History-aware training requires the league environment (--opponents)")
+    if args.opponent_position_bundles is not None:
+        if len(args.opponent_position_bundles) != len(args.opponents):
+            p.error("Position bundles must align with --opponents")
+        if any(name != "none" for name in args.opponent_position_bundles) and not args.cancel_guard:
+            p.error("Position opponents require --cancel-guard")
     if args.league_turn_limit < 0 or (args.league_turn_limit and not args.opponents):
         p.error("--league-turn-limit requires league opponents and a nonnegative turn count")
     if not 0 <= args.opponent_graph_max_batch <= 64:
@@ -140,7 +147,8 @@ def main():
         raise SystemExit("Existing run: specify --resume or use a new --run-dir")
     device = torch.device(args.device)
     torch.set_num_threads(args.torch_threads)
-    torch.set_float32_matmul_precision("high")
+    bundles = [None if name == "none" else Path(name) for name in args.opponent_position_bundles or []]
+    torch.set_float32_matmul_precision("highest" if any(bundles) else "high")
     torch.manual_seed(args.seed)
     np.random.seed(args.seed)
     if device.type == "cuda" and not torch.cuda.is_available():
@@ -150,12 +158,12 @@ def main():
         config["hotfix_37_0_1"] = True
     opponent_models, opponent_manifest = [], []
     if args.opponents:
-        from .league import LeagueEnv, load_opponents
-        opponent_models, opponent_manifest = load_opponents(args.opponents, device)
+        from .league import LeagueEnv, load_opponents, opponent_identity
+        opponent_models, opponent_manifest = load_opponents(args.opponents, device, bundles or None)
         if any(m.get("action_cap", args.action_cap) != args.action_cap for m in opponent_manifest):
             raise ValueError("A frozen opponent was trained with a different action cap")
         env = LeagueEnv(args.envs, seed=args.seed, opponents=opponent_models,
-                        opponent_ids=[m["sha256"] for m in opponent_manifest], device=device,
+                        opponent_ids=[opponent_identity(m) for m in opponent_manifest], device=device,
                         threads=args.threads, config=config, inference_batch=args.opponent_batch,
                         cancel_guard=args.cancel_guard, training_turn_limit=args.league_turn_limit,
                         truncation_dir=run / "truncations",
@@ -214,8 +222,10 @@ def main():
             raise ValueError("Resume changes cancellation decoding")
         if args.league_turn_limit != ckpt["args"].get("league_turn_limit", 0):
             raise ValueError("Resume changes training time limit; use --init-from for a new stage")
-        if [m["sha256"] for m in opponent_manifest] != [m["sha256"] for m in ckpt.get("opponent_manifest", [])]:
-            raise ValueError("Resume changes the frozen opponent pool")
+        if args.opponents:
+            if ([opponent_identity(m) for m in opponent_manifest]
+                    != [opponent_identity(m) for m in ckpt.get("opponent_manifest", [])]):
+                raise ValueError("Resume changes the frozen opponent pool or position decoder")
         optimizer = make_optimizer(model, args.lr, args.attachment_lr)
         optimizer.load_state_dict(ckpt["optimizer"])
         update, steps = ckpt["update"], ckpt["steps"]
@@ -310,10 +320,12 @@ def main():
         nonlocal best, stale
         if opponent_models:
             from .arena import play_arena
+            from .position import preserve_position_context
             roles = [model] + [opponent_models[i % len(opponent_models)] for i in range(7)]
-            arena = play_arena(roles, games=args.eval_games, seed=args.eval_seed,
-                               threads=args.threads, config=config, device=device,
-                               inference_batch=args.opponent_batch, cancel_guard=args.cancel_guard)
+            with preserve_position_context(opponent_models):
+                arena = play_arena(roles, games=args.eval_games, seed=args.eval_seed,
+                                   threads=args.threads, config=config, device=device,
+                                   inference_batch=args.opponent_batch, cancel_guard=args.cancel_guard)
             arena.update(opponent_manifest=opponent_manifest, training_steps=steps,
                          training_code_hash=source_hash)
             report = run / f"league_eval_{update:06d}.json"

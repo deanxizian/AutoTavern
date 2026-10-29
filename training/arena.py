@@ -248,6 +248,8 @@ def frozen_checkpoint(path, device):
         metadata["weight_transfer"] = checkpoint["weight_transfer"]
     if checkpoint.get("initial_policy"):
         metadata["initial_policy"] = checkpoint["initial_policy"]
+    if any("position_encoder" in m for m in checkpoint.get("opponent_manifest", [])):
+        metadata["opponent_manifest"] = checkpoint["opponent_manifest"]
     metadata["trained_hotfix_37_0_1"] = checkpoint["args"].get("hotfix_37_0_1", False)
     metadata["training_turn_limit"] = checkpoint["args"].get("league_turn_limit", 0)
     metadata["truncated_training_episodes"] = checkpoint.get("truncated_training_episodes", 0)

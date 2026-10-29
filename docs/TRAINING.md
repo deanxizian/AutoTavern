@@ -228,3 +228,23 @@ Use the same option in `training.evaluate` and `training.arena` when assessing t
 decoder. Arena applies it equally to all learned policies; the heuristic is unchanged.
 Reports record the decoder version. Scores from plain greedy and guarded decoding
 describe different deployed policies and must be labeled accordingly.
+
+### Frozen opponents with public position decoding
+
+League training accepts `--opponent-position-bundles`, with one frozen bundle path
+or `none` for every entry in `--opponents`. Repeated actor/bundle pairs share weights
+and inference work. These opponents require `--cancel-guard`, matching bundle rules,
+and process-wide float32 matmul precision `highest`. They use eager inference; plain
+opponents can still use the existing CUDA graph cache. The learner remains an ordinary
+PPO policy, so its sampled actions and log probabilities are not replaced by the decoder.
+
+The checkpoint binds each opponent to both its actor and decoder, including the frozen
+encoder, ridge and threshold. Changing any of these requires a new stage. Per-lane
+position history and cancellation history survive exact resume; validation restores
+the training histories after using the same frozen weights. Training retains bounded
+slot histories and counters without accumulating Move-event records. Validation still
+retains its Move events. Preserve `opponent_manifest` when exporting compact checkpoints
+so enhanced opponents' encoder lineage remains available to later audit seed checks.
+
+This option supplies a stronger training curriculum. Its implementation and recovery
+tests do not establish that a newly trained candidate is stronger or ready for live play.
