@@ -10,6 +10,7 @@ from collections import Counter
 from copy import deepcopy
 import hashlib
 import json
+import math
 from pathlib import Path
 
 import numpy as np
@@ -44,11 +45,23 @@ class StrategyTeacher:
         if bundle.get("carddb_sha256") != hashlib.sha256(
                 (Path(__file__).resolve().parents[1] / "crates/taverngym/data/cards.json").read_bytes()).hexdigest():
             raise ValueError("Expert strategy card table differs")
-        self.sha256 = digest(bundle)
         self.cards = bundle["cards"]
         self.heroes = bundle["heroes"]
         self.powers = {h["power_id"]: h for h in self.heroes.values()}
         self.comps = bundle["compositions"]
+        self.fresh_preference = bundle.get("fresh_perspective_preference")
+        if self.fresh_preference is not None:
+            pref = self.fresh_preference
+            if (not isinstance(pref, dict) or pref.get("format_version") != 1
+                    or pref.get("scope") != "dark_gift_discover"
+                    or not isinstance(pref.get("bonus"), (int, float))
+                    or not math.isfinite(pref["bonus"]) or not 0 <= pref["bonus"] <= 6
+                    or not isinstance(pref.get("strength_ratio"), (int, float))
+                    or not 0 < pref["strength_ratio"] <= 1
+                    or type(pref.get("min_turn")) is not int or type(pref.get("max_turn")) is not int
+                    or not 0 <= pref["min_turn"] <= pref["max_turn"]):
+                raise ValueError("Invalid conditional Fresh Perspective preference")
+        self.sha256 = digest(bundle)
         self.counts = Counter()
         self.normal = {cid: c.get("normal_id") or cid for cid, c in self.cards.items()}
         for comp in self.comps:
@@ -123,6 +136,36 @@ class StrategyTeacher:
                     return self.powers[card_id(power)]
         return profile
 
+    def fresh_choice_bonus(self, card, options, turn):
+        """A bounded preference among comparable offers, never a forced action.
+
+        Across tiers, visible attack/health is only a conservative comparison
+        proxy: require identical combat keywords and positive finite body stats.
+        This is not a combat simulation or a valuation of other card effects.
+        """
+        pref = self.fresh_preference
+        if (pref is None or not pref["min_turn"] <= turn <= pref["max_turn"]
+                or not any(card_id(a) == self.bundle["fresh_perspective_id"]
+                           for a in (card.get("attached") or [])) or len(options) < 2):
+            return 0.
+        tier = card.get("tier", 0)
+        if tier <= 0 or any(c.get("tier", 0) <= 0 for c in options):
+            return 0.
+        if tier >= max(c["tier"] for c in options):
+            return float(pref["bonus"])
+        keywords = set(card.get("keywords") or [])
+        strengths = []
+        for option in [card, *options]:
+            if set(option.get("keywords") or []) != keywords:
+                return 0.
+            attack, health = option.get("atk"), option.get("hp")
+            if (not isinstance(attack, (int, float)) or not isinstance(health, (int, float))
+                    or not math.isfinite(attack) or not math.isfinite(health)
+                    or attack <= 0 or health <= 0):
+                return 0.
+            strengths.append(math.sqrt(attack) * math.sqrt(health))
+        return float(pref["bonus"]) if strengths[0] >= pref["strength_ratio"] * max(strengths[1:]) else 0.
+
     def advise(self, view, mask=None, *, explain=False):
         if view.get("schema_version") != 1:
             raise ValueError("Missing player-visible strategy schema")
@@ -168,7 +211,9 @@ class StrategyTeacher:
                 score += .9
             if comps and "battlecry" in tags and any(c.get("battlecries") for c in comps):
                 score += .6
-            if "fresh_perspective" in tags and turn <= 6:
+            # Preserve old bundles exactly. The clarified preference is scoped
+            # to choosing a Dark Gift, so it must not also leak into generic worth.
+            if self.fresh_preference is None and "fresh_perspective" in tags and turn <= 6:
                 score += 1.5
             return score
 
@@ -202,6 +247,8 @@ class StrategyTeacher:
             return self._result(bias, mask, reasons, comps, explain)
 
         if pending:
+            legal_options = [card for i, card in enumerate(pending.get("options") or [])
+                             if 30 + i < len(mask) and mask[30 + i]]
             for i, card in enumerate(pending.get("options") or []):
                 score = worth(card)
                 tags = self.tags(card)
@@ -210,7 +257,8 @@ class StrategyTeacher:
                     score += 1.3 * (self.cid(card) in profile.get("discover_ids", []))
                     if not comps and profile.get("discover_direction"):
                         score += 1.0 * ("direction" in tags)
-                if source in self.bundle.get("dark_gift_ids", []) and turn <= 5:
+                if (self.fresh_preference is None and
+                        source in self.bundle.get("dark_gift_ids", []) and turn <= 5):
                     if any(card_id(a) == self.bundle["fresh_perspective_id"] for a in (card.get("attached") or [])):
                         score += 6.
                 for rule in profile.get("choice_rules", []):
@@ -233,6 +281,9 @@ class StrategyTeacher:
                     if opponent:
                         score += .3 * opponent["tier"] + .01 * (opponent["health"] + opponent["armor"])
                 add(30 + i, score, "choice_value")
+                if pending["kind"] == "discover" and source in self.bundle.get("dark_gift_ids", []):
+                    add(30 + i, self.fresh_choice_bonus(card, legal_options, turn),
+                        "fresh_perspective_preference")
             if pending["kind"] == "target":
                 source_profile = self.powers.get(source, {})
                 for i, target in enumerate(pending.get("targets") or []):

@@ -15,7 +15,19 @@ tables are not required by the public test suite or included in the repository.
 The user's ordinary curve is turn 2 level, turns 3 and 4 use the 3-gold Dark Gift
 button, turn 5 level; early Fresh Perspective offers receive a preference. Dark
 Gift, refreshing the shop and collecting the Aberration tribe are separate actions.
-Hero-specific curves take precedence. Composition advice activates from owned
+Hero-specific curves take precedence. A clarified private bundle can specify
+`fresh_perspective_preference` version 1: a clear relative preference for Fresh
+Perspective over comparable legal Dark Gift offers, without making it mandatory.
+It is eligible when the Fresh Perspective
+minion has the highest offered tier, or when its visible body strength is close
+to the alternatives with identical combat keywords. The cross-tier comparison
+uses `sqrt(attack * health)` as an explicit approximation, not a combat win-rate
+estimate or a valuation of other card effects. The bonus, closeness ratio and turn
+window are frozen in the knowledge bundle; hero, composition and learned values
+can outweigh it. It supplies no separate generic purchase or play bonus. Bundles
+without this optional field retain their original behavior for reproducibility.
+
+Composition advice activates from owned
 starting components and any specified economy, health, timing or growth conditions.
 It does not activate just because a core card appears in the shop. Source passages
 with no actionable advice or unresolved ambiguity remain marked in the bundle.

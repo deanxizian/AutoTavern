@@ -85,6 +85,61 @@ def test_fresh_choice_reads_attached_effect_only_in_gift_discover():
     assert teacher.advise(v)[31]==teacher.advise(v)[30]
 
 
+def conditional_fresh_book():
+    b=book()
+    b['cards']['BG36_MidGameEffect_000t52']['tags'].append('fresh_perspective')
+    b['fresh_perspective_preference']=dict(format_version=1,scope='dark_gift_discover',
+        bonus=1.,strength_ratio=.85,min_turn=3,max_turn=5)
+    return b
+
+
+def fresh_options_view(fresh_tier=2,fresh_stats=(3,3),other_tier=2,other_stats=(4,4)):
+    v=view(3,2);v['mask']=[0]*tg.N_ACTIONS;v['mask'][30:32]=[1,1]
+    v['me']['pending']=dict(kind='discover',source={'id':'BG36_MidGameEffect_000t52'},options=[
+        dict(id='BG36_345',tier=other_tier,atk=other_stats[0],hp=other_stats[1],keywords=[]),
+        dict(id='BG36_345',tier=fresh_tier,atk=fresh_stats[0],hp=fresh_stats[1],keywords=[],
+             attached=[{'id':'BG36_MidGameEffect_000t52'}])])
+    return v
+
+
+def test_conditional_fresh_is_clearly_preferred_but_can_be_outweighed():
+    b=conditional_fresh_book();teacher=StrategyTeacher(b);v=fresh_options_view()
+    score,why=teacher.advise(v,explain=True)
+    assert score[31]-score[30]==1 and any(r['rule']=='fresh_perspective_preference' for r in why['rules'])
+    assert score.argmax()==31
+    # A stronger learned action remains stronger; advice does not change the mask.
+    base=np.zeros(tg.N_ACTIONS);base[30]=2
+    assert (base+score).argmax()==30 and v['mask'][30]==v['mask'][31]==1
+    b['heroes']['TB_BaconShop_HERO_45']['discover_ids']=['BG36_700']
+    v['me']['hero']={'id':'TB_BaconShop_HERO_45'}
+    v['me']['pending']['options'][0]['id']='BG36_700'
+    assert StrategyTeacher(b).advise(v)[30]>StrategyTeacher(b).advise(v)[31]
+
+
+def test_conditional_fresh_requires_comparable_legal_offers():
+    teacher=StrategyTeacher(conditional_fresh_book())
+    v=fresh_options_view(fresh_tier=1,fresh_stats=(2,2),other_stats=(8,8))
+    assert teacher.advise(v)[31]==0
+    v=fresh_options_view(fresh_tier=1,fresh_stats=(5,5),other_stats=(6,5))
+    assert teacher.advise(v)[31]==1
+    v['me']['pending']['options'][0]['keywords']=['DIVINE_SHIELD']
+    assert teacher.advise(v)[31]==0
+    v['mask'][30]=0
+    assert teacher.advise(v)[31]==0  # A sole legal option needs no preference.
+
+
+def test_conditional_fresh_is_scoped_and_legacy_bundles_keep_old_behavior():
+    b=conditional_fresh_book();v=fresh_options_view();teacher=StrategyTeacher(b)
+    v['me']['pending']['source']={'id':'unrelated'}
+    assert teacher.advise(v)[31]==teacher.advise(v)[30]==0
+    v['me']['pending']['source']={'id':'BG36_MidGameEffect_000t52'};v['turn']=6
+    assert teacher.advise(v)[31]==0
+    legacy=deepcopy(b);del legacy['fresh_perspective_preference'];v['turn']=3
+    assert StrategyTeacher(legacy).advise(v)[31]==6
+    b['fresh_perspective_preference']['bonus']=float('nan')
+    with pytest.raises(ValueError,match='Fresh Perspective'):StrategyTeacher(b)
+
+
 def test_target_uses_entity_id_not_slot_and_respects_spell_source():
     v=view(8,4);b=book();b['heroes']['TB_BaconShop_HERO_45']['targets']=[dict(ids=['BG36_700'],score=2)]
     v['me']['hero']={'id':'TB_BaconShop_HERO_45'}
@@ -224,7 +279,8 @@ def test_real_strategy_ppo_checkpoint_resume_is_exact(tmp_path,loss_kind):
     torch.save(dict(engine_hash=tg.source_hash(),training_code_hash='test-only',weights_only=True,
         architecture=actor.architecture,model=actor.state_dict(),update=0,steps=0,
         args=dict(seed=741,eval_seed=1741,action_cap=128,hotfix_37_0_1=True)),initial)
-    knowledge=tmp_path/'knowledge.json';knowledge.write_text(json.dumps(book()))
+    bundle=conditional_fresh_book() if loss_kind=='priority-margin-v1' else book()
+    knowledge=tmp_path/'knowledge.json';knowledge.write_text(json.dumps(bundle))
     base=[sys.executable,'-m','training.train','--device','cpu','--envs','8','--rollout','128',
         '--minibatch','128','--threads','2','--torch-threads','1','--width','16','--layers','1',
         '--heads','2','--seed','741','--eval-seed','1741','--eval-games','8','--eval-every','100',
@@ -247,7 +303,7 @@ def test_real_strategy_ppo_checkpoint_resume_is_exact(tmp_path,loss_kind):
         (tmp_path/f'{name}-{count}.log').write_text(result.stdout)
         assert result.returncode==0,result.stdout[-6000:]
     _,whole=load_checkpoint(tmp_path/'whole/latest.pt');_,split=load_checkpoint(tmp_path/'split/latest.pt')
-    assert whole['strategy_sha256']==split['strategy_sha256']==digest(book())
+    assert whole['strategy_sha256']==split['strategy_sha256']==digest(bundle)
     assert whole['args']['strategy_loss']==split['args']['strategy_loss']==loss_kind
     assert whole['steps']==split['steps']==2048
     for key in whole['model']:
