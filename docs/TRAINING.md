@@ -102,6 +102,13 @@ Checkpoints are written atomically, every five minutes and at evaluation or grac
 Only load trusted checkpoint files: training state is serialized with PyTorch/pickle.
 TensorBoard can be run on loopback and accessed through an SSH tunnel; no public port is needed.
 
+PPO updates log unweighted `policy_loss_mean`, `value_loss_mean`, `placement_loss_mean`,
+`anchor_loss_mean`, and (when enabled) `strategy_loss_mean`. Use the coefficients in
+the run manifest, together with `entropy`, to reconstruct the total `loss`.
+`gradient_norm_mean` and `gradient_norm_max` summarize the total gradient norm before
+clipping; `gradient_over_limit_fraction` is the fraction of optimizer steps above
+the configured clipping limit. These are training diagnostics, not measures of playing strength.
+
 ## Evaluation and continuation
 
 Validation uses different seeds from training, an equal number of games at all eight seats,

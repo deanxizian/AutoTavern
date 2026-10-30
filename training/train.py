@@ -550,6 +550,8 @@ def main():
             adv = (adv - adv.mean()) / (adv.std(unbiased=False) + 1e-8)
             losses, kls, entropies, clips = [], [], [], []
             teaching_losses = []
+            loss_parts = {name: [] for name in ("policy", "value", "placement", "anchor")}
+            gradient_norms = []
             early_stop = False
             for epoch in range(args.epochs):
                 epoch_kls = []
@@ -605,10 +607,15 @@ def main():
                         raise RuntimeError("Non-finite PPO loss")
                     optimizer.zero_grad(set_to_none=True)
                     loss.backward()
-                    nn.utils.clip_grad_norm_(model.parameters(), args.grad_norm, error_if_nonfinite=True)
+                    gradient_norm = nn.utils.clip_grad_norm_(
+                        model.parameters(), args.grad_norm, error_if_nonfinite=True)
                     optimizer.step()
                     epoch_kls.append(kl); kls.append(kl)
                     losses.append(loss.item()); entropies.append(entropy.item())
+                    for name, part in (("policy", pg), ("value", vf),
+                                       ("placement", auxiliary), ("anchor", anchored)):
+                        loss_parts[name].append(part.item())
+                    gradient_norms.append(gradient_norm.item())
                     if strategy_bundle:
                         teaching_losses.append(taught.item())
                     clips.append(((ratio.detach() - 1).abs() > args.clip).float().mean().item())
@@ -627,6 +634,13 @@ def main():
                 "kl_early_stop": early_stop, "optimizer_steps": len(losses),
                 "learning_rate": optimizer.param_groups[0]["lr"],
                 "recent_training": stats(recent), "rejected_actions": 0,
+                # Unweighted loss means; coefficients remain in the run manifest.
+                **{name + "_loss_mean": float(np.mean(parts))
+                   for name, parts in loss_parts.items()},
+                "gradient_norm_mean": float(np.mean(gradient_norms)),
+                "gradient_norm_max": float(np.max(gradient_norms)),
+                "gradient_over_limit_fraction": float(np.mean(
+                    np.asarray(gradient_norms) > args.grad_norm)),
             }
             if strategy_bundle:
                 report["strategy_rule_applications"] = dict(model.teacher.counts)

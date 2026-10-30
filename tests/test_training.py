@@ -157,3 +157,15 @@ def test_skipped_kl_minibatch_releases_activations_before_next_rollout(tmp_path,
     updates = [row for row in metrics if row["event"] == "update"]
     assert len(updates) == 2 and all(row["kl_early_stop"] for row in updates)
     assert transitions == [0], "Skipped minibatch activations survived into the next rollout"
+    args = json.loads((tmp_path / "run/manifest.json").read_text())["args"]
+    for row in updates:
+        parts = [row[name + "_loss_mean"] for name in ("policy", "value", "placement", "anchor")]
+        assert all(np.isfinite(part) for part in parts)
+        policy, value, placement, anchor = parts
+        reconstructed = (policy + args["value_coef"] * value
+                         + args["aux_coef"] * placement + args["anchor_coef"] * anchor
+                         - args["entropy"] * row["entropy"])
+        assert row["loss"] == pytest.approx(reconstructed, abs=1e-6)
+        assert np.isfinite(row["gradient_norm_max"])
+        assert 0 <= row["gradient_norm_mean"] <= row["gradient_norm_max"]
+        assert 0 <= row["gradient_over_limit_fraction"] <= 1
