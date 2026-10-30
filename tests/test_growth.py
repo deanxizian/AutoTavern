@@ -330,3 +330,46 @@ def test_real_growth_ppo_and_full_resume_match_uninterrupted_training(tmp_path):
     assert a["optimizer"]["param_groups"] == b["optimizer"]["param_groups"]
     for key, values in a["optimizer"]["state"].items():
         assert all(torch.equal(t, b["optimizer"]["state"][key][name]) for name, t in values.items())
+
+
+@pytest.mark.parametrize("threads,count", [(8, 128), (8, 127), (4, 128)])
+@pytest.mark.parametrize("public_growth", [False, True])
+def test_parallel_public_context_preserves_rows_advice_and_native_states(threads, count, public_growth):
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+
+    class Counted:
+        def __init__(self, game):
+            self.game, self.callers = game, []
+        def strategy_view(self, seat):
+            self.callers.append(threading.get_ident())
+            return self.game.strategy_view(seat)
+
+    template = json.loads(pair()[0].state_json())
+    games = []
+    for index in range(count):
+        state = deepcopy(template)
+        state["players"][0]["stats"]["eternal_knight_deaths"] = index
+        games.append(tg.Game.from_json(json.dumps(state)))
+    before = [game.state_json() for game in games]
+    rows = [((index * 37) % count, 0) for index in range(count)]
+    reference_teacher = StrategyTeacher(book())
+    expected = observation_rows(games, rows)
+    add_public_context(expected, SimpleNamespace(games=games), rows,
+                       teacher=reference_teacher, public_growth=public_growth)
+    teacher = StrategyTeacher(book())
+    wrapped = [Counted(game) for game in games]
+    actual = {"action_mask": expected["action_mask"].copy()}
+    with ThreadPoolExecutor(threads) as executor:
+        env = SimpleNamespace(games=wrapped, threads=threads, executor=executor)
+        add_public_context(actual, env, rows, teacher=teacher, public_growth=public_growth)
+    np.testing.assert_array_equal(actual["strategy_bias"], expected["strategy_bias"])
+    if public_growth:
+        np.testing.assert_array_equal(actual["growth"], expected["growth"])
+        np.testing.assert_array_equal(actual["growth"][:, 0], [lane for lane, _ in rows])
+    assert teacher.counts == reference_teacher.counts
+    main_thread = threading.get_ident()
+    for game in wrapped:
+        assert len(game.callers) == 1
+        assert (game.callers[0] != main_thread) == (threads >= 8 and count >= 128)
+    assert [game.state_json() for game in games] == before

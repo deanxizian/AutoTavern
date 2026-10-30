@@ -541,8 +541,11 @@ class StrategyTeacher:
         games = getattr(env, "games", None)
         if games is None:
             games = {lane: env.game(lane) for lane, _ in rows}
-        return np.stack([self.advise(json.loads(games[lane].strategy_view(seat)), mask)
-                         for (lane, seat), mask in zip(rows, masks)])
+        views = _parallel_public_views(env, games, rows)
+        if views is None:
+            return np.stack([self.advise(json.loads(games[lane].strategy_view(seat)), mask)
+                             for (lane, seat), mask in zip(rows, masks)])
+        return np.stack([self.advise(view, mask) for view, mask in zip(views, masks)])
 
 
 class ExpertStrategyPolicy(nn.Module):
@@ -599,6 +602,24 @@ def add_strategy_observation(policy, observation, env, rows):
                        public_growth=getattr(policy, "requires_growth", False))
 
 
+def _parallel_public_views(env, games, rows):
+    """Reuse the idle league pool to prepare large batches of public inputs."""
+    executor = getattr(env, "executor", None)
+    if executor is None or getattr(env, "threads", 0) < 8 or len(rows) < 128:
+        return None
+
+    def project(chunk):
+        return [games[lane].strategy_view(seat) for lane, seat in chunk]
+
+    chunks = [rows[start:start + 32] for start in range(0, len(rows), 32)]
+    views = []
+    # Preserve row order. Only the read-only native projection runs in workers;
+    # JSON decoding, growth extraction and advice counters stay on this thread.
+    for values in executor.map(project, chunks):
+        views.extend(json.loads(value) for value in values)
+    return views
+
+
 def add_public_context(observation, env, rows, *, teacher=None, public_growth=False):
     """Share one public projection when both advice and growth inputs are needed."""
     if not public_growth:
@@ -612,7 +633,9 @@ def add_public_context(observation, env, rows, *, teacher=None, public_growth=Fa
     games = getattr(env, "games", None)
     if games is None:
         games = {lane: env.game(lane) for lane, _ in rows}
-    views = [json.loads(games[lane].strategy_view(seat)) for lane, seat in rows]
+    views = _parallel_public_views(env, games, rows)
+    if views is None:
+        views = [json.loads(games[lane].strategy_view(seat)) for lane, seat in rows]
     observation["growth"] = from_views(views)
     if teacher is not None:
         observation["strategy_bias"] = np.stack([
