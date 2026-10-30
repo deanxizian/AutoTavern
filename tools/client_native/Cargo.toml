@@ -1,0 +1,17 @@
+[package]
+name = "autotavern-client-native"
+version = "0.1.0"
+edition = "2024"
+
+[workspace]
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+taverngym = { path = "../../crates/taverngym" }
+serde_json = "1.0.151"
+
+[profile.release]
+opt-level = 3
+strip = false

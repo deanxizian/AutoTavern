@@ -2,11 +2,12 @@
 
 import json
 import os
+from datetime import datetime, timedelta, timezone
 
 import pytest
 
 pytest.importorskip("hslog")
-from tools.client_state import newest_log, snapshot, write_snapshot
+from tools.client_state import newest_log, snapshot, watch_signature, write_snapshot
 
 
 def line(message, method="DebugPrintPower"):
@@ -131,3 +132,69 @@ def test_snapshot_file_is_local_private_json(tmp_path):
     assert json.loads(target.read_text()) == result
     assert target.stat().st_mode & 0o777 == 0o600
     assert not target.with_suffix(".json.tmp").exists()
+
+
+def test_idle_log_expires_and_changes_watch_signature_without_new_bytes(tmp_path):
+    path = tmp_path / "Power.log"
+    path.write_text(start() + card())
+    observed = datetime.fromtimestamp(path.stat().st_mtime, timezone.utc)
+    fresh = snapshot(path, now=observed)
+    old = snapshot(path, now=observed + timedelta(seconds=31))
+    assert fresh["freshness"]["status"] == "recent"
+    assert old["freshness"]["status"] == "stale" and "log_stale" in old["model_blockers"]
+    assert fresh["snapshot_id"] == old["snapshot_id"]
+    assert watch_signature(path, now=observed) != watch_signature(path, now=observed + timedelta(seconds=31))
+    assert not old["model_ready"] and not old["live_ready"]
+
+
+def test_newest_named_session_without_log_never_revives_previous_game(tmp_path):
+    old = tmp_path / "Hearthstone_2026_10_29_21_00_00/Power.log"
+    old.parent.mkdir()
+    old.write_text(start() + card())
+    current = tmp_path / "Hearthstone_2026_10_30_08_00_00/Power.log"
+    current.parent.mkdir()
+    assert newest_log(tmp_path) == current
+    result = snapshot(newest_log(tmp_path))
+    assert result["status"] == "missing_log" and "entities" not in result
+    current.write_text("")
+    os.utime(old, (2_000_000_000, 2_000_000_000))
+    assert newest_log(tmp_path) == current
+
+
+def test_log_replacement_during_read_is_incomplete_even_if_size_and_mtime_match(tmp_path, monkeypatch):
+    path = tmp_path / "Power.log"
+    text = start() + card()
+    path.write_text(text)
+    before = path.stat()
+    original = os.fstat
+    calls = 0
+    def replaced(fd):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            path.unlink()
+            path.write_text(text)
+            os.utime(path, ns=(before.st_atime_ns, before.st_mtime_ns))
+        return original(fd)
+    monkeypatch.setattr(os, "fstat", replaced)
+    result = snapshot(path)
+    assert result["status"] == "incomplete_snapshot"
+    assert result["source"]["changed_while_reading"]
+    assert "incomplete_log" in result["model_blockers"]
+
+
+def test_unresolved_choices_become_stale_after_state_change(tmp_path):
+    text = start() + card()
+    text += line("id=9 Player=3 TaskList=1 ChoiceType=GENERAL CountMin=1 CountMax=1", "DebugPrintEntityChoices")
+    text += line("Source=40", "DebugPrintEntityChoices")
+    text += line("Entities[0]=[entityName=Test id=40 zone=HAND zonePos=1 cardId=AT_121 player=2]", "DebugPrintEntityChoices")
+    result = read(tmp_path, text)
+    assert result["choices_after_last_state_change"]
+    result = read(tmp_path, text + line("TAG_CHANGE Entity=40 tag=ATK value=5"))
+    assert not result["choices_after_last_state_change"]
+    assert "stale_choices" in result["model_blockers"]
+
+
+def test_unknown_cards_and_missing_actions_have_explicit_blockers(tmp_path):
+    result = read(tmp_path, start() + card(card_id="UNKNOWN"))
+    assert {"unknown_cards", "missing_current_options", "perspective_unconfirmed"} <= set(result["model_blockers"])

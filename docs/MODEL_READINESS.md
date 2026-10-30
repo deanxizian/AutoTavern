@@ -147,9 +147,10 @@ trial notification, and `live_ready` remains false until the separate checks bel
 
 ## Live-state and manual-action gates
 
-The released repository exposes simulator state and action APIs. It does not include
-a Hearthstone-client state reader or controller. A client log reader is a separate
-adapter: [HearthSim's hslog](https://github.com/HearthSim/python-hslog) parses Power.log
+The repository exposes simulator state/action APIs and a local diagnostic client
+reader with a partial [model adapter](CLIENT_MODEL.md), but no client controller.
+The client log reader is a separate adapter:
+[HearthSim's hslog](https://github.com/HearthSim/python-hslog) parses Power.log
 packets and can reconstruct entities and their tags. Its generic entity exporter ignores
 Choices and Options packets, so using it alone does not provide TavernGym's choice order
 or legal-action mask.

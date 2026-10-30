@@ -6,6 +6,10 @@ libraries were not released. The architecture and PPO settings are informed by
 [the technical report, Section 6 and Appendix C](https://arxiv.org/html/2610.33845v1#A3).
 Beating the bundled heuristic bots does not establish strength against humans or other agents.
 
+For the paused RTX 5090 run, see the
+[2026-10-30 checkpoint and recovery handoff](TRAINING_CHECKPOINT_20261030.md).
+It records u23, private backup locations and the conditions for an explicit resume.
+
 ## Environment
 
 Use Python 3.10+, the Rust version in `rust-toolchain.toml`, and a CUDA-compatible PyTorch

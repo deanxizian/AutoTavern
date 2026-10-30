@@ -143,6 +143,8 @@ pip install ".[bench]"
 | [Architecture](docs/ARCHITECTURE.md) | Engine structure, interfaces and how the components fit together. |
 | [Content coverage](docs/CONTENT.md) | Implemented minions, heroes, spells, trinkets and other game objects. |
 | [Timewarp](docs/TIMEWARP.md) | The Timewarped Tavern (off by default in 36.6.3; two heroes still visit it). |
+| [PPO training](docs/TRAINING.md) | Independent training implementation; [u23 pause and recovery handoff](docs/TRAINING_CHECKPOINT_20261030.md). |
+| [macOS companion](docs/CLIENT_WINDOW.md) | Local log reading and manual advice, [model integration](docs/CLIENT_MODEL.md), and [recorded-match validation](docs/CLIENT_MATCH_20261030.md). |
 
 For development, run `pip install -e ".[test]"` and `pytest`. The Rust crate also works on its
 own with `cargo test --release`.
