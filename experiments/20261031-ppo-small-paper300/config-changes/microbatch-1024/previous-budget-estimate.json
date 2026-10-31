@@ -1,0 +1,15 @@
+{
+  "target_iterations": 300,
+  "completed_iterations": 3,
+  "target_samples": 1258291200,
+  "max_optimizer_steps": 153600,
+  "max_microbatches": 4915200,
+  "estimated_sampling_seconds_per_iteration": 249.36766591633446,
+  "estimated_update_seconds_per_iteration": 369.6626451343327,
+  "estimated_total_hours": 51.585859254222264,
+  "observation_cache_gib": 12.9140625,
+  "complete_training_cache_gib": 13.0703125,
+  "cumulative_observation_tib": 3.783416748046875,
+  "basis": "mean of 3 completed iterations, subtracting 72.0371 seconds of profiling pauses from iteration 2",
+  "status": "estimate_only; training stopped by user"
+}

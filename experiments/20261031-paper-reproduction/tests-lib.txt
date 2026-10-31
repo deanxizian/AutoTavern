@@ -1,0 +1,22 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (target/release/deps/taverngym-090bcda57997f8b9)
+
+running 15 tests
+test actions::tests::encode_decode_roundtrip ... ok
+test batch::tests::a_saved_game_continues_exactly ... ok
+test batch::tests::an_illegal_action_is_rejected_and_ignored ... ok
+test batch::tests::bad_arguments_are_errors ... ok
+test batch::tests::episodes_end_with_a_placement_and_a_reward_in_range ... ok
+test batch::tests::results_do_not_depend_on_the_number_of_threads ... ok
+test cards::tests::all_races_sentinel ... ok
+test cards::tests::loads_and_links_golden ... ok
+test cards::tests::pool_counts_match_bundle ... ok
+test config::tests::damage_cap_schedule ... ok
+test env::tests::placement_reward_range ... ok
+test rng::tests::below_in_range_and_covers ... ok
+test rng::tests::deterministic ... ok
+test rng::tests::sample_distinct ... ok
+test tests::versions ... ok
+
+test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.13s
+

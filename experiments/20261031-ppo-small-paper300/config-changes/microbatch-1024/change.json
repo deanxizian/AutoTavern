@@ -1,0 +1,26 @@
+{
+  "changed_at": "2026-10-31T12:04:32.647847+08:00",
+  "request": "Use 1024 as the default microbatch and re-estimate full training time.",
+  "before_micro_batch_size": 256,
+  "after_micro_batch_size": 1024,
+  "effective_batch_size": 8192,
+  "before_gradient_accumulation": 32,
+  "after_gradient_accumulation": 8,
+  "completed_iterations": 3,
+  "target_iterations": 300,
+  "formal_training_started": false,
+  "precision": "FP32 parameters, gradients and Adam; TF32 allowed; BF16 autocast remains benchmark-only",
+  "runtime_configuration_preserved": "../../resolved-config.json",
+  "existing_checkpoints_preserved": {
+    "runs/20261031-ppo-small-init/initial_model.zip": "3c8f024a0cfb1526298d0d9a105d4d5a2e283cc724eb0682b160f0a9a7d38e53",
+    "runs/20261031-ppo-small-paper300/latest_model.zip": "68a136df9af883412e4c9e73f79025cd1835b5879d895056a28b1cf7479d6048",
+    "runs/20261031-ppo-small-paper300/checkpoints/iteration-0003-before-budget-change.zip": "68a136df9af883412e4c9e73f79025cd1835b5879d895056a28b1cf7479d6048"
+  },
+  "new_defaults_apply_to": [
+    "new EntityPPO instances",
+    "generic training entry point (overrides checkpoint microbatch)",
+    "recorded experiment configuration and fallback",
+    "initialization template"
+  ],
+  "new_default_effective_on_next_explicit_training_start": true
+}

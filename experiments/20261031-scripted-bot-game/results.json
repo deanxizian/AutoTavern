@@ -1,0 +1,86 @@
+{
+  "seed": 1,
+  "rules_version": "36.6.3",
+  "players": 8,
+  "controller": "built-in heuristic bot for every seat",
+  "game_over": true,
+  "final_turn": 23,
+  "turn_cap_reached": false,
+  "elapsed_seconds": null,
+  "log_lines": 5313,
+  "results": [
+    {
+      "placement": 1,
+      "seat": 7,
+      "hero": "Kith'ix",
+      "hero_zh": "基希克斯",
+      "tier": 6,
+      "health": 16,
+      "final_warband": "Laboratory Assistant 326/204, *Bubble Gunner 286/166, Boom-in-a-Box 269/150, *Risen Rider 285/160, *Lichling Hoarder 292/170, *Sin'dorei Straight Shot 266/140, Maritime Extortionist 263/153"
+    },
+    {
+      "placement": 2,
+      "seat": 0,
+      "hero": "Time Twister Chromie",
+      "hero_zh": "时光扭曲者克罗米",
+      "tier": 6,
+      "health": -5,
+      "final_warband": "*Aureate Laureate 88/94, *Maw Caster 178/48, *Plaguerunner 153/42, Forsaken Weaver 126/21, Nightmare Par-tea Guest 142/32, Snazzy Phantom 115/8, *Eternal Summoner 157/32"
+    },
+    {
+      "placement": 3,
+      "seat": 5,
+      "hero": "Scabbs Cutterbutter",
+      "hero_zh": "斯卡布斯·刀油",
+      "tier": 6,
+      "health": -4,
+      "final_warband": "*Aureate Laureate 92/46, Devout Hellcaller 98/48, Greedy Conniver 93/51, Gearfin 90/47, Treasure Parrot 93/47, Geomagus Roogug 110/78, Bream Counter 94/48"
+    },
+    {
+      "placement": 4,
+      "seat": 4,
+      "hero": "Yogg-Saron, Hope's End",
+      "hero_zh": "尤格-萨隆",
+      "tier": 6,
+      "health": -9,
+      "final_warband": "Nerubian Deathswarmer 35/26, *Aureate Laureate 49/29, Laboratory Assistant 53/35, Greedy Conniver 47/25, Plaguerunner 35/26, Greedy Conniver 48/27, *Gearfin 55/33"
+    },
+    {
+      "placement": 5,
+      "seat": 2,
+      "hero": "Rock Master Voone",
+      "hero_zh": "摇滚教父沃恩",
+      "tier": 6,
+      "health": -11,
+      "final_warband": "*Eternal Knight 68/42, Felboar 26/39, Deft Deserter 12/11, Intrepid Botanist 15/15, *Imp-lusionist 49/43, Snare Trapper 22/21, Barrier Banshee 16/16"
+    },
+    {
+      "placement": 6,
+      "seat": 6,
+      "hero": "Death Speaker Blackthorn",
+      "hero_zh": "亡语者布莱克松",
+      "tier": 5,
+      "health": -8,
+      "final_warband": "Bubble Gunner 7/10, Greedy Conniver 25/25, Shoalfin Mystic 16/10, Geomagus Roogug 4/6, Maritime Extortionist 7/7, Boom-in-a-Box 5/10, Leeroy the Reckless 6/2"
+    },
+    {
+      "placement": 7,
+      "seat": 1,
+      "hero": "Galakrond",
+      "hero_zh": "迦拉克隆",
+      "tier": 5,
+      "health": -10,
+      "final_warband": "*Aureate Laureate 7/18, Locked-up Mutineer 6/3, Sly Infiltrator 4/5, Ashen Corruptor 6/6, Treasure Parrot 5/5, Humon'gozz 5/5, *Crater Miner 4/4"
+    },
+    {
+      "placement": 8,
+      "seat": 3,
+      "hero": "Tavish Stormpike",
+      "hero_zh": "塔维什·雷矛",
+      "tier": 4,
+      "health": -1,
+      "final_warband": "*Aureate Laureate 19/7, Bilgewater Breakout 5/3, Clever Castaway 4/4, Expert Aviator 3/5, Clever Castaway 4/4, Dead Bellringer 3/6, Imposing Percussionist 4/4"
+    }
+  ],
+  "log_file": "events.txt"
+}

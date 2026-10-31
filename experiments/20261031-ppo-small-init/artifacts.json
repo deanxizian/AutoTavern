@@ -1,0 +1,128 @@
+{
+  "artifacts": [
+    {
+      "path": "runs/20261031-ppo-small-init/initial_model.zip",
+      "bytes": 21242924,
+      "sha256": "3c8f024a0cfb1526298d0d9a105d4d5a2e283cc724eb0682b160f0a9a7d38e53"
+    },
+    {
+      "path": "experiments/20261031-ppo-small-init/config.json",
+      "bytes": 1613,
+      "sha256": "efffd7e2eb164bd74984c87f314376ee516e31b695c8be6d50152b057416600c",
+      "original_path": "runs/20261031-ppo-small-init/config.json"
+    },
+    {
+      "path": "experiments/20261031-ppo-small-init/initialization.json",
+      "bytes": 2085,
+      "sha256": "318a66e2b8e21215c212e8f33f912664e35489fa43a13c8f351ebbbb3dec7db1",
+      "original_path": "runs/20261031-ppo-small-init/initialization.json"
+    },
+    {
+      "path": "runs/assets/card-text/minilm-l6-v2.pt",
+      "bytes": 6214028,
+      "sha256": "2388d6eb7375db549965daeb7790cd0ab67d57ea331fd9365099dfacc5a91c3d"
+    }
+  ],
+  "sources": [
+    {
+      "path": "python/taverngym/learning/__init__.py",
+      "bytes": 149,
+      "sha256": "c91821de2c1a4efd6ff8a01d2843bee5962db0789a33aaf7fcdba0d6330c7b4e"
+    },
+    {
+      "path": "python/taverngym/learning/env.py",
+      "bytes": 1821,
+      "sha256": "4bdd77126a6e33b5c22562178fbef9ca956f28f91f85be313b167f57ef0c8c64"
+    },
+    {
+      "path": "python/taverngym/learning/initialize.py",
+      "bytes": 4704,
+      "sha256": "c1100158f046705c2464300fa39dced9d3c4a2f18fcf7abc402b8afa82a40db6"
+    },
+    {
+      "path": "python/taverngym/learning/model.py",
+      "bytes": 14510,
+      "sha256": "d2fa3bbe28731ac9edb0d97f1c3de37a823836819cd830ff0e28977dc9a573b1"
+    },
+    {
+      "path": "python/taverngym/learning/policy.py",
+      "bytes": 3299,
+      "sha256": "780c0d96ed3eb1a9732c84667e627cf017ea787375776e8eb3278a3e3eab8e3a"
+    },
+    {
+      "path": "python/taverngym/learning/ppo.py",
+      "bytes": 6811,
+      "sha256": "fa511314fdf4e6933d6288c63d02ac4ed8600bf55cbd98326bbac6152bbea467"
+    },
+    {
+      "path": "python/taverngym/learning/text.py",
+      "bytes": 4183,
+      "sha256": "f308861324d67557b363d42e47cf09a929e8bb3676c1988ec768c01fa8cefc76"
+    },
+    {
+      "path": "python/taverngym/learning/train.py",
+      "bytes": 2927,
+      "sha256": "5734034584f0855e40587c6c167a73fd6e1951b6eaeaea00d5dee793e2328803"
+    },
+    {
+      "path": "tests/test_learning.py",
+      "bytes": 7583,
+      "sha256": "d0041896bfcf1b8c8a21b21ce308be2f0564758f344661a0967b7e73e3a17c4b"
+    },
+    {
+      "path": "configs/ppo-small.json",
+      "bytes": 935,
+      "sha256": "a7884875cd2aa17a7f4dd6b42ab4b56242d339f6942bad4df88d20b2cc0e664f"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 1149,
+      "sha256": "f59f9be2962791ac0901bf4ca74a5a7d3c4188da4a0fe331532fbc408eab328f"
+    },
+    {
+      "path": "uv.lock",
+      "bytes": 522365,
+      "sha256": "9f883108ad012189fc82cd8ecbb2d885cf17f1a430a553cda59592d37022fc3f"
+    },
+    {
+      "path": "crates/taverngym/src/obs.rs",
+      "bytes": 15636,
+      "sha256": "906b2612ffc6eec44b7055f27c8fb31807f30477b0065a3df5bfd80808d7faa1"
+    },
+    {
+      "path": "crates/taverngym/src/actions.rs",
+      "bytes": 15859,
+      "sha256": "c44915a4236a945d0a76e577953e00cad87118b8b78eae341776cd19a1aa9e1d"
+    },
+    {
+      "path": "crates/taverngym-py/src/lib.rs",
+      "bytes": 19110,
+      "sha256": "f62f5e043135b81042386497fbc13be4c29b5f29ffedc06f254641b4de6f7f7b"
+    },
+    {
+      "path": "experiments/20261031-ppo-small-init/verify.py",
+      "bytes": 3568,
+      "sha256": "5a03c6735587305c6f2272774416dee82dc441c38bfff009910804daafbe9326"
+    }
+  ],
+  "git_head": "fb61201a557ddd36a411cf44aac51ce4d9b606ce",
+  "working_tree_has_uncommitted_changes": true,
+  "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "tests": {
+    "initial_integration_suite": {
+      "passed": 26,
+      "seconds": 3.04
+    },
+    "learning_suite_after_resume_check_added": {
+      "passed": 6,
+      "raw_output": "tests-learning.txt"
+    }
+  },
+  "record_relocation": {
+    "reason": "User requested experiment records in experiments and models in runs",
+    "paths": {
+      "runs/20261031-ppo-small-init/config.json": "experiments/20261031-ppo-small-init/config.json",
+      "runs/20261031-ppo-small-init/initialization.json": "experiments/20261031-ppo-small-init/initialization.json"
+    }
+  }
+}

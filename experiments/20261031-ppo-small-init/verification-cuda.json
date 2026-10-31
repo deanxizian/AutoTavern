@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "device": "cuda",
+  "checkpoint_sha256": "3c8f024a0cfb1526298d0d9a105d4d5a2e283cc724eb0682b160f0a9a7d38e53",
+  "checkpoint_unchanged": true,
+  "training_timesteps": 0,
+  "optimizer_updates": 0,
+  "legal_native_actions_checked": 32,
+  "loaded_without_external_text_cache": true,
+  "all_heads_backward": "finite nonzero gradients",
+  "backward_targets": "synthetic verification targets only; no optimizer step",
+  "frozen_text_vectors": true
+}

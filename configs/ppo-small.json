@@ -1,0 +1,38 @@
+{
+  "name": "ppo-small",
+  "model": {
+    "d_model": 192,
+    "n_layers": 4,
+    "n_heads": 8,
+    "ff_dim": 1024,
+    "text_dim": 384,
+    "dropout": 0.0
+  },
+  "target_trainable_parameters": 3500000,
+  "text_encoder": "sentence-transformers/all-MiniLM-L6-v2",
+  "text_encoder_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "text_language": "en",
+  "text_encoder_frozen": true,
+  "seed": 42,
+  "n_envs": 8,
+  "ppo": {
+    "learning_rate": 0.0001,
+    "n_steps": 256,
+    "batch_size": 256,
+    "micro_batch_size": 1024,
+    "n_epochs": 1,
+    "gamma": 1.0,
+    "gae_lambda": 0.995,
+    "clip_range": 0.2,
+    "target_kl": 0.05,
+    "ent_coef": 0.002,
+    "vf_coef": 0.5,
+    "max_grad_norm": 1.0,
+    "aux_coef": 0.1
+  },
+  "reward": "simulator terminal placement utility: (9 - 2 * placement) / 7",
+  "stage_kl_anchor": null,
+  "opponents": "seven identical built-in scripted policies",
+  "model_format": "SB3 native .zip",
+  "training_started": false
+}

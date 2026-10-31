@@ -1,0 +1,13 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.01s
+     Running tests/games.rs (target/release/deps/games-d61cc1b7240face0)
+
+running 6 tests
+test all_vanilla_content_mode_runs ... ok
+test bot_games_complete ... ok
+test deterministic_given_seed ... ok
+test random_play_keeps_invariants ... ok
+test snapshot_roundtrip ... ok
+test turn_cap_ranks_survivors_by_health ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.28s
+

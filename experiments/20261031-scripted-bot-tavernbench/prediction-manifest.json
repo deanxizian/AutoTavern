@@ -1,0 +1,23 @@
+{
+  "created_at": "2026-10-31T00:27:44.154598+08:00",
+  "git_commit": "fb61201a557ddd36a411cf44aac51ce4d9b606ce",
+  "dataset": "tavernbench/data/eval",
+  "tasks": 368,
+  "input_hashes": {
+    "prompts.jsonl": "0c9b15d239585a9069b6d8c07bb674db0a0d3e7aa876f84e3452866ff160d590",
+    "states.jsonl.gz": "3f8ebeeae90c4a846344dd53672747d30f61b57203f8607d5b6bd55d8a54cdad"
+  },
+  "source_hashes": {
+    "experiments/20261031-scripted-bot-tavernbench/adapter.rs": "cff81ea3b41bb912c4387301ae75ed7883111fb8b727b7e7a127911ae531fb9e",
+    "experiments/20261031-scripted-bot-tavernbench/run.py": "491530e04881d81e4c0811f5f3cc690a989f4f7ba4d6d52dbe4908ea0789946a",
+    "crates/taverngym/src/bot.rs": "63b24e6d48a65bab585c415753b437804e6039b71d6b6fb5a5f3f497e4789855"
+  },
+  "answers_sha256": {
+    "scripted-policy": "6f2b833da9c2b49a5874e0bac0d40bd4959cf9f39c874387343cda889845ee30",
+    "scripted-combat256": "5af7826262710007dd4394ff11798ee69ff57f68beda2eb8ab0b11a43c1df029"
+  },
+  "inference_wall_seconds": 0.2394764539994867,
+  "labels_read_by_inference": false,
+  "candidate_score_values_used": false,
+  "adapter_test_output": "adapter-tests.txt"
+}

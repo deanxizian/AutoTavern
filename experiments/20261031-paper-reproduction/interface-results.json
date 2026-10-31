@@ -1,0 +1,144 @@
+{
+  "created_at": "2026-10-31T00:17:40.377894+08:00",
+  "groups": [
+    {
+      "group": "lib",
+      "purpose": "Actions, RNG, batched stepping, thread-independent results and exact batch save/load",
+      "command": [
+        "/tmp/autotavern-cargo/bin/cargo",
+        "+1.98.1",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "taverngym",
+        "--lib",
+        "--",
+        "--test-threads=1"
+      ],
+      "output": "tests-lib.txt",
+      "returncode": 0,
+      "passed": 15,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "group": "games",
+      "purpose": "Completed bot games, deterministic replay, snapshot roundtrip and random legal play",
+      "command": [
+        "/tmp/autotavern-cargo/bin/cargo",
+        "+1.98.1",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "taverngym",
+        "--test",
+        "games",
+        "--",
+        "--test-threads=1"
+      ],
+      "output": "tests-games.txt",
+      "returncode": 0,
+      "passed": 6,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "group": "legal-mask",
+      "purpose": "Sampled masked-legal actions are accepted by the engine",
+      "command": [
+        "/tmp/autotavern-cargo/bin/cargo",
+        "+1.98.1",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "taverngym",
+        "--test",
+        "mechanics",
+        "every_masked_legal_action_applies",
+        "--",
+        "--test-threads=1"
+      ],
+      "output": "tests-legal-mask.txt",
+      "returncode": 0,
+      "passed": 1,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "group": "observation",
+      "purpose": "Unseen opponent boards are hidden and previously fought boards are remembered",
+      "command": [
+        "/tmp/autotavern-cargo/bin/cargo",
+        "+1.98.1",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "taverngym",
+        "--test",
+        "mechanics",
+        "observation_",
+        "--",
+        "--test-threads=1"
+      ],
+      "output": "tests-observation.txt",
+      "returncode": 0,
+      "passed": 3,
+      "failed": 0,
+      "ignored": 0
+    },
+    {
+      "group": "scoreboard",
+      "purpose": "Public scoreboard does not reveal live opponent cards",
+      "command": [
+        "/tmp/autotavern-cargo/bin/cargo",
+        "+1.98.1",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-p",
+        "taverngym",
+        "--test",
+        "scoreboard",
+        "--",
+        "--test-threads=1"
+      ],
+      "output": "tests-scoreboard.txt",
+      "returncode": 0,
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    }
+  ],
+  "total_passed": 27,
+  "total_failed": 0,
+  "all_passed": true,
+  "trajectory_build_command": [
+    "/tmp/autotavern-cargo/bin/rustc",
+    "+1.98.1",
+    "--edition=2024",
+    "-O",
+    "-L",
+    "dependency=/home/eric/projects/AutoTavern/target/release/deps",
+    "--extern",
+    "taverngym=/home/eric/projects/AutoTavern/target/release/deps/libtaverngym-1e358f46bc5fe554.rlib",
+    "--extern",
+    "serde_json=/home/eric/projects/AutoTavern/target/release/deps/libserde_json-59c66dcb17f956c3.rlib",
+    "/home/eric/projects/AutoTavern/experiments/20261031-paper-reproduction/verify_trajectories.rs",
+    "-o",
+    "/home/eric/projects/AutoTavern/target/paper-verification"
+  ],
+  "trajectory_command": [
+    "/home/eric/projects/AutoTavern/target/paper-verification"
+  ],
+  "trajectory_returncode": 0,
+  "trajectory_result": "trajectory-verification.json"
+}

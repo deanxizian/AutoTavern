@@ -1,0 +1,21 @@
+{
+  "observed_at": "2026-10-31T11:38:57.120947+08:00",
+  "basis": "first fully completed formal iteration; unaffected by later profiling pauses",
+  "iteration": 1,
+  "decisions": 4194304,
+  "sampling_seconds": 256.23953982799867,
+  "training_seconds": 378.67443332199764,
+  "total_seconds": 634.9139731499963,
+  "sampling_fraction": 0.4035815097228344,
+  "training_fraction": 0.5964184902771655,
+  "sampling_decisions_per_second": 16368.683782430437,
+  "training_samples_per_second": 11076.279861844974,
+  "training_vs_sampling_time_ratio": 1.4778142107817696,
+  "bottleneck": "PPO update phase is slower and accounts for approximately 60 percent of iteration time",
+  "scope": "phase-level timing; not proof that GPU compute capacity alone is saturated",
+  "profiling_pauses": {
+    "total_seconds": 72.03709873899788,
+    "affected_iteration": 2,
+    "note": "Not part of iteration 1; do not compare the raw iteration 2 update time without subtracting pauses."
+  }
+}

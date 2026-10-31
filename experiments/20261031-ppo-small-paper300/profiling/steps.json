@@ -1,0 +1,68 @@
+{
+  "n_envs": 256,
+  "warmup_vector_steps": 16,
+  "measured_vector_steps": 128,
+  "measured_decisions": 32768,
+  "seed": 700001,
+  "units": "milliseconds per vector step (256 player decisions), unless stated otherwise",
+  "sampling": {
+    "mask_cpu_wall_ms": {
+      "mean": 0.1976447971401285,
+      "median": 0.18986449867952615,
+      "p95": 0.25632835022406647
+    },
+    "h2d_wall_ms": {
+      "mean": 0.3898730391824756,
+      "median": 0.3797980025410652,
+      "p95": 0.5010000015317928
+    },
+    "h2d_cuda_event_ms": {
+      "mean": 0.3080522499512881,
+      "median": 0.2956960052251816,
+      "p95": 0.40572159588336937
+    },
+    "policy_wall_ms": {
+      "mean": 6.384456874741318,
+      "median": 6.099336504121311,
+      "p95": 7.274744646929321
+    },
+    "policy_cuda_event_ms": {
+      "mean": 6.357811003923416,
+      "median": 6.070288181304932,
+      "p95": 7.2491889715194695
+    },
+    "action_d2h_wall_ms": {
+      "mean": 0.0717907262242079,
+      "median": 0.06961150211282074,
+      "p95": 0.08854599691403564
+    },
+    "env_cpu_wall_ms": {
+      "mean": 6.870375390803929,
+      "median": 6.653882996033644,
+      "p95": 9.983724750054533
+    },
+    "buffer_store_wall_ms": {
+      "mean": 1.7071060467515053,
+      "median": 1.6617005021544173,
+      "p95": 2.0209381520544407
+    },
+    "total_wall_ms": {
+      "mean": 15.621246874843564,
+      "median": 15.408502498758025,
+      "p95": 18.832487799954833
+    }
+  },
+  "amortized_per_decision_ms": 0.06102049560485767,
+  "gae_cpu_ms": 3.1984990055207163,
+  "ppo_update_seconds": 3.277750637003919,
+  "effective_minibatch": 8192,
+  "microbatch": 256,
+  "accumulation": 32,
+  "logical_optimizer_steps": 4,
+  "seconds_per_logical_optimizer_step": 0.8194376592509798,
+  "peak_gpu_allocated_bytes": 1557382656,
+  "sampling_buffer_bytes": 108331008,
+  "cuda_event_note": "Device event intervals include launch gaps, not a sum of kernel-only times; transfer and policy wall columns include synchronization.",
+  "original_checkpoint_unchanged": true,
+  "formal_training_budget_used": 0
+}

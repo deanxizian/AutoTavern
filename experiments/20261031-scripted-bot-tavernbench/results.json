@@ -1,0 +1,553 @@
+{
+  "dataset": "eval",
+  "tasks": 368,
+  "play_tasks": 288,
+  "play_scenarios": 30,
+  "systems": {
+    "scripted-policy": {
+      "rules": 0.0,
+      "economy": 0.125,
+      "combat": 0.0,
+      "positioning": 0.25,
+      "ordering": 0.325,
+      "targets": 0.375,
+      "selection": 0.375,
+      "strategy": 0.1206896551724138,
+      "play": 0.23304597701149424,
+      "rule_score": 0.0,
+      "n_play": 30,
+      "n_rules": 10,
+      "real_time_play": 0.23304597701149424,
+      "rt_by_scenario": {
+        "R1": 0.0,
+        "R2": 0.0,
+        "R3": 0.0,
+        "R5": 0.0,
+        "R6": 0.0,
+        "E1": 0.0,
+        "E3": 0.125,
+        "E4": 0.0,
+        "E5": 0.0,
+        "B1": 0.0,
+        "B2": 0.0,
+        "B3": 0.0,
+        "B4": 0.0,
+        "B5": 0.0,
+        "B6": 0.0,
+        "P1": 0.125,
+        "P2": 0.25,
+        "P3": 0.375,
+        "P4": 0.25,
+        "P5": 0.25,
+        "O2": 0.25,
+        "O3": 0.625,
+        "O4": 0.125,
+        "O5": 0.375,
+        "T1": 0.375,
+        "T2": 0.25,
+        "T3": 0.5,
+        "T4": 0.25,
+        "T5": 0.5,
+        "D1": 0.125,
+        "D2": 0.375,
+        "D3": 0.875,
+        "D5": 0.25,
+        "E2": 0.0,
+        "O1": 0.25,
+        "R4": 0.0,
+        "R7": 0.0,
+        "D4": 0.25,
+        "N1": 0.2413793103448276,
+        "N2": 0.0
+      },
+      "answered": 368,
+      "tokens_in": 0.0,
+      "tokens_out": 0.0,
+      "latency_s": 0.00013064851630434777,
+      "latency_median_s": 0.000117842,
+      "truncated": 0.0,
+      "by_scenario": {
+        "R1": 0.0,
+        "R2": 0.0,
+        "R3": 0.0,
+        "R5": 0.0,
+        "R6": 0.0,
+        "E1": 0.0,
+        "E3": 0.125,
+        "E4": 0.0,
+        "E5": 0.0,
+        "B1": 0.0,
+        "B2": 0.0,
+        "B3": 0.0,
+        "B4": 0.0,
+        "B5": 0.0,
+        "B6": 0.0,
+        "P1": 0.125,
+        "P2": 0.25,
+        "P3": 0.375,
+        "P4": 0.25,
+        "P5": 0.25,
+        "O2": 0.25,
+        "O3": 0.625,
+        "O4": 0.125,
+        "O5": 0.375,
+        "T1": 0.375,
+        "T2": 0.25,
+        "T3": 0.5,
+        "T4": 0.25,
+        "T5": 0.5,
+        "D1": 0.125,
+        "D2": 0.375,
+        "D3": 0.875,
+        "D5": 0.25,
+        "E2": 0.0,
+        "O1": 0.25,
+        "R4": 0.0,
+        "R7": 0.0,
+        "D4": 0.25,
+        "N1": 0.2413793103448276,
+        "N2": 0.0
+      },
+      "coverage": {
+        "unsupported_question": 136,
+        "play_total": 288,
+        "play_ok": 185,
+        "ok": 185,
+        "unmapped_policy_action": 47
+      },
+      "coverage_by_scenario": {
+        "R1": {
+          "unsupported_question": 8
+        },
+        "R2": {
+          "unsupported_question": 8
+        },
+        "R3": {
+          "unsupported_question": 8
+        },
+        "R5": {
+          "unsupported_question": 8
+        },
+        "R6": {
+          "unsupported_question": 8
+        },
+        "E1": {
+          "unsupported_question": 8
+        },
+        "E3": {
+          "ok": 8
+        },
+        "E4": {
+          "unsupported_question": 8
+        },
+        "E5": {
+          "unsupported_question": 8
+        },
+        "B1": {
+          "unsupported_question": 8
+        },
+        "B2": {
+          "unsupported_question": 8
+        },
+        "B3": {
+          "unsupported_question": 8
+        },
+        "B4": {
+          "unsupported_question": 8
+        },
+        "B5": {
+          "unsupported_question": 8
+        },
+        "B6": {
+          "unsupported_question": 8
+        },
+        "P1": {
+          "ok": 8
+        },
+        "P2": {
+          "ok": 8
+        },
+        "P3": {
+          "ok": 8
+        },
+        "P4": {
+          "ok": 8
+        },
+        "P5": {
+          "ok": 8
+        },
+        "O2": {
+          "ok": 8
+        },
+        "O3": {
+          "ok": 8
+        },
+        "O4": {
+          "ok": 8
+        },
+        "O5": {
+          "ok": 8
+        },
+        "T1": {
+          "ok": 8
+        },
+        "T2": {
+          "ok": 8
+        },
+        "T3": {
+          "ok": 8
+        },
+        "T4": {
+          "ok": 8
+        },
+        "T5": {
+          "ok": 8
+        },
+        "D1": {
+          "ok": 8
+        },
+        "D2": {
+          "ok": 8
+        },
+        "D3": {
+          "ok": 8
+        },
+        "D5": {
+          "ok": 8
+        },
+        "E2": {
+          "unsupported_question": 8
+        },
+        "O1": {
+          "ok": 8
+        },
+        "R4": {
+          "unsupported_question": 8
+        },
+        "R7": {
+          "unsupported_question": 8
+        },
+        "D4": {
+          "ok": 16
+        },
+        "N1": {
+          "unmapped_policy_action": 20,
+          "ok": 9
+        },
+        "N2": {
+          "unmapped_policy_action": 27
+        }
+      },
+      "rules_applicable": false,
+      "answered_scenario_mean": 0.3421717171717172,
+      "common_23_decision_scenarios_mean": 0.30397301349325334,
+      "play_correct_tasks": 63,
+      "play_coverage_fraction": 0.6423611111111112
+    },
+    "scripted-combat256": {
+      "rules": 1.0,
+      "economy": 0.125,
+      "combat": 0.9791666666666666,
+      "positioning": 0.25,
+      "ordering": 0.325,
+      "targets": 0.375,
+      "selection": 0.375,
+      "strategy": 0.1206896551724138,
+      "play": 0.4622126436781609,
+      "rule_score": 0.0,
+      "n_play": 30,
+      "n_rules": 10,
+      "real_time_play": 0.4622126436781609,
+      "rt_by_scenario": {
+        "R1": 0.0,
+        "R2": 1.0,
+        "R3": 0.0,
+        "R5": 0.0,
+        "R6": 0.0,
+        "E1": 0.0,
+        "E3": 0.125,
+        "E4": 0.0,
+        "E5": 0.0,
+        "B1": 1.0,
+        "B2": 1.0,
+        "B3": 1.0,
+        "B4": 1.0,
+        "B5": 1.0,
+        "B6": 0.875,
+        "P1": 0.125,
+        "P2": 0.25,
+        "P3": 0.375,
+        "P4": 0.25,
+        "P5": 0.25,
+        "O2": 0.25,
+        "O3": 0.625,
+        "O4": 0.125,
+        "O5": 0.375,
+        "T1": 0.375,
+        "T2": 0.25,
+        "T3": 0.5,
+        "T4": 0.25,
+        "T5": 0.5,
+        "D1": 0.125,
+        "D2": 0.375,
+        "D3": 0.875,
+        "D5": 0.25,
+        "E2": 0.0,
+        "O1": 0.25,
+        "R4": 0.0,
+        "R7": 0.0,
+        "D4": 0.25,
+        "N1": 0.2413793103448276,
+        "N2": 0.0
+      },
+      "answered": 368,
+      "tokens_in": 0.0,
+      "tokens_out": 0.0,
+      "latency_s": 0.0003193330570652173,
+      "latency_median_s": 0.000127093,
+      "truncated": 0.0,
+      "by_scenario": {
+        "R1": 0.0,
+        "R2": 1.0,
+        "R3": 0.0,
+        "R5": 0.0,
+        "R6": 0.0,
+        "E1": 0.0,
+        "E3": 0.125,
+        "E4": 0.0,
+        "E5": 0.0,
+        "B1": 1.0,
+        "B2": 1.0,
+        "B3": 1.0,
+        "B4": 1.0,
+        "B5": 1.0,
+        "B6": 0.875,
+        "P1": 0.125,
+        "P2": 0.25,
+        "P3": 0.375,
+        "P4": 0.25,
+        "P5": 0.25,
+        "O2": 0.25,
+        "O3": 0.625,
+        "O4": 0.125,
+        "O5": 0.375,
+        "T1": 0.375,
+        "T2": 0.25,
+        "T3": 0.5,
+        "T4": 0.25,
+        "T5": 0.5,
+        "D1": 0.125,
+        "D2": 0.375,
+        "D3": 0.875,
+        "D5": 0.25,
+        "E2": 0.0,
+        "O1": 0.25,
+        "R4": 0.0,
+        "R7": 0.0,
+        "D4": 0.25,
+        "N1": 0.2413793103448276,
+        "N2": 0.0
+      },
+      "coverage": {
+        "unsupported_question": 80,
+        "ok": 241,
+        "play_total": 288,
+        "play_ok": 241,
+        "unmapped_policy_action": 47
+      },
+      "coverage_by_scenario": {
+        "R1": {
+          "unsupported_question": 8
+        },
+        "R2": {
+          "ok": 8
+        },
+        "R3": {
+          "unsupported_question": 8
+        },
+        "R5": {
+          "unsupported_question": 8
+        },
+        "R6": {
+          "unsupported_question": 8
+        },
+        "E1": {
+          "unsupported_question": 8
+        },
+        "E3": {
+          "ok": 8
+        },
+        "E4": {
+          "unsupported_question": 8
+        },
+        "E5": {
+          "unsupported_question": 8
+        },
+        "B1": {
+          "ok": 8
+        },
+        "B2": {
+          "ok": 8
+        },
+        "B3": {
+          "ok": 8
+        },
+        "B4": {
+          "ok": 8
+        },
+        "B5": {
+          "ok": 8
+        },
+        "B6": {
+          "ok": 8
+        },
+        "P1": {
+          "ok": 8
+        },
+        "P2": {
+          "ok": 8
+        },
+        "P3": {
+          "ok": 8
+        },
+        "P4": {
+          "ok": 8
+        },
+        "P5": {
+          "ok": 8
+        },
+        "O2": {
+          "ok": 8
+        },
+        "O3": {
+          "ok": 8
+        },
+        "O4": {
+          "ok": 8
+        },
+        "O5": {
+          "ok": 8
+        },
+        "T1": {
+          "ok": 8
+        },
+        "T2": {
+          "ok": 8
+        },
+        "T3": {
+          "ok": 8
+        },
+        "T4": {
+          "ok": 8
+        },
+        "T5": {
+          "ok": 8
+        },
+        "D1": {
+          "ok": 8
+        },
+        "D2": {
+          "ok": 8
+        },
+        "D3": {
+          "ok": 8
+        },
+        "D5": {
+          "ok": 8
+        },
+        "E2": {
+          "unsupported_question": 8
+        },
+        "O1": {
+          "ok": 8
+        },
+        "R4": {
+          "unsupported_question": 8
+        },
+        "R7": {
+          "unsupported_question": 8
+        },
+        "D4": {
+          "ok": 16
+        },
+        "N1": {
+          "unmapped_policy_action": 20,
+          "ok": 9
+        },
+        "N2": {
+          "unmapped_policy_action": 27
+        }
+      },
+      "rules_applicable": false,
+      "answered_scenario_mean": 0.4966475095785441,
+      "common_23_decision_scenarios_mean": 0.30397301349325334,
+      "play_correct_tasks": 118,
+      "play_coverage_fraction": 0.8368055555555556
+    }
+  },
+  "released_reference_results": {
+    "tavernagent": {
+      "rules": 1.0,
+      "economy": 1.0,
+      "combat": 1.0,
+      "positioning": 0.975,
+      "ordering": 1.0,
+      "targets": 0.975,
+      "selection": 0.6375,
+      "strategy": 0.7471264367816092,
+      "play": 0.9143917624521073,
+      "rule_score": 1.0,
+      "n_play": 30,
+      "n_rules": 10,
+      "answers_sha256": "f9332394d2d79fbb811e6fc92bf84ca49c9b5a2fbd98fe37eb52f17d33cff3a3"
+    },
+    "gpt-6-astra": {
+      "rules": 1.0,
+      "economy": 0.75,
+      "combat": 0.75,
+      "positioning": 0.55,
+      "ordering": 0.725,
+      "targets": 0.55,
+      "selection": 0.5,
+      "strategy": 0.5363984674329503,
+      "play": 0.6315932311621967,
+      "rule_score": 0.95,
+      "n_play": 30,
+      "n_rules": 10,
+      "answers_sha256": "b48f5643adce84287e7176e4542e353a2326acb36bcf4a7de3c304534fceaad7"
+    },
+    "claude-opus-5.5": {
+      "rules": 1.0,
+      "economy": 0.5,
+      "combat": 0.6666666666666666,
+      "positioning": 0.325,
+      "ordering": 0.6,
+      "targets": 0.525,
+      "selection": 0.4125,
+      "strategy": 0.376117496807152,
+      "play": 0.5188244997871434,
+      "rule_score": 0.925,
+      "n_play": 30,
+      "n_rules": 10,
+      "answers_sha256": "69059038b56a3811fa35e632b557201824ee84781ba4eb903f556ed27af5fa4d"
+    },
+    "jev": {
+      "rules": 0.75,
+      "economy": 0.125,
+      "combat": 0.5625,
+      "positioning": 0.25,
+      "ordering": 0.2,
+      "targets": 0.45,
+      "selection": 0.4,
+      "strategy": 0.17496807151979565,
+      "play": 0.36999787143465307,
+      "rule_score": 0.35,
+      "n_play": 30,
+      "n_rules": 10,
+      "answers_sha256": "bf4261d17d6f04c38680a73d0fae203ff26c860aebbd1307fd8a4a3e1fb51fb2"
+    }
+  },
+  "rules_interpretation": "Not applicable for these bots; official numeric rule_score is zero because all 80 rule-QA tasks are intentionally unsupported.",
+  "labels_sha256": "99447d4fbafd9b3748a0460b02598a4b7244897ab4313a081bfdff0fb579f940",
+  "prediction_manifest": "prediction-manifest.json"
+}

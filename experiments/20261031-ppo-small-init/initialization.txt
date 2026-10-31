@@ -1,0 +1,69 @@
+{
+  "status": "initialized",
+  "created_at": "2026-10-31T01:01:22.990408+08:00",
+  "checkpoint": "/home/eric/projects/AutoTavern/runs/20261031-ppo-small-init/initial_model.zip",
+  "sha256": "3c8f024a0cfb1526298d0d9a105d4d5a2e283cc724eb0682b160f0a9a7d38e53",
+  "training_timesteps": 0,
+  "optimizer_updates": 0,
+  "parameters": {
+    "trainable": 3491978,
+    "total_parameters": 3491978,
+    "buffers": 1794026,
+    "by_module": {
+      "identity": 764928,
+      "static_projection": 12672,
+      "text_projection": 73728,
+      "minion_projection": 6144,
+      "item_projection": 7872,
+      "opponent_projection": 1920,
+      "global_projection": 100416,
+      "metadata_roles": 5184,
+      "metadata_encoder": 37056,
+      "opponent_minion_encoder": 74112,
+      "zone": 1344,
+      "position": 3072,
+      "input_norm": 384,
+      "transformer": 2174080,
+      "action_type": 2688,
+      "insertion_position": 1728,
+      "power_slot": 576,
+      "pointer": 147841,
+      "value_head": 37249,
+      "placement_head": 38600
+    },
+    "config": {
+      "d_model": 192,
+      "n_layers": 4,
+      "n_heads": 8,
+      "ff_dim": 1024,
+      "text_dim": 384,
+      "dropout": 0.0
+    }
+  },
+  "tokens": 49,
+  "text_cache": "runs/assets/card-text/minilm-l6-v2.pt",
+  "text_metadata": {
+    "format_version": 1,
+    "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "language": "en",
+    "preprocessing": "HTML unescape, strip tags, collapse whitespace; rule text only",
+    "normalize_embeddings": true,
+    "max_seq_length": 256,
+    "dimension": 384,
+    "cards": 3984,
+    "nonempty_texts": 3755,
+    "unique_nonempty_texts": 3462,
+    "card_data_sha256": "429305fb9dd53e6c5240bf5219a747602e96d7a0e4bbd19a0d65b8b044ed6168",
+    "created_at": "2026-10-30T16:58:32.582461+00:00",
+    "paper_encoder": false
+  },
+  "device": "cuda",
+  "save_load_weights_exact_match": true,
+  "save_load_outputs_match": true,
+  "output_tolerance": {
+    "rtol": 1e-06,
+    "atol": 1e-06
+  },
+  "text_cache_required_for_loading": false
+}

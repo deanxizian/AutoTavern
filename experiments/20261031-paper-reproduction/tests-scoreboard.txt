@@ -1,0 +1,9 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.00s
+     Running tests/scoreboard.rs (target/release/deps/scoreboard-e09827a1779c41d9)
+
+running 2 tests
+test scoreboard_counts_dual_all_and_tied_tribes ... ok
+test scoreboard_uses_completed_combat_and_does_not_reveal_live_cards ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

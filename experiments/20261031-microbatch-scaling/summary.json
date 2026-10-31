@@ -1,0 +1,60 @@
+{
+  "status": "completed",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "device": "NVIDIA GeForce RTX 5080",
+  "effective_batch": 8192,
+  "rows": [
+    {
+      "microbatch": 256,
+      "accumulation": 32,
+      "forward_cuda_ms_median": 7.1031999588012695,
+      "loss_backward_cuda_ms_median": 13.574655532836914,
+      "forward_backward_cuda_ms_median": 20.664608001708984,
+      "effective_batch_update_wall_ms_median": 638.7055380037054,
+      "peak_allocated_gib": 1.4509716033935547,
+      "peak_reserved_gib": 1.703125
+    },
+    {
+      "microbatch": 512,
+      "accumulation": 16,
+      "forward_cuda_ms_median": 11.69382381439209,
+      "loss_backward_cuda_ms_median": 24.756383895874023,
+      "forward_backward_cuda_ms_median": 36.44015884399414,
+      "effective_batch_update_wall_ms_median": 615.1321809957153,
+      "peak_allocated_gib": 2.6773605346679688,
+      "peak_reserved_gib": 3.1015625
+    },
+    {
+      "microbatch": 1024,
+      "accumulation": 8,
+      "forward_cuda_ms_median": 23.767200469970703,
+      "loss_backward_cuda_ms_median": 50.64284896850586,
+      "forward_backward_cuda_ms_median": 74.55238342285156,
+      "effective_batch_update_wall_ms_median": 621.3104510025005,
+      "peak_allocated_gib": 5.126572608947754,
+      "peak_reserved_gib": 5.81640625
+    },
+    {
+      "microbatch": 2048,
+      "accumulation": 4,
+      "forward_cuda_ms_median": 50.60956954956055,
+      "loss_backward_cuda_ms_median": 101.87299346923828,
+      "forward_backward_cuda_ms_median": 152.35743713378906,
+      "effective_batch_update_wall_ms_median": 617.5692819961114,
+      "peak_allocated_gib": 10.04230785369873,
+      "peak_reserved_gib": 11.44921875
+    }
+  ],
+  "source_checkpoint_sha256": "7cecc0ea7fe37101b920deef63afc764286feb606cd8bf4dc225396e36736cb4",
+  "archived_source_model": "runs/20261031-microbatch-scaling/source_model.zip",
+  "method": "steady-state CUDA event intervals; median of 9 repetitions; reverse order; fixed GPU-resident batch",
+  "training_resumed": true,
+  "training_pause_seconds": 72.03709873899788,
+  "training_microbatch_unchanged": 256,
+  "conclusion": "Per-microbatch work scales approximately linearly; fixed effective-batch update time is nearly flat.",
+  "raw_runs": [
+    "results.json",
+    "steady-repeat/results.json"
+  ]
+}

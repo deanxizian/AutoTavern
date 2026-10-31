@@ -143,6 +143,9 @@ pip install ".[bench]"
 | [Architecture](docs/ARCHITECTURE.md) | Engine structure, interfaces and how the components fit together. |
 | [Content coverage](docs/CONTENT.md) | Implemented minions, heroes, spells, trinkets and other game objects. |
 | [Timewarp](docs/TIMEWARP.md) | The Timewarped Tavern (off by default in 36.6.3; two heroes still visit it). |
+| [PPO setup and small model](docs/TRAINING.md) | uv, Python 3.12, initialized entity PPO, training entry point, and model and log locations. |
+| [Training infrastructure](docs/TRAINING_INFRA.md) | Lossless rollouts, gradient accumulation, checkpoint recovery, profiling, precision and Git artifact policy. |
+| [Experiment records](experiments/README.md) | Dated experiments, reproduction commands, environment details and raw results. |
 
 For development, run `pip install -e ".[test]"` and `pytest`. The Rust crate also works on its
 own with `cargo test --release`.

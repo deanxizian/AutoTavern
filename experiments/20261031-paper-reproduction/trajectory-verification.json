@@ -1,0 +1,29 @@
+{
+  "all_completed_naturally": true,
+  "games_checked": 2000,
+  "invalid_placement_seeds": [],
+  "mean_turns": 15.3655,
+  "n_actions": 245,
+  "observation_cards": 124,
+  "observation_floats": 3227,
+  "seeds": [
+    0,
+    1999
+  ],
+  "snapshot": {
+    "continuation_actions": 400,
+    "continuation_steps": 200,
+    "finished_episodes": 20,
+    "games": 2,
+    "preparation_steps": 71,
+    "rejected_actions": 0,
+    "saved_turn": 8,
+    "states_observations_rewards_and_placements_equal": true,
+    "threads_original": 1,
+    "threads_restored": 3
+  },
+  "stopped_seeds": [],
+  "truncated_combats": 0,
+  "truncated_recruit_contexts": 0,
+  "turn_cap_seeds": []
+}

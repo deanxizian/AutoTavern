@@ -18,6 +18,7 @@
 venv/
 .pytest_cache/
 .ruff_cache/
+.uv-cache/
 
 # credentials and private configuration
 .env
@@ -48,3 +49,27 @@ guard-*.json
 *.npz
 *.npy
 *.pkl
+
+# Local paper downloads, translations and rendered previews; keep the source index.
+/docs/papers/*
+!/docs/papers/README.md
+
+# Transient experiment state and verbose logs. Keep configs, metrics, result JSON,
+# benchmark samples and reproduction scripts under version control.
+/experiments/**/tensorboard/
+/experiments/**/events.out.tfevents.*
+/experiments/**/sessions/
+/experiments/**/process.json
+/experiments/**/launcher.json
+/experiments/**/progress.json
+/experiments/**/progress.csv
+/experiments/**/training.json
+/experiments/**/*console*.txt
+/experiments/**/events.txt
+/experiments/**/*build*.txt
+/experiments/**/*stderr.txt
+/experiments/**/legacy-runs/
+/experiments/**/reruns/
+/experiments/**/*.zip
+/experiments/**/*.bin
+/experiments/**/*.tmp

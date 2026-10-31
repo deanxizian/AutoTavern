@@ -1,0 +1,2 @@
+full games: 2000 in 5.34s -> 374 games/s, avg 15.4 turns, 31185 decided combats/s (single thread, incl. bots)
+combats: 20000 in 0.19s -> 104887 combats/s (19827 decided)

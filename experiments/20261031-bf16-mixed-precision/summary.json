@@ -1,0 +1,349 @@
+{
+  "status": "completed",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "main_result": "reverse-repeat/results.json; median of 9 timed repetitions per setting",
+  "baseline_label": "FP32 storage; matmul precision high; TF32 allowed; no AMP",
+  "baseline_is_strict_ieee_fp32": false,
+  "actual_kernels_profiled": false,
+  "mixed_precision_scope": "autocast neural forward only; outputs, distributions and PPO losses are FP32",
+  "device": "NVIDIA GeForce RTX 5080",
+  "trainable_parameters": 3491978,
+  "effective_batch": 8192,
+  "rows": [
+    {
+      "microbatch": 256,
+      "accumulation": 32,
+      "fp32_tf32_allowed_update_wall_ms": 657.2976870011189,
+      "bf16_update_wall_ms": 500.7275409952854,
+      "wall_speedup": 1.3126853092494621,
+      "fp32_tf32_allowed_update_cuda_ms": 623.0042114257812,
+      "bf16_update_cuda_ms": 479.86041259765625,
+      "fp32_tf32_allowed_peak_allocated_gib": 1.4504656791687012,
+      "bf16_peak_allocated_gib": 1.08573579788208,
+      "memory_reduction_fraction": 0.2514570916946184,
+      "fp32_wall_ms_range_across_run_medians": [
+        570.0442819943419,
+        657.2976870011189
+      ],
+      "bf16_wall_ms_range_across_run_medians": [
+        438.924734997272,
+        500.7275409952854
+      ]
+    },
+    {
+      "microbatch": 512,
+      "accumulation": 16,
+      "fp32_tf32_allowed_update_wall_ms": 634.1653359995689,
+      "bf16_update_wall_ms": 450.53807200019946,
+      "wall_speedup": 1.4075732449960148,
+      "fp32_tf32_allowed_update_cuda_ms": 612.2123413085938,
+      "bf16_update_cuda_ms": 415.8438415527344,
+      "fp32_tf32_allowed_peak_allocated_gib": 2.6771130561828613,
+      "bf16_peak_allocated_gib": 1.9746522903442383,
+      "memory_reduction_fraction": 0.2623948825083319,
+      "fp32_wall_ms_range_across_run_medians": [
+        599.3569599959301,
+        634.1653359995689
+      ],
+      "bf16_wall_ms_range_across_run_medians": [
+        410.8402330020908,
+        450.53807200019946
+      ]
+    },
+    {
+      "microbatch": 1024,
+      "accumulation": 8,
+      "fp32_tf32_allowed_update_wall_ms": 663.3021420057048,
+      "bf16_update_wall_ms": 415.4096810016199,
+      "wall_speedup": 1.5967421375601456,
+      "fp32_tf32_allowed_update_cuda_ms": 612.232421875,
+      "bf16_update_cuda_ms": 412.6304626464844,
+      "fp32_tf32_allowed_peak_allocated_gib": 5.124984264373779,
+      "bf16_peak_allocated_gib": 3.7361397743225098,
+      "memory_reduction_fraction": 0.2709948788927593,
+      "fp32_wall_ms_range_across_run_medians": [
+        606.9311869941885,
+        663.3021420057048
+      ],
+      "bf16_wall_ms_range_across_run_medians": [
+        410.1694459968712,
+        415.4096810016199
+      ]
+    },
+    {
+      "microbatch": 2048,
+      "accumulation": 4,
+      "fp32_tf32_allowed_update_wall_ms": 632.7612259992748,
+      "bf16_update_wall_ms": 442.00608800019836,
+      "wall_speedup": 1.4315667661097708,
+      "fp32_tf32_allowed_update_cuda_ms": 617.180908203125,
+      "bf16_update_cuda_ms": 407.97613525390625,
+      "fp32_tf32_allowed_peak_allocated_gib": 10.041377067565918,
+      "bf16_peak_allocated_gib": 7.25720739364624,
+      "memory_reduction_fraction": 0.27726970665334993,
+      "fp32_wall_ms_range_across_run_medians": [
+        607.397697000124,
+        632.7612259992748
+      ],
+      "bf16_wall_ms_range_across_run_medians": [
+        422.5937230003183,
+        442.00608800019836
+      ]
+    }
+  ],
+  "sampling_inference": {
+    "fp32": {
+      "batch": 256,
+      "timing": {
+        "cuda_ms": {
+          "mean": 5.930722173055013,
+          "median": 5.845056056976318,
+          "p95": 6.365523147583008,
+          "samples": 15
+        },
+        "wall_ms": {
+          "mean": 6.474530999548733,
+          "median": 6.392085000697989,
+          "p95": 6.934842498594662,
+          "samples": 15
+        }
+      },
+      "raw": [
+        {
+          "cuda_ms": 5.686016082763672,
+          "wall_ms": 6.392085000697989
+        },
+        {
+          "cuda_ms": 6.091040134429932,
+          "wall_ms": 6.628018003539182
+        },
+        {
+          "cuda_ms": 6.5378241539001465,
+          "wall_ms": 7.12229900091188
+        },
+        {
+          "cuda_ms": 6.069248199462891,
+          "wall_ms": 6.63913299649721
+        },
+        {
+          "cuda_ms": 5.835008144378662,
+          "wall_ms": 6.349117997160647
+        },
+        {
+          "cuda_ms": 5.545983791351318,
+          "wall_ms": 6.036342994775623
+        },
+        {
+          "cuda_ms": 5.779168128967285,
+          "wall_ms": 6.3034979975782335
+        },
+        {
+          "cuda_ms": 6.291679859161377,
+          "wall_ms": 6.854503997601569
+        },
+        {
+          "cuda_ms": 5.826335906982422,
+          "wall_ms": 6.3454019982600585
+        },
+        {
+          "cuda_ms": 5.971136093139648,
+          "wall_ms": 6.507689002319239
+        },
+        {
+          "cuda_ms": 5.879551887512207,
+          "wall_ms": 6.398790996172465
+        },
+        {
+          "cuda_ms": 6.1451520919799805,
+          "wall_ms": 6.691665003017988
+        },
+        {
+          "cuda_ms": 5.810848236083984,
+          "wall_ms": 6.3305610019597225
+        },
+        {
+          "cuda_ms": 5.646783828735352,
+          "wall_ms": 6.147615997178946
+        },
+        {
+          "cuda_ms": 5.845056056976318,
+          "wall_ms": 6.371243005560245
+        }
+      ],
+      "raw_network_dtypes": {
+        "raw_policy_logits": "torch.float32",
+        "raw_values": "torch.float32",
+        "raw_placement_logits": "torch.float32"
+      },
+      "distribution_dtype": "torch.float32"
+    },
+    "bf16": {
+      "batch": 256,
+      "timing": {
+        "cuda_ms": {
+          "mean": 5.340089575449626,
+          "median": 5.258048057556152,
+          "p95": 5.641158485412597,
+          "samples": 15
+        },
+        "wall_ms": {
+          "mean": 5.835222400006994,
+          "median": 5.772892000095453,
+          "p95": 6.142229402757948,
+          "samples": 15
+        }
+      },
+      "raw": [
+        {
+          "cuda_ms": 5.048960208892822,
+          "wall_ms": 5.526169006770942
+        },
+        {
+          "cuda_ms": 5.459680080413818,
+          "wall_ms": 5.94681400252739
+        },
+        {
+          "cuda_ms": 5.574304103851318,
+          "wall_ms": 6.072483003663365
+        },
+        {
+          "cuda_ms": 5.525951862335205,
+          "wall_ms": 6.029051997757051
+        },
+        {
+          "cuda_ms": 5.545055866241455,
+          "wall_ms": 6.032528996001929
+        },
+        {
+          "cuda_ms": 5.301119804382324,
+          "wall_ms": 5.775502999313176
+        },
+        {
+          "cuda_ms": 5.205567836761475,
+          "wall_ms": 5.936098998063244
+        },
+        {
+          "cuda_ms": 5.797152042388916,
+          "wall_ms": 6.30497100064531
+        },
+        {
+          "cuda_ms": 5.306079864501953,
+          "wall_ms": 5.772892000095453
+        },
+        {
+          "cuda_ms": 5.253632068634033,
+          "wall_ms": 5.727715993998572
+        },
+        {
+          "cuda_ms": 5.225599765777588,
+          "wall_ms": 5.692658000043593
+        },
+        {
+          "cuda_ms": 5.258048057556152,
+          "wall_ms": 5.722147005144507
+        },
+        {
+          "cuda_ms": 5.253695964813232,
+          "wall_ms": 5.719394997868221
+        },
+        {
+          "cuda_ms": 5.1460161209106445,
+          "wall_ms": 5.607409999356605
+        },
+        {
+          "cuda_ms": 5.200479984283447,
+          "wall_ms": 5.662497998855542
+        }
+      ],
+      "raw_network_dtypes": {
+        "raw_policy_logits": "torch.bfloat16",
+        "raw_values": "torch.bfloat16",
+        "raw_placement_logits": "torch.bfloat16"
+      },
+      "distribution_dtype": "torch.float32"
+    }
+  },
+  "numerical": {
+    "samples": 8192,
+    "gradient_samples": 256,
+    "fp32_loss": 0.037393391132354736,
+    "bf16_loss": 0.03739125654101372,
+    "log_prob_abs_difference_mean": 0.0005099913687445223,
+    "log_prob_abs_difference_max": 0.0026433467864990234,
+    "log_prob_abs_difference_p95": 0.001339173293672502,
+    "exact_policy_kl_fp32_to_bf16_mean": 2.13259426118384e-07,
+    "exact_policy_kl_fp32_to_bf16_max": 1.1702068150043488e-06,
+    "greedy_action_change_rate": 0.0130615234375,
+    "value_abs_difference_mean": 0.0019472513813525438,
+    "value_abs_difference_max": 0.007954120635986328,
+    "same_bf16_eval_train_log_prob_abs_max": 0.0,
+    "same_bf16_eval_train_approx_kl": 0.0,
+    "fp32_rollout_bf16_train_approx_kl": 2.1539017325267196e-07,
+    "gradient_finite": true,
+    "gradient_relative_l2_difference": 0.08879023045301437,
+    "gradient_cosine_similarity": 0.9962048530578613,
+    "parameter_dtypes": [
+      "torch.float32"
+    ],
+    "gradient_dtypes": [
+      "torch.float32"
+    ],
+    "optimizer_moment_dtypes": [
+      "torch.float32"
+    ],
+    "note": "Finite gradients and small one-batch error do not establish long-horizon training equivalence."
+  },
+  "full_training_estimate": {
+    "baseline_sampling_seconds_per_round": 249.36766591633446,
+    "baseline_update_seconds_per_round_pause_corrected": 369.6626451343327,
+    "baseline_300_round_hours": 51.585859254222264,
+    "bf16_estimates": [
+      {
+        "microbatch": 256,
+        "sampling_seconds_estimate": 239.2228077944625,
+        "update_seconds_estimate": 281.60796996021094,
+        "round_seconds_estimate": 520.8307777546735,
+        "total_300_rounds_hours_estimate": 43.40256481288946
+      },
+      {
+        "microbatch": 512,
+        "sampling_seconds_estimate": 239.2228077944625,
+        "update_seconds_estimate": 253.38153278642628,
+        "round_seconds_estimate": 492.6043405808888,
+        "total_300_rounds_hours_estimate": 41.05036171507406
+      },
+      {
+        "microbatch": 1024,
+        "sampling_seconds_estimate": 239.2228077944625,
+        "update_seconds_estimate": 233.6254098110142,
+        "round_seconds_estimate": 472.84821760547675,
+        "total_300_rounds_hours_estimate": 39.404018133789734
+      },
+      {
+        "microbatch": 2048,
+        "sampling_seconds_estimate": 239.2228077944625,
+        "update_seconds_estimate": 248.5831654164239,
+        "round_seconds_estimate": 487.8059732108864,
+        "total_300_rounds_hours_estimate": 40.65049776757387
+      }
+    ],
+    "assumptions": "Scale sampling by per-vector inference delta and updates by same-run fixed-batch wall-time ratio. Reuses historical 3-round baseline; no full BF16 rollout/update round was run. Data decode, H2D and optimization scaling may differ; excludes evaluation/checkpoint time."
+  },
+  "storage": {
+    "rollout_cpu_gib": 13.0703125,
+    "changed_by_autocast": false,
+    "fp32_parameters_gradients_adam_moments_bytes": 55871648,
+    "checkpoint_precision_changed": false
+  },
+  "formal_training_started": false,
+  "saved_test_weights": false,
+  "source_model": "runs/20261031-ppo-small-paper300/checkpoints/iteration-0003-before-budget-change.zip",
+  "source_sha256": "68a136df9af883412e4c9e73f79025cd1835b5879d895056a28b1cf7479d6048",
+  "limitations": [
+    "Both raw runs retained; wall-clock medians vary across runs. CUDA event interval medians differ from wall time in this WSL environment; both are retained, not mixed in one column.",
+    "GPU-resident 8192 batch excludes simulator, CPU decode, H2D and full-round GAE.",
+    "Peak allocated is PyTorch process allocation, not total board memory.",
+    "Numerical checks use 8192 transitions and one 256-sample gradient, not convergence or win-rate validation."
+  ]
+}

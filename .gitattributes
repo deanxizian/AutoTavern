@@ -1,3 +1,6 @@
 * text=auto eol=lf
 *.zip binary
 *.png binary
+
+# Preserve finite raw test output, including its final empty line.
+experiments/**/*.txt whitespace=-blank-at-eof

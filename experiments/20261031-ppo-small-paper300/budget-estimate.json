@@ -1,0 +1,131 @@
+{
+  "target_iterations": 300,
+  "completed_iterations": 3,
+  "remaining_iterations": 297,
+  "micro_batch_size": 1024,
+  "effective_batch_size": 8192,
+  "gradient_accumulation": 8,
+  "samples_per_iteration": 4194304,
+  "target_samples": 1258291200,
+  "remaining_samples": 1245708288,
+  "max_optimizer_steps_per_iteration": 512,
+  "max_optimizer_steps": 153600,
+  "microbatches_per_iteration": 4096,
+  "max_microbatches": 1228800,
+  "microbatches_if_resuming_after_three_micro256_iterations": 1265664,
+  "estimated_sampling_seconds_per_iteration": 249.36766591633446,
+  "estimated_update_seconds_per_iteration": 373.0395362500039,
+  "estimated_total_hours": 51.86726684719486,
+  "estimated_remaining_hours": 51.34859417872292,
+  "observation_cache_gib": 12.9140625,
+  "complete_training_cache_gib": 13.0703125,
+  "cumulative_observation_tib": 3.783416748046875,
+  "precision_scenarios": {
+    "fp32_tf32_allowed": {
+      "main_estimate": {
+        "mode": "fp32_tf32_allowed",
+        "source": "experiments/20261031-bf16-mixed-precision/reverse-repeat/results.json",
+        "micro_batch_size": 1024,
+        "sampling_seconds_per_iteration": 249.36766591633446,
+        "update_seconds_per_iteration": 373.0395362500039,
+        "seconds_per_iteration": 622.4072021663384,
+        "total_300_rounds_hours": 51.86726684719486,
+        "remaining_297_rounds_hours": 51.34859417872292
+      },
+      "total_hours_range_across_measurement_orders": [
+        51.86726684719486,
+        53.57922937530546
+      ],
+      "remaining_hours_range_across_measurement_orders": [
+        51.34859417872292,
+        53.043437081552405
+      ],
+      "enabled_in_formal_training": true
+    },
+    "bf16_mixed_fp32": {
+      "main_estimate": {
+        "mode": "bf16_mixed_fp32",
+        "source": "experiments/20261031-bf16-mixed-precision/reverse-repeat/results.json",
+        "micro_batch_size": 1024,
+        "sampling_seconds_per_iteration": 239.2228077944625,
+        "update_seconds_per_iteration": 233.6254098110142,
+        "seconds_per_iteration": 472.84821760547675,
+        "total_300_rounds_hours": 39.404018133789734,
+        "remaining_297_rounds_hours": 39.009977952451834
+      },
+      "total_hours_range_across_measurement_orders": [
+        39.404018133789734,
+        42.09125188317204
+      ],
+      "remaining_hours_range_across_measurement_orders": [
+        39.009977952451834,
+        41.670339364340315
+      ],
+      "enabled_in_formal_training": false
+    }
+  },
+  "all_estimates": [
+    {
+      "mode": "fp32_tf32_allowed",
+      "source": "experiments/20261031-bf16-mixed-precision/results.json",
+      "micro_batch_size": 1024,
+      "sampling_seconds_per_iteration": 249.36766591633446,
+      "update_seconds_per_iteration": 393.583086587331,
+      "seconds_per_iteration": 642.9507525036655,
+      "total_300_rounds_hours": 53.57922937530546,
+      "remaining_297_rounds_hours": 53.043437081552405
+    },
+    {
+      "mode": "bf16_mixed_fp32",
+      "source": "experiments/20261031-bf16-mixed-precision/results.json",
+      "micro_batch_size": 1024,
+      "sampling_seconds_per_iteration": 239.10810342396385,
+      "update_seconds_per_iteration": 265.98691917410065,
+      "seconds_per_iteration": 505.0950225980645,
+      "total_300_rounds_hours": 42.09125188317204,
+      "remaining_297_rounds_hours": 41.670339364340315
+    },
+    {
+      "mode": "fp32_tf32_allowed",
+      "source": "experiments/20261031-bf16-mixed-precision/reverse-repeat/results.json",
+      "micro_batch_size": 1024,
+      "sampling_seconds_per_iteration": 249.36766591633446,
+      "update_seconds_per_iteration": 373.0395362500039,
+      "seconds_per_iteration": 622.4072021663384,
+      "total_300_rounds_hours": 51.86726684719486,
+      "remaining_297_rounds_hours": 51.34859417872292
+    },
+    {
+      "mode": "bf16_mixed_fp32",
+      "source": "experiments/20261031-bf16-mixed-precision/reverse-repeat/results.json",
+      "micro_batch_size": 1024,
+      "sampling_seconds_per_iteration": 239.2228077944625,
+      "update_seconds_per_iteration": 233.6254098110142,
+      "seconds_per_iteration": 472.84821760547675,
+      "total_300_rounds_hours": 39.404018133789734,
+      "remaining_297_rounds_hours": 39.009977952451834
+    }
+  ],
+  "basis": {
+    "sampling_seconds_mean_three_completed_rounds": 249.36766591633446,
+    "update_seconds_mean_pause_corrected": 369.6626451343327,
+    "pause_seconds_removed": 72.03709873899788,
+    "update_formula": "historical micro256 full-round update seconds * same-run micro1024 update ms / same-run micro256 FP32-with-TF32-allowed update ms",
+    "sampling_formula": "historical sampling seconds + (target minus baseline no-grad inference ms) * 16384 / 1000",
+    "input_sha256": {
+      "experiments/20261031-ppo-small-paper300/metrics.jsonl": "968c1c2ef115806c93a94f7aace7727beb781fdfca3a0cc93209175519735114",
+      "experiments/20261031-ppo-small-paper300/profiling-pauses.jsonl": "0be15d690f6192d6564974b1a14d958f13762cf7bd77abf955fda953bb6e8833",
+      "experiments/20261031-ppo-small-paper300/progress.json": "309067ee7f611ca0f82aae635e8df944a9ff2f9537cefd35e436ee601fb178a9",
+      "experiments/20261031-bf16-mixed-precision/results.json": "4bffdc43e641ada62ee05633dd99162ff54401b39ac3d3bd335eabe5e226ea21",
+      "experiments/20261031-bf16-mixed-precision/reverse-repeat/results.json": "1de04cba81e609ef2886c46be902d238c85f2935461c50d49d6304ece8304bf8"
+    }
+  },
+  "limitations": [
+    "These are extrapolations, not full-round micro1024 timings or confidence intervals.",
+    "BF16 is an evaluated alternative, not enabled in the formal training entry point.",
+    "Fixed-batch benchmarks exclude CPU decoding/H2D; scaling the whole update phase is approximate.",
+    "Estimates exclude evaluation, checkpoint saves and interruptions; future game lengths can change.",
+    "Microbatch counts assume no KL early stopping; max_microbatches assumes all 300 rounds use 1024."
+  ],
+  "status": "estimate_only; formal training stopped by user"
+}

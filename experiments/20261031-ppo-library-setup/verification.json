@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "completed_at": "2026-10-31T00:45:14.307458+08:00",
+  "python": "3.12.8 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:31:09) [GCC 11.2.0]",
+  "executable": "/home/eric/projects/AutoTavern/.venv/bin/python",
+  "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "packages": {
+    "torch": "2.15.0",
+    "stable-baselines3": "2.9.2",
+    "sb3-contrib": "2.9.2",
+    "gymnasium": "1.4.0",
+    "tensorboard": "2.21.0",
+    "taverngym": "1.0.0",
+    "numpy": "2.5.4",
+    "pytest": "9.2.0"
+  },
+  "sha256": {
+    "pyproject.toml": "2a3a23f274287cf119dc434dfafcdaf42a5c3c9771b457afd509c4b6ac3f9860",
+    "uv.lock": "7c894c6d1baa17c7a7e62b07b9ee58324a5d8d1ad7ceeb86d23a7abdff9dbec2",
+    ".python-version": "7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d"
+  },
+  "cuda": {
+    "available": true,
+    "runtime": "13.2",
+    "device": "NVIDIA GeForce RTX 5080",
+    "capability": [
+      12,
+      0
+    ],
+    "compiled_architectures": [
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ],
+    "matmul_and_backward": "passed"
+  },
+  "maskable_ppo": {
+    "environment": "sb3_contrib.common.envs.InvalidActionEnvDiscrete",
+    "device": "cpu",
+    "training_timesteps": 32,
+    "masked_predictions_checked": 32,
+    "save_load_prediction_match": true,
+    "model_format": "SB3 native .zip; temporary smoke model removed",
+    "game_training": false
+  },
+  "taverngym": {
+    "build": {
+      "source_hash": "c807e9aa1a6746ee",
+      "profile": "release",
+      "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+    },
+    "build_is_current": true,
+    "actions": 245,
+    "numeric_features": 3227,
+    "card_indices": 124
+  }
+}

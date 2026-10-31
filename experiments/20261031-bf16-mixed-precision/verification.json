@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-10-31T12:01:19.985198+08:00",
+  "python": "3.12.8 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:31:09) [GCC 11.2.0]",
+  "torch": "2.15.0+cu132",
+  "matmul_precision": "high",
+  "cuda_matmul_allow_tf32": true,
+  "cudnn_allow_tf32": true,
+  "baseline_label": "FP32 weights/gradients/Adam; TF32 permitted for CUDA float32 matmul; no AMP",
+  "kernel_profiled": false,
+  "running_formal_training_pids": [],
+  "formal_status": "stopped_by_user",
+  "source_sha256": "68a136df9af883412e4c9e73f79025cd1835b5879d895056a28b1cf7479d6048",
+  "gpu_after_benchmark": "NVIDIA GeForce RTX 5080, 616.56, 16303 MiB, 1004 MiB, 2 %"
+}

@@ -1,0 +1,113 @@
+{
+  "created_at": "2026-10-31T00:13:47.381784+08:00",
+  "git_commit": "fb61201a557ddd36a411cf44aac51ce4d9b606ce",
+  "source_sha256": "be6ea2b5df249705bbf5f5ef71e649780876041d812c7191bd5b0eeb3fd8c945",
+  "system": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "cpu_model": "AMD Ryzen 7 9700X 8-Core Processor",
+  "cpu_affinity": [
+    0
+  ],
+  "threads_in_benchmark": 1,
+  "build": "release; workspace defaults; thin LTO; one codegen unit; no target-cpu=native override",
+  "rules": "RulesConfig::default(); 36.6.3; eight built-in heuristic bots; record_log=false",
+  "warmup": {
+    "games": 200,
+    "combats": 20000,
+    "included_in_measurement": false
+  },
+  "timing": "Original benchmark internal Instant timing; excludes compilation and console output; per-operation latency derived from printed throughput.",
+  "combat_fixture": "Exactly as examples/bench.rs: seed-0 terminal snapshot; revive all seats and copy last_board into board; repeat 20,000 pairwise fights.",
+  "combat_pairing_calls": 20000,
+  "runs": [
+    {
+      "run": 1,
+      "games": 2000,
+      "seeds": [
+        0,
+        1999
+      ],
+      "games_per_second": 370,
+      "milliseconds_per_game": 2.7027027027027026,
+      "mean_turns": 15.4,
+      "combats": 20000,
+      "combats_per_second": 104400,
+      "microseconds_per_combat": 9.578544061302683,
+      "decided_combats": 19827,
+      "command": [
+        "taskset",
+        "-c",
+        "0",
+        "/home/eric/projects/AutoTavern/target/release/examples/bench",
+        "2000"
+      ]
+    },
+    {
+      "run": 2,
+      "games": 2000,
+      "seeds": [
+        0,
+        1999
+      ],
+      "games_per_second": 375,
+      "milliseconds_per_game": 2.6666666666666665,
+      "mean_turns": 15.4,
+      "combats": 20000,
+      "combats_per_second": 103591,
+      "microseconds_per_combat": 9.653348263845315,
+      "decided_combats": 19827,
+      "command": [
+        "taskset",
+        "-c",
+        "0",
+        "/home/eric/projects/AutoTavern/target/release/examples/bench",
+        "2000"
+      ]
+    },
+    {
+      "run": 3,
+      "games": 2000,
+      "seeds": [
+        0,
+        1999
+      ],
+      "games_per_second": 374,
+      "milliseconds_per_game": 2.6737967914438503,
+      "mean_turns": 15.4,
+      "combats": 20000,
+      "combats_per_second": 104887,
+      "microseconds_per_combat": 9.534069999141934,
+      "decided_combats": 19827,
+      "command": [
+        "taskset",
+        "-c",
+        "0",
+        "/home/eric/projects/AutoTavern/target/release/examples/bench",
+        "2000"
+      ]
+    }
+  ],
+  "aggregate": {
+    "median_games_per_second": 374,
+    "median_milliseconds_per_game": 2.6737967914438503,
+    "median_combats_per_second": 104400,
+    "median_microseconds_per_combat": 9.578544061302683
+  },
+  "paper_ranges": {
+    "games_per_second": [
+      190,
+      280
+    ],
+    "milliseconds_per_game": [
+      3.6,
+      5.3
+    ],
+    "combats_per_second": [
+      52000,
+      76000
+    ],
+    "microseconds_per_combat": [
+      13,
+      19
+    ]
+  }
+}

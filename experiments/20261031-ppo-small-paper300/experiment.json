@@ -1,0 +1,38 @@
+{
+  "id": "20261031-ppo-small-paper300",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "status": "stopped_by_user",
+  "objective": "小模型 300 次 PPO 迭代、每次 4,194,304 决策，脚本对手基线。",
+  "config": "config.json",
+  "run_directory": "../../runs/20261031-ppo-small-paper300",
+  "initial_model": "../../runs/20261031-ppo-small-init/initial_model.zip",
+  "planned_decisions": 1258291200,
+  "storage_contract": "experiments: configurations/logs/metrics; runs: model checkpoints",
+  "pid": 789861,
+  "started_at": "2026-10-31T11:17:27.417303+08:00",
+  "progress": "progress.json",
+  "metrics": "metrics.jsonl",
+  "log": "console.txt",
+  "provenance": "provenance.json",
+  "launcher": "launcher.json",
+  "attempt": 2,
+  "previous_attempt": "attempts/initial-deterministic-evaluation",
+  "profiling": "profiling/steps.json",
+  "evaluation": "fixed-seed stochastic policy",
+  "simulator_config": {
+    "turn_action_caps": [
+      60
+    ]
+  },
+  "previous_id": "20261031-ppo-small-paper400",
+  "target_iterations": 300,
+  "completed_iterations": 3,
+  "budget_change": "budget-changes/to-300/change.json",
+  "resumed_at": "2026-10-31T11:53:03.377292+08:00",
+  "stop_reason": "User requested a budget table only, without starting training.",
+  "configured_micro_batch_size": 1024,
+  "last_run_micro_batch_size": 256,
+  "configuration_change": "config-changes/microbatch-1024/change.json",
+  "budget_estimate": "budget-estimate.json"
+}

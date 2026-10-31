@@ -1,0 +1,16 @@
+{
+  "format_version": 1,
+  "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+  "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+  "language": "en",
+  "preprocessing": "HTML unescape, strip tags, collapse whitespace; rule text only",
+  "normalize_embeddings": true,
+  "max_seq_length": 256,
+  "dimension": 384,
+  "cards": 3984,
+  "nonempty_texts": 3755,
+  "unique_nonempty_texts": 3462,
+  "card_data_sha256": "429305fb9dd53e6c5240bf5219a747602e96d7a0e4bbd19a0d65b8b044ed6168",
+  "created_at": "2026-10-30T16:58:32.582461+00:00",
+  "paper_encoder": false
+}

@@ -1,0 +1,55 @@
+{
+  "name": "20261031-ppo-small-paper300",
+  "iterations": 300,
+  "decisions_per_iteration": 4194304,
+  "n_envs": 256,
+  "n_steps": 16384,
+  "batch_size": 8192,
+  "micro_batch_size": 256,
+  "n_epochs": 1,
+  "learning_rate_start": 6e-06,
+  "learning_rate_end": 5e-06,
+  "learning_rate_schedule": "linear",
+  "seed": 42,
+  "env_threads": 4,
+  "checkpoint_every_iterations": 10,
+  "initial_evaluation_games": 128,
+  "evaluation_every_iterations": 10,
+  "evaluation_games": 128,
+  "final_evaluation_games": 256,
+  "evaluation_seed": 20000001,
+  "final_evaluation_seed": 30000001,
+  "rollout_storage": "lossless packed RAM: float32 numerics, packed binary flags, uint16 card IDs",
+  "paper_alignment": {
+    "model_size": "d=192, layers=4, approximately 3.5M trainable parameters",
+    "iterations": "300, changed by user request after 3 completed iterations; per-iteration decision budget stays 4,194,304",
+    "decisions_per_iteration": "4,194,304 approximates the reported 4.2 million",
+    "undisclosed_early_training_details": "LR endpoints, minibatch/epochs and several PPO coefficients borrowed from final-stage Table 7; linear schedule is a local choice",
+    "opponents": "seven identical built-in scripted bots; original calibrated libraries not reproduced",
+    "local_turn_budget": "60 operations per turn to prevent infinite free-action loops; not specified in paper",
+    "learning_rate_history": "First 3 iterations used the 400-iteration linear schedule; from iteration 4 onward use the 300-iteration schedule."
+  },
+  "simulator_config": {
+    "turn_action_caps": [
+      60
+    ]
+  },
+  "evaluation_policy": "stochastic, fixed evaluation seed, isolated from training RNG",
+  "source_model": "runs/20261031-ppo-small-paper300/checkpoints/iteration-0003-before-budget-change.zip",
+  "source_model_sha256": "68a136df9af883412e4c9e73f79025cd1835b5879d895056a28b1cf7479d6048",
+  "total_decisions": 1258291200,
+  "resumed": true,
+  "initial_completed_iterations": 3,
+  "remaining_decisions": 1245708288,
+  "packed_observation_bytes": 3306,
+  "model_parameters": 3491978,
+  "ppo_inherited": {
+    "gamma": 1.0,
+    "gae_lambda": 0.995,
+    "ent_coef": 0.002,
+    "vf_coef": 0.5,
+    "aux_coef": 0.1,
+    "target_kl": 0.05,
+    "max_grad_norm": 1.0
+  }
+}

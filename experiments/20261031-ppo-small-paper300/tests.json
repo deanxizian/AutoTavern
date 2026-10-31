@@ -1,0 +1,6 @@
+{
+  "passed": 12,
+  "seconds": 3.14,
+  "command": ".venv/bin/python -m pytest tests/test_training_scale.py tests/test_learning.py -q",
+  "note": "Observed pytest result: 12 passed in 3.14s"
+}

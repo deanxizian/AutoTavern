@@ -1,0 +1,19 @@
+{
+  "runner_sha256": "61805301abbc0b2d9e8f5370f705072169f8e3e1481f67fb5aad99b8bd76f8f9",
+  "model_sha256": "7cecc0ea7fe37101b920deef63afc764286feb606cd8bf4dc225396e36736cb4",
+  "note": "Current runner includes the additional allocator priming used for the steady-state repeat; initial run had no post-empty-cache priming.",
+  "records": [
+    {
+      "path": "experiments/20261031-microbatch-scaling/results.json",
+      "sha256": "f5d0bb8c6a6306a253d5399703586d63bd4f3204eaddb61804be087ac2325e12"
+    },
+    {
+      "path": "experiments/20261031-microbatch-scaling/steady-repeat/results.json",
+      "sha256": "2e0776882ce7c0df4bc8710abc5640d5cb8f6993e7d8b4f322d3cf61f03d662e"
+    },
+    {
+      "path": "experiments/20261031-microbatch-scaling/summary.json",
+      "sha256": "e8054c21f3aab6cdb45bca6d932e82e466aacb65e6adbe2b833a3257f4ff6681"
+    }
+  ]
+}

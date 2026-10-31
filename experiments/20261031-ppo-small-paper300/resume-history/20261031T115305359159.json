@@ -1,0 +1,12 @@
+{
+  "resumed_at": "2026-10-31T11:53:05.359452+08:00",
+  "source_model": "runs/20261031-ppo-small-paper300/checkpoints/iteration-0003-before-budget-change.zip",
+  "source_model_sha256": "68a136df9af883412e4c9e73f79025cd1835b5879d895056a28b1cf7479d6048",
+  "completed_iterations": 3,
+  "target_iterations": 300,
+  "remaining_decisions": 1245708288,
+  "initial_optimizer_lr": 5.99e-06,
+  "policy_and_adam_restored": true,
+  "environment_and_rng_reinitialized": true,
+  "log_directory": "experiments/20261031-ppo-small-paper300/sessions/resume-0003-20261031T115305359159"
+}

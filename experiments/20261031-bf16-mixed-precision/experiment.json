@@ -1,0 +1,50 @@
+{
+  "id": "20261031-bf16-mixed-precision",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "status": "completed",
+  "purpose": "Compare TF32-permitted FP32 baseline against BF16 autocast with FP32 PPO and optimizer",
+  "formal_training_started": false,
+  "parameters": {
+    "model": "d=192, L=4, heads=8, ff=1024",
+    "trainable": 3491978,
+    "device": "NVIDIA GeForce RTX 5080",
+    "python": "3.12.8",
+    "torch": "2.15.0+cu132",
+    "effective_batch": 8192,
+    "microbatches": [
+      256,
+      512,
+      1024,
+      2048
+    ],
+    "warmup": 3,
+    "repeats": 9,
+    "collection_decisions": 32768,
+    "sample_seed": 900101,
+    "environment_threads": 4,
+    "environment_count": 256,
+    "turn_action_caps": [
+      60
+    ],
+    "matmul_precision": "high",
+    "allow_tf32": true,
+    "autocast_dtype": "bfloat16",
+    "master_parameters": "float32",
+    "gradient_dtype": "float32",
+    "adam_dtype": "float32",
+    "ppo_probability_loss_dtype": "float32"
+  },
+  "artifacts": {
+    "readme": "README.md",
+    "script": "benchmark.py",
+    "initial_raw": "results.json",
+    "repeat_raw": "reverse-repeat/results.json",
+    "summary": "summary.json",
+    "verification": "verification.json",
+    "provenance": "provenance.json",
+    "source_model": "runs/20261031-ppo-small-paper300/checkpoints/iteration-0003-before-budget-change.zip"
+  },
+  "new_model_artifacts": [],
+  "source_unchanged": true
+}

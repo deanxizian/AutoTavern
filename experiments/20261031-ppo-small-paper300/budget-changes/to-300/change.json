@@ -1,0 +1,15 @@
+{
+  "requested_iterations": 300,
+  "previous_iterations": 400,
+  "completed_iterations": 3,
+  "checkpoint": "runs/20261031-ppo-small-paper400/checkpoints/iteration-0003-before-budget-change.zip",
+  "checkpoint_decisions": 12582912,
+  "checkpoint_sha256": "68a136df9af883412e4c9e73f79025cd1835b5879d895056a28b1cf7479d6048",
+  "observed_partial_rollout_decisions": 1379328,
+  "requested_at": "2026-10-31T11:50:59.354835+08:00",
+  "note": "Resume from latest fully trained checkpoint, preserving policy and Adam; incomplete next rollout is discarded.",
+  "interrupted_sampled_decisions": 14045184,
+  "discarded_untrained_decisions": 1462272,
+  "policy_and_adam_unchanged_during_shutdown": true,
+  "resume_semantics": "Weights and Adam restored; environment episodes and RNG restart, not bitwise trajectory continuation."
+}

@@ -1,0 +1,19 @@
+{
+  "verified_at": "2026-10-31T12:05:19.982176+08:00",
+  "tests": "3 passed in 2.07s: dense/disk/compact gradient accumulation equivalence and PPO save/load/update integration",
+  "default_micro_batch_size": 1024,
+  "effective_batch_size": 8192,
+  "gradient_accumulation": 8,
+  "formal_training_started": false,
+  "formal_training_status": "stopped_by_user",
+  "checkpoint_sha256_unchanged": true,
+  "historical_resolved_config_preserved": true,
+  "files_sha256": {
+    "python/taverngym/learning/ppo.py": "b53b9c95af290474a35f813b772602034e061fd483643b4ac1b69afaa4bcf408",
+    "python/taverngym/learning/train.py": "0949f9b504f20f04a98ad6f91874ea4049dbe8635fc280c423d7b3c0e894bff0",
+    "python/taverngym/learning/experiment.py": "48d863eb0dceb96f66a177fd12389bd0aa563d9c69a70073478e1cdee29a84cd",
+    "configs/ppo-small.json": "748c77a33a2665640e1c55d5024531314912db782123b0ab567958ae9905c58d",
+    "experiments/20261031-ppo-small-paper300/config.json": "cb69a7257a662053173628c1af54458d7f76fa14562c55f8c96f72d159e72ccb",
+    "experiments/20261031-ppo-small-paper300/config-changes/microbatch-1024/reestimate.py": "3bb19a4b6deb10fcf0d42427d6a2a347820980a2afe8ce62cc0d8d309bf9e579"
+  }
+}

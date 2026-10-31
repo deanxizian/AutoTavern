@@ -1,0 +1,10 @@
+    Finished `release` profile [optimized + debuginfo] target(s) in 0.00s
+     Running tests/mechanics.rs (target/release/deps/mechanics-e1dc0a6621b79a7a)
+
+running 3 tests
+test observation_hides_this_turns_opponent_boards ... ok
+test observation_shows_only_the_warbands_the_player_fought ... ok
+test observation_shows_pending_source_quests_and_tavern_flags ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 412 filtered out; finished in 0.01s
+
