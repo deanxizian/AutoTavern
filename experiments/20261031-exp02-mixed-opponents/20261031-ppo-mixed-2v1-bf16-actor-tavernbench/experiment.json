@@ -1,0 +1,21 @@
+{
+  "id": "20261031-ppo-mixed-2v1-bf16-actor-tavernbench",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "status": "completed",
+  "protocol": "protocol.json",
+  "models": {
+    "ppo-v1": {
+      "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+    },
+    "ppo-v2": {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+    }
+  },
+  "weights_uploaded": false,
+  "completed_at": "2026-10-31T19:12:46.725539+08:00",
+  "results": "results.json",
+  "elapsed_seconds": 13.616853443993023
+}

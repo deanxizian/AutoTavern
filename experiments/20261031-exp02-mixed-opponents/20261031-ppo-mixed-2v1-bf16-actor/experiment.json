@@ -1,6 +1,6 @@
 {
   "id": "20261031-ppo-mixed-2v1-bf16-actor",
-  "status": "running",
+  "status": "completed",
   "date": "2026-10-31",
   "timezone": "Asia/Shanghai",
   "training_started": true,
@@ -13,5 +13,19 @@
   "started_at": "2026-10-31T16:57:15.840280+08:00",
   "supervisor_pid": 3872515,
   "training_pid": 3872569,
-  "resumed_at": "2026-10-31T17:42:50.338440+08:00"
+  "resumed_at": "2026-10-31T17:42:50.338440+08:00",
+  "completed_training_at": "2026-10-31T19:09:15.438481+08:00",
+  "completed_at": "2026-10-31T19:12:47.485964+08:00",
+  "retained_model": {
+    "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+    "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+    "bytes": 53924286,
+    "ppo_iteration": 100,
+    "optimizer_steps": 3200
+  },
+  "results": "results.json",
+  "retention": "retention.json",
+  "benchmark": "experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-2v1-bf16-actor-tavernbench",
+  "exit_code": 0,
+  "exited_at": "2026-10-31T19:12:47.486020+08:00"
 }

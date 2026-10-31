@@ -1,0 +1,66 @@
+{
+  "observed_at": "2026-10-31T18:30:55.273085+08:00",
+  "checkpoint_ppo_iteration": 66,
+  "checkpoint_samples": 17301504,
+  "snapshot_sha256": "64b52a05182e1edab0ea1ad8c97b5a524ff1ede63808c541f7890d90a30094f2",
+  "opponents": "2 fixed V1 + 5 scripted",
+  "games": 16,
+  "steps_per_game": 128,
+  "forward_precision": "bf16",
+  "optimizer_updates": 0,
+  "rows": [
+    {
+      "learner_mode": "sampled",
+      "counts": {
+        "learner_decisions": 2048,
+        "end_actions": 50,
+        "end_chosen_with_other_legal_actions": 31,
+        "end_as_only_legal_action": 19
+      },
+      "voluntary_end_examples": [
+        {
+          "game": 2,
+          "turn": 1,
+          "legal_action_count": 2
+        },
+        {
+          "game": 12,
+          "turn": 1,
+          "legal_action_count": 3
+        },
+        {
+          "game": 0,
+          "turn": 1,
+          "legal_action_count": 2
+        }
+      ]
+    },
+    {
+      "learner_mode": "greedy",
+      "counts": {
+        "learner_decisions": 2048,
+        "end_actions": 35,
+        "end_chosen_with_other_legal_actions": 11,
+        "end_as_only_legal_action": 24
+      },
+      "voluntary_end_examples": [
+        {
+          "game": 0,
+          "turn": 1,
+          "legal_action_count": 2
+        },
+        {
+          "game": 6,
+          "turn": 1,
+          "legal_action_count": 2
+        },
+        {
+          "game": 7,
+          "turn": 1,
+          "legal_action_count": 2
+        }
+      ]
+    }
+  ],
+  "scope": "short action probe, not complete-game evaluation or cap_end_rate estimate"
+}

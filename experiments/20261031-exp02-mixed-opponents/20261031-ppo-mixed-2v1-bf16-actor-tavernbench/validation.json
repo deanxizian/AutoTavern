@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "tasks_per_system": 368,
+  "unique_ids": true,
+  "prediction_hashes_unchanged": true,
+  "model_hashes_unchanged": true,
+  "adapter_errors": 0,
+  "labels_denied_during_inference": true
+}

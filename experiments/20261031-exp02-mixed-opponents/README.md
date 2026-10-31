@@ -3,8 +3,8 @@
 第二次正式模型实验的记录入口。
 后续在这里新建 `yyyymmdd-{exp-name}/`，保存训练配置、结果及对应 benchmark；模型放到 runs。
 
-**当前正式运行：** [2 V1 + BF16 + 独立 Actor](20261031-ppo-mixed-2v1-bf16-actor/README.md)，
-100 次 PPO，从第一轮 V1 起点重新初始化本阶段 Adam 与计数。
+**已完成正式运行：** [2 V1 + BF16 + 独立 Actor](20261031-ppo-mixed-2v1-bf16-actor/README.md)，
+100 次 PPO，从第一轮 V1 起点重新初始化本阶段 Adam 与计数，最终选中第 100 轮 best。
 [W&B tgv920ha](https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/tgv920ha)。
 当前设置见 [next-settings.json](next-settings.json)：5 脚本 + 2 固定 V1 + 1 学习者，
 三类前向 BF16，训练状态与权重 FP32，独立 Actor 已接入正式 PPO。
@@ -38,3 +38,9 @@ Move/Freeze 以外的操作、回合／公开资源／属性等变化、新对�
 系数是本项目的初始实验选择，尚未证明能减少训练后模型的循环，需要同时复核贪心／随机采样的循环与胜率。
 
 接入及验证记录见 [奖励训练基础设施](../20261031-infra/20261031-reward-shaping/README.md)。
+
+## V1 / V2 同局对战
+
+[2 脚本 + 3 V1 + 3 V2](20261031-match-2script-3v1-3v2/README.md)：256 个八人对局，
+两版模型均使用正式训练后的 best，随机采样、BF16 前向；报告每席位吃鸡率、前四率、平均名次，
+以及每组占全部第一名的比例。原始逐局结果和汇总保存在该目录，独立 W&B 运行见 wandb.json。

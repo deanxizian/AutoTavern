@@ -1,0 +1,62 @@
+{
+  "sealed_at": "2026-10-31T19:12:46.572026+08:00",
+  "git_commit": "fa3d8ba42d74c34d7b28af7ef0f2552089552221",
+  "protocol": {
+    "dataset": "tavernbench/data/eval",
+    "tasks": 368,
+    "play_scenarios": 30,
+    "play_tasks": 288,
+    "models": [
+      "original V1 source",
+      "retained best of 100 PPO with 2 fixed V1 seats"
+    ],
+    "selection": "argmax candidate-plan probability under the frozen policy; no retraining",
+    "candidate_constraints": "renormalize native legal action logits over continuations of public candidate plans; shared forced actions have probability one",
+    "positioning": "canonical left-to-right move sequence followed by EndTurn for each public arrangement",
+    "ordering": "execute each listed sequence, resolving shifted cards by entity ID",
+    "targeting": "execute the question's required action, then score its target choices",
+    "purchase": "listed buy-and-immediately-play sequences followed by EndTurn, including buying nothing",
+    "hero_selection": "restore the public offered heroes as a pending HeroSelect, matching the scripted adapter",
+    "natural_decisions": "use the actual saved seat and public action-to-answer map",
+    "observation_boundary": "only Game.observe(seat) and the true legal mask enter the network",
+    "blocked_tasks": "saved states whose pending choices block all listed plans are unmappable and remain zero in the denominator; never clear pending state to make actions legal",
+    "candidate_execution": "recruit actions on independent reseeded copies only; no combat search or value-head lookahead",
+    "rules": "no rule-QA head; retain all unsupported items, count zero in official denominator",
+    "combat": "pure policy unsupported; separate augmented system uses the unchanged scripted baseline's 256-simulation combat component",
+    "aggregation": "unchanged official scorer; Play is the unweighted mean of 30 play-scenario accuracies",
+    "leakage_control": "inference denies label-file reads; seal prediction hashes before opening labels or reference answers",
+    "precision": "both policies BF16 neural forwards; FP32 weights, head outputs and candidate probabilities",
+    "comparison_scope": "a local task adapter, not a reproduction of the original TavernAgent benchmark interface",
+    "comparison": "V1 source vs V2 retained best; identical label-free adapter and official scoring"
+  },
+  "device": "cuda",
+  "native_build": {
+    "source_hash": "af9455de8615b5a6",
+    "profile": "release",
+    "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+  },
+  "input_hashes": {
+    "prompts.jsonl": "0c9b15d239585a9069b6d8c07bb674db0a0d3e7aa876f84e3452866ff160d590",
+    "states.jsonl.gz": "3f8ebeeae90c4a846344dd53672747d30f61b57203f8607d5b6bd55d8a54cdad"
+  },
+  "model_hashes": {
+    "ppo-v1": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+    "ppo-v2": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+  },
+  "source_hashes": {
+    "experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-2v1-bf16-actor-tavernbench/run.py": "83db3c0b8407828a4705d29b126e0ae77af6d366d3c0e5ab3de611a6064cd155",
+    "experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-2v1-bf16-actor-tavernbench/adapter.py": "d8ebdda2c8b94b2e4777753b8cd98f8e0d75f86bcfad249dbc3e5aa252df0414",
+    "experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-2v1-bf16-actor-tavernbench/protocol.json": "8ce43035219898b3b44faaaeec685d9ed7fcc337852c7a61745308fda4d4f1b4"
+  },
+  "combat_binary_sha256": "6fea2faf07aeef397a9a7c46991ab6b2a84717447fc2a8d5a344ef1b2a643e26",
+  "combat_source_sha256": "cff81ea3b41bb912c4387301ae75ed7883111fb8b727b7e7a127911ae531fb9e",
+  "answers_sha256": {
+    "ppo-v1-policy": "3394cda80264f3d1dba80824133d180738aacd0973a9b0c3d453d65d9dce25dd",
+    "ppo-v1-combat256": "007e8f678e396b830fa59ad9ebf5b9e71497b8c7b7515f237302efe634152af7",
+    "ppo-v2-policy": "bddcfcf0d4a6b44feb50353126807b7e6ff173f2d8c0beea13b4c2e833a477fa",
+    "ppo-v2-combat256": "5f2f2fa41551799dd0c205a8a0b86d93947edf89e5e93311ee5d468bf9502bbb"
+  },
+  "labels_read_by_inference": false,
+  "candidate_score_values_used": false,
+  "inference_wall_seconds": 13.492059162992518
+}

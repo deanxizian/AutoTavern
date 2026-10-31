@@ -20,5 +20,7 @@
 | [Actor 对手数量](20261031-actor-opponent-scaling/README.md) | 新调度下 1／2 个固定 V1 对照；2 个对手采样耗时多约 11%，含训练时间外推 |
 | [Actor 接入 PPO](20261031-actor-ppo-integration/README.md) | 压缩缓存、GAE、奖励与 W&B 接入；真实首轮完整预检 58.9 秒、99 项测试通过 |
 | [批量动作失效修复](20261031-batch-action-deferral/README.md) | 跨席位死亡触发发现时刷新旧决策，103 项测试通过；从第 22 轮继续 |
+| [主动 EndTurn 短测](20261031-endturn-behavior/results.json) | PPO 66，2 固定 V1 + 5 脚本；16 局 × 128 步／模式，随机与贪心均观察到仍有其他合法动作时主动 End；非整局比例 |
+| [每局步数分位数](20261031-episode-length-quantiles/results.json) | PPO 25／50／75／81 的四个最近 100 局窗口；2 固定 V1 + 5 脚本、学习者随机采样；P50／P90／P95／P99 与原始长度，无新增训练 |
 
 正式模型实验从 [exp01](../20261031-exp01-ppo-scripted/README.md) 开始；原始测量和停止的试跑均保留。

@@ -1,0 +1,54 @@
+{
+  "status": "completed",
+  "completed_at": "2026-10-31T19:12:47.484333+08:00",
+  "kept_model": {
+    "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+    "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+    "bytes": 53924286,
+    "ppo_iteration": 100,
+    "optimizer_steps": 3200
+  },
+  "removed_models": [
+    {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/starting_model.zip",
+      "sha256": "11e30fb62c1a613c8ee31f2dda9ef351776834f2782e966180d5258386cb064b",
+      "bytes": 21247620
+    },
+    {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/latest_model.zip",
+      "sha256": "f561e0e8dbdc32b2f5bfeb0d020ab90171ff374b9ca4fb75da9dc5d41ea659db",
+      "bytes": 53924286
+    },
+    {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/final_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+      "bytes": 53924286
+    },
+    {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/failed_model.zip",
+      "sha256": "4cdbf4861938773f29a54772707fc58194b377312e8e9af39ec2b05c9e1a9150",
+      "bytes": 53923047
+    },
+    {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/checkpoints/iteration-0025.zip",
+      "sha256": "0af6020dacd7012c07a03046fa2bb95cf34dd1aae8d0451adbb696b92b7f4182",
+      "bytes": 53924287
+    },
+    {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/checkpoints/iteration-0050.zip",
+      "sha256": "856e2faf10ebd103f447def84586498308868a861b23c7d9bfb20bac4e79390b",
+      "bytes": 53924287
+    },
+    {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/checkpoints/iteration-0075.zip",
+      "sha256": "563f0b2007ea0bb5d9f35cc3cb31660b59734f522e3c7b21532d7147700b96c8",
+      "bytes": 53924285
+    },
+    {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/checkpoints/iteration-0100.zip",
+      "sha256": "f561e0e8dbdc32b2f5bfeb0d020ab90171ff374b9ca4fb75da9dc5d41ea659db",
+      "bytes": 53924286
+    }
+  ],
+  "heldout_used_for_selection": false
+}

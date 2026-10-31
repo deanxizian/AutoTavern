@@ -7,7 +7,7 @@
 | [20261031-infra/](20261031-infra/README.md) | 环境、模拟器、初始化、性能测试和训练试跑 | PPO 基础设施准备与验证 |
 | [20261031-scripted-baseline/](20261031-scripted-baseline/README.md) | 独立参考策略评测 | 脚本机器人 TavernBench 基线 |
 | [20261031-exp01-ppo-scripted/](20261031-exp01-ppo-scripted/README.md) | **第一次正式模型实验**的训练与评测 | 100 PPO × 32 minibatch；整局测试和 TavernBench |
-| [20261031-exp02-mixed-opponents/](20261031-exp02-mixed-opponents/README.md) | **第二次正式模型实验** | 2 V1 + BF16 + 独立 Actor 已启动；旧 4 V1 尝试停止并保留 |
+| [20261031-exp02-mixed-opponents/](20261031-exp02-mixed-opponents/README.md) | **第二次正式模型实验** | 2 V1 + BF16 + 独立 Actor 已完成；含 TavernBench 与 2 脚本 + 3 V1 + 3 V2 对战 |
 
 查第一次正式实验，直接进入 **[20261031-exp01-ppo-scripted](20261031-exp01-ppo-scripted/README.md)**。
 安装验证、旧 300 轮预演和 100 次 Adam 小试跑都归入 infra，不占正式实验编号。

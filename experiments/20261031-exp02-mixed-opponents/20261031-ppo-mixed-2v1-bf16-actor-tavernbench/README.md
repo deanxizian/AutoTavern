@@ -6,4 +6,16 @@
 
 推理期间禁止读取标签与脚本答案，封存答案摘要后再调用官方计分器。
 适配器和协议来自此前 V1 基准，不用于本次训练或选模。
-协议见 [protocol.json](protocol.json)，运行结果完成后写到本目录。
+协议见 [protocol.json](protocol.json)。北京时间 2026-10-31 19:12 完成，共 368 个任务，
+其中 Play 为 288 个任务、30 个场景的官方宏平均；这些是任务测试，没有整局对手组合。
+
+| 系统 | 官方 Play 分数（×100） |
+| --- | ---: |
+| V1 纯策略，BF16 候选方案 argmax | 20.96 |
+| V2 纯策略，BF16 候选方案 argmax | 21.65 |
+| V1 + 256 次战斗模拟组件 | 43.88 |
+| V2 + 256 次战斗模拟组件 | 44.56 |
+
+附加组件沿用同一脚本战斗预测工具，不能把这部分收益归因于 PPO 模型。
+完整分项见 [results.json](results.json)，封存预测摘要见 [prediction-manifest.json](prediction-manifest.json)，
+完整性与无标签推理检查见 [validation.json](validation.json)。这是本地任务适配器测评，不等同原论文接口复现。
