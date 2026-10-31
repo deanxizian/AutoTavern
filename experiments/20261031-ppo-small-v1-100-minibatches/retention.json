@@ -1,0 +1,62 @@
+{
+  "status": "completed",
+  "requested_policy": "Only keep best version after evaluation, scoped to this experiment",
+  "selection": {
+    "iteration": 25,
+    "games": 64,
+    "seed": 20000001,
+    "mean_placement": 7.859375,
+    "method": "lowest fixed-seed 64-game mean placement; earliest wins ties; held-out results never select"
+  },
+  "best_heldout_mean_placement": 7.9453125,
+  "completed_training_updates": 100,
+  "kept_model": {
+    "path": "runs/20261031-ppo-small-v1-100-minibatches/best_model.zip",
+    "sha256": "e5dfd1dc1296fd4b7d384afbd3a1251a13bfab05a4abcc2a83cbdf56a48d617e",
+    "bytes": 49843688,
+    "training_updates": 25,
+    "samples": 204800
+  },
+  "removed_models": [
+    {
+      "path": "runs/20261031-ppo-small-v1-100-minibatches/starting_model.zip",
+      "sha256": "11bc851caa8369aea990fcdb79754db752abe6737c5c8d14553c5adfe8da3fb3",
+      "bytes": 21244497
+    },
+    {
+      "path": "runs/20261031-ppo-small-v1-100-minibatches/latest_model.zip",
+      "sha256": "b40f04d752e2a41092b7710cf8337067f07875f445034a49d36b7943cdd4e586",
+      "bytes": 49843689
+    },
+    {
+      "path": "runs/20261031-ppo-small-v1-100-minibatches/final_model.zip",
+      "sha256": "b40f04d752e2a41092b7710cf8337067f07875f445034a49d36b7943cdd4e586",
+      "bytes": 49843689
+    },
+    {
+      "path": "runs/20261031-ppo-small-v1-100-minibatches/checkpoints/iteration-0025.zip",
+      "sha256": "77e6a7e0d8c1f7d557b43768fd7482937602fff136a24aa715f0d5dd91967ff5",
+      "bytes": 49843688
+    },
+    {
+      "path": "runs/20261031-ppo-small-v1-100-minibatches/checkpoints/iteration-0050.zip",
+      "sha256": "9d39a0f7b77a711293295286a30aef4554a1af3edbfacd2f6cb0a6c43245638f",
+      "bytes": 49843688
+    },
+    {
+      "path": "runs/20261031-ppo-small-v1-100-minibatches/checkpoints/iteration-0075.zip",
+      "sha256": "6104361df3c457e665ce68d125da1c5c744639f703f1c9678ab9c06898c9ece9",
+      "bytes": 49843688
+    },
+    {
+      "path": "runs/20261031-ppo-small-v1-100-minibatches/checkpoints/iteration-0100.zip",
+      "sha256": "b40f04d752e2a41092b7710cf8337067f07875f445034a49d36b7943cdd4e586",
+      "bytes": 49843689
+    }
+  ],
+  "source_initialization_and_other_runs_preserved": true,
+  "experiment_metrics_and_tensorboard_preserved": true,
+  "completed_at": "2026-10-31T12:43:54.240040+08:00",
+  "removed_count": 7,
+  "reclaimed_bytes": 320306628
+}

@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "source": "live HTTP and progress files",
+  "tensorboard_port": 6006,
+  "tensorboard_logdir": "experiments/20261031-ppo-small-100ppo-32minibatches",
+  "tensorboard_pid": 1083410,
+  "train_point_count_at_check": 64,
+  "train_step_sequence_contiguous": true,
+  "baseline_point_count": 1,
+  "validation_points_expected": 4,
+  "tensorboard_x_axis": "actual cumulative Adam optimizer steps",
+  "ppo_summary_separated_from_train": true,
+  "training_pid": 1072665,
+  "completed_ppo_iterations_at_check": 2,
+  "optimizer_steps_at_check": 64,
+  "automatic_post_training_evaluation_and_retention": "run.py -> finalize.py",
+  "focused_resume_and_tensorboard_test": "passed, train/loss steps [1,2] verified across initial run"
+}

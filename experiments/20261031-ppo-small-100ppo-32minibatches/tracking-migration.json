@@ -1,0 +1,53 @@
+{
+  "recorded_at": "2026-10-31T13:36:03.609021+08:00",
+  "method": "backfill and tail existing event files in a separate process",
+  "training_restarted": false,
+  "training_pid": 1072665,
+  "project": "eric_eric_/AutoTavern",
+  "weave_initialization": "weave.init('eric_eric_/AutoTavern')",
+  "weave_initialized": true,
+  "run_id": "4xw0tzgd",
+  "url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/4xw0tzgd",
+  "tensorboard_ui": "stopped",
+  "source_logs": "preserved; current process continues its original event writers",
+  "future_training": "native W&B only; no TensorBoard events",
+  "x_axis": "actual Adam optimizer_step",
+  "mapping": {
+    "baseline/*": "val/* (step zero)",
+    "rollout/*": "train/*",
+    "ppo_summary/*": "train/ppo_*",
+    "time/*": "system/*"
+  },
+  "validation_points_planned": 5,
+  "validation_schedule_ppo_iterations": [
+    0,
+    25,
+    50,
+    75,
+    100
+  ],
+  "train_logging": "one point per actual Adam update; max 3200",
+  "sync_process": "wandb/bridge-process.json",
+  "sync_state": "wandb/bridge-state.json",
+  "local_journal": "wandb-metrics.jsonl",
+  "source_configuration": "config.json preserves the actual settings at original launch",
+  "verification": {
+    "verified_at": "2026-10-31T13:36:51.856218+08:00",
+    "cloud_run_state": "running",
+    "cloud_validation_mean_placement": [
+      {
+        "optimizer_step": 0,
+        "value": 7.921875
+      },
+      {
+        "optimizer_step": 800,
+        "value": 4.390625
+      }
+    ],
+    "training_pid_unchanged": 1072665,
+    "tensorboard_server_stopped": true,
+    "regression_tests": "62 passed",
+    "dependency_lock_check": "passed",
+    "diff_whitespace_check": "passed"
+  }
+}

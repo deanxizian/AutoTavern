@@ -19,6 +19,8 @@ venv/
 .pytest_cache/
 .ruff_cache/
 .uv-cache/
+wandb/
+.weave/
 
 # credentials and private configuration
 .env

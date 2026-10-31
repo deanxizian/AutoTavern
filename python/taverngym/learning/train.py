@@ -9,9 +9,11 @@ from zoneinfo import ZoneInfo
 
 import torch
 from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.logger import configure
 
 from .env import make_vector_env
 from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO
+from .tracking import WandbOutputFormat, WandbTracker, tracking_settings
 
 
 def main():
@@ -24,6 +26,7 @@ def main():
     parser.add_argument("--n-envs", type=int)
     parser.add_argument("--micro-batch-size", type=int, default=DEFAULT_MICRO_BATCH_SIZE)
     parser.add_argument("--checkpoint-every", type=int, default=100_000)
+    parser.add_argument("--tracking-backend", choices=("wandb", "none"), default="wandb")
     args = parser.parse_args()
     experiment_dir = args.experiment_dir or Path("experiments") / args.run_dir.name
     if args.run_dir.exists():
@@ -40,15 +43,45 @@ def main():
     model.experiment_config = config
     env = make_vector_env(args.n_envs if args.n_envs is not None else config["n_envs"], config["seed"])
     model.set_env(env)
-    model.tensorboard_log = str(experiment_dir / "tensorboard")
+    model.tensorboard_log = None
     args.run_dir.mkdir(parents=True)
     experiment_dir.mkdir(parents=True, exist_ok=True)
     (args.run_dir / "checkpoints").mkdir()
     resolved = dict(config, training_started=True, n_envs=env.num_envs,
+                    tracking_backend=args.tracking_backend, tracking=tracking_settings(config),
                     source_checkpoint=str(args.model.resolve()),
                     source_checkpoint_sha256=hashlib.sha256(args.model.read_bytes()).hexdigest(),
                     requested_additional_timesteps=args.total_timesteps)
     (experiment_dir / "config.json").write_text(json.dumps(resolved, indent=2) + "\n")
+    tracker = WandbTracker(experiment_dir, resolved) if args.tracking_backend == "wandb" else None
+    logger = configure(str(experiment_dir), ["stdout", "csv"])
+    if tracker is not None:
+        logger.output_formats.append(WandbOutputFormat(tracker))
+    model.set_logger(logger)
+
+    def record_optimizer_step(current, metrics, step):
+        if tracker is not None:
+            tracker.log({**{f"train/{name}": value for name, value in metrics.items()},
+                         "train/learning_rate": current.policy.optimizer.param_groups[0]["lr"],
+                         "train/sampled_decisions": current.num_timesteps}, step)
+
+    def record_iteration(current):
+        for name, value in list(logger.name_to_value.items()):
+            if name.startswith("train/"):
+                if name != "train/n_updates":
+                    logger.record(f"ppo_summary/{name.removeprefix('train/')}", value)
+                logger.record(name, value, exclude="wandb")
+        places = current._rollout_places
+        if places:
+            logger.record("rollout/mean_placement", sum(places) / len(places))
+            logger.record("rollout/top4_rate", sum(p <= 4 for p in places) / len(places))
+            logger.record("rollout/first_rate", sum(p == 1 for p in places) / len(places))
+        logger.record("time/rollout_seconds", current.last_rollout_seconds)
+        logger.record("time/update_seconds", current.last_train_seconds)
+        logger.dump(current.optimizer_step_count())
+
+    model._after_optimizer_step = record_optimizer_step
+    model._after_update = record_iteration
     callback = CheckpointCallback(
         save_freq=max(1, args.checkpoint_every // env.num_envs),
         save_path=str(args.run_dir / "checkpoints"), name_prefix="ppo-small",
@@ -57,7 +90,7 @@ def main():
     status = "completed"
     try:
         model.learn(total_timesteps=args.total_timesteps, callback=callback,
-                    reset_num_timesteps=False, tb_log_name="ppo-small")
+                    reset_num_timesteps=False, log_interval=None)
     except KeyboardInterrupt:
         status = "interrupted"
     except BaseException:
@@ -71,6 +104,8 @@ def main():
                   "updated_at": datetime.now(ZoneInfo("Asia/Shanghai")).isoformat()}
         (experiment_dir / "training.json").write_text(json.dumps(result, indent=2) + "\n")
         env.close()
+        if tracker is not None:
+            tracker.finish(exit_code=0 if status == "completed" else 1)
 
 
 if __name__ == "__main__":

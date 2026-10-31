@@ -18,6 +18,7 @@ from stable_baselines3.common.logger import configure
 from .buffer import CompactPlacementBuffer
 from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO
 from .schedule import LinearLearningRate
+from .tracking import WandbOutputFormat, WandbTracker, tracking_settings
 from .vector_env import NativeVectorEnv
 
 
@@ -93,6 +94,7 @@ class Recorder(BaseCallback):
                   "pid": os.getpid(), "completed_iterations": self.completed,
                   "target_iterations": self.config["iterations"],
                   "sampled_decisions": self.model.num_timesteps,
+                  "optimizer_steps": self.model.optimizer_step_count(),
                   "target_decisions": budget * self.config["iterations"],
                   "elapsed_seconds": elapsed, "estimated_remaining_seconds": estimate,
                   "latest_model": str(self.models / "latest_model.zip"), **extra}
@@ -126,6 +128,13 @@ class Recorder(BaseCallback):
         if len(places):
             metrics.update(mean_placement=float(places.mean()), first_rate=float((places == 1).mean()),
                            top4_rate=float((places <= 4).mean()))
+        model.logger.record("progress/ppo_iterations", self.completed)
+        model.logger.record("progress/sampled_decisions", model.num_timesteps)
+        model.logger.record("time/rollout_seconds", model.last_rollout_seconds)
+        model.logger.record("time/update_seconds", model.last_train_seconds)
+        if len(places):
+            for name in ("mean_placement", "first_rate", "top4_rate"):
+                model.logger.record(f"rollout/{name}", metrics[name])
         save_model(model, self.models / "latest_model.zip")
         every = self.config["checkpoint_every_iterations"]
         if self.completed % every == 0:
@@ -137,13 +146,24 @@ class Recorder(BaseCallback):
             result = evaluate(model, self.config["evaluation_games"], self.config["evaluation_seed"],
                               simulator_config=self.config.get("simulator_config"))
             write_json(self.experiment / f"evaluation-{self.completed:04d}.json", result)
+            for name in ("mean_placement", "first_rate", "top4_rate"):
+                model.logger.record(f"{self.config.get('validation_prefix', self.config.get('tensorboard_validation_prefix', 'val'))}/{name}", result[name])
+            model.logger.record(f"{self.config.get('validation_prefix', self.config.get('tensorboard_validation_prefix', 'val'))}/ppo_iteration", self.completed)
             if result["mean_placement"] < self.best:
                 self.best = result["mean_placement"]
                 save_model(model, self.models / "best_model.zip")
             metrics["evaluation_mean_placement"] = result["mean_placement"]
         with (self.experiment / "metrics.jsonl").open("a") as stream:
             stream.write(json.dumps(metrics) + "\n")
-        model.logger.dump(model.num_timesteps)
+        if self.config["train_per_optimizer_step"]:
+            for name, value in list(model.logger.name_to_value.items()):
+                if name.startswith("train/"):
+                    if name != "train/n_updates":
+                        model.logger.record(f"ppo_summary/{name.removeprefix('train/')}", value)
+                    model.logger.record(name, value, exclude=("tensorboard", "wandb"))
+        log_step = (model.optimizer_step_count() if self.config["tracking_backend"] == "wandb"
+                    or self.config.get("tensorboard_step_unit") == "optimizer_step" else model.num_timesteps)
+        model.logger.dump(log_step)
         self.phase = "iteration_complete"
         self.status(last_iteration=metrics)
 
@@ -159,6 +179,10 @@ def main():
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
     config.setdefault("micro_batch_size", DEFAULT_MICRO_BATCH_SIZE)
+    config.setdefault("tracking_backend", tracking_settings(config)["backend"])
+    config.setdefault("train_per_optimizer_step", config.get("tensorboard_train_per_optimizer_step", True))
+    if config["tracking_backend"] not in ("wandb", "tensorboard", "none"):
+        raise ValueError("tracking_backend must be wandb, tensorboard or none")
     expected = config["n_envs"] * config["n_steps"]
     if expected != config["decisions_per_iteration"] or expected % config["batch_size"]:
         raise ValueError("Iteration and minibatch budgets must divide exactly")
@@ -215,8 +239,16 @@ def main():
             "policy_and_adam_restored": True, "environment_and_rng_reinitialized": True,
             "log_directory": str(log_directory),
         })
-    model.set_logger(configure(str(log_directory), ["stdout", "csv", "tensorboard"]))
-    model.tensorboard_log = str(args.experiment_dir / "tensorboard")
+    tracker = None
+    formats = ["stdout", "csv"]
+    if config["tracking_backend"] == "tensorboard":
+        formats.append("tensorboard")
+    logger = configure(str(log_directory), formats)
+    if config["tracking_backend"] == "wandb":
+        tracker = WandbTracker(args.experiment_dir, config)
+        logger.output_formats.append(WandbOutputFormat(tracker))
+    model.set_logger(logger)
+    model.tensorboard_log = str(args.experiment_dir / "tensorboard") if config["tracking_backend"] == "tensorboard" else None
     write_json(args.experiment_dir / "resolved-config.json", {
         **config, "source_model": str(args.model),
         "source_model_sha256": hashlib.sha256(args.model.read_bytes()).hexdigest(),
@@ -242,6 +274,25 @@ def main():
             evaluation = json.loads(evaluation_path.read_text())
             recorder.best = min(recorder.best, evaluation.get("mean_placement", float("inf")))
     model._after_update = recorder.after_update
+    adam_writer = None
+    if config["train_per_optimizer_step"]:
+        if config["tracking_backend"] == "tensorboard":
+            from torch.utils.tensorboard import SummaryWriter
+
+            adam_writer = SummaryWriter(str(log_directory), filename_suffix=".adam", flush_secs=5)
+
+        def record_optimizer_step(current, metrics, step):
+            values = {f"train/{name}": value for name, value in metrics.items()}
+            values.update({"train/learning_rate": current.policy.optimizer.param_groups[0]["lr"],
+                           "train/ppo_iteration": current.num_timesteps // expected,
+                           "train/sampled_decisions": current.num_timesteps})
+            if tracker is not None:
+                tracker.log(values, step)
+            if adam_writer is not None:
+                for name, value in values.items():
+                    adam_writer.add_scalar(name, value, step)
+
+        model._after_optimizer_step = record_optimizer_step
     if not args.resume:
         save_model(model, args.run_dir / "starting_model.zip")
     write_json(args.experiment_dir / "process.json", {"pid": os.getpid(), "started_at": now()})
@@ -259,6 +310,9 @@ def main():
                               simulator_config=config.get("simulator_config"))
             recorder.best = result["mean_placement"]
             write_json(args.experiment_dir / "evaluation-0000.json", result)
+            for name in ("mean_placement", "first_rate", "top4_rate"):
+                model.logger.record(f"{config.get('baseline_prefix', config.get('tensorboard_baseline_prefix', 'val'))}/{name}", result[name])
+            model.logger.dump(0)
             save_model(model, args.run_dir / "best_model.zip")
         model.learn(remaining_decisions, callback=recorder,
                     reset_num_timesteps=False, log_interval=None)
@@ -278,8 +332,12 @@ def main():
         result = recorder.status(status=status,
                                  peak_gpu_allocated_bytes=torch.cuda.max_memory_allocated() if args.device == "cuda" else None)
         write_json(args.experiment_dir / "training.json", result)
+        if adam_writer is not None:
+            adam_writer.close()
         model.rollout_buffer.close()
         env.close()
+        if tracker is not None:
+            tracker.finish(exit_code=0 if status == "completed" else 1)
 
 
 if __name__ == "__main__":

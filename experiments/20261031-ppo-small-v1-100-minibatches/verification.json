@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "training_completed": true,
+  "samples": 819200,
+  "effective_minibatches": 100,
+  "adam_updates_verified_on_shared_identity": 100,
+  "adam_parameter_step_values": [
+    100
+  ],
+  "micro_batch_size": 1024,
+  "gradient_accumulation": 8,
+  "microbatch_backwards": 800,
+  "learning_rate_initial_configured": 0.0003,
+  "learning_rate_first_update": 0.00029703,
+  "learning_rate_final": 3e-06,
+  "linear_schedule_matches_all_updates": true,
+  "parameters_finite": true,
+  "source_initialization_unchanged": true,
+  "rule_text_embeddings_unchanged": true,
+  "final_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-small-v1-100-minibatches/final_model.zip",
+  "final_model_sha256": "b40f04d752e2a41092b7710cf8337067f07875f445034a49d36b7943cdd4e586",
+  "optimizer_restored_from_final_checkpoint": true,
+  "full_training_checkpoint_verified_before_cleanup": true,
+  "full_training_checkpoint_retained": false,
+  "retained_best_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-small-v1-100-minibatches/best_model.zip",
+  "retained_best_training_updates": 25,
+  "retained_best_verified_after_cleanup": true
+}

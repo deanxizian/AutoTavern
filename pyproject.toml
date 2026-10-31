@@ -41,6 +41,8 @@ train = [
     "stable-baselines3>=2.9.2,<2.10.0",
     "tensorboard>=2.21.0,<2.22.0",
     "torch>=2.15.0,<2.16.0",
+    "wandb>=0.31.0,<0.32.0",
+    "weave>=0.54.0",
 ]
 
 [tool.uv.dependency-groups]

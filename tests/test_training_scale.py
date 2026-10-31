@@ -107,9 +107,9 @@ def test_compact_codec_is_bitwise_lossless_on_real_observations():
 
 def test_linear_scheduler_endpoints_and_clamping():
     schedule = LinearLearningRate()
-    assert schedule(1) == pytest.approx(6e-6)
-    assert schedule(0.5) == pytest.approx(5.5e-6)
-    assert schedule(0) == pytest.approx(5e-6)
+    assert schedule(1) == pytest.approx(3e-4)
+    assert schedule(0.5) == pytest.approx(1.515e-4)
+    assert schedule(0) == pytest.approx(3e-6)
     assert schedule(2) == schedule(1)
     assert schedule(-1) == schedule(0)
 
@@ -144,6 +144,11 @@ def test_experiment_resume_preserves_completed_iterations_and_optimizer(tmp_path
         "initial_evaluation_games": 0, "final_evaluation_games": 0,
         "evaluation_seed": 101, "final_evaluation_seed": 102,
         "simulator_config": {"turn_action_caps": [3]},
+        "tensorboard_train_per_optimizer_step": True,
+        "tensorboard_step_unit": "optimizer_step",
+        "tensorboard_validation_prefix": "val",
+        "tensorboard_baseline_prefix": "baseline",
+        "tracking_backend": "tensorboard",
     }
     config_path = tmp_path / "config.json"
     config_path.write_text(json.dumps(config))
@@ -162,6 +167,11 @@ def test_experiment_resume_preserves_completed_iterations_and_optimizer(tmp_path
     assert after.num_timesteps == 96 and after._n_updates == 3
     records = [json.loads(line) for line in (experiment / "metrics.jsonl").read_text().splitlines()]
     assert [row["iteration"] for row in records] == [1, 2, 3]
+    assert [row["train/optimizer_steps"] for row in records] == [2, 4, 6]
+    assert [row["train/optimizer_steps_this_iteration"] for row in records] == [2, 2, 2]
+    from tensorboard.backend.event_processing.event_accumulator import EventAccumulator
+    events = EventAccumulator(str(experiment)).Reload()
+    assert [event.step for event in events.Scalars("train/loss")] == [1, 2]
     assert records[-1]["train/learning_rate"] == pytest.approx(5e-6)
     old_step = next(iter(before.policy.optimizer.state.values()))["step"]
     new_step = next(iter(after.policy.optimizer.state.values()))["step"]

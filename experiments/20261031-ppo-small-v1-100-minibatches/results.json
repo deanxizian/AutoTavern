@@ -1,0 +1,64 @@
+{
+  "status": "completed",
+  "completed_at": "2026-10-31T12:40:59.214468+08:00",
+  "samples": 819200,
+  "adam_updates": 100,
+  "micro_batch_size": 1024,
+  "effective_batch_size": 8192,
+  "gradient_accumulation": 8,
+  "microbatch_backwards": 800,
+  "learning_rate_configured_start": 0.0003,
+  "learning_rate_first_actual_update": 0.00029703,
+  "learning_rate_last_actual_update": 3e-06,
+  "scheduler": "linear; post-rollout global sample progress",
+  "precision": "FP32 with TF32 allowed; no BF16 autocast",
+  "elapsed_seconds_including_evaluation_and_save": 221.08390709800005,
+  "sampling_seconds": 132.0041669740458,
+  "update_seconds": 72.86671062800451,
+  "evaluation_save_logging_overhead_seconds": 16.21302949594974,
+  "training_samples_per_second_excluding_overhead": 3998.6161507603247,
+  "peak_gpu_allocated_bytes": 5507572736,
+  "selection": {
+    "iteration": 25,
+    "games": 64,
+    "seed": 20000001,
+    "mean_placement": 7.859375,
+    "method": "lowest fixed-seed 64-game mean placement; earliest wins ties; held-out results never select"
+  },
+  "heldout_128_same_seed": {
+    "initial": {
+      "mean_placement": 7.9765625,
+      "first_rate": 0.0,
+      "top4_rate": 0.0
+    },
+    "preselected_best": {
+      "mean_placement": 7.9453125,
+      "first_rate": 0.0,
+      "top4_rate": 0.0
+    },
+    "final_100_updates": {
+      "mean_placement": 7.9609375,
+      "first_rate": 0.0,
+      "top4_rate": 0.0
+    },
+    "seed": 30000001,
+    "used_for_selection": false
+  },
+  "retained_model": {
+    "path": "runs/20261031-ppo-small-v1-100-minibatches/best_model.zip",
+    "sha256": "e5dfd1dc1296fd4b7d384afbd3a1251a13bfab05a4abcc2a83cbdf56a48d617e",
+    "bytes": 49843688,
+    "training_updates": 25,
+    "samples": 204800
+  },
+  "other_model_files_removed": 7,
+  "removed_bytes": 320306628,
+  "tensorboard_logdir": "experiments/20261031-ppo-small-v1-100-minibatches",
+  "tensorboard_x_axis": "cumulative controlled-player decisions, not optimizer steps or games",
+  "limitations": [
+    "100-update small-budget run does not establish convergence.",
+    "One effective minibatch per fresh rollout; pre-Adam KL/clip metrics are near zero by construction, not post-update stability evidence.",
+    "Held-out result differs from initialization by only 0.03125 mean placement; no material improvement established.",
+    "Top-four and first-place rates remain zero in 128 held-out games against scripted bots."
+  ]
+}

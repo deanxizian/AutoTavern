@@ -1,0 +1,20 @@
+{
+  "recorded_at": "2026-10-31T12:37:06.988606+08:00",
+  "source_model_sha256": "3c8f024a0cfb1526298d0d9a105d4d5a2e283cc724eb0682b160f0a9a7d38e53",
+  "files_sha256": {
+    "uv.lock": "9f883108ad012189fc82cd8ecbb2d885cf17f1a430a553cda59592d37022fc3f",
+    "experiments/20261031-ppo-small-v1-100-minibatches/config.json": "586b8491a1a861b1676014fdb7616bba3fd97e07b2f54a81a1277453c303e926",
+    "python/taverngym/learning/__init__.py": "c91821de2c1a4efd6ff8a01d2843bee5962db0789a33aaf7fcdba0d6330c7b4e",
+    "python/taverngym/learning/buffer.py": "a2e740067e0c02db01c766eea6e41fc09110a3334e38bc01f8edc21147b2cd29",
+    "python/taverngym/learning/env.py": "4bdd77126a6e33b5c22562178fbef9ca956f28f91f85be313b167f57ef0c8c64",
+    "python/taverngym/learning/experiment.py": "48d863eb0dceb96f66a177fd12389bd0aa563d9c69a70073478e1cdee29a84cd",
+    "python/taverngym/learning/initialize.py": "593d7f58ae6ad7d2f81294761e080a683dee0ca00f971dcdeffd690907b2af23",
+    "python/taverngym/learning/model.py": "d2fa3bbe28731ac9edb0d97f1c3de37a823836819cd830ff0e28977dc9a573b1",
+    "python/taverngym/learning/policy.py": "780c0d96ed3eb1a9732c84667e627cf017ea787375776e8eb3278a3e3eab8e3a",
+    "python/taverngym/learning/ppo.py": "b53b9c95af290474a35f813b772602034e061fd483643b4ac1b69afaa4bcf408",
+    "python/taverngym/learning/schedule.py": "c42408da4bd90ba6d8087fa24e23dee9cda8f5a2b78574f767047035bbe2d748",
+    "python/taverngym/learning/text.py": "f308861324d67557b363d42e47cf09a929e8bb3676c1988ec768c01fa8cefc76",
+    "python/taverngym/learning/train.py": "0949f9b504f20f04a98ad6f91874ea4049dbe8635fc280c423d7b3c0e894bff0",
+    "python/taverngym/learning/vector_env.py": "5efa65fe2797e674cbbc7ff7d1052719f814810c24ff8570277bf0d495cf56f2"
+  }
+}

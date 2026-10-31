@@ -1,6 +1,24 @@
 # PPO 开发环境与训练产物
 
 本轮改进、当前默认值、实测边界与 Git 忽略策略见 [训练基础设施](TRAINING_INFRA.md)。
+PPO iteration、epoch、sample、minibatch 和 Adam step 的区别，以及论文／其他项目的统一对照，
+见 [PPO 批次与预算对照表](PPO_BATCH_COMPARISON.md)。
+指标含义、记录频率及当前训练的在线迁移见 [W&B 与训练指标](TRAINING_METRICS.md)。
+
+后续训练默认使用 **W&B**，项目 `eric_eric_/AutoTavern`，并调用
+`weave.init('eric_eric_/AutoTavern')`。不再启动 TensorBoard 或为新训练生成事件文件。
+最近完成的一次训练通过旁路进程补录、持续同步原有日志，训练进程未重启。
+
+最近一版已完成 **100 次 PPO iteration、每个 epoch 32 个 minibatch、epoch=1**，
+共 26,214,400 条新样本、3,200 次 Adam 更新，总耗时约 57 分钟。
+最终独立 128 局平均名次 1.765625、前四率 93.75%、第一名率 58.59375%，对手为七个脚本机器人。
+参数、循环层级和结果见 [实验记录](../experiments/20261031-ppo-small-100ppo-32minibatches/README.md)。
+
+已完成的首版采用用户指定的小预算：100 个有效 minibatch，共 100 次 Adam 更新、819,200 条样本，
+microbatch=1,024、累积 8 次，学习率配置 `3e-4 → 3e-6` 线性衰减，无 warmup。
+从既有零步初始化开始，采用 32 环境 × 256 步，每轮一个有效 minibatch；
+配置、命令及结果见 [首版实验](../experiments/20261031-ppo-small-v1-100-minibatches/README.md)。
+下文的旧 300 轮实验保持停止，其配置与实测结果保留历史值。
 
 ## 安装
 
@@ -29,7 +47,8 @@ uv sync --locked --python 3.12 --group train --extra test
 `/tmp` 工具链和缓存是当前机器的临时安装位置；其他机器应先安装 Rust 工具链。
 
 训练依赖包括 PyTorch、Stable-Baselines3、sb3-contrib（提供 MaskablePPO）、
-Gymnasium 和 TensorBoard。运行训练相关命令时保留 `--group train`；
+Gymnasium、W&B 和 Weave；TensorBoard 仅保留作旧日志读取和兼容验证。
+运行训练相关命令时保留 `--group train`；
 该组不是默认依赖组，普通 `uv sync` 可能移除训练依赖。
 
 安装验证及实测版本见
@@ -52,12 +71,16 @@ experiments/yyyymmdd-{exp-name}/
 ├── config.json        # 超参数、随机种子、环境与对手设置
 ├── progress.json      # 当前进度
 ├── metrics.jsonl      # 每轮指标
+├── wandb.json         # W&B run ID、项目与链接，恢复时复用
+├── wandb-metrics.jsonl # 已提交的标量指标，含实际 optimizer_step
+├── wandb/             # SDK 缓存与同步状态，本地忽略
 └── ...                # 评估指标与原始文本输出
 ```
 
 已保存第一版零步初始化模型：
 `runs/20261031-ppo-small-init/initial_model.zip`，该文件保持零训练步数。
-实验配置、日志（含 TensorBoard）和指标全部放在 `experiments/`，`runs/` 存放模型。
+实验配置、W&B 日志和指标全部放在 `experiments/`，`runs/` 存放模型。
+历史 TensorBoard 文件保留作为来源记录。
 `runs/` 已由 Git 忽略；`experiments/` 保存可审查的记录。
 配置还应记录代码版本、依赖锁文件摘要、观测编码、动作掩码与奖励定义，
 以便正确加载模型并比较实验。

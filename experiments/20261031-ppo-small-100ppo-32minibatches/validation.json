@@ -1,0 +1,14 @@
+{
+  "verified_at": "2026-10-31T13:03:14.083610+08:00",
+  "status": "passed",
+  "rollout_equals_envs_times_steps": true,
+  "rollout_divides_into_32_minibatches": true,
+  "epoch_is_one": true,
+  "effective_minibatch_equals_8_microbatches": true,
+  "total_samples": 26214400,
+  "max_adam_updates": 3200,
+  "config_sha256": "6c18c79ba243eef285c2cdc34fcd7d36fd306f98b5ebcaf2b853e40e835347bf",
+  "source_initialization_hash_verified": true,
+  "new_model_directory_exists": false,
+  "training_started": false
+}

@@ -26,6 +26,8 @@ TensorBoard、实时 progress/process/launcher/training 文件、逐次控制台
 | [20261031-ppo-library-setup](20261031-ppo-library-setup/README.md) | uv 与 Python 3.12 安装 PPO 库，验证 CUDA、模型存取与 TavernGym 接口。 |
 | [20261031-ppo-small-init](20261031-ppo-small-init/README.md) | 初始化 d=192、4 层、3,491,978 参数的 PPO，保存零训练步数模型。 |
 | [20261031-ppo-small-paper300](20261031-ppo-small-paper300/README.md) | 300 轮 × 4,194,304 决策；完成 3 轮后停止；默认 microbatch 改为 1,024，并记录两种精度的全量时间估算。 |
+| [20261031-ppo-small-v1-100-minibatches](20261031-ppo-small-v1-100-minibatches/README.md) | 新首版：100 个有效 minibatch、100 次 Adam、819,200 条样本，LR 3e-4→3e-6 线性衰减。 |
+| [20261031-ppo-small-100ppo-32minibatches](20261031-ppo-small-100ppo-32minibatches/README.md) | 已完成：100 次 PPO、3,200 次 Adam；独立 128 局平均名次 1.77、前四率 93.75%、第一名率 58.59%；仅保留第 100 轮最佳模型。 |
 | [20261031-microbatch-scaling](20261031-microbatch-scaling/README.md) | 256／512／1024／2048 的前后向延迟、显存与有效 batch 更新耗时实测。 |
 | [20261031-bf16-mixed-precision](20261031-bf16-mixed-precision/README.md) | 允许 TF32 的 FP32 基线与 BF16 autocast 对比；记录延迟、显存和 PPO 数值差异，正式训练保持停止。 |
 
@@ -33,10 +35,12 @@ TensorBoard、实时 progress/process/launcher/training 文件、逐次控制台
 
 训练产生的模型权重、定期检查点、最佳模型与最终模型，
 统一放在 `runs/yyyymmdd-{exp-name}/`。`runs/` 已被 Git 忽略。
-实验配置、说明、TensorBoard 日志、评估指标、原始文本输出和模型路径，
+实验配置、说明、W&B 日志、评估指标、原始文本输出和模型路径，
 放在对应的 `experiments/yyyymmdd-{exp-name}/`，不将模型文件复制进实验记录。
 PPO 模型沿用 SB3 原生 `.zip` 格式；具体目录和恢复说明见
 [训练环境与产物说明](../docs/TRAINING.md)。
+W&B 项目、指标含义和旧训练迁移见 [训练指标](../docs/TRAINING_METRICS.md)。
+历史 TensorBoard 原始日志保留；后续默认仅使用 W&B。
 
 ## 默认脚本机器人说明
 

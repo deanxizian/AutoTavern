@@ -3,7 +3,9 @@
 日期：2026-10-31，Asia/Shanghai。
 
 本轮为 TavernGym 增加可初始化、保存和继续训练的实体 PPO，以及可复核的实验与性能记录。
-当前正式训练按用户要求停止，保留三个完整 PPO 迭代的检查点。
+旧 300 轮训练按用户要求停止，保留三个完整 PPO 迭代的检查点。
+后续首版改为 100 个有效 minibatch、100 次 Adam 更新，学习率 3e-4→3e-6 线性衰减，
+配置和结果见 [首版实验](../experiments/20261031-ppo-small-v1-100-minibatches/README.md)。
 已有性能测试没有改写这些权重。论文原始 TavernAgent 的权重、完整训练配方和校准对手库不包含在本实现中。
 
 ## 已实现的改进
@@ -21,6 +23,7 @@
 | 评估随机流隔离 | 固定评估种子、每席位对局配额；保存／恢复 Torch RNG，避免评估推进训练随机流 | `experiment.py` |
 | 性能与数值检查 | 分开记录模拟器、推理、传输和缓存写入；固定权重、Adam 和样本比较 microbatch 与精度 | `experiments/20261031-microbatch-scaling/`、`20261031-bf16-mixed-precision/` |
 | 实验与模型分离 | experiments 保存配置、指标和结论，runs 保存初始化／最近／最佳／定期／最终模型 | [目录与命令](TRAINING.md) |
+| W&B 与 Weave | 每次 Adam 记录 train，初始评估作为 val 的 step=0；当前训练不重启，通过旁路补录后持续同步 | [指标与迁移](TRAINING_METRICS.md)、`tracking.py`、`migrate_wandb.py` |
 
 断点续训会重新初始化环境与 RNG，不是逐游戏、逐位一致的继续执行。
 名次标签仅作为已结束片段的训练目标，不进入玩家可见观测。
@@ -82,7 +85,7 @@ CPU 与 GPU 当前按数据依赖串行执行，没有实现跨采样／更新�
 | --- | --- |
 | 源码、测试、默认配置、uv.lock、.python-version | `.venv/`、构建目录、包和下载缓存 |
 | 实验 README、配置快照、metrics/results/summary、验证及来源摘要 | `runs/` 内所有模型、文本向量和检查点 |
-| 性能基准原始 JSON、脚本机器人答案／评分及复现脚本 | TensorBoard、sessions、实时 process/progress/launcher/training 文件 |
+| 性能基准原始 JSON、脚本机器人答案／评分及复现脚本 | TensorBoard、W&B SDK 缓存、sessions、实时 process/progress/launcher/training 文件 |
 | 有审查价值的有限原始测试文本结果 | 控制台／编译／stderr 日志、完整游戏事件流、重复 legacy-runs 和未筛选 reruns |
 | 论文来源索引 | 本地论文 PDF、源文件、译文、HTML 预览及图片 |
 

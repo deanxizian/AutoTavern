@@ -1,0 +1,17 @@
+{
+  "status": "passed",
+  "verified_at": "2026-10-31T14:09:00.897757+08:00",
+  "completed_ppo_iterations": 100,
+  "fresh_samples": 26214400,
+  "actual_adam_updates": 3200,
+  "max_adam_updates": 3200,
+  "train_tensorboard_points": 3200,
+  "validation_tensorboard_points": 4,
+  "baseline_tensorboard_points": 1,
+  "tensorboard_x_axis": "actual Adam optimizer steps",
+  "linear_schedule_verified": true,
+  "source_initialization_unchanged": true,
+  "final_model_sha256_before_cleanup": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "best_ppo_iteration": 100,
+  "best_optimizer_steps": 3200
+}

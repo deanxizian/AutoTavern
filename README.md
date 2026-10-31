@@ -145,6 +145,8 @@ pip install ".[bench]"
 | [Timewarp](docs/TIMEWARP.md) | The Timewarped Tavern (off by default in 36.6.3; two heroes still visit it). |
 | [PPO setup and small model](docs/TRAINING.md) | uv, Python 3.12, initialized entity PPO, training entry point, and model and log locations. |
 | [Training infrastructure](docs/TRAINING_INFRA.md) | Lossless rollouts, gradient accumulation, checkpoint recovery, profiling, precision and Git artifact policy. |
+| [PPO batch comparison](docs/PPO_BATCH_COMPARISON.md) | Rollouts, minibatches, epochs, optimizer steps and training budgets compared with reference implementations. |
+| [Training metrics and W&B](docs/TRAINING_METRICS.md) | Per-Adam train curves, step-zero validation, Weave setup and migration without restarting training. |
 | [Experiment records](experiments/README.md) | Dated experiments, reproduction commands, environment details and raw results. |
 
 For development, run `pip install -e ".[test]"` and `pytest`. The Rust crate also works on its

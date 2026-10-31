@@ -1,0 +1,11 @@
+name,status,n_envs,n_steps,rollout_samples,minibatch_samples,minibatches_per_epoch,epochs,adam_updates_per_ppo,ppo_iterations,total_samples,total_adam_updates,lr,source
+SB3 默认（单环境）,reference,1,2048,2048,64,32,10,320,,,,3e-4，固定,https://stable-baselines3.readthedocs.io/en/master/modules/ppo.html#parameters
+CleanRL PPO 默认,reference,4,128,512,128,4,4,16,976,499712,15616,2.5e-4，线性趋近 0,https://github.com/vwxyzjn/cleanrl/blob/master/cleanrl/ppo.py
+RL Zoo Atari,reference,8,128,1024,256,4,4,16,9766,10000384,156256,2.5e-4，线性趋近 0,https://github.com/DLR-RM/rl-baselines3-zoo/blob/master/hyperparams/ppo.yml
+CleanRL Transformer-XL PPO,reference,32,512,16384,2048,8,3,24,12207,199999488,292968,2.75e-4→1e-5，线性后保持,https://github.com/vwxyzjn/cleanrl/blob/master/cleanrl/ppo_trxl/ppo_trxl.py
+论文早期规模实验,reported_approximate,,,4200000,,,,,400,1680000000,,未公开,https://arxiv.org/html/2610.33845v1#A3.T8
+论文最终 TA-23,reported_approximate,512,256,1050000,8192,,1,,300,310000000,,6e-6→5e-6，曲线未公开,https://arxiv.org/html/2610.33845v1#A3.T7
+本地旧全量方案（已停止）,configured_stopped,256,16384,4194304,8192,512,1,512,300,1258291200,153600,6e-6→5e-6，线性（历史配置）,../experiments/20261031-ppo-small-paper300/config.json
+本地首版试跑（已完成）,completed,32,256,8192,8192,1,1,1,100,819200,100,3e-4→3e-6，线性,../experiments/20261031-ppo-small-v1-100-minibatches/config.json
+本地候选（未运行，300迭代举例）,proposal_not_configured,256,512,131072,8192,16,2,32,300,39321600,9600,3e-4→3e-6，线性候选,#候选配置与总预算
+本地下一版（100 PPO × 32 mini，训练中）,running,256,1024,262144,8192,32,1,32,100,26214400,3200,3e-4→3e-6，线性,../experiments/20261031-ppo-small-100ppo-32minibatches/config.json

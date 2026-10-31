@@ -88,7 +88,13 @@ class EntityPPO(MaskablePPO):
         super().__init__(*args, **kwargs)
 
     def _excluded_save_params(self):
-        return super()._excluded_save_params() + ["_after_update", "_rollout_places"]
+        return super()._excluded_save_params() + ["_after_update", "_after_optimizer_step", "_rollout_places"]
+
+    def optimizer_step_count(self):
+        """Read Adam's persisted counter on the shared, always-used identity table."""
+        state = self.policy.optimizer.state.get(self.policy.network.identity.weight, {})
+        value = state.get("step", 0)
+        return int(value.item()) if torch.is_tensor(value) else int(value)
 
     def collect_rollouts(self, env, callback, rollout_buffer, n_rollout_steps, use_masking=True):
         started = time.monotonic()
@@ -110,6 +116,8 @@ class EntityPPO(MaskablePPO):
             "placement_label_fraction", "approx_kl", "clip_fraction", "loss",
         )}
         stop = False
+        optimizer_steps_before = self.optimizer_step_count()
+        optimizer_steps_this_iteration = 0
         for _ in range(self.n_epochs):
             for batch in self.rollout_buffer.get(self.batch_size):
                 advantages = batch.advantages
@@ -159,14 +167,20 @@ class EntityPPO(MaskablePPO):
                     self.policy.optimizer.zero_grad()
                     stop = True
                     break
-                torch.nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm, error_if_nonfinite=True)
+                grad_norm = torch.nn.utils.clip_grad_norm_(self.policy.parameters(), self.max_grad_norm, error_if_nonfinite=True)
                 self.policy.optimizer.step()
+                optimizer_steps_this_iteration += 1
+                if getattr(self, "_after_optimizer_step", None) is not None:
+                    self._after_optimizer_step(self, {**metrics, "grad_norm": float(grad_norm.item())},
+                                               optimizer_steps_before + optimizer_steps_this_iteration)
             self._n_updates += 1
             if stop:
                 break
         for name, entries in history.items():
             self.logger.record(f"train/{name}", float(np.mean(entries)) if entries else 0.0)
         self.logger.record("train/n_updates", self._n_updates, exclude="tensorboard")
+        self.logger.record("train/optimizer_steps", optimizer_steps_before + optimizer_steps_this_iteration)
+        self.logger.record("train/optimizer_steps_this_iteration", optimizer_steps_this_iteration)
         self.logger.record("train/clip_range", clip)
         self.logger.record("train/explained_variance", explained_variance(
             self.rollout_buffer.values.flatten(), self.rollout_buffer.returns.flatten(),

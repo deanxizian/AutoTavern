@@ -45,7 +45,7 @@ def main():
         EntityPolicy, env, **config["ppo"], seed=config["seed"], device=args.device,
         policy_kwargs={"model_config": asdict(model_config),
                        "card_data_sha256": text_metadata["card_data_sha256"]},
-        tensorboard_log=str(experiment_dir / "tensorboard"), verbose=0,
+        tensorboard_log=None, verbose=0,
     )
     model.policy.network.set_text_embeddings(vectors)
     model.rule_text_metadata = text_metadata
