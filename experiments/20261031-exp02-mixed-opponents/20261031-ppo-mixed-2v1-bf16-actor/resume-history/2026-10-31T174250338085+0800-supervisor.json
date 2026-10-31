@@ -1,0 +1,23 @@
+{
+  "previous_execution": {
+    "id": "20261031-ppo-mixed-2v1-bf16-actor",
+    "status": "failed",
+    "date": "2026-10-31",
+    "timezone": "Asia/Shanghai",
+    "training_started": true,
+    "model_directory": "runs/20261031-ppo-mixed-2v1-bf16-actor",
+    "config": "config.json",
+    "weights_uploaded": false,
+    "preflight": "../../20261031-infra/20261031-actor-ppo-integration/full-ppo-preflight.json",
+    "previous_stopped_attempt": "../20261031-ppo-mixed-v2",
+    "automatic_restart": false,
+    "started_at": "2026-10-31T16:57:15.840280+08:00",
+    "supervisor_pid": 3428313,
+    "training_pid": 3428322,
+    "exited_at": "2026-10-31T17:20:50.800268+08:00",
+    "exit_code": 1
+  },
+  "resumed_at": "2026-10-31T17:42:50.338282+08:00",
+  "checkpoint": "/home/eric/projects/AutoTavern/runs/20261031-ppo-mixed-2v1-bf16-actor/latest_model.zip",
+  "reason": "fixed same-batch cross-seat pending-choice invalidation"
+}

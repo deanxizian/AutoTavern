@@ -11,6 +11,7 @@
   "previous_stopped_attempt": "../20261031-ppo-mixed-v2",
   "automatic_restart": false,
   "started_at": "2026-10-31T16:57:15.840280+08:00",
-  "supervisor_pid": 3428313,
-  "training_pid": 3428322
+  "supervisor_pid": 3872515,
+  "training_pid": 3872569,
+  "resumed_at": "2026-10-31T17:42:50.338440+08:00"
 }

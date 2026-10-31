@@ -191,6 +191,7 @@ class MixedOpponentVectorEnv(NativeVectorEnv):
             self.opponent_decisions += len(opponent_slots)
         rewards, dones, metadata = self.batch.step(actions, active=active)
         self._validate_result(dones, metadata)
+        self.opponent_decisions -= int(metadata["deferred"][opponent_slots].sum())
         self.batch.reset_finished_first()
         return rewards[::self.roles], dones[::self.roles], metadata["placement"][::self.roles]
 

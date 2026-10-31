@@ -62,6 +62,10 @@ pub struct SlotResult {
     pub placement: u8,
     /// The slot was ready and its action was illegal or out of range: it was ignored.
     pub rejected: bool,
+    /// Legal at the batch snapshot, but an earlier seat changed this player's
+    /// decision (e.g. a recruit-phase elimination triggers Bigglesworth's Discover).
+    /// No action or penalty is applied; observe again before choosing a new action.
+    pub deferred: bool,
 }
 
 /// Many games stepped together; see the module documentation.
@@ -88,6 +92,18 @@ fn splitmix64(mut z: u64) -> u64 {
 
 fn over(g: &Game) -> bool {
     g.is_over() || g.stopped_reason.is_some()
+}
+
+// A new Discover can replace a menu with the same legal action indices. Checking
+// just legality would then apply an answer to the wrong menu.
+fn pending_stamp(g: &Game, p: PlayerId) -> (usize, Option<Vec<u8>>) {
+    let pending = &g.players[p].pending;
+    (
+        pending.len(),
+        pending
+            .last()
+            .map(|top| serde_json::to_vec(top).expect("serializable pending decision")),
+    )
 }
 
 /// Let the bot seats act until a controlled seat must act, or the game is over.
@@ -396,22 +412,50 @@ impl BatchEnv {
         let ready: Vec<bool> = (0..self.controlled.len())
             .map(|j| !e.finished[j] && !over(&e.game) && e.game.needs_action(controlled[j]))
             .collect();
+        let legal_at_start: Vec<bool> = slots
+            .iter()
+            .enumerate()
+            .map(|(j, (a, _))| {
+                ready[j]
+                    && usize::try_from(**a)
+                        .ok()
+                        .filter(|&a| a < N_ACTIONS)
+                        .is_some_and(|a| e.game.legal_mask(controlled[j])[a])
+            })
+            .collect();
+        let menus: Vec<_> = controlled
+            .iter()
+            .map(|&p| pending_stamp(&e.game, p))
+            .collect();
         for (j, (a, r)) in slots.iter_mut().enumerate() {
             **r = SlotResult::default();
             let p = controlled[j];
-            if !ready[j] || over(&e.game) || !e.game.needs_action(p) {
+            if !ready[j] {
+                continue;
+            }
+            if !legal_at_start[j] {
+                r.rejected = true;
+                r.reward += self.illegal_penalty;
+                continue;
+            }
+            if over(&e.game) || !e.game.needs_action(p) {
+                r.deferred = true;
+                continue;
+            }
+            if menus[j] != pending_stamp(&e.game, p) {
+                r.deferred = true;
                 continue;
             }
             let legal = e.game.legal_mask(p);
-            let ok = usize::try_from(**a)
-                .ok()
-                .filter(|&a| a < legal.len() && legal[a]);
-            match ok.map(|a| e.game.apply_index(p, a)) {
-                Some(Ok(())) => {}
-                _ => {
-                    r.rejected = true;
-                    r.reward += self.illegal_penalty;
-                }
+            let action = **a as usize; // Range checked at the snapshot above.
+            if !legal[action] {
+                r.deferred = true;
+                continue;
+            }
+            // A still-legal action rejected by the engine remains an error.
+            if e.game.apply_index(p, action).is_err() {
+                r.rejected = true;
+                r.reward += self.illegal_penalty;
             }
         }
         advance(&mut e.game, &controlled);

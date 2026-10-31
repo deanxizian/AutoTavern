@@ -1,0 +1,51 @@
+{
+  "verified_at": "2026-10-31T17:42:51.934821+08:00",
+  "status": "passed",
+  "root_cause": "earlier controlled-seat recruit death triggers Bigglesworth Discover and invalidates a later seat action selected from the batch snapshot",
+  "original_failure": {
+    "completed_ppo": 22,
+    "adam_updates": 704,
+    "native_step": 977,
+    "role": 2,
+    "action": 225,
+    "learner_death_seat": 1,
+    "bigglesworth_seat": 6,
+    "legal_at_original_observation": true
+  },
+  "regression": {
+    "cases": 4,
+    "threads": [
+      1,
+      3
+    ],
+    "variants": [
+      "Move invalidated by fresh Discover",
+      "Choose indices unchanged but menu replaced"
+    ]
+  },
+  "python_tests": {
+    "passed": 103,
+    "seconds": 33.75,
+    "cuda_and_wandb_included": true
+  },
+  "rust_clippy_libraries": "passed",
+  "native_build": {
+    "source_hash": "af9455de8615b5a6",
+    "profile": "release",
+    "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+  },
+  "native_build_current": true,
+  "behavior": "defer only previously legal actions invalidated by an earlier seat or a replaced pending menu; no action or penalty; observe again",
+  "invalid_original_actions_remain_rejected": true,
+  "learner_still_first_role": true,
+  "source_hashes": {
+    "crates/taverngym/src/batch.rs": "8beab7e358ec92b396ab79e2829baee93d5baf45b61937d8b29f9b87a1a335d0",
+    "crates/taverngym-py/src/lib.rs": "0eb9e38ca0bf3c228cbf95123295b9adb1e3960e84a8a7cad8c5a6f8e50fe4c8",
+    "python/taverngym/batch.py": "0caefc1fd12cebc681e2b09d84a661047db443f75b6495e3dba11fa7c8ab1eb2",
+    "python/taverngym/learning/actor_sampling.py": "c578c96f3eaf431d94c911a698aae0ff755099a1fffee999a0cf741167958905",
+    "python/taverngym/learning/vector_env.py": "48d7a4568fdbe06a1ca0cc109ccdbb953f0bf1652e669dc9016007c9c3883f47",
+    "tests/test_batch.py": "5a4dc705beed8c36cea11aa5caae15f9db5071834bbd73c15d7544c3c1a01a4c"
+  },
+  "rust_library_tests_passed": 15,
+  "rust_format": "passed"
+}

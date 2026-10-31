@@ -79,7 +79,8 @@ def main():
         bench = json.loads((benchmark / "results.json").read_text())
         tracker.log({f"test/tavernbench_{name.replace('-', '_')}_play": row["play"]
                      for name, row in bench["systems"].items()}, steps)
-        candidates = [models / name for name in ("starting_model.zip", "latest_model.zip", "final_model.zip")]
+        candidates = [models / name for name in ("starting_model.zip", "latest_model.zip", "final_model.zip",
+                                                 "failed_model.zip", "interrupted_model.zip")]
         candidates += sorted((models / "checkpoints").glob("iteration-*.zip"))
         assert models.resolve().parent == (root / "runs").resolve()
         assert not best.is_symlink() and best.is_file()

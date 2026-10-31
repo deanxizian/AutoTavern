@@ -67,9 +67,63 @@ def test_rejected_actions_are_ignored():
     before = env.save(0)
     rewards, dones, info = env.step([N_ACTIONS + 5])
     assert info["rejected"][0] and rewards[0] < 0 and not dones[0]
+    assert not info["deferred"].any()
     assert env.save(0) == before
     with pytest.raises(ValueError):
         env.step([0, 0])
+
+
+@pytest.mark.parametrize("threads", [1, 3])
+@pytest.mark.parametrize("existing_discover", [False, True])
+def test_recruit_death_defers_bigglesworth_stale_move_or_discover(threads, existing_discover):
+    """An earlier seat dies after every actor has selected an initially legal action."""
+    cfg = {"hero_pool": ["TB_BaconShop_HERO_34"], "hero_choices": 1}
+    game = taverngym.Game(11, json.dumps(cfg))
+    for _ in range(100):
+        if game.turn >= 1:
+            break
+        for seat in range(8):
+            if game.needs_action(seat):
+                game.step(seat, game.bot_action(seat))
+    for seat, hero in ((0, "TB_BaconShop_HERO_25"), (1, "TB_BaconShop_HERO_70")):
+        game.debug(json.dumps({"cmd": "set_hero", "p": seat, "hero": hero}))
+        for zone in ("board", "hand", "shop"):
+            game.debug(json.dumps({"cmd": "clear_zone", "p": seat, "zone": zone}))
+    card = next(c["id"] for c in json.loads(taverngym.catalog_json())
+                if c["kind"] == "minion" and c["in_pool"] and c["implemented"])
+    for seat in (0, 1, 1):
+        game.debug(json.dumps({"cmd": "add_minion", "p": seat, "zone": "board", "card": card}))
+    game.debug(json.dumps({"cmd": "add_minion", "p": 0, "zone": "shop", "card": card}))
+    game.debug(json.dumps({"cmd": "set_player", "p": 0, "health": 1, "armor": 0, "gold": 10}))
+    game.step(0, 4)  # Baz'hial's target selection; resolving it will kill her.
+    state = json.loads(game.state_json())
+    if existing_discover:
+        state["players"][1]["pending"] = [{"Discover": {
+            "source": state["players"][1]["powers"][0]["card"],
+            "options": [{"Minion": state["players"][1]["board"][0]}],
+        }}]
+    env = BatchEnv(1, controlled=(0, 1), threads=threads, config=cfg)
+    episode = json.loads(env.save(0))
+    episode["game"] = state
+    env.load(0, json.dumps(episode))
+    action = 30 if existing_discover else 203
+    before = env.observe()
+    assert before["action_mask"][[0, 1], [30, action]].all()
+    old_board = state["players"][1]["board"]
+    rewards, dones, info = env.step([30, action])
+    assert not info["rejected"].any()
+    np.testing.assert_array_equal(info["deferred"], [False, True])
+    np.testing.assert_array_equal(dones, [True, False])
+    np.testing.assert_array_equal(rewards, [-1, 0])
+    state = json.loads(env.save(0))["game"]
+    assert state["players"][1]["board"] == old_board
+    assert len(state["players"][1]["pending"]) == 1 + int(existing_discover)
+    # The fresh Discover is answered using its new observation, without any
+    # illegal-action penalty or unrecorded stand-in operation.
+    after = env.observe()
+    assert after["action_mask"][1, 30]
+    _, _, info = env.step([0, 30])
+    assert not info["rejected"].any() and not info["deferred"].any()
 
 
 def test_save_and_load_continue_exactly():

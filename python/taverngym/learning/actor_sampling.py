@@ -144,6 +144,7 @@ class UnifiedActorSampler:
         counts = np.zeros(self.n_games, dtype=np.int64)
         pending = [None] * self.n_games
         native_steps = terminal_transitions = submitted = 0
+        deferred_opponents = 0
         native_seconds = observation_seconds = reward_seconds = 0.0
         started = time.monotonic()
         while (counts < steps_per_game).any():
@@ -182,6 +183,9 @@ class UnifiedActorSampler:
                     "legal_in_observed_mask": full["action_mask"][rejected, actions[rejected]].tolist(),
                     "after_states": {str(int(s // self.roles)): self.batch.save(int(s // self.roles)) for s in rejected}}
                 raise
+            if metadata["deferred"][::self.roles].any():
+                raise RuntimeError("First-role learner action unexpectedly deferred")
+            deferred_opponents += int(metadata["deferred"].sum())
             self.batch.reset_finished_first()
             native_seconds += time.monotonic() - tick
             tick = time.monotonic()
@@ -230,6 +234,7 @@ class UnifiedActorSampler:
         return {"learner_samples": submitted, "sampling_seconds": seconds,
                 "learner_samples_per_second": submitted / seconds, "native_steps": native_steps,
                 "terminal_transitions": terminal_transitions, "native_seconds": native_seconds,
+                "deferred_opponent_actions": deferred_opponents,
                 "observation_seconds": observation_seconds, "reward_and_sink_seconds": reward_seconds}
 
 
@@ -257,7 +262,7 @@ class ActorOpponentVectorEnv(NativeVectorEnv):
         policy.set_training_mode(False)
         self.sampler.actors = {"learner": PolicyActor(policy), "bot_v1": PolicyActor(self.opponent_policy)}
         result = self.sampler.collect(steps, on_batch=sink)
-        self.opponent_decisions += sum(self.sampler.actors["bot_v1"].batch_sizes)
+        self.opponent_decisions += sum(self.sampler.actors["bot_v1"].batch_sizes) - result["deferred_opponent_actions"]
         self._observe()
         for identity, actor in self.sampler.actors.items():
             result[f"{identity}_forward_calls"] = len(actor.batch_sizes)

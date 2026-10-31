@@ -1,0 +1,28 @@
+{
+  "verified_at": "2026-10-31T17:48:02.028351+08:00",
+  "status": "passed",
+  "completed_ppo": 25,
+  "optimizer_steps": 800,
+  "sampled_decisions": 6553600,
+  "local_train_points": 800,
+  "continuous_optimizer_steps": true,
+  "source_v1_unchanged": true,
+  "original_wandb_run": "tgv920ha",
+  "wandb_server_verified_optimizer_step": 800,
+  "wandb_server_state": "running",
+  "weave_initialized": true,
+  "first_resumed_ppo": {
+    "iteration": 23,
+    "rollout_seconds": 44.08304691800731,
+    "update_seconds": 16.996059992001392,
+    "train/learning_rate": 0.00023168999999999997,
+    "system/actor_deferred_opponent_actions": 1.0
+  },
+  "periodic_evaluation25": true,
+  "models_uploaded": false,
+  "native_build": {
+    "source_hash": "af9455de8615b5a6",
+    "profile": "release",
+    "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+  }
+}

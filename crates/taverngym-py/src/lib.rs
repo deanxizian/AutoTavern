@@ -306,7 +306,8 @@ impl PyBatchEnv {
         ))
     }
     /// One action per slot as little-endian int64 bytes; returns (rewards f32, dones u8,
-    /// placements u8, rejected u8) as bytes, one entry per slot.
+    /// placements u8, action status u8) as bytes, one entry per slot.
+    /// Status bit 0 = rejected, bit 1 = deferred after another seat changed legality.
     #[pyo3(signature = (actions, active=None))]
     fn step<'py>(
         &mut self,
@@ -335,12 +336,15 @@ impl PyBatchEnv {
         let rewards: Vec<f32> = out.iter().map(|r| r.reward).collect();
         let dones: Vec<u8> = out.iter().map(|r| r.done as u8).collect();
         let places: Vec<u8> = out.iter().map(|r| r.placement).collect();
-        let rejected: Vec<u8> = out.iter().map(|r| r.rejected as u8).collect();
+        let status: Vec<u8> = out
+            .iter()
+            .map(|r| r.rejected as u8 | (r.deferred as u8) << 1)
+            .collect();
         Ok((
             f32_bytes(py, &rewards),
             PyBytes::new(py, &dones),
             PyBytes::new(py, &places),
-            PyBytes::new(py, &rejected),
+            PyBytes::new(py, &status),
         ))
     }
     /// Game `i` and its episode state as JSON (`load` restores it exactly).

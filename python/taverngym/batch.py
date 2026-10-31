@@ -84,7 +84,9 @@ class BatchEnv:
     def step(self, actions, active=None):
         """Apply one action per slot. Returns (rewards float32 [n_slots], dones bool
         [n_slots], info) with `info["placement"]` (uint8, the final placement where done;
-        0 if a simulator guard stopped the game) and `info["rejected"]` (bool)."""
+        0 if a simulator guard stopped the game), `info["rejected"]` (bool), and
+        `info["deferred"]` for an unexecuted action invalidated by an earlier seat.
+        Observe again before choosing a replacement for a deferred action."""
         a = np.ascontiguousarray(np.asarray(actions).reshape(-1), dtype="<i8")
         if a.shape[0] != self.n_slots:
             raise ValueError(f"{a.shape[0]} actions for {self.n_slots} slots")
@@ -94,13 +96,15 @@ class BatchEnv:
             if flags.shape != (self.n_games,):
                 raise ValueError("active must contain one flag per game")
             flags = flags.tobytes()
-        rw, dn, pl, rj = self._env.step(a.tobytes(), flags)
+        rw, dn, pl, status = self._env.step(a.tobytes(), flags)
+        status = np.frombuffer(status, dtype=np.uint8)
         return (
             np.frombuffer(rw, dtype="<f4").copy(),
             np.frombuffer(dn, dtype=np.uint8).astype(bool),
             {
                 "placement": np.frombuffer(pl, dtype=np.uint8).copy(),
-                "rejected": np.frombuffer(rj, dtype=np.uint8).astype(bool),
+                "rejected": (status & 1).astype(bool),
+                "deferred": (status & 2).astype(bool),
             },
         )
 

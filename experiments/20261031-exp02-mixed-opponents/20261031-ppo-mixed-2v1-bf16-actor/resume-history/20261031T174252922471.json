@@ -1,0 +1,12 @@
+{
+  "resumed_at": "2026-10-31T17:42:52.922548+08:00",
+  "source_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-mixed-2v1-bf16-actor/latest_model.zip",
+  "source_model_sha256": "9a2010ae08d26d6407df8a822cd07f61430e952546e7280e04729e5aef14a5f5",
+  "completed_iterations": 22,
+  "target_iterations": 100,
+  "remaining_decisions": 20447232,
+  "initial_optimizer_lr": 0.00023465999999999995,
+  "policy_and_adam_restored": true,
+  "environment_and_rng_reinitialized": true,
+  "log_directory": "/home/eric/projects/AutoTavern/experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-2v1-bf16-actor/sessions/resume-0022-20261031T174252922471"
+}
