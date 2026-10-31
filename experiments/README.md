@@ -1,46 +1,32 @@
 # 实验记录
 
-每次实验使用独立目录，命名格式为 `yyyymmdd-{exp-name}`。日期按 **Asia/Shanghai** 时区的实验开始日期计算；实验名使用简短的英文小写连字符形式。例如：`20261031-paper-reproduction`。
+一级目录统一使用 `yyyymmdd-{实验名称}`，日期按北京时间计算；内部保留原记录日期和名称。
 
-每个实验目录应保存：
+| 目录 | 放什么 | 当前内容 |
+| --- | --- | --- |
+| [20261031-infra/](20261031-infra/README.md) | 环境、模拟器、初始化、性能测试和训练试跑 | PPO 基础设施准备与验证 |
+| [20261031-scripted-baseline/](20261031-scripted-baseline/README.md) | 独立参考策略评测 | 脚本机器人 TavernBench 基线 |
+| [20261031-exp01-ppo-scripted/](20261031-exp01-ppo-scripted/README.md) | **第一次正式模型实验**的训练与评测 | 100 PPO × 32 minibatch；整局测试和 TavernBench |
+| [20261031-exp02-mixed-opponents/](20261031-exp02-mixed-opponents/README.md) | **第二次正式模型实验** | 2 V1 + BF16 + 独立 Actor 已启动；旧 4 V1 尝试停止并保留 |
 
-- `README.md`：目的、方法、运行命令、结果和解释。
-- `experiment.json`：实验标识、日期、状态、参数及产物索引。
-- 原始输出与结构化结果，必要时附复现脚本、环境信息和代码版本。
+查第一次正式实验，直接进入 **[20261031-exp01-ppo-scripted](20261031-exp01-ppo-scripted/README.md)**。
+安装验证、旧 300 轮预演和 100 次 Adam 小试跑都归入 infra，不占正式实验编号。
 
-实验进行时标记为 `in_progress`，完成后更新结论和状态。不同设置的独立实验另建目录；同日同类实验可以追加清楚的名称后缀。保留失败结果，并将原始测量与后续解释分开。
+每个日期目录保留 README、配置、状态、原始指标、评估结果和必要的复现脚本。
+同一正式实验的训练和后续 benchmark 放在同一个 expXX 组；不同训练方案另开下一组。
 
-本目录用于保留可审查的实验记录；大规模临时产物、模型权重与构建缓存仍放在 `runs/`、`target/` 等目录。原始文本输出优先使用 `.txt`，避免被项目的 `*.log` 忽略规则排除。
+## 模型与日志
 
-Git 保留配置、实验说明、结构化指标／结果、基准原始样本及复现脚本。
-TensorBoard、实时 progress/process/launcher/training 文件、逐次控制台日志、完整游戏事件流、
-编译／stderr 输出、sessions、reruns 和重复 legacy-runs 留在本地并忽略；因此文档中的这些运行产物路径不一定存在于新克隆中。
-`uv.lock` 和 `.python-version` 应提交。完整目录约定及本轮基础设施改进见
-[训练基础设施](../docs/TRAINING_INFRA.md)。
+- experiments 存记录，runs 存模型；本次只整理记录目录，模型的目录、文件和内容不变。
+- 模型继续放在 `runs/yyyymmdd-{exp-name}/` 并由 Git 忽略；后续 best 名称使用北京时间前缀。
+- 新实验显式指定 `--experiment-dir experiments/20261031-exp02-mixed-opponents/yyyymmdd-{exp-name}`，
+  `--run-dir runs/yyyymmdd-{exp-name}`；两者不要求目录深度相同。
+- 后续使用 W&B。配置、结果和指标 journal 保留；SDK 缓存、旧 TensorBoard、控制台、
+  sessions、reruns、实时进度和进程文件留在本地并忽略。
 
-| 实验 | 内容 |
-| --- | --- |
-| [20261031-scripted-bot-game](20261031-scripted-bot-game/README.md) | 八个脚本机器人完成一局游戏，保存事件日志、阵容与排名。 |
-| [20261031-paper-reproduction](20261031-paper-reproduction/README.md) | 单核吞吐量复现与强化学习接口验证。 |
-| [20261031-scripted-bot-tavernbench](20261031-scripted-bot-tavernbench/README.md) | 脚本机器人 TavernBench 基线，区分策略适配与战斗模拟器贡献。 |
-| [20261031-ppo-library-setup](20261031-ppo-library-setup/README.md) | uv 与 Python 3.12 安装 PPO 库，验证 CUDA、模型存取与 TavernGym 接口。 |
-| [20261031-ppo-small-init](20261031-ppo-small-init/README.md) | 初始化 d=192、4 层、3,491,978 参数的 PPO，保存零训练步数模型。 |
-| [20261031-ppo-small-paper300](20261031-ppo-small-paper300/README.md) | 300 轮 × 4,194,304 决策；完成 3 轮后停止；默认 microbatch 改为 1,024，并记录两种精度的全量时间估算。 |
-| [20261031-ppo-small-v1-100-minibatches](20261031-ppo-small-v1-100-minibatches/README.md) | 新首版：100 个有效 minibatch、100 次 Adam、819,200 条样本，LR 3e-4→3e-6 线性衰减。 |
-| [20261031-ppo-small-100ppo-32minibatches](20261031-ppo-small-100ppo-32minibatches/README.md) | 已完成：100 次 PPO、3,200 次 Adam；独立 128 局平均名次 1.77、前四率 93.75%、第一名率 58.59%；仅保留第 100 轮最佳模型。 |
-| [20261031-microbatch-scaling](20261031-microbatch-scaling/README.md) | 256／512／1024／2048 的前后向延迟、显存与有效 batch 更新耗时实测。 |
-| [20261031-bf16-mixed-precision](20261031-bf16-mixed-precision/README.md) | 允许 TF32 的 FP32 基线与 BF16 autocast 对比；记录延迟、显存和 PPO 数值差异，正式训练保持停止。 |
-
-## 训练模型与日志
-
-训练产生的模型权重、定期检查点、最佳模型与最终模型，
-统一放在 `runs/yyyymmdd-{exp-name}/`。`runs/` 已被 Git 忽略。
-实验配置、说明、W&B 日志、评估指标、原始文本输出和模型路径，
-放在对应的 `experiments/yyyymmdd-{exp-name}/`，不将模型文件复制进实验记录。
-PPO 模型沿用 SB3 原生 `.zip` 格式；具体目录和恢复说明见
-[训练环境与产物说明](../docs/TRAINING.md)。
-W&B 项目、指标含义和旧训练迁移见 [训练指标](../docs/TRAINING_METRICS.md)。
-历史 TensorBoard 原始日志保留；后续默认仅使用 W&B。
+目录迁移对照见 [layout-migration.json](layout-migration.json)。
+历史命令、provenance 和答案封存清单记录运行当时的路径／源码摘要，原样保留；
+旧路径可查迁移对照。当前 README 链接和复现脚本使用新路径。
 
 ## 默认脚本机器人说明
 

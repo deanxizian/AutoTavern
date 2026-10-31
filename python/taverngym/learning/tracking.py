@@ -3,6 +3,7 @@
 import json
 import numbers
 import os
+import warnings
 from pathlib import Path
 
 from stable_baselines3.common.logger import KVWriter
@@ -55,9 +56,15 @@ class WandbTracker:
                     "weave_initialized": False}
         metadata_path.write_text(json.dumps(metadata, indent=2) + "\n")
         if mode == "online" and settings.get("weave_project"):
-            import weave
-            self.weave_client = weave.init(settings["weave_project"])
-            metadata["weave_initialized"] = True
+            try:
+                import weave
+                self.weave_client = weave.init(settings["weave_project"])
+                metadata["weave_initialized"] = True
+            except Exception as exc:
+                # Weave tracing is independent of the required W&B PPO scalars.
+                # Preserve the failure visibly instead of aborting before sampling.
+                metadata["weave_error"] = f"{type(exc).__name__}: {exc}"
+                warnings.warn(f"Weave initialization failed; W&B metrics remain enabled: {exc}", RuntimeWarning)
             metadata_path.write_text(json.dumps(metadata, indent=2) + "\n")
         self.journal = (self.folder / "wandb-metrics.jsonl").open("a", buffering=1)
         self.closed = False

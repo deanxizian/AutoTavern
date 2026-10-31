@@ -5,13 +5,16 @@ import numpy as np
 from gymnasium import spaces
 
 import taverngym as tg
+from .rewards import ActionRewardShaper, RewardShapingConfig
 
 
 class TavernGymEnv(gym.Env):
     metadata = {"render_modes": []}
 
-    def __init__(self, seed=0, agent=0, config=None):
+    def __init__(self, seed=0, agent=0, config=None, reward_shaping=None):
         self.simulator = tg.BattlegroundsEnv(seed=seed, agent=agent, config=config)
+        self.reward_shaper = (ActionRewardShaper(RewardShapingConfig(**reward_shaping))
+                              if reward_shaping is not None else None)
         self.action_space = spaces.Discrete(tg.N_ACTIONS)
         self.observation_space = spaces.Dict({
             "features": spaces.Box(-np.inf, np.inf, (tg.OBS_FLOATS,), dtype=np.float32),
@@ -25,11 +28,22 @@ class TavernGymEnv(gym.Env):
         super().reset(seed=seed)
         self._obs, info = self.simulator.reset(seed=seed)
         self._done = False
+        if self.reward_shaper is not None:
+            self.reward_shaper.reset()
         return self._obs, info
 
     def step(self, action):
+        before = self._obs
         self._obs, reward, done, truncated, info = self.simulator.step(int(action))
         self._done = done or truncated
+        if self.reward_shaper is not None:
+            if info.get("illegal") is not None:
+                raise RuntimeError("Reward-shaped training requires a valid native action")
+            reward, components = self.reward_shaper.step(
+                action, before, self._obs, reward, done=self._done,
+            )
+            if components is not None:
+                info["reward_components"] = components
         return self._obs, reward, done, truncated, info
 
     def action_masks(self):
@@ -38,13 +52,13 @@ class TavernGymEnv(gym.Env):
         return self._obs["action_mask"].copy()
 
 
-def make_vector_env(n_envs=8, seed=42):
+def make_vector_env(n_envs=8, seed=42, reward_shaping=None):
     from functools import partial
     from stable_baselines3.common.monitor import Monitor
     from stable_baselines3.common.vec_env import DummyVecEnv
 
     def make_one(seed):
-        return Monitor(TavernGymEnv(seed=seed))
+        return Monitor(TavernGymEnv(seed=seed, reward_shaping=reward_shaping))
 
     if n_envs < 1:
         raise ValueError("n_envs must be positive")

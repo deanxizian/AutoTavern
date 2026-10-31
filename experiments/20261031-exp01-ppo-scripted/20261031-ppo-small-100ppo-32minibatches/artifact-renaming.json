@@ -1,0 +1,10 @@
+{
+  "renamed_at": "2026-10-31T14:21:03.332384+08:00",
+  "old_path": "runs/20261031-ppo-small-100ppo-32minibatches/best_model.zip",
+  "new_path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+  "filename_time": "training start, Asia/Shanghai",
+  "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "bytes": 53921685,
+  "contents_unchanged": true,
+  "git_ignored": true
+}

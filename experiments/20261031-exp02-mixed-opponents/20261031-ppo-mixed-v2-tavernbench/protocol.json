@@ -1,0 +1,28 @@
+{
+  "dataset": "tavernbench/data/eval",
+  "tasks": 368,
+  "play_scenarios": 30,
+  "play_tasks": 288,
+  "models": [
+    "initial zero-step policy",
+    "retained PPO iteration 100"
+  ],
+  "selection": "argmax candidate-plan probability under the frozen policy; no retraining",
+  "candidate_constraints": "renormalize native legal action logits over continuations of public candidate plans; shared forced actions have probability one",
+  "positioning": "canonical left-to-right move sequence followed by EndTurn for each public arrangement",
+  "ordering": "execute each listed sequence, resolving shifted cards by entity ID",
+  "targeting": "execute the question's required action, then score its target choices",
+  "purchase": "listed buy-and-immediately-play sequences followed by EndTurn, including buying nothing",
+  "hero_selection": "restore the public offered heroes as a pending HeroSelect, matching the scripted adapter",
+  "natural_decisions": "use the actual saved seat and public action-to-answer map",
+  "observation_boundary": "only Game.observe(seat) and the true legal mask enter the network",
+  "blocked_tasks": "saved states whose pending choices block all listed plans are unmappable and remain zero in the denominator; never clear pending state to make actions legal",
+  "candidate_execution": "recruit actions on independent reseeded copies only; no combat search or value-head lookahead",
+  "rules": "no rule-QA head; retain all unsupported items, count zero in official denominator",
+  "combat": "pure policy unsupported; separate augmented system uses the unchanged scripted baseline's 256-simulation combat component",
+  "aggregation": "unchanged official scorer; Play is the unweighted mean of 30 play-scenario accuracies",
+  "leakage_control": "inference denies label-file reads; seal prediction hashes before opening labels or reference answers",
+  "precision": "FP32 checkpoint, matmul precision high permits TF32; no BF16 autocast",
+  "comparison_scope": "a local task adapter, not a reproduction of the original TavernAgent benchmark interface",
+  "comparison": "V1 source vs V2 retained best; identical label-free adapter and official scoring"
+}

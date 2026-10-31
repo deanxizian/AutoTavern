@@ -1,0 +1,179 @@
+{
+  "status": "completed",
+  "completed_at": "2026-10-31T15:54:15.244436+08:00",
+  "device": "NVIDIA GeForce RTX 5080",
+  "source_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "weights_dtype": "float32",
+  "formal_training_unchanged": true,
+  "formal_job_shared_resources": true,
+  "no_probe_updates_or_checkpoints": true,
+  "sampling": [
+    {
+      "frozen_opponents": 1,
+      "scripted_opponents": 6,
+      "learner_samples": 16384,
+      "sampling_seconds": 26.754650037008105,
+      "learner_samples_per_second": 612.3795294401906,
+      "learner_inference_seconds": 0.7289625149860512,
+      "opponent_inference_seconds": 17.19342638299713,
+      "remaining_driver_seconds": 8.832261139024922,
+      "opponent_decisions": 19094,
+      "opponent_forward_calls": 2408,
+      "opponent_mean_batch": 7.929401993355482,
+      "opponent_median_batch": 2.0,
+      "opponent_max_batch": 256,
+      "waiting_rounds": 2344,
+      "blocks_seconds": [
+        12.774199259001762,
+        13.980450778006343
+      ]
+    },
+    {
+      "frozen_opponents": 4,
+      "scripted_opponents": 3,
+      "learner_samples": 16384,
+      "sampling_seconds": 42.535799658006,
+      "learner_samples_per_second": 385.1814267447594,
+      "learner_inference_seconds": 0.7119101449861773,
+      "opponent_inference_seconds": 21.782227670031716,
+      "remaining_driver_seconds": 20.041661842988105,
+      "opponent_decisions": 70938,
+      "opponent_forward_calls": 2664,
+      "opponent_mean_batch": 26.62837837837838,
+      "opponent_median_batch": 6.5,
+      "opponent_max_batch": 1024,
+      "waiting_rounds": 2600,
+      "blocks_seconds": [
+        21.39627112400194,
+        21.139528534004057
+      ]
+    }
+  ],
+  "inference": [
+    {
+      "batch": 32,
+      "fp32_median_ms": 2.3552404963993467,
+      "bf16_median_ms": 4.007355499197729,
+      "speedup": 0.5877293633846223,
+      "greedy_disagreement_fraction": 0.0,
+      "mean_probability_total_variation": 0.0008620746666565537,
+      "max_probability_difference": 0.002644956111907959,
+      "bf16_raw_logits_dtype": "torch.bfloat16",
+      "distribution_dtype": "torch.float32",
+      "timings_ms": {
+        "fp32_tf32_allowed": [
+          2.7002569986507297,
+          2.0536939991870895,
+          2.4180619948310778,
+          2.063413994619623,
+          2.018182996835094,
+          2.6158560067415237,
+          2.5598950014682487,
+          2.2924189979676157
+        ],
+        "bf16": [
+          3.925502998754382,
+          5.260233003355097,
+          2.927872003056109,
+          3.265488994657062,
+          5.1946499952464364,
+          2.842850000888575,
+          4.089207999641076,
+          5.4894480053917505
+        ]
+      }
+    },
+    {
+      "batch": 256,
+      "fp32_median_ms": 6.345528498059139,
+      "bf16_median_ms": 5.966842498310143,
+      "speedup": 1.063465057081068,
+      "greedy_disagreement_fraction": 0.01953125,
+      "mean_probability_total_variation": 0.0009341989643871784,
+      "max_probability_difference": 0.00793352723121643,
+      "bf16_raw_logits_dtype": "torch.bfloat16",
+      "distribution_dtype": "torch.float32",
+      "timings_ms": {
+        "fp32_tf32_allowed": [
+          6.013956997776404,
+          10.555782995652407,
+          6.024756999977399,
+          5.7756210007937625,
+          5.6155490019591525,
+          7.826194996596314,
+          23.340974999882746,
+          6.666299996140879
+        ],
+        "bf16": [
+          5.301623998093419,
+          5.839624995132908,
+          23.62897300190525,
+          5.234469994320534,
+          6.094060001487378,
+          10.490713000763208,
+          6.184832003782503,
+          5.575567003688775
+        ]
+      }
+    },
+    {
+      "batch": 1024,
+      "fp32_median_ms": 25.50740699734888,
+      "bf16_median_ms": 19.970326000475325,
+      "speedup": 1.277265428553433,
+      "greedy_disagreement_fraction": 0.0185546875,
+      "mean_probability_total_variation": 0.000923650455661118,
+      "max_probability_difference": 0.005759894847869873,
+      "bf16_raw_logits_dtype": "torch.bfloat16",
+      "distribution_dtype": "torch.float32",
+      "timings_ms": {
+        "fp32_tf32_allowed": [
+          25.324157999421004,
+          25.983061001170427,
+          25.048659997992218,
+          25.38039100181777,
+          25.786613994569052,
+          25.55338299862342,
+          26.16615700389957,
+          25.46143099607434
+        ],
+        "bf16": [
+          20.36688999942271,
+          18.562026001745835,
+          20.0323879980715,
+          19.90826400287915,
+          19.12969799741404,
+          20.588204999512527,
+          19.34396800061222,
+          20.598399998561945
+        ]
+      }
+    }
+  ],
+  "formal_progress_at_end": {
+    "status": "running",
+    "phase": "sampling",
+    "updated_at": "2026-10-31T15:54:14.430998+08:00",
+    "pid": 2330509,
+    "completed_iterations": 1,
+    "target_iterations": 100,
+    "sampled_decisions": 498432,
+    "optimizer_steps": 32,
+    "target_decisions": 26214400,
+    "elapsed_seconds": 683.9196401160007,
+    "estimated_remaining_seconds": 31523.642854110425,
+    "latest_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-mixed-v2/latest_model.zip",
+    "best_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-mixed-v2/20261031-154229-best_model.zip"
+  },
+  "limitations": [
+    "Concurrent formal training means these are not isolated peak-speed measurements.",
+    "Sampling uses fixed V1 for the learner and opponents, 64 learner steps per environment, ABBA order.",
+    "BF16 timing covers GPU-resident neural forward plus FP32 masked softmax; not complete game throughput.",
+    "Numerical differences are not a win-rate validation."
+  ],
+  "dtype_rechecked_separately": true,
+  "weights_dtype_verified": [
+    "torch.float32"
+  ],
+  "one_opponent_sampling_speedup": 1.5898469835773885
+}

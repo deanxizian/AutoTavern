@@ -8,6 +8,7 @@ from pathlib import Path
 import signal
 import time
 from datetime import datetime
+from dataclasses import asdict
 from zoneinfo import ZoneInfo
 
 import numpy as np
@@ -16,10 +17,15 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.logger import configure
 
 from .buffer import CompactPlacementBuffer
-from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO
+from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO, PlacementBuffer
+from .precision import FORWARD_PRECISIONS, configure_precision
+from .rewards import REWARD_METRICS, RewardShapingConfig
 from .schedule import LinearLearningRate
 from .tracking import WandbOutputFormat, WandbTracker, tracking_settings
-from .vector_env import NativeVectorEnv
+from .vector_env import MixedOpponentVectorEnv, NativeVectorEnv
+from .actor_sampling import ActorOpponentVectorEnv
+
+EVALUATION_METRICS = (*REWARD_METRICS, "cap_end_rate")
 
 
 def now():
@@ -40,47 +46,113 @@ def save_model(model, path):
     temporary.replace(path)
 
 
-def evaluate(model, games, seed, n_envs=32, threads=4, simulator_config=None):
+def evaluate(model, games, seed, n_envs=32, threads=4, simulator_config=None, reward_shaping=None,
+             opponent_policy=None, deterministic=False, frozen_opponents=4, rotate_seats=False):
     devices = [model.device.index or 0] if model.device.type == "cuda" else []
     # Evaluation must not advance the training sampler's random stream.
     with torch.random.fork_rng(devices=devices):
         torch.manual_seed(seed)
-        return _evaluate(model, games, seed, n_envs, threads, simulator_config)
+        return _evaluate(model, games, seed, n_envs, threads, simulator_config, reward_shaping,
+                         opponent_policy, deterministic, frozen_opponents, rotate_seats)
 
 
-def _evaluate(model, games, seed, n_envs, threads, simulator_config):
+def _evaluate(model, games, seed, n_envs, threads, simulator_config, reward_shaping,
+              opponent_policy, deterministic, frozen_opponents, rotate_seats):
     if games == 0:
         return None
-    env = NativeVectorEnv(min(n_envs, games), seed=seed, threads=threads, config=simulator_config)
+    options = dict(seed=seed, threads=threads, config=simulator_config,
+                   reward_shaping=reward_shaping, rotate_seats=rotate_seats)
+    env = (MixedOpponentVectorEnv(min(n_envs, games), opponent_policy=opponent_policy,
+                                  frozen_opponents=frozen_opponents, **options)
+           if opponent_policy is not None else NativeVectorEnv(min(n_envs, games), **options))
     obs = env.reset()
     counts = np.zeros(env.num_envs, dtype=np.int64)
     quotas = np.array([(games + i) // env.num_envs for i in range(env.num_envs)])
     placements = []
+    components = []
     try:
         while (counts < quotas).any():
-            actions, _ = model.predict(obs, deterministic=False)
+            actions, _ = model.predict(obs, deterministic=deterministic)
             obs, _, dones, infos = env.step(actions)
             for i, done in enumerate(dones):
                 if done and counts[i] < quotas[i]:
                     placements.append(infos[i]["placement"])
+                    if "reward_components" in infos[i]:
+                        components.append(infos[i]["reward_components"])
                     counts[i] += 1
     finally:
         env.close()
     values = np.array(placements)
-    return {"games": games, "seed": seed, "deterministic": False,
-            "mean_placement": float(values.mean()), "first_rate": float((values == 1).mean()),
-            "top4_rate": float((values <= 4).mean()), "placements": placements,
-            "opponents": "seven identical scripted bots"}
+    result = {"games": games, "seed": seed, "deterministic": deterministic,
+              "mean_placement": float(values.mean()), "first_rate": float((values == 1).mean()),
+              "top4_rate": float((values <= 4).mean()), "placements": placements,
+              "opponents": "seven identical scripted bots"}
+    if opponent_policy is not None:
+        result["opponents"] = f"{frozen_opponents} frozen policies and {7 - frozen_opponents} scripted bots"
+    if components:
+        result.update({name: float(np.mean([row[name] for row in components]))
+                       for name in EVALUATION_METRICS})
+        result["reward_shaping"] = asdict(RewardShapingConfig(**reward_shaping))
+    return result
+
+
+def load_frozen_policy(path, device, forward_precision=None):
+    # A small temporary buffer avoids allocating the old training rollout.
+    frozen = EntityPPO.load(path, device=device, n_envs=1, n_steps=2, batch_size=2,
+                            rollout_buffer_class=PlacementBuffer, rollout_buffer_kwargs={})
+    if forward_precision is not None:
+        frozen.set_forward_precision(forward_precision)
+    policy = frozen.policy
+    policy.optimizer.state.clear()
+    policy.requires_grad_(False)
+    policy.set_training_mode(False)
+    return policy
+
+
+def evaluate_suite(model, games, seed, config, opponent_policy=None):
+    # Standalone held-out evaluation must use the same configured precision as
+    # training validation, even when opponents originate from an old FP32 file.
+    configure_precision(model, config, opponent_policy)
+    options = dict(simulator_config=config.get("simulator_config"),
+                   reward_shaping=config.get("reward_shaping"))
+    if not config.get("evaluation_matrix"):
+        return evaluate(model, games, seed, **options)
+    if opponent_policy is None:
+        raise ValueError("The mixed evaluation matrix requires the frozen opponent")
+    conditions = {}
+    for name, opponent, greedy in (("mixed_sampled", opponent_policy, False),
+                                    ("mixed_greedy", opponent_policy, True),
+                                    ("scripted_sampled", None, False),
+                                    ("scripted_greedy", None, True)):
+        conditions[name] = evaluate(
+            model, games, seed, opponent_policy=opponent, deterministic=greedy,
+            frozen_opponents=config.get("frozen_opponents", 4), rotate_seats=True, **options,
+        )
+    return {**conditions["mixed_sampled"], "conditions": conditions,
+            "selection_condition": "mixed_sampled"}
+
+
+def log_evaluation(logger, prefix, result):
+    names = ("mean_placement", "first_rate", "top4_rate", *EVALUATION_METRICS)
+    conditions = result.get("conditions", {"mixed_sampled": result})
+    labels = {"mixed_sampled": "", "mixed_greedy": "greedy_",
+              "scripted_sampled": "scripted_", "scripted_greedy": "scripted_greedy_"}
+    for label, row in conditions.items():
+        for name in names:
+            if name in row:
+                logger.record(f"{prefix}/{labels[label]}{name}", row[name])
 
 
 class Recorder(BaseCallback):
-    def __init__(self, config, experiment, models):
+    def __init__(self, config, experiment, models, opponent_policy=None):
         super().__init__()
         self.config, self.experiment, self.models = config, experiment, models
+        self.opponent_policy = opponent_policy
         self.started = time.monotonic()
         self.last_write = 0
         self.completed = 0
         self.best = float("inf")
+        self.best_model_path = models / config.get("best_model_filename", "best_model.zip")
         self.iteration_seconds = []
         self.phase = "sampling"
 
@@ -98,6 +170,7 @@ class Recorder(BaseCallback):
                   "target_decisions": budget * self.config["iterations"],
                   "elapsed_seconds": elapsed, "estimated_remaining_seconds": estimate,
                   "latest_model": str(self.models / "latest_model.zip"), **extra}
+        record["best_model"] = str(self.best_model_path)
         write_json(self.experiment / "progress.json", record)
         return record
 
@@ -143,15 +216,14 @@ class Recorder(BaseCallback):
         if self.config["evaluation_games"] and self.completed % eval_every == 0:
             self.phase = "evaluating"
             self.status()
-            result = evaluate(model, self.config["evaluation_games"], self.config["evaluation_seed"],
-                              simulator_config=self.config.get("simulator_config"))
+            result = evaluate_suite(model, self.config["evaluation_games"], self.config["evaluation_seed"],
+                                    self.config, self.opponent_policy)
             write_json(self.experiment / f"evaluation-{self.completed:04d}.json", result)
-            for name in ("mean_placement", "first_rate", "top4_rate"):
-                model.logger.record(f"{self.config.get('validation_prefix', self.config.get('tensorboard_validation_prefix', 'val'))}/{name}", result[name])
+            log_evaluation(model.logger, self.config.get("validation_prefix", self.config.get("tensorboard_validation_prefix", "val")), result)
             model.logger.record(f"{self.config.get('validation_prefix', self.config.get('tensorboard_validation_prefix', 'val'))}/ppo_iteration", self.completed)
             if result["mean_placement"] < self.best:
                 self.best = result["mean_placement"]
-                save_model(model, self.models / "best_model.zip")
+                save_model(model, self.best_model_path)
             metrics["evaluation_mean_placement"] = result["mean_placement"]
         with (self.experiment / "metrics.jsonl").open("a") as stream:
             stream.write(json.dumps(metrics) + "\n")
@@ -175,12 +247,20 @@ def main():
     parser.add_argument("--experiment-dir", type=Path, required=True)
     parser.add_argument("--run-dir", type=Path, required=True)
     parser.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
-    parser.add_argument("--resume", action="store_true", help="Resume a fully updated iteration checkpoint")
+    parser.add_argument("--forward-precision", choices=FORWARD_PRECISIONS,
+                        help="Neural forward precision; missing inherits config/checkpoint")
+    stage = parser.add_mutually_exclusive_group()
+    stage.add_argument("--resume", action="store_true", help="Resume a fully updated iteration checkpoint")
+    stage.add_argument("--warm-start", action="store_true", help="Start a new stage from trained weights with fresh Adam")
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
+    if args.forward_precision is not None:
+        config["forward_precision"] = args.forward_precision
     config.setdefault("micro_batch_size", DEFAULT_MICRO_BATCH_SIZE)
     config.setdefault("tracking_backend", tracking_settings(config)["backend"])
     config.setdefault("train_per_optimizer_step", config.get("tensorboard_train_per_optimizer_step", True))
+    if config.get("reward_shaping") is not None:
+        config["reward_shaping"] = asdict(RewardShapingConfig(**config["reward_shaping"]))
     if config["tracking_backend"] not in ("wandb", "tensorboard", "none"):
         raise ValueError("tracking_backend must be wandb, tensorboard or none")
     expected = config["n_envs"] * config["n_steps"]
@@ -194,8 +274,24 @@ def main():
     torch.set_float32_matmul_precision("high")
     if args.device == "cuda":
         torch.cuda.reset_peak_memory_stats()
-    env = NativeVectorEnv(config["n_envs"], seed=config["seed"], threads=config["env_threads"],
-                          config=config.get("simulator_config"))
+    opponent_policy = None
+    if config.get("opponent_model"):
+        source_hash = hashlib.sha256(Path(config["opponent_model"]).read_bytes()).hexdigest()
+        if config.get("opponent_model_sha256", source_hash) != source_hash:
+            raise ValueError("Frozen opponent checkpoint hash changed")
+        config["opponent_model_sha256"] = source_hash
+        opponent_policy = load_frozen_policy(config["opponent_model"], args.device)
+    options = dict(seed=config["seed"], threads=config["env_threads"],
+                   config=config.get("simulator_config"), reward_shaping=config.get("reward_shaping"))
+    driver = config.get("sampling_driver", "synchronous")
+    if driver not in ("synchronous", "unified_actor"):
+        raise ValueError("sampling_driver must be synchronous or unified_actor")
+    if driver == "unified_actor" and opponent_policy is None:
+        raise ValueError("Unified actor sampling requires a fixed opponent policy")
+    mixed_class = ActorOpponentVectorEnv if driver == "unified_actor" else MixedOpponentVectorEnv
+    env = (mixed_class(config["n_envs"], opponent_policy=opponent_policy,
+                                  frozen_opponents=config.get("frozen_opponents", 4), **options)
+           if opponent_policy is not None else NativeVectorEnv(config["n_envs"], **options))
     model = EntityPPO.load(
         args.model, env=env, device=args.device,
         learning_rate=LinearLearningRate(config["learning_rate_start"], config["learning_rate_end"]),
@@ -203,11 +299,25 @@ def main():
         micro_batch_size=config["micro_batch_size"], rollout_buffer_class=CompactPlacementBuffer,
         rollout_buffer_kwargs={}, seed=config["seed"],
     )
+    configure_precision(model, config, opponent_policy)
     total_decisions = config["iterations"] * expected
+    if args.warm_start:
+        config["warm_start_source_timesteps"] = model.num_timesteps
+        config["warm_start_source_optimizer_steps"] = model.optimizer_step_count()
+        model.start_new_stage()
+        config["stage_initialization"] = "inherited network and text; fresh Adam and stage counters"
     if not args.resume and model.num_timesteps != 0:
         raise ValueError("This experiment must start from the zero-step initialization")
     if model.num_timesteps % expected:
         raise ValueError("Resume requires a fully updated iteration checkpoint, not an interrupted rollout")
+    if args.resume:
+        prior_path = args.experiment_dir / "resolved-config.json"
+        prior_config = json.loads(prior_path.read_text()) if prior_path.exists() else {}
+        config["best_model_filename"] = prior_config.get(
+            "best_model_filename", model.experiment_config.get("best_model_filename", "best_model.zip"))
+    else:
+        stamp = datetime.now(ZoneInfo("Asia/Shanghai")).strftime("%Y%m%d-%H%M%S")
+        config["best_model_filename"] = f"{stamp}-best_model.zip"
     remaining_decisions = total_decisions - model.num_timesteps
     if remaining_decisions <= 0:
         raise ValueError("Checkpoint has already reached the requested budget")
@@ -260,7 +370,7 @@ def main():
         "ppo_inherited": {name: getattr(model, name) for name in
                           ("gamma", "gae_lambda", "ent_coef", "vf_coef", "aux_coef", "target_kl", "max_grad_norm")},
     })
-    recorder = Recorder(config, args.experiment_dir, args.run_dir)
+    recorder = Recorder(config, args.experiment_dir, args.run_dir, opponent_policy)
     recorder.init_callback(model)
     recorder.completed = initial_iteration
     recorder.started -= previous_elapsed
@@ -306,26 +416,27 @@ def main():
         if config["initial_evaluation_games"] and not args.resume:
             recorder.phase = "initial_evaluation"
             recorder.status()
-            result = evaluate(model, config["initial_evaluation_games"], config["evaluation_seed"],
-                              simulator_config=config.get("simulator_config"))
+            result = evaluate_suite(model, config["initial_evaluation_games"], config["evaluation_seed"],
+                                    config, opponent_policy)
             recorder.best = result["mean_placement"]
             write_json(args.experiment_dir / "evaluation-0000.json", result)
-            for name in ("mean_placement", "first_rate", "top4_rate"):
-                model.logger.record(f"{config.get('baseline_prefix', config.get('tensorboard_baseline_prefix', 'val'))}/{name}", result[name])
+            log_evaluation(model.logger, config.get("baseline_prefix", config.get("tensorboard_baseline_prefix", "val")), result)
             model.logger.dump(0)
-            save_model(model, args.run_dir / "best_model.zip")
+            save_model(model, recorder.best_model_path)
         model.learn(remaining_decisions, callback=recorder,
                     reset_num_timesteps=False, log_interval=None)
         save_model(model, args.run_dir / "final_model.zip")
         if config["final_evaluation_games"]:
-            write_json(args.experiment_dir / "evaluation-final-heldout.json", evaluate(
-                model, config["final_evaluation_games"], config["final_evaluation_seed"],
-                simulator_config=config.get("simulator_config")))
+            write_json(args.experiment_dir / "evaluation-final-heldout.json", evaluate_suite(
+                model, config["final_evaluation_games"], config["final_evaluation_seed"], config, opponent_policy))
     except KeyboardInterrupt:
         status = "interrupted"
         save_model(model, args.run_dir / "interrupted_model.zip")
     except BaseException:
         status = "failed"
+        failure = getattr(getattr(env, "sampler", None), "last_failure", None)
+        if failure is not None:
+            write_json(args.experiment_dir / "native-action-failure.json", failure)
         save_model(model, args.run_dir / "failed_model.zip")
         raise
     finally:

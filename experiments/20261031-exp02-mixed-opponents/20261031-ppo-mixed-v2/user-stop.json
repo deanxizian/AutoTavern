@@ -1,0 +1,40 @@
+{
+  "requested_at": "2026-10-31T16:02:00.853787+08:00",
+  "reason": "user requested stopping second training pending experiment design",
+  "training_pid": 2330509,
+  "before_stop": {
+    "status": "failed",
+    "phase": "sampling",
+    "updated_at": "2026-10-31T15:56:20.509401+08:00",
+    "pid": 2330509,
+    "completed_iterations": 2,
+    "target_iterations": 100,
+    "sampled_decisions": 603392,
+    "optimizer_steps": 64,
+    "target_decisions": 26214400,
+    "elapsed_seconds": 809.9980232890011,
+    "estimated_remaining_seconds": 30258.958066099185,
+    "latest_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-mixed-v2/latest_model.zip",
+    "peak_gpu_allocated_bytes": 5533085696,
+    "best_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-mixed-v2/20261031-154229-best_model.zip"
+  },
+  "resume_from": "runs/20261031-ppo-mixed-v2/latest_model.zip",
+  "preserve_all_checkpoints": true,
+  "postprocessing_requested": false,
+  "status": "stopped",
+  "confirmed_at": "2026-10-31T16:02:52.622018+08:00",
+  "training_process_absent": true,
+  "observed_prior_status": "failed",
+  "previous_exit_at": "2026-10-31T15:56:26.933643+08:00",
+  "previous_error": "native batch rejected a policy action despite masking",
+  "complete_checkpoint": {
+    "path": "runs/20261031-ppo-mixed-v2/latest_model.zip",
+    "num_timesteps": 524288,
+    "ppo_iterations": 2,
+    "optimizer_steps": 64,
+    "sha256": "a91db3db987c989fa439d540ffb9676ae4ce5eb51fafc10c7e0b750544551dac"
+  },
+  "automatic_restart": false,
+  "postprocessing_not_run": true,
+  "checkpoints_preserved": true
+}

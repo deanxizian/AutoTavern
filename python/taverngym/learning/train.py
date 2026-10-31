@@ -3,6 +3,7 @@
 import argparse
 import hashlib
 import json
+from dataclasses import asdict
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -13,6 +14,8 @@ from stable_baselines3.common.logger import configure
 
 from .env import make_vector_env
 from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO
+from .precision import FORWARD_PRECISIONS, configure_precision
+from .rewards import RewardShapingConfig
 from .tracking import WandbOutputFormat, WandbTracker, tracking_settings
 
 
@@ -27,6 +30,10 @@ def main():
     parser.add_argument("--micro-batch-size", type=int, default=DEFAULT_MICRO_BATCH_SIZE)
     parser.add_argument("--checkpoint-every", type=int, default=100_000)
     parser.add_argument("--tracking-backend", choices=("wandb", "none"), default="wandb")
+    parser.add_argument("--forward-precision", choices=FORWARD_PRECISIONS,
+                        help="Neural forward precision; missing inherits checkpoint")
+    parser.add_argument("--operation-cost", type=float, help="Move/Freeze reward cost; enables reward shaping")
+    parser.add_argument("--cycle-cost", type=float, help="Additional no-progress return cost; enables reward shaping")
     args = parser.parse_args()
     experiment_dir = args.experiment_dir or Path("experiments") / args.run_dir.name
     if args.run_dir.exists():
@@ -36,12 +43,25 @@ def main():
     torch.set_num_threads(2)
     model = EntityPPO.load(args.model, device=args.device, micro_batch_size=args.micro_batch_size)
     config = dict(model.experiment_config)
+    if args.forward_precision is not None:
+        config["forward_precision"] = args.forward_precision
+    configure_precision(model, config)
     if "ppo" in config:
         config["ppo"] = {**config["ppo"], "micro_batch_size": args.micro_batch_size}
     else:
         config["micro_batch_size"] = args.micro_batch_size
+    if args.operation_cost is not None or args.cycle_cost is not None:
+        costs = dict(config.get("reward_shaping") or {})
+        if args.operation_cost is not None:
+            costs["operation_cost"] = args.operation_cost
+        if args.cycle_cost is not None:
+            costs["cycle_cost"] = args.cycle_cost
+        config["reward_shaping"] = asdict(RewardShapingConfig(**costs))
+    elif config.get("reward_shaping") is not None:
+        config["reward_shaping"] = asdict(RewardShapingConfig(**config["reward_shaping"]))
     model.experiment_config = config
-    env = make_vector_env(args.n_envs if args.n_envs is not None else config["n_envs"], config["seed"])
+    env = make_vector_env(args.n_envs if args.n_envs is not None else config["n_envs"], config["seed"],
+                          reward_shaping=config.get("reward_shaping"))
     model.set_env(env)
     model.tensorboard_log = None
     args.run_dir.mkdir(parents=True)

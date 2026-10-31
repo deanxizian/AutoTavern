@@ -1,0 +1,61 @@
+{
+  "sealed_at": "2026-10-31T14:36:32.176872+08:00",
+  "git_commit": "749aca12a3c526cfa8872535f6a14fc8919b2491",
+  "protocol": {
+    "dataset": "tavernbench/data/eval",
+    "tasks": 368,
+    "play_scenarios": 30,
+    "play_tasks": 288,
+    "models": [
+      "initial zero-step policy",
+      "retained PPO iteration 100"
+    ],
+    "selection": "argmax candidate-plan probability under the frozen policy; no retraining",
+    "candidate_constraints": "renormalize native legal action logits over continuations of public candidate plans; shared forced actions have probability one",
+    "positioning": "canonical left-to-right move sequence followed by EndTurn for each public arrangement",
+    "ordering": "execute each listed sequence, resolving shifted cards by entity ID",
+    "targeting": "execute the question's required action, then score its target choices",
+    "purchase": "listed buy-and-immediately-play sequences followed by EndTurn, including buying nothing",
+    "hero_selection": "restore the public offered heroes as a pending HeroSelect, matching the scripted adapter",
+    "natural_decisions": "use the actual saved seat and public action-to-answer map",
+    "observation_boundary": "only Game.observe(seat) and the true legal mask enter the network",
+    "blocked_tasks": "saved states whose pending choices block all listed plans are unmappable and remain zero in the denominator; never clear pending state to make actions legal",
+    "candidate_execution": "recruit actions on independent reseeded copies only; no combat search or value-head lookahead",
+    "rules": "no rule-QA head; retain all unsupported items, count zero in official denominator",
+    "combat": "pure policy unsupported; separate augmented system uses the unchanged scripted baseline's 256-simulation combat component",
+    "aggregation": "unchanged official scorer; Play is the unweighted mean of 30 play-scenario accuracies",
+    "leakage_control": "inference denies label-file reads; seal prediction hashes before opening labels or reference answers",
+    "precision": "FP32 checkpoint, matmul precision high permits TF32; no BF16 autocast",
+    "comparison_scope": "a local task adapter, not a reproduction of the original TavernAgent benchmark interface"
+  },
+  "device": "cuda",
+  "native_build": {
+    "source_hash": "c807e9aa1a6746ee",
+    "profile": "release",
+    "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+  },
+  "input_hashes": {
+    "prompts.jsonl": "0c9b15d239585a9069b6d8c07bb674db0a0d3e7aa876f84e3452866ff160d590",
+    "states.jsonl.gz": "3f8ebeeae90c4a846344dd53672747d30f61b57203f8607d5b6bd55d8a54cdad"
+  },
+  "model_hashes": {
+    "ppo-init": "3c8f024a0cfb1526298d0d9a105d4d5a2e283cc724eb0682b160f0a9a7d38e53",
+    "ppo-100": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+  },
+  "source_hashes": {
+    "experiments/20261031-ppo-small-tavernbench/run.py": "44306e7054b6a07e8f1d4b4abbb71873e8c1e35a00c212b6fc861e85bb3ab60f",
+    "experiments/20261031-ppo-small-tavernbench/adapter.py": "d8ebdda2c8b94b2e4777753b8cd98f8e0d75f86bcfad249dbc3e5aa252df0414",
+    "experiments/20261031-ppo-small-tavernbench/protocol.json": "1c8f6c3fc1458bedd79dd8602c1114a0dfdb843ef960576ef07f47b46bf0bc9d"
+  },
+  "combat_binary_sha256": "6fea2faf07aeef397a9a7c46991ab6b2a84717447fc2a8d5a344ef1b2a643e26",
+  "combat_source_sha256": "cff81ea3b41bb912c4387301ae75ed7883111fb8b727b7e7a127911ae531fb9e",
+  "answers_sha256": {
+    "ppo-init-policy": "34bac9ad40266ae98f67611fde2b0b4c927c10f95d239a8483b0438b8e2a0369",
+    "ppo-init-combat256": "2449d4c1cdd8efad23291d26ccaa0502db7ebed7fd2a13ddd4fb333700cad2b3",
+    "ppo-100-policy": "e2c3858b64c8cfc6a27e4b0f30afff65fca30cd3aa49eeed87eb10c71e03bb29",
+    "ppo-100-combat256": "cfb0a5d870cbbec894af94d5c4978d84195a3e76d402cdc76fee00f9366c1984"
+  },
+  "labels_read_by_inference": false,
+  "candidate_score_values_used": false,
+  "inference_wall_seconds": 12.983277339997585
+}

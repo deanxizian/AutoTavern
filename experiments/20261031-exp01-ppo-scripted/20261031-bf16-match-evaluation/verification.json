@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "games": 1024,
+  "games_per_condition": 256,
+  "unique_game_ids": true,
+  "pairing_verified_by_seed_lane_episode": true,
+  "summaries_recomputed": true,
+  "paired_bootstrap_recomputed": true,
+  "native_build_current": true,
+  "native_build": {
+    "source_hash": "9cbe681ed1c2ca9b",
+    "profile": "release",
+    "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+  },
+  "torch_version": "2.15.0+cu132",
+  "numpy_version": "2.5.4",
+  "source_model_unchanged": true,
+  "new_model_files": 0,
+  "optimizer_updates": 0,
+  "wandb_points_per_condition": 4,
+  "wandb_x_axis": "evaluated_games",
+  "second_training_status": "stopped_by_user",
+  "source_sha256": {
+    "experiments/20261031-exp01-ppo-scripted/20261031-bf16-match-evaluation/run.py": "5b9bfe87e80cf72ad7f810fb852ff6fe5fdcebea12aaa78836d2e2eeb103a08a",
+    "experiments/20261031-exp01-ppo-scripted/20261031-bf16-match-evaluation/config.json": "0ba7fe4ee243ebd3eae64f8a5605aa1d8d95ba7b4213ffd4268ea63048ef8294",
+    "python/taverngym/learning/model.py": "d2fa3bbe28731ac9edb0d97f1c3de37a823836819cd830ff0e28977dc9a573b1",
+    "python/taverngym/learning/policy.py": "780c0d96ed3eb1a9732c84667e627cf017ea787375776e8eb3278a3e3eab8e3a",
+    "python/taverngym/learning/vector_env.py": "9d6f5117ef8091babb65e22157cc654200230195d5d615c11a3f3786e369b917",
+    "python/taverngym/learning/rewards.py": "1846220f55724eb6d3d70ca27bfc4aa3eefcecc81bc0a5dd45f470b8053ea1fe",
+    "uv.lock": "fb976be5a67a8c6a356cd1f0837a0ce1c00525d610888a275d2cdc0dc25ae296"
+  }
+}

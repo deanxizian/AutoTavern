@@ -156,6 +156,7 @@ def test_experiment_resume_preserves_completed_iterations_and_optimizer(tmp_path
     base = [sys.executable, "-m", "taverngym.learning.experiment", "--config", str(config_path),
             "--experiment-dir", str(experiment), "--run-dir", str(run), "--device", "cpu"]
     subprocess.run(base + ["--model", str(initial)], check=True, capture_output=True, text=True)
+    original_best_name = json.loads((experiment / "resolved-config.json").read_text())["best_model_filename"]
     source = tmp_path / "first-iteration.zip"
     source.write_bytes((run / "latest_model.zip").read_bytes())
     before = EntityPPO.load(source, device="cpu")
@@ -163,6 +164,7 @@ def test_experiment_resume_preserves_completed_iterations_and_optimizer(tmp_path
     config["iterations"] = 3
     config_path.write_text(json.dumps(config))
     subprocess.run(base + ["--model", str(source), "--resume"], check=True, capture_output=True, text=True)
+    assert json.loads((experiment / "resolved-config.json").read_text())["best_model_filename"] == original_best_name
     after = EntityPPO.load(run / "final_model.zip", device="cpu")
     assert after.num_timesteps == 96 and after._n_updates == 3
     records = [json.loads(line) for line in (experiment / "metrics.jsonl").read_text().splitlines()]

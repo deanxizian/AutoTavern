@@ -1,0 +1,22 @@
+{
+  "id": "20261031-ppo-mixed-v2",
+  "status": "stopped_by_user",
+  "training_started": true,
+  "source_model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+  "source_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "models": "runs/20261031-ppo-mixed-v2",
+  "protocol": "100 PPO, 32 minibatches, epoch=1; learner-only samples; mixed opponents and action costs",
+  "record_path": "experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-v2",
+  "weights_uploaded": false,
+  "started_at": "2026-10-31T15:42:26.872250+08:00",
+  "supervisor_pid": 2330506,
+  "training_pid": 2330509,
+  "exited_at": "2026-10-31T15:56:26.933643+08:00",
+  "exit_code": 1,
+  "previous_attempt": "experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-v2/attempts/weave-init-tls-failure",
+  "stopped_at": "2026-10-31T16:02:52.622018+08:00",
+  "prior_status": "failed",
+  "automatic_restart": false,
+  "stop_record": "user-stop.json",
+  "resume_checkpoint": "runs/20261031-ppo-mixed-v2/latest_model.zip"
+}

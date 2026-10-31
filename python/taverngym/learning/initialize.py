@@ -14,6 +14,7 @@ from .env import make_vector_env
 from .model import ModelConfig
 from .policy import EntityPolicy
 from .ppo import EntityPPO
+from .precision import configure_precision
 from .text import load_text_cache
 
 
@@ -40,14 +41,17 @@ def main():
     if text_metadata["revision"] != config["text_encoder_revision"]:
         raise ValueError("Text cache revision differs from the model configuration")
     torch.set_num_threads(2)
-    env = make_vector_env(config["n_envs"], config["seed"])
+    torch.set_float32_matmul_precision("high")
+    env = make_vector_env(config["n_envs"], config["seed"], reward_shaping=config.get("reward_shaping"))
     model = EntityPPO(
         EntityPolicy, env, **config["ppo"], seed=config["seed"], device=args.device,
         policy_kwargs={"model_config": asdict(model_config),
-                       "card_data_sha256": text_metadata["card_data_sha256"]},
+                       "card_data_sha256": text_metadata["card_data_sha256"],
+                       "forward_precision": config.get("forward_precision", "fp32")},
         tensorboard_log=None, verbose=0,
     )
     model.policy.network.set_text_embeddings(vectors)
+    configure_precision(model, config)
     model.rule_text_metadata = text_metadata
     model.experiment_config = config
     counts = model.policy.network.parameter_counts()

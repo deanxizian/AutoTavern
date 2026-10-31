@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "summary_recomputed": true,
+  "exact_sample_budgets": true,
+  "bf16_both_actors": true,
+  "source_and_stopped_model_hashes_unchanged": true,
+  "formal_training_still_stopped": true,
+  "full_test_command": ".venv/bin/python -m pytest -q",
+  "full_tests_passed": 94,
+  "full_tests_seconds": 21.56,
+  "cuda_tests_included": true,
+  "targeted_tests_passed": 18,
+  "result_sha256": "51c13789903439a76801e47386b43aed3da2d90e96af0614a609de789df244c3"
+}

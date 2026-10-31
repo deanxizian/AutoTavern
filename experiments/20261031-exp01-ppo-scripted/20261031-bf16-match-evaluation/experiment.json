@@ -1,0 +1,19 @@
+{
+  "status": "completed",
+  "started_at": "2026-10-31T16:04:18.921599+08:00",
+  "source_model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+  "source_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "config": "config.json",
+  "weights_uploaded": false,
+  "training_started": false,
+  "second_training_restarted": false,
+  "native_build": {
+    "source_hash": "9cbe681ed1c2ca9b",
+    "profile": "release",
+    "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+  },
+  "fp32_wrapper_matches_original": true,
+  "completed_at": "2026-10-31T16:06:38.223439+08:00",
+  "results": "results.json",
+  "scored_games": 1024
+}

@@ -241,7 +241,7 @@ struct PyBatchEnv {
 #[pymethods]
 impl PyBatchEnv {
     #[new]
-    #[pyo3(signature = (n_games, seed=0, controlled=vec![0], config_json=None, threads=1))]
+    #[pyo3(signature = (n_games, seed=0, controlled=vec![0], config_json=None, threads=1, rotate_seats=false))]
     fn new(
         py: Python<'_>,
         n_games: usize,
@@ -249,10 +249,17 @@ impl PyBatchEnv {
         controlled: Vec<usize>,
         config_json: Option<&str>,
         threads: usize,
+        rotate_seats: bool,
     ) -> PyResult<Self> {
         let cfg = parse_config(config_json)?;
         let env = py
-            .detach(|| BatchEnv::new(n_games, seed, cfg, controlled, threads))
+            .detach(|| {
+                if rotate_seats {
+                    BatchEnv::new_rotating(n_games, seed, cfg, controlled, threads)
+                } else {
+                    BatchEnv::new(n_games, seed, cfg, controlled, threads)
+                }
+            })
             .map_err(PyValueError::new_err)?;
         Ok(PyBatchEnv { env })
     }
@@ -267,6 +274,13 @@ impl PyBatchEnv {
     #[getter]
     fn controlled(&self) -> Vec<usize> {
         self.env.controlled().to_vec()
+    }
+    #[getter]
+    fn slot_seats(&self) -> Vec<usize> {
+        self.env.slot_seats()
+    }
+    fn reset_finished_first(&mut self, py: Python<'_>) {
+        py.detach(|| self.env.reset_finished_first());
     }
     #[getter]
     fn illegal_penalty(&self) -> f32 {
@@ -293,7 +307,13 @@ impl PyBatchEnv {
     }
     /// One action per slot as little-endian int64 bytes; returns (rewards f32, dones u8,
     /// placements u8, rejected u8) as bytes, one entry per slot.
-    fn step<'py>(&mut self, py: Python<'py>, actions: &[u8]) -> PyResult<BatchObs<'py>> {
+    #[pyo3(signature = (actions, active=None))]
+    fn step<'py>(
+        &mut self,
+        py: Python<'py>,
+        actions: &[u8],
+        active: Option<&[u8]>,
+    ) -> PyResult<BatchObs<'py>> {
         let n = self.env.n_slots();
         if actions.len() != n * 8 {
             return Err(PyValueError::new_err(format!(
@@ -305,9 +325,13 @@ impl PyBatchEnv {
         let (chunks, _) = actions.as_chunks::<8>();
         let acts: Vec<i64> = chunks.iter().map(|b| i64::from_le_bytes(*b)).collect();
         let mut out = vec![SlotResult::default(); n];
+        let flags: Option<Vec<bool>> = active.map(|a| a.iter().map(|&x| x != 0).collect());
         let env = &mut self.env;
-        py.detach(|| env.step(&acts, &mut out))
-            .map_err(PyValueError::new_err)?;
+        py.detach(|| match flags {
+            Some(ref flags) => env.step_active(&acts, flags, &mut out),
+            None => env.step(&acts, &mut out),
+        })
+        .map_err(PyValueError::new_err)?;
         let rewards: Vec<f32> = out.iter().map(|r| r.reward).collect();
         let dones: Vec<u8> = out.iter().map(|r| r.done as u8).collect();
         let places: Vec<u8> = out.iter().map(|r| r.placement).collect();

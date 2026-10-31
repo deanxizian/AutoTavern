@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "complete_games": 128,
+  "move_return_games": 0,
+  "freeze_return_games": 0,
+  "model_weights_unchanged": true,
+  "training_started": false,
+  "default_policy_changed": false,
+  "native_game_legality_changed": false,
+  "source_sha256": {
+    "python/taverngym/learning/action_filter.py": "dd9b6ea0a7ad2c8d1ea9da83a2cd7262231e88e1c31ae1248ecb2675b8b87534",
+    "tests/test_action_filter.py": "b00fdfae11d20ca62bcd6c5694d1c83a1d339d98fa3a43bb02d22c43d4fc552c",
+    "experiments/20261031-exp01-ppo-scripted/20261031-action-loop-filter/run.py": "798afef79b2c7597fa5e2208c5ec5f40a9f55782e2d7c614fac4f14bbaae76a8"
+  },
+  "python_regression_tests": "67 passed",
+  "same_model_seed_and_counter": true,
+  "all_128_games_complete": true
+}

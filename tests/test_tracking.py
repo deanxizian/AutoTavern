@@ -21,6 +21,32 @@ def test_flat_metric_names_share_baseline_and_validation():
     assert metric_name("train/rollout/top4_rate") == "train/rollout_top4_rate"
 
 
+def test_weave_connection_failure_preserves_wandb_metrics(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from taverngym.learning.tracking import WandbTracker
+
+    values, finished = [], []
+    run = SimpleNamespace(entity="eric_eric_", project="AutoTavern", id="fake", url="https://example.test/run",
+                           define_metric=lambda *a, **k: None, log=values.append,
+                           finish=lambda **k: finished.append(True))
+    monkeypatch.setitem(sys.modules, "wandb", SimpleNamespace(init=lambda **k: run, Settings=lambda **k: k))
+
+    def unavailable(project):
+        assert project == "eric_eric_/AutoTavern"
+        raise ConnectionError("test TLS endpoint unavailable")
+
+    monkeypatch.setitem(sys.modules, "weave", SimpleNamespace(init=unavailable))
+    with pytest.warns(RuntimeWarning, match="W&B metrics remain enabled"):
+        tracker = WandbTracker(tmp_path, {"tracking": {"mode": "online"}})
+    tracker.log({"val/mean_placement": 4.0}, 0)
+    tracker.finish()
+    assert values == [{"val/mean_placement": 4.0, "optimizer_step": 0}]
+    assert finished == [True]
+    metadata = json.loads((tmp_path / "wandb.json").read_text())
+    assert not metadata["weave_initialized"] and "ConnectionError" in metadata["weave_error"]
+    assert json.loads((tmp_path / "wandb-metrics.jsonl").read_text())["optimizer_step"] == 0
+
+
 def test_live_bridge_reads_both_active_event_files_and_resumes(tmp_path):
     pytest.importorskip("tensorboard")
     from torch.utils.tensorboard import SummaryWriter
@@ -51,7 +77,8 @@ def test_live_bridge_reads_both_active_event_files_and_resumes(tmp_path):
     second.close()
 
 
-def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_path):
+@pytest.mark.parametrize("sampling_driver", ["synchronous", "unified_actor"])
+def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_path, sampling_driver):
     pytest.importorskip("wandb")
     from taverngym.learning.model import ModelConfig
     from taverngym.learning.policy import EntityPolicy
@@ -78,8 +105,13 @@ def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_pa
         "initial_evaluation_games": 1, "final_evaluation_games": 0,
         "evaluation_seed": 101, "final_evaluation_seed": 102,
         "simulator_config": {"turn_action_caps": [3]},
+        "reward_shaping": {"operation_cost": 0.0001, "cycle_cost": 0.0002},
+        "forward_precision": "bf16",
         "tracking": {"mode": "offline"},
     }
+    if sampling_driver == "unified_actor":
+        config.update(sampling_driver=sampling_driver, opponent_model=str(initial),
+                      frozen_opponents=2, evaluation_matrix=True)
     config_path = tmp_path / "config.json"
     config_path.write_text(json.dumps(config))
     folder, runs = tmp_path / "experiment", tmp_path / "models"
@@ -91,11 +123,32 @@ def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_pa
     rows = [json.loads(line) for line in (folder / "wandb-metrics.jsonl").read_text().splitlines()]
     assert [r["optimizer_step"] for r in rows if "train/loss" in r] == [1, 2, 3, 4]
     assert [r["optimizer_step"] for r in rows if "val/mean_placement" in r] == [0, 2, 4]
+    validation = [r for r in rows if "val/mean_placement" in r]
+    for row in validation:
+        assert row["val/total_reward"] == pytest.approx(
+            row["val/placement_reward"] + row["val/operation_penalty"] + row["val/cycle_penalty"])
+        assert row["val/actions_per_game"] > 0
+        assert "val/cycle_returns" in row
     assert len([r for r in rows if "train/ppo_loss" in r]) == 2
     assert all(name.count("/") <= 1 for row in rows for name in row)
     assert not list(folder.rglob("events.out.tfevents.*"))
     assert not (folder / "tensorboard").exists()
+    resolved = json.loads((folder / "resolved-config.json").read_text())
+    assert resolved["reward_shaping"] == config["reward_shaping"]
+    assert resolved["forward_precision"] == "bf16"
+    assert resolved["precision_settings"]["learner_sampling_forward"] == "bf16"
+    assert resolved["precision_settings"]["learner_update_forward"] == "bf16"
+    if sampling_driver == "unified_actor":
+        assert resolved["sampling_driver"] == sampling_driver and resolved["frozen_opponents"] == 2
+        assert resolved["precision_settings"]["opponent_forward"] == "bf16"
+        assert all(f"val/{prefix}mean_placement" in row for row in validation
+                   for prefix in ("", "greedy_", "scripted_", "scripted_greedy_"))
+        assert all(row["system/actor_learner_samples"] == 32 for row in rows if "system/actor_learner_samples" in row)
+    best_path = runs / resolved["best_model_filename"]
+    assert best_path.is_file() and list(runs.glob("*-best_model.zip")) == [best_path]
+    assert not (runs / "best_model.zip").exists()
     restored = EntityPPO.load(runs / "final_model.zip", device="cpu")
     assert restored.optimizer_step_count() == 4
+    assert restored.policy.forward_precision == "bf16"
     assert getattr(restored, "_after_optimizer_step", None) is None
     model.env.close()

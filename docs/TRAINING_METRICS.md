@@ -9,6 +9,10 @@ wandb.init(entity="eric_eric_", project="AutoTavern", ...)
 weave.init('eric_eric_/AutoTavern')
 ```
 
+Weave 初始化遇到网络／TLS 错误时，错误写入 `wandb.json` 的 `weave_error`，
+`weave_initialized=false`；W&B 的 PPO 标量日志继续正常写入。
+调用仍使用上述项目名，失败状态不会伪报为已连接，也不会阻断训练采样。
+
 新训练的 `learning.experiment` 和 `learning.train` 默认直接调用 `wandb.log`，
 同时写本地 `experiments/<name>/wandb-metrics.jsonl`，不生成 TensorBoard 事件文件。
 初始化模型本身不启动在线 run。模型仍保存在 `runs/<name>/`。
@@ -67,9 +71,36 @@ rollout 的对局结果放入 `train/*`；baseline 合入 `val/*` 的 step=0。
 固定验证集用于选模，test 不参与选择。64 局验证的估计有波动，应连同局数和种子解读。
 当前规则与对手为本地脚本基线，分数不是论文校准对手库上的结果。
 
+## 启用操作／循环成本后的指标
+
+以下指标仅在配置 `reward_shaping` 后记录。`train/*` 是本轮采样期间**已完成整局**的均值，
+每 PPO 一点，包含这局跨越此前 rollout 的操作；`val/*` 是对应固定验证局的均值，含 step=0。
+这些是每局累计值的平均，而非每个动作的均值，不与每 Adam 的 loss 混合。
+
+| `train/`、`val/` 下的同名指标 | 含义 |
+| --- | --- |
+| `placement_reward` | 原始终局名次效用，始终与真实名次对应 |
+| `operation_penalty` | 每局 Move / Freeze 的累计负成本 |
+| `cycle_penalty` | 每局无进展状态往返的累计负成本 |
+| `total_reward` | 上述三项之和；训练的 GAE / critic 使用这个奖励 |
+| `reversible_actions` | 每局 Move / Freeze 总次数 |
+| `cycle_returns` | 每局返回已见完整可见状态的次数；连续返回可以重叠计数 |
+| `actions_per_game` | 每局全部决策操作数 |
+| `cap_end_rate` | 每局达到动作上限后被迫 EndTurn 的招募回合比例，再取整局均值 |
+
+第二轮增加四个验证条件，主组沿用 `val/*`；混合贪心、全脚本随机、全脚本贪心
+分别使用 `val/greedy_*`、`val/scripted_*`、`val/scripted_greedy_*`，各有初始点加 4 次周期点。
+训练采样默认随机，四个冻结旧模型只推理，`train/opponent_decisions` 记录其每轮操作数，
+不把它们计入学习者 sample 或 Adam step。
+
+本地 `metrics.jsonl` 中对应键为 `rollout/*`，W&B 会映射为一层 `/` 的 `train/*`。
+验证环境只计算这些指标，不更新模型或过滤动作；选 best 仍依据 `val/mean_placement`。
+相同种子、相同动作下，启用奖励不会改变模拟器状态、合法掩码、终局名次或验证随机流。
+这项改动不会补写第一次实验的历史 W&B 曲线；下一轮启动时会直接记录。
+
 ## 当前训练的迁移
 
-当前实验：[100 PPO × 32 minibatches](../experiments/20261031-ppo-small-100ppo-32minibatches/README.md)。
+当前实验：[100 PPO × 32 minibatches](../experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/README.md)。
 [在线 run](https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/4xw0tzgd)。
 
 这次训练启动时已在写两个 TensorBoard 文件。保留训练进程，使用独立进程读取旧文件，
@@ -87,7 +118,7 @@ rollout 的对局结果放入 `train/*`；baseline 合入 `val/*` 的 step=0。
 
 ```bash
 uv run --locked --group train python -m taverngym.learning.migrate_wandb \
-  --experiment-dir experiments/20261031-ppo-small-100ppo-32minibatches
+  --experiment-dir experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches
 ```
 
 不对已运行的训练热替换 Python 代码。未来新训练直接写 W&B；

@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "verified_at": "2026-10-31T16:19:13.349522+08:00",
+  "device": "NVIDIA GeForce RTX 5080",
+  "source_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "source_model_unchanged": true,
+  "new_checkpoints_saved": false,
+  "learner_samples_checked": 512,
+  "frozen_opponents_per_game": 1,
+  "scripted_opponents_per_game": 6,
+  "learner_raw_logits_dtype": "bfloat16",
+  "fixed_bot_raw_logits_dtype": "bfloat16",
+  "probabilities_values_logprobs": "float32",
+  "parameter_dtype": "float32",
+  "sampling_update_rescoring_match": true,
+  "optimizer_updates": 0,
+  "frozen_bot_batched_across_games": true,
+  "maximum_fixed_bot_batch": 16,
+  "precision_settings": {
+    "learner_sampling_forward": "bf16",
+    "learner_update_forward": "bf16",
+    "opponent_forward": "bf16",
+    "parameters": "fp32",
+    "gradient_accumulation": "fp32",
+    "adam_state": "fp32",
+    "head_outputs_and_probabilities": "fp32",
+    "gae_returns_losses": "fp32",
+    "checkpoint_floating_weights": "fp32",
+    "grad_scaler": false,
+    "fp32_matmul_precision": "high"
+  },
+  "second_training_restarted": false
+}

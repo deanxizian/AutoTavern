@@ -1,0 +1,12 @@
+{
+  "model_inputs": "unchanged native player-view features, card IDs, and legal action mask",
+  "comparison": "64 complete games per mode, each against seven identical scripted bots, 32 parallel lobbies with 2 episode quotas per slot",
+  "loop_scope": "same episode and turn, uninterrupted sequence containing only moves and Freeze; reset on any other action",
+  "move_return": "a move changes the visible board then returns to a previously seen board signature within this sequence",
+  "freeze_return": "a Freeze action returns features and cards to a previously seen state within the sequence",
+  "exact_input_return": "the complete native features, cards, and legal mask return to an earlier value",
+  "counts": "overlapping repeated-state visits counted separately; not disjoint loop pairs",
+  "examples": "up to three per type and mode; replay the stored native snapshot and actions to verify entity order or per-card frozen state exactly",
+  "limits": "existing per-turn action cap 60 and default Freeze-button cap 10 are retained",
+  "changes": "none to model weights, policy, reward, native legality or external project"
+}

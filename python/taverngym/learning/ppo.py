@@ -70,6 +70,10 @@ class _PlacementRecorder(BaseCallback):
             info["placement"] for done, info in zip(self.locals["dones"], self.locals["infos"])
             if done and 1 <= info.get("placement", 0) <= 8
         )
+        self.model._rollout_reward_components.extend(
+            info["reward_components"] for done, info in zip(self.locals["dones"], self.locals["infos"])
+            if done and "reward_components" in info
+        )
         self.delegate.update_locals(self.locals)
         return self.delegate.on_step()
 
@@ -88,7 +92,9 @@ class EntityPPO(MaskablePPO):
         super().__init__(*args, **kwargs)
 
     def _excluded_save_params(self):
-        return super()._excluded_save_params() + ["_after_update", "_after_optimizer_step", "_rollout_places"]
+        return super()._excluded_save_params() + [
+            "_after_update", "_after_optimizer_step", "_rollout_places", "_rollout_reward_components",
+        ]
 
     def optimizer_step_count(self):
         """Read Adam's persisted counter on the shared, always-used identity table."""
@@ -96,14 +102,79 @@ class EntityPPO(MaskablePPO):
         value = state.get("step", 0)
         return int(value.item()) if torch.is_tensor(value) else int(value)
 
+    def set_forward_precision(self, precision):
+        self.policy.set_forward_precision(precision)
+        # SB3 reconstructs the policy from this dict when loading a full model.
+        self.policy_kwargs["forward_precision"] = self.policy.forward_precision
+
+    def start_new_stage(self):
+        """Keep network/text weights; discard old Adam moments and stage counters."""
+        self.policy.optimizer.zero_grad(set_to_none=True)
+        self.policy.optimizer.state.clear()
+        self.num_timesteps = self._n_updates = self._episode_num = 0
+        self._total_timesteps = self._num_timesteps_at_start = 0
+        self._last_obs = self._last_original_obs = None
+        self.ep_info_buffer = self.ep_success_buffer = None
+
     def collect_rollouts(self, env, callback, rollout_buffer, n_rollout_steps, use_masking=True):
         started = time.monotonic()
         self._rollout_places = []
-        recorder = _PlacementRecorder(callback)
-        recorder.init_callback(self)
-        result = super().collect_rollouts(env, recorder, rollout_buffer, n_rollout_steps, use_masking)
+        self._rollout_reward_components = []
+        opponent_before = getattr(env, "opponent_decisions", 0)
+        if hasattr(env, "collect_actors"):
+            result = self._collect_actor_rollouts(env, callback, rollout_buffer, n_rollout_steps)
+        else:
+            recorder = _PlacementRecorder(callback)
+            recorder.init_callback(self)
+            result = super().collect_rollouts(env, recorder, rollout_buffer, n_rollout_steps, use_masking)
+        if self._rollout_reward_components:
+            for name in self._rollout_reward_components[0]:
+                self.logger.record(f"rollout/{name}", float(np.mean([
+                    row[name] for row in self._rollout_reward_components
+                ])))
         self.last_rollout_seconds = time.monotonic() - started
+        if hasattr(env, "opponent_decisions"):
+            self.logger.record("rollout/opponent_decisions", env.opponent_decisions - opponent_before)
         return result
+
+    def _collect_actor_rollouts(self, env, callback, rollout_buffer, n_rollout_steps):
+        if not hasattr(rollout_buffer, "add_actor_batch") or rollout_buffer.buffer_size != n_rollout_steps:
+            raise ValueError("Actor rollout requires a matching CompactPlacementBuffer")
+        self.policy.set_training_mode(False)
+        rollout_buffer.reset()
+        last_dones = np.zeros(env.num_envs, dtype=bool)
+        callback.on_rollout_start()
+
+        def consume(transitions):
+            rollout_buffer.add_actor_batch(transitions)
+            self.num_timesteps += len(transitions)
+            dones = np.array([t.done for t in transitions])
+            infos = [t.info or {} for t in transitions]
+            for t in transitions:
+                last_dones[t.game] = t.done
+                if t.done:
+                    self._rollout_places.append(t.placement)
+                    if "reward_components" in (t.info or {}):
+                        self._rollout_reward_components.append(t.info["reward_components"])
+            self._update_info_buffer(infos, dones)
+            callback.update_locals({"transitions": transitions, "rollout_buffer": rollout_buffer,
+                "dones": dones, "infos": infos, "rewards": np.array([t.reward for t in transitions]),
+                "actions": np.array([t.action for t in transitions])})
+            if not callback.on_step():
+                raise KeyboardInterrupt("Actor collection stopped by callback")
+
+        stats = env.collect_actors(self.policy, n_rollout_steps, consume)
+        assert rollout_buffer.full and np.all(rollout_buffer.actor_counts == n_rollout_steps)
+        self._last_obs = env._obs
+        self._last_episode_starts = last_dones
+        with torch.no_grad():
+            tensors, _ = self.policy.obs_to_tensor(self._last_obs)
+            last_values = self.policy.predict_values(tensors)
+        rollout_buffer.compute_returns_and_advantage(last_values, last_dones)
+        for name, value in stats.items():
+            self.logger.record(f"system/actor_{name}", value)
+        callback.on_rollout_end()
+        return True
 
     def train(self):
         started = time.monotonic()

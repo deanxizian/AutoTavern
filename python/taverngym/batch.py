@@ -29,10 +29,10 @@ from taverngym._core import Game
 
 
 class BatchEnv:
-    def __init__(self, n_games, seed=0, controlled=(0,), config=None, threads=1):
+    def __init__(self, n_games, seed=0, controlled=(0,), config=None, threads=1, rotate_seats=False):
         config_json = json.dumps(config) if config is not None else None
         self._env = _BatchEnv(int(n_games), int(seed), [int(p) for p in controlled],
-                              config_json, int(threads))
+                              config_json, int(threads), bool(rotate_seats))
 
     @property
     def n_games(self):
@@ -47,6 +47,15 @@ class BatchEnv:
         return tuple(self._env.controlled)
 
     @property
+    def slot_seats(self):
+        """Actual seat of every slot, including per-game role rotation."""
+        return np.asarray(self._env.slot_seats, dtype=np.int64)
+
+    def reset_finished_first(self):
+        """Reset games whose first role finished; keep its already-reported result."""
+        self._env.reset_finished_first()
+
+    @property
     def illegal_penalty(self):
         return self._env.illegal_penalty
 
@@ -57,7 +66,7 @@ class BatchEnv:
     def slot(self, i):
         """(game index, seat) of slot `i`."""
         k = len(self.controlled)
-        return i // k, self.controlled[i % k]
+        return i // k, int(self.slot_seats[i])
 
     def observe(self):
         """Per slot: `features` float32 [n_slots, OBS_FLOATS], `cards` int32
@@ -72,14 +81,20 @@ class BatchEnv:
             "ready": np.frombuffer(r, dtype=np.uint8).astype(bool),
         }
 
-    def step(self, actions):
+    def step(self, actions, active=None):
         """Apply one action per slot. Returns (rewards float32 [n_slots], dones bool
         [n_slots], info) with `info["placement"]` (uint8, the final placement where done;
         0 if a simulator guard stopped the game) and `info["rejected"]` (bool)."""
         a = np.ascontiguousarray(np.asarray(actions).reshape(-1), dtype="<i8")
         if a.shape[0] != self.n_slots:
             raise ValueError(f"{a.shape[0]} actions for {self.n_slots} slots")
-        rw, dn, pl, rj = self._env.step(a.tobytes())
+        flags = None
+        if active is not None:
+            flags = np.asarray(active, dtype=np.uint8)
+            if flags.shape != (self.n_games,):
+                raise ValueError("active must contain one flag per game")
+            flags = flags.tobytes()
+        rw, dn, pl, rj = self._env.step(a.tobytes(), flags)
         return (
             np.frombuffer(rw, dtype="<f4").copy(),
             np.frombuffer(dn, dtype=np.uint8).astype(bool),

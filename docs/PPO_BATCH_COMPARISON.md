@@ -51,10 +51,10 @@ Adam 次数 / PPO iteration = (B / b) × epochs E
 | [CleanRL Transformer-XL PPO](https://github.com/vwxyzjn/cleanrl/blob/master/cleanrl/ppo_trxl/ppo_trxl.py) | 32 × 512 | 16,384 | 2,048 | 8 | 3 | 24 | 12,207 | 199,999,488 | 2.75e-4→1e-5，线性后保持 |
 | [论文早期规模实验](https://arxiv.org/html/2610.33845v1#A3.T8) | 未公开 | 约 4,200,000 | 未公开 | 未公开 | 未公开 | 未公开 | 400 | 约 1,680,000,000 | 未公开 |
 | [论文最终 TA-23](https://arxiv.org/html/2610.33845v1#A3.T7) | 512 × 256／成员¹ | 约 1,050,000（合计） | 8,192¹ | 口径未明¹ | 1 | 口径未明¹ | 300 | 约 310,000,000 | 6e-6→5e-6，曲线未公开 |
-| [本地旧全量方案（已停止）](../experiments/20261031-ppo-small-paper300/config.json) | 256 × 16,384 | 4,194,304 | 8,192 | 512 | 1 | 512 | 300 | 1,258,291,200 | 6e-6→5e-6，线性（历史配置） |
-| [本地首版试跑（已完成）](../experiments/20261031-ppo-small-v1-100-minibatches/config.json) | 32 × 256 | 8,192 | 8,192 | 1 | 1 | 1 | 100 | 819,200 | 3e-4→3e-6，线性 |
+| [本地旧全量方案（已停止）](../experiments/20261031-infra/20261031-ppo-small-paper300/config.json) | 256 × 16,384 | 4,194,304 | 8,192 | 512 | 1 | 512 | 300 | 1,258,291,200 | 6e-6→5e-6，线性（历史配置） |
+| [本地首版试跑（已完成）](../experiments/20261031-infra/20261031-ppo-small-v1-100-minibatches/config.json) | 32 × 256 | 8,192 | 8,192 | 1 | 1 | 1 | 100 | 819,200 | 3e-4→3e-6，线性 |
 | [本地候选（未运行，300迭代举例）](#候选配置与总预算) | 256 × 512 | 131,072 | 8,192 | 16 | 2 | 32 | 300 | 39,321,600 | 3e-4→3e-6，线性候选 |
-| [本地下一版（训练中）](../experiments/20261031-ppo-small-100ppo-32minibatches/config.json) | 256 × 1,024 | 262,144 | 8,192 | 32 | 1 | 32 | 100 | 26,214,400 | 3e-4→3e-6，线性 |
+| [本地下一版（训练中）](../experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/config.json) | 256 × 1,024 | 262,144 | 8,192 | 32 | 1 | 32 | 100 | 26,214,400 | 3e-4→3e-6，线性 |
 
 ¹ 论文最终阶段明确给出“每成员 512 × 256”、合计每迭代约 105 万决策、minibatch=8,192、epoch=1，
 但未明确 minibatch 的全局／每成员或每设备口径。如果 8,192 是全局有效 minibatch，按合计决策数除以它，
@@ -102,7 +102,7 @@ SB3 本身没有固定训练总量，由调用 learn() 时指定。
 
 首版仍完成了用户要求的 100 个 minibatch，使用 819,200 个新样本；
 它的总样本量为旧全量方案的 1/1,536。评估后仅保留第 25 次更新的最佳模型，完整指标仍保存。
-结果见 [首版实验](../experiments/20261031-ppo-small-v1-100-minibatches/README.md)。
+结果见 [首版实验](../experiments/20261031-infra/20261031-ppo-small-v1-100-minibatches/README.md)。
 
 ## 数据与来源
 
@@ -120,4 +120,4 @@ SB3 本身没有固定训练总量，由调用 learn() 时指定。
 当前已启动的新方案为：256 环境 × 1,024 步 = 262,144 条新样本／PPO，
 每个 epoch 32 个 minibatch、最多 32 次 Adam，合计 26,214,400 条新样本及最多 3,200 次 Adam。
 前面的 16 mini × 2 epochs 仍作为历史候选对照，没有执行；100 PPO × 32 mini × 1 epoch 已按用户指令启动。
-详见 [下一版记录](../experiments/20261031-ppo-small-100ppo-32minibatches/README.md)。
+详见 [下一版记录](../experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/README.md)。

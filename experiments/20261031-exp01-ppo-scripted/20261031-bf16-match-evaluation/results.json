@@ -1,0 +1,231 @@
+{
+  "status": "completed",
+  "completed_at": "2026-10-31T16:06:38.183273+08:00",
+  "source_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "conditions": {
+    "sampled_fp32": {
+      "games": 256,
+      "mean_placement": 1.98828125,
+      "top4_rate": 0.953125,
+      "first_rate": 0.43359375,
+      "cycle_returns": 117.2578125,
+      "actions_per_game": 770.5859375,
+      "reversible_actions": 602.421875,
+      "cap_end_rate": 0.7337854787031209
+    },
+    "sampled_bf16": {
+      "games": 256,
+      "mean_placement": 1.92578125,
+      "top4_rate": 0.95703125,
+      "first_rate": 0.44140625,
+      "cycle_returns": 117.21484375,
+      "actions_per_game": 775.69921875,
+      "reversible_actions": 605.0859375,
+      "cap_end_rate": 0.7393180298219422
+    },
+    "greedy_fp32": {
+      "games": 256,
+      "mean_placement": 3.6484375,
+      "top4_rate": 0.6484375,
+      "first_rate": 0.29296875,
+      "cycle_returns": 635.234375,
+      "actions_per_game": 758.65234375,
+      "reversible_actions": 653.640625,
+      "cap_end_rate": 0.8947839790677641
+    },
+    "greedy_bf16": {
+      "games": 256,
+      "mean_placement": 3.83984375,
+      "top4_rate": 0.625,
+      "first_rate": 0.25,
+      "cycle_returns": 631.55078125,
+      "actions_per_game": 749.890625,
+      "reversible_actions": 650.06640625,
+      "cap_end_rate": 0.8936862396061434
+    }
+  },
+  "paired": {
+    "sampled": {
+      "paired_games": 256,
+      "difference_direction": "BF16 minus FP32",
+      "interval_method": "10,000 paired game bootstrap resamples, percentile 95% CI",
+      "mean_placement": {
+        "delta": -0.0625,
+        "ci95": [
+          -0.171875,
+          0.04296875
+        ]
+      },
+      "top4_percentage_points": {
+        "delta": 0.390625,
+        "ci95": [
+          -1.953125,
+          3.125
+        ]
+      },
+      "first_percentage_points": {
+        "delta": 0.78125,
+        "ci95": [
+          -3.90625,
+          5.46875
+        ]
+      },
+      "games_with_same_placement": 189
+    },
+    "greedy": {
+      "paired_games": 256,
+      "difference_direction": "BF16 minus FP32",
+      "interval_method": "10,000 paired game bootstrap resamples, percentile 95% CI",
+      "mean_placement": {
+        "delta": 0.19140625,
+        "ci95": [
+          -0.10556640624999991,
+          0.4921875
+        ]
+      },
+      "top4_percentage_points": {
+        "delta": -2.34375,
+        "ci95": [
+          -8.203125,
+          3.90625
+        ]
+      },
+      "first_percentage_points": {
+        "delta": -4.296875,
+        "ci95": [
+          -10.546875,
+          1.953125
+        ]
+      },
+      "games_with_same_placement": 90
+    }
+  },
+  "timings": [
+    {
+      "condition": "sampled_fp32",
+      "block": 0,
+      "seconds": 7.214279810999869,
+      "vector_steps": 1032,
+      "raw_logits_dtype": "torch.float32"
+    },
+    {
+      "condition": "sampled_bf16",
+      "block": 0,
+      "seconds": 8.375141602999065,
+      "vector_steps": 1042,
+      "raw_logits_dtype": "torch.bfloat16"
+    },
+    {
+      "condition": "greedy_fp32",
+      "block": 0,
+      "seconds": 9.166297083000245,
+      "vector_steps": 1295,
+      "raw_logits_dtype": "torch.float32"
+    },
+    {
+      "condition": "greedy_bf16",
+      "block": 0,
+      "seconds": 9.106411155000387,
+      "vector_steps": 1182,
+      "raw_logits_dtype": "torch.bfloat16"
+    },
+    {
+      "condition": "sampled_bf16",
+      "block": 1,
+      "seconds": 8.492404889999307,
+      "vector_steps": 1102,
+      "raw_logits_dtype": "torch.bfloat16"
+    },
+    {
+      "condition": "greedy_fp32",
+      "block": 1,
+      "seconds": 10.268823236998287,
+      "vector_steps": 1356,
+      "raw_logits_dtype": "torch.float32"
+    },
+    {
+      "condition": "greedy_bf16",
+      "block": 1,
+      "seconds": 10.93374010700063,
+      "vector_steps": 1297,
+      "raw_logits_dtype": "torch.bfloat16"
+    },
+    {
+      "condition": "sampled_fp32",
+      "block": 1,
+      "seconds": 8.391768738001701,
+      "vector_steps": 1115,
+      "raw_logits_dtype": "torch.float32"
+    },
+    {
+      "condition": "greedy_fp32",
+      "block": 2,
+      "seconds": 9.149188632000005,
+      "vector_steps": 1295,
+      "raw_logits_dtype": "torch.float32"
+    },
+    {
+      "condition": "greedy_bf16",
+      "block": 2,
+      "seconds": 8.64203025399911,
+      "vector_steps": 1116,
+      "raw_logits_dtype": "torch.bfloat16"
+    },
+    {
+      "condition": "sampled_fp32",
+      "block": 2,
+      "seconds": 7.5043408179990365,
+      "vector_steps": 1080,
+      "raw_logits_dtype": "torch.float32"
+    },
+    {
+      "condition": "sampled_bf16",
+      "block": 2,
+      "seconds": 8.646291432996804,
+      "vector_steps": 1095,
+      "raw_logits_dtype": "torch.bfloat16"
+    },
+    {
+      "condition": "greedy_bf16",
+      "block": 3,
+      "seconds": 9.681597438000608,
+      "vector_steps": 1173,
+      "raw_logits_dtype": "torch.bfloat16"
+    },
+    {
+      "condition": "sampled_fp32",
+      "block": 3,
+      "seconds": 7.4007866280007875,
+      "vector_steps": 1044,
+      "raw_logits_dtype": "torch.float32"
+    },
+    {
+      "condition": "sampled_bf16",
+      "block": 3,
+      "seconds": 8.228064854003605,
+      "vector_steps": 1044,
+      "raw_logits_dtype": "torch.bfloat16"
+    },
+    {
+      "condition": "greedy_fp32",
+      "block": 3,
+      "seconds": 7.842469332994369,
+      "vector_steps": 1116,
+      "raw_logits_dtype": "torch.float32"
+    }
+  ],
+  "elapsed_seconds": 139.30096723099996,
+  "total_scored_games": 1024,
+  "weights_unchanged": true,
+  "formal_training_restarted": false,
+  "new_checkpoints_saved": false,
+  "float_weights_dtype": "float32",
+  "bf16_logits_dtype": "torch.bfloat16",
+  "probability_dtype": "float32",
+  "fp32_wrapper_parity_verified": true,
+  "limitations": [
+    "256 paired games per mode; CIs describe this evaluation, not a universal strength guarantee.",
+    "Same simulator and policy seeds do not force identical trajectories when numerical precision changes actions.",
+    "Auto-reset games after a lane's first scored episode are ignored; pairing uses block, seed, lane and episode index."
+  ]
+}

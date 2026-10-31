@@ -1,0 +1,221 @@
+{
+  "status": "verified_not_trained",
+  "verified_at": "2026-10-31T15:19:53.334156+08:00",
+  "reward_shaping": {
+    "operation_cost": 0.0001,
+    "cycle_cost": 0.0002
+  },
+  "tests": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 80,
+    "seconds": 17.94,
+    "reward_tests_passed": 13,
+    "wandb": "offline integration only"
+  },
+  "replayed_cases": 12,
+  "cases": [
+    {
+      "snapshot": "cases/greedy-freeze_return-01.state.json",
+      "mode": "greedy",
+      "kind": "freeze_return",
+      "actions": [
+        2,
+        2
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "6c267de11077f80e30f0ed476e83b35b4bf6027583937d1eebf8b52c21e3eb6e"
+    },
+    {
+      "snapshot": "cases/greedy-freeze_return-02.state.json",
+      "mode": "greedy",
+      "kind": "freeze_return",
+      "actions": [
+        2,
+        2
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "c2680ec76d9d59612e1eb1a7329bd11f8afbf50a4f5edbaca09e604529212d88"
+    },
+    {
+      "snapshot": "cases/greedy-freeze_return-03.state.json",
+      "mode": "greedy",
+      "kind": "freeze_return",
+      "actions": [
+        2,
+        2
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "106717bcebf47ed78127ce24ccd737d0a0216b80a9c475ea8ee7ef202c0e4e79"
+    },
+    {
+      "snapshot": "cases/greedy-move_return-01.state.json",
+      "mode": "greedy",
+      "kind": "move_return",
+      "actions": [
+        197,
+        203
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "7fd33d266554ebc901235b4c20f2b6ad3732fe340d0a20085d96decd8bd907cc"
+    },
+    {
+      "snapshot": "cases/greedy-move_return-02.state.json",
+      "mode": "greedy",
+      "kind": "move_return",
+      "actions": [
+        197,
+        203
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "838637d1a34aae74fd4f8ae0148b93fad8517c76957bb382ab5c3deb52f5dbfe"
+    },
+    {
+      "snapshot": "cases/greedy-move_return-03.state.json",
+      "mode": "greedy",
+      "kind": "move_return",
+      "actions": [
+        197,
+        203,
+        197
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 2,
+      "snapshot_sha256": "7fd33d266554ebc901235b4c20f2b6ad3732fe340d0a20085d96decd8bd907cc"
+    },
+    {
+      "snapshot": "cases/sampled-freeze_return-01.state.json",
+      "mode": "sampled",
+      "kind": "freeze_return",
+      "actions": [
+        2,
+        2
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "6c267de11077f80e30f0ed476e83b35b4bf6027583937d1eebf8b52c21e3eb6e"
+    },
+    {
+      "snapshot": "cases/sampled-freeze_return-02.state.json",
+      "mode": "sampled",
+      "kind": "freeze_return",
+      "actions": [
+        2,
+        2
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "630d7374a25a6978175c7612d2cfa9a57cbf7f29a849f93f45ec4ba115d0a1ea"
+    },
+    {
+      "snapshot": "cases/sampled-freeze_return-03.state.json",
+      "mode": "sampled",
+      "kind": "freeze_return",
+      "actions": [
+        2,
+        2
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "af107a51edeb9483d23f226b8da8dea9dc54ec737fb4bcb79d1444a00607f94c"
+    },
+    {
+      "snapshot": "cases/sampled-move_return-01.state.json",
+      "mode": "sampled",
+      "kind": "move_return",
+      "actions": [
+        203,
+        197
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "9223d5cf76feb55a1969314ab8e6c25a723cb63d6440225c48cf0b1841323c1e"
+    },
+    {
+      "snapshot": "cases/sampled-move_return-02.state.json",
+      "mode": "sampled",
+      "kind": "move_return",
+      "actions": [
+        203,
+        197
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "e3386337ad45a727b2d98cdb3f56e842fad8cb1f2a967903b808f9d4ac13fb7c"
+    },
+    {
+      "snapshot": "cases/sampled-move_return-03.state.json",
+      "mode": "sampled",
+      "kind": "move_return",
+      "actions": [
+        203,
+        197
+      ],
+      "rewards": [
+        -0.0001,
+        -0.00030000000000000003
+      ],
+      "cycle_returns": 1,
+      "snapshot_sha256": "af3a6763cfb9ee2b47d10f823f4cb77bc492572ca1d280602fb5abc8e5bb56bc"
+    }
+  ],
+  "uncapped_recorded_action_replay": {
+    "steps": 128,
+    "cycle_returns": 127,
+    "reward_sum": -0.038200000000000005,
+    "policy_run": false
+  },
+  "model_sha256_unchanged": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "formal_training_started": false,
+  "native_masks_and_policy_inputs_unchanged": true,
+  "source_sha256": {
+    "python/taverngym/learning/rewards.py": "1846220f55724eb6d3d70ca27bfc4aa3eefcecc81bc0a5dd45f470b8053ea1fe",
+    "python/taverngym/learning/env.py": "c24952aebbe9c490ed5e7804e827b4cefa5e4705c7e8d2c9dc5e72ce46c54a14",
+    "python/taverngym/learning/vector_env.py": "ba5ea856677657a525a4b1c8f3ebb183ccbf30c46261d1c9ab1814b3f1441905",
+    "python/taverngym/learning/ppo.py": "7d4a2e03cfd86f646229df30dbdc344c12d6c3c3f263d1f931038dea8975105a",
+    "python/taverngym/learning/experiment.py": "d72be612ddae4a8891ec9274f836c38244c6d7e7da8ff366b82c6d45e5d94420",
+    "python/taverngym/learning/train.py": "ebdcfe19db3369c35b248ce73072a1d2d90afa7b5c336761626ac16c9bae8c18",
+    "python/taverngym/learning/initialize.py": "25ea4d6916ec7879a22f4593b26b02f719d1589cee74151cd348411378163a15",
+    "configs/ppo-small.json": "ea2943ee2c2bb7dd2e1fd5da501e757982027eaeae7f6bbf664ced7d84e1a99a",
+    "tests/test_reward_shaping.py": "04a14453e8bc5f51155610e8e448adf5fb0e9e1a480f87416dc501bf32cb341f",
+    "tests/test_tracking.py": "f0bb82489228f1030955e3ef6c05d75c471b081ad391cd240a1ec0953d4fd57e"
+  }
+}

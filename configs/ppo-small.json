@@ -15,6 +15,8 @@
   "text_encoder_frozen": true,
   "seed": 42,
   "n_envs": 8,
+  "forward_precision": "bf16",
+  "opponent_forward_precision": "bf16",
   "ppo": {
     "learning_rate": 0.0003,
     "n_steps": 256,
@@ -30,7 +32,11 @@
     "max_grad_norm": 1.0,
     "aux_coef": 0.1
   },
-  "reward": "simulator terminal placement utility: (9 - 2 * placement) / 7",
+  "reward": "native placement utility (9 - 2 * placement) / 7 minus reversible-operation and no-progress cycle costs",
+  "reward_shaping": {
+    "operation_cost": 0.0001,
+    "cycle_cost": 0.0002
+  },
   "stage_kl_anchor": null,
   "opponents": "seven identical built-in scripted policies",
   "model_format": "SB3 native .zip",

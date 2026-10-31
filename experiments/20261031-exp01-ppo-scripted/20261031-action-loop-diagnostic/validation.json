@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "complete_games": 128,
+  "native_replay_verified_cases": 12,
+  "cross_turn_cycles_excluded": true,
+  "productive_action_boundaries_reset_history": true,
+  "model_weights_unchanged": true,
+  "source_sha256": {
+    "experiments/20261031-exp01-ppo-scripted/20261031-action-loop-diagnostic/run.py": "6d798d14fd745286251fdb421734e897ec407efba119dcda254d1dd2ac23eefe",
+    "experiments/20261031-exp01-ppo-scripted/20261031-action-loop-diagnostic/replay.py": "c2944024a7d8b9633fbe4b07cb3b94d6883d0d4903be044350fdd58c5869a33b",
+    "python/taverngym/learning/policy.py": "780c0d96ed3eb1a9732c84667e627cf017ea787375776e8eb3278a3e3eab8e3a",
+    "crates/taverngym/src/obs.rs": "906b2612ffc6eec44b7055f27c8fb31807f30477b0065a3df5bfd80808d7faa1",
+    "crates/taverngym/src/actions.rs": "c44915a4236a945d0a76e577953e00cad87118b8b78eae341776cd19a1aa9e1d"
+  }
+}

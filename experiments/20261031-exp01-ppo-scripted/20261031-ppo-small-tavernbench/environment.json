@@ -1,0 +1,8 @@
+{
+  "python": "3.12.8 | packaged by Anaconda, Inc. | (main, Dec 11 2024, 16:31:09) [GCC 11.2.0]",
+  "torch": "2.15.0+cu132",
+  "cuda_runtime": "13.2",
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "precision": "FP32 checkpoint and Adam; high matmul precision permits TF32; no autocast"
+}

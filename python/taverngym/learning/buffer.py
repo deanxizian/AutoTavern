@@ -144,6 +144,7 @@ class CompactPlacementBuffer(PlacementBuffer):
         self.actions = np.zeros((*shape, self.action_dim), dtype=np.int64)
         self.placement_targets = np.full(shape, -1, dtype=np.int64)
         self.segment_starts = np.zeros(self.n_envs, dtype=np.int64)
+        self.actor_counts = np.zeros(self.n_envs, dtype=np.int64)
         self.mask_dims = int(self.action_space.n)
         if self._storage is None:
             self._storage = (
@@ -165,6 +166,34 @@ class CompactPlacementBuffer(PlacementBuffer):
         self.log_probs[self.pos] = log_prob.detach().cpu().numpy().flatten()
         self.pos += 1
         self.full = self.pos == self.buffer_size
+
+    def add_actor_batch(self, transitions):
+        """Scatter independently completed learner decisions into [step, game]."""
+        games = np.array([t.game for t in transitions], dtype=np.int64)
+        steps = np.array([t.rollout_step for t in transitions], dtype=np.int64)
+        if len(np.unique(games)) != len(games) or not np.array_equal(self.actor_counts[games], steps):
+            raise ValueError("Actor samples must be consecutive and unique per game")
+        if np.any(steps >= self.buffer_size):
+            raise ValueError("Actor sample exceeds rollout budget")
+        obs = {key: np.stack([t.observation[key] for t in transitions]) for key in transitions[0].observation}
+        at = (steps, games)
+        for storage, encoded in zip(self._storage, self.codec.encode(obs)):
+            storage[at] = encoded
+        self.actions[steps, games, 0] = [t.action for t in transitions]
+        for field, values in (("rewards", [t.reward for t in transitions]),
+                              ("values", [t.value for t in transitions]),
+                              ("log_probs", [t.log_prob for t in transitions]),
+                              ("episode_starts", [t.episode_step == 0 for t in transitions])):
+            getattr(self, field)[at] = values
+        for t in transitions:
+            if t.done:
+                if not 1 <= t.placement <= 8:
+                    raise ValueError("Terminal actor transition requires a real placement")
+                self.placement_targets[self.segment_starts[t.game]:t.rollout_step + 1, t.game] = t.placement - 1
+                self.segment_starts[t.game] = t.rollout_step + 1
+        self.actor_counts[games] += 1
+        self.pos = int(self.actor_counts.min())
+        self.full = bool((self.actor_counts == self.buffer_size).all())
 
     def get(self, batch_size=None):
         if not self.full:

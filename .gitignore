@@ -75,3 +75,5 @@ guard-*.json
 /experiments/**/*.zip
 /experiments/**/*.bin
 /experiments/**/*.tmp
+/experiments/**/partial-results.json
+/experiments/**/*-actions.jsonl.gz

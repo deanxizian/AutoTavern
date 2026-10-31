@@ -1,0 +1,231 @@
+{
+  "organized_at": "2026-10-31T14:49:18.678952+08:00",
+  "groups": {
+    "20261031-infra": [
+      "20261031-scripted-bot-game",
+      "20261031-paper-reproduction",
+      "20261031-ppo-library-setup",
+      "20261031-ppo-small-init",
+      "20261031-ppo-small-paper300",
+      "20261031-ppo-small-v1-100-minibatches",
+      "20261031-microbatch-scaling",
+      "20261031-bf16-mixed-precision"
+    ],
+    "20261031-scripted-baseline": [
+      "20261031-scripted-bot-tavernbench"
+    ],
+    "20261031-exp01-ppo-scripted": [
+      "20261031-ppo-small-100ppo-32minibatches",
+      "20261031-ppo-small-tavernbench"
+    ]
+  },
+  "moved_directories": {
+    "experiments/20261031-scripted-bot-game": "experiments/20261031-infra/20261031-scripted-bot-game",
+    "experiments/20261031-paper-reproduction": "experiments/20261031-infra/20261031-paper-reproduction",
+    "experiments/20261031-ppo-library-setup": "experiments/20261031-infra/20261031-ppo-library-setup",
+    "experiments/20261031-ppo-small-init": "experiments/20261031-infra/20261031-ppo-small-init",
+    "experiments/20261031-ppo-small-paper300": "experiments/20261031-infra/20261031-ppo-small-paper300",
+    "experiments/20261031-ppo-small-v1-100-minibatches": "experiments/20261031-infra/20261031-ppo-small-v1-100-minibatches",
+    "experiments/20261031-microbatch-scaling": "experiments/20261031-infra/20261031-microbatch-scaling",
+    "experiments/20261031-bf16-mixed-precision": "experiments/20261031-infra/20261031-bf16-mixed-precision",
+    "experiments/20261031-scripted-bot-tavernbench": "experiments/20261031-scripted-baseline/20261031-scripted-bot-tavernbench",
+    "experiments/20261031-ppo-small-100ppo-32minibatches": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches",
+    "experiments/20261031-ppo-small-tavernbench": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-tavernbench",
+    "experiments/20261031-ppo-small-paper400": "experiments/20261031-infra/20261031-ppo-small-paper300"
+  },
+  "legacy_alias": "experiments/20261031-infra/20261031-ppo-small-paper400 -> 20261031-ppo-small-paper300",
+  "raw_records_verified_unchanged": 184,
+  "model_sha256_unchanged": {
+    "runs/20261031-ppo-small-init/initial_model.zip": "3c8f024a0cfb1526298d0d9a105d4d5a2e283cc724eb0682b160f0a9a7d38e53",
+    "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+  },
+  "historical_paths": "Recorded commands, provenance paths and source hashes describe their original execution; resolve moved paths with moved_directories. Historical score and prediction files are not rewritten.",
+  "updated_source_and_document_files": [
+    {
+      "old_path": "experiments/20261031-scripted-bot-game/README.md",
+      "new_path": "experiments/20261031-infra/20261031-scripted-bot-game/README.md",
+      "sha256_before": "cadcf9441e7d102ea21bf17e3467f97cf7789bebbf2fc33d0cac18c51ba958ef",
+      "sha256_after": "efee42622377a63a89cce846c950b273e0678c6d6f99cd5e7905086097a3cf9e"
+    },
+    {
+      "old_path": "experiments/20261031-paper-reproduction/reproduce_bench.py",
+      "new_path": "experiments/20261031-infra/20261031-paper-reproduction/reproduce_bench.py",
+      "sha256_before": "5ae60487b3b100d7837981aeb18cd67919ce2575f9509f710732547f681a9fa8",
+      "sha256_after": "f3f9e0d62ea4348f66d9b4f9ce22100a9331c17ee909aef4893c5fca88461b3f"
+    },
+    {
+      "old_path": "experiments/20261031-paper-reproduction/README.md",
+      "new_path": "experiments/20261031-infra/20261031-paper-reproduction/README.md",
+      "sha256_before": "04b9fd959d8a4b71e30f122de6589ed0f82d17dc75f580287bbba6fffe51fdef",
+      "sha256_after": "401ce377ffd8cd9de46c860cad4de7be51e07b7fa8d2e1a2258e0ce94378b513"
+    },
+    {
+      "old_path": "experiments/20261031-paper-reproduction/reproduce_interfaces.py",
+      "new_path": "experiments/20261031-infra/20261031-paper-reproduction/reproduce_interfaces.py",
+      "sha256_before": "eb52ada39959abc6a5fac158b3b3cb7a47ddb8b1c6b11edd0a605ad27ff6aa91",
+      "sha256_after": "048d8b3e40ff650d11f1a50289abdc8488ba12915e3f544e7908b3b73b8ac37e"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-library-setup/README.md",
+      "new_path": "experiments/20261031-infra/20261031-ppo-library-setup/README.md",
+      "sha256_before": "8d5eda101954565a3fb5e91f2ab41654fb5a84d3d4e83d86dee9884c0411ad2e",
+      "sha256_after": "205f3465b81c081fac1f8d961080c8dfa83ae0752e752967841463298de0985d"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-library-setup/verify.py",
+      "new_path": "experiments/20261031-infra/20261031-ppo-library-setup/verify.py",
+      "sha256_before": "9982ec07389371a3dd8d858ab91a84464c5a23fd2510786e9a1a6f84d20e4c72",
+      "sha256_after": "c14cc60d71a028e3a5b78ca29de414ce4865029f34f50f416987b70417f681d5"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-init/README.md",
+      "new_path": "experiments/20261031-infra/20261031-ppo-small-init/README.md",
+      "sha256_before": "258dffbed3890b9581cd23241c5434f414e19cc0b517e0a3d933c42cf4610c32",
+      "sha256_after": "dc27048c0cc7f6c7225750e83ef6c2faaa09606bf8dc1161c45718acc65c1a11"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-paper300/README.md",
+      "new_path": "experiments/20261031-infra/20261031-ppo-small-paper300/README.md",
+      "sha256_before": "2896f6975f34b301c0aa22eb1c210edc05824321b0bfcaec6fcdc80815a51a87",
+      "sha256_after": "243b8849efc26e1a3d89797ffabf82ec3b984c8142442218e59e15eff53f9fb2"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-paper300/config-changes/microbatch-1024/reestimate.py",
+      "new_path": "experiments/20261031-infra/20261031-ppo-small-paper300/config-changes/microbatch-1024/reestimate.py",
+      "sha256_before": "8fa96cb78e242e4ed88fe8aa862be2c9be42919d50c813f0d7350584025d7cb4",
+      "sha256_after": "1e49e523d8a145616e34f4ad8c3a7297c1a9e82209df663992fcf30cc3a08e6a"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-paper300/config-changes/microbatch-1024/README.md",
+      "new_path": "experiments/20261031-infra/20261031-ppo-small-paper300/config-changes/microbatch-1024/README.md",
+      "sha256_before": "47d56173b405ac26eeb0e910d42366e1a7ec75d81b62722fb204abfd1877bcbb",
+      "sha256_after": "6ba27f3f829edfa13ed153671b17482efdb6931302695cdec29af231f7b1a7cb"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-v1-100-minibatches/evaluate_retained.py",
+      "new_path": "experiments/20261031-infra/20261031-ppo-small-v1-100-minibatches/evaluate_retained.py",
+      "sha256_before": "42a8ce75511f2d1a038c548c7eb76287516e8258432a9d33bd9cd1217a7cdcf3",
+      "sha256_after": "168407861f84fc40e324bcd443b4a1e12f161d23bba6aaa2fc05d3fcf3d8f66b"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-v1-100-minibatches/README.md",
+      "new_path": "experiments/20261031-infra/20261031-ppo-small-v1-100-minibatches/README.md",
+      "sha256_before": "938ce3afae61b089af1524f12c5052916341ab8e073c78fc5e72c790a6385e38",
+      "sha256_after": "19df4ef6ac1e79db0c651f96cea21a6d567a57b473261490653b5b0f3723ae74"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-v1-100-minibatches/verify.py",
+      "new_path": "experiments/20261031-infra/20261031-ppo-small-v1-100-minibatches/verify.py",
+      "sha256_before": "fb5de0065abcd02506b06c9038c7c88925c17fe6aee71b030ac2ab3e1f284214",
+      "sha256_after": "1cca88c08ad51ffc6e2ce011914d0ca98331357dae516c0f85496e04b1a5a97b"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-v1-100-minibatches/retain_best.py",
+      "new_path": "experiments/20261031-infra/20261031-ppo-small-v1-100-minibatches/retain_best.py",
+      "sha256_before": "176bd13b265c16d9d3ecbb923b8ea03ef31fb87fc9a689d29318248e0cfd8044",
+      "sha256_after": "fd40a274570118ed427afa5b0991576f8b72287a4ba73f09dfc4b6d5ac69eb22"
+    },
+    {
+      "old_path": "experiments/20261031-microbatch-scaling/benchmark.py",
+      "new_path": "experiments/20261031-infra/20261031-microbatch-scaling/benchmark.py",
+      "sha256_before": "61805301abbc0b2d9e8f5370f705072169f8e3e1481f67fb5aad99b8bd76f8f9",
+      "sha256_after": "c32fecb938ca4df69bb19078dd9c0849368a7389f1c8eb412aaf43182d940ada"
+    },
+    {
+      "old_path": "experiments/20261031-microbatch-scaling/README.md",
+      "new_path": "experiments/20261031-infra/20261031-microbatch-scaling/README.md",
+      "sha256_before": "fd1316c70e26f84849f53548eed95685bf5d9840ed6a57d9db2614cd9775ce3d",
+      "sha256_after": "4d46fa369f8364039f7c7ee889c342707b2cc789781c2f82ac69abe71ed6f7d3"
+    },
+    {
+      "old_path": "experiments/20261031-bf16-mixed-precision/benchmark.py",
+      "new_path": "experiments/20261031-infra/20261031-bf16-mixed-precision/benchmark.py",
+      "sha256_before": "da608952a56401346fd650e1a915f9259d6a3d4399746612fb86208bb59457f5",
+      "sha256_after": "4bab94fb8ff5f354dea59c0cb75db50e0c78b17ba1ed720f974f088d0b09f370"
+    },
+    {
+      "old_path": "experiments/20261031-bf16-mixed-precision/README.md",
+      "new_path": "experiments/20261031-infra/20261031-bf16-mixed-precision/README.md",
+      "sha256_before": "00a5e00888492c4b63945f51c29857d51523b1035201e8019b075a1eaf4380aa",
+      "sha256_after": "555ced5af81d8f94c36fd437a8ad22637c4faa978de1241b09134d4cadf966ad"
+    },
+    {
+      "old_path": "experiments/20261031-scripted-bot-tavernbench/README.md",
+      "new_path": "experiments/20261031-scripted-baseline/20261031-scripted-bot-tavernbench/README.md",
+      "sha256_before": "99020a4e2006aa74a7ace33eb1648d15e045fdcbabd94af1e114ffcf6b5948ec",
+      "sha256_after": "427cfc471a540d8c8565e6d8efbe4bc6bcf83cf43a067ceab352379cc628b0fc"
+    },
+    {
+      "old_path": "experiments/20261031-scripted-bot-tavernbench/run.py",
+      "new_path": "experiments/20261031-scripted-baseline/20261031-scripted-bot-tavernbench/run.py",
+      "sha256_before": "491530e04881d81e4c0811f5f3cc690a989f4f7ba4d6d52dbe4908ea0789946a",
+      "sha256_after": "42d974e5d64d3899c519ec1a3aa45e539f07ef667112a8b85126bccb48415fa0"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-100ppo-32minibatches/finalize.py",
+      "new_path": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/finalize.py",
+      "sha256_before": "ab63268dc2bcb2ab47c89c6ba7cc2227116614fa07570c05f33913a8858e77ac",
+      "sha256_after": "2496eda2893ec3750f1e27a9e424cdc35ed76bdf7bbeb254c606b9d57ffd204c"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-100ppo-32minibatches/README.md",
+      "new_path": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/README.md",
+      "sha256_before": "6d6c89bd3216a55cb09e4e243f3f904b72005c457be09d5e08fc755f571ad8ba",
+      "sha256_after": "a5b2effedcb6a9bbc09a78fb0e2de9b122033f33e86da8f2179fb2f3fa86faa6"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-100ppo-32minibatches/run.py",
+      "new_path": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/run.py",
+      "sha256_before": "2874911f255c15a2d2000dae7865dc9d9dab9842e60162cef22f109244da9203",
+      "sha256_after": "a2cc560df3ed7f209e9a6af73703c23beb21ac190d17c3ff421f8a2ae4e105db"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-tavernbench/README.md",
+      "new_path": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-tavernbench/README.md",
+      "sha256_before": "e21b811796a2a40bd22d8b7368d4dc05844cea9b8f5908778ca5f31d082c191a",
+      "sha256_after": "1fe20962001ec822ad7f8fb94097e8ff8e7b108d8a3a79aa7d132fbe8c41dc90"
+    },
+    {
+      "old_path": "experiments/20261031-ppo-small-tavernbench/run.py",
+      "new_path": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-tavernbench/run.py",
+      "sha256_before": "44306e7054b6a07e8f1d4b4abbb71873e8c1e35a00c212b6fc861e85bb3ab60f",
+      "sha256_after": "b1d299af69667155442e8f0b452b4a24d6e8f5bed6630b9ce710ea0e5bf51403"
+    },
+    {
+      "old_path": "docs/PPO_BATCH_COMPARISON.md",
+      "new_path": "docs/PPO_BATCH_COMPARISON.md",
+      "sha256_before": "85c5b740a5dfdcd56bca4a6946749b9cd0470209fb6b95145232f1007b3c11bb",
+      "sha256_after": "e50872f2cc2a0a1bffe42b309c30160aa25a3b6269dff93a39b08136fde31a58"
+    },
+    {
+      "old_path": "docs/TRAINING_INFRA.md",
+      "new_path": "docs/TRAINING_INFRA.md",
+      "sha256_before": "adc5cc693e2b9d4fe279c984f2a2f113ae0bdb3de68f05bd15b24429ddac9afe",
+      "sha256_after": "1bc39bdabbf0a7732a0cf7249a5cde25eabd741cd2f7e8447f02d44f7a97fe56"
+    },
+    {
+      "old_path": "docs/TRAINING_METRICS.md",
+      "new_path": "docs/TRAINING_METRICS.md",
+      "sha256_before": "12ce79ec6b3bc6ea5cfb152e8056c1e54c789cfe3f8991dead36970b2fe3b544",
+      "sha256_after": "f33ea85bc53fb49f4fb035e20d061be6598c8f4db6c2f24683a34139dd6bf9f0"
+    },
+    {
+      "old_path": "docs/TRAINING.md",
+      "new_path": "docs/TRAINING.md",
+      "sha256_before": "24dfa6851b2d77683499c9f09f42ac41f09ef3c074ccb6340db969021be17144",
+      "sha256_after": "62942c7796597dd91137ac6091930a32fe407c9030e77e668f80bec2ef147ed1"
+    }
+  ],
+  "verification": {
+    "python_scripts_parse": true,
+    "repository_root_detection": true,
+    "navigation_metadata_targets": true,
+    "models_unchanged": true,
+    "markdown_links_resolve": true,
+    "dated_top_level_directories": true,
+    "python_scripts_checked": 19,
+    "existing_run_overwrite_guard": true,
+    "python_regression_tests": "62 passed"
+  },
+  "date_convention": "Every top-level experiment group uses YYYYMMDD-name; dates are Asia/Shanghai."
+}

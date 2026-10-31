@@ -1,0 +1,15 @@
+{
+  "id": "20261031-action-loop-filter",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "status": "completed",
+  "objective": "Inference-only reversible-action filter comparison, same frozen checkpoint and audit counter",
+  "results": "results.json",
+  "record_group": "exp01",
+  "record_path": "experiments/20261031-exp01-ppo-scripted/20261031-action-loop-filter",
+  "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+  "model_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "weights_uploaded": false,
+  "training_started": false,
+  "wandb_url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/fnfp39ez"
+}

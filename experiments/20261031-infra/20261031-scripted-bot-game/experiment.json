@@ -1,0 +1,33 @@
+{
+  "id": "20261031-scripted-bot-game",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "name": "scripted-bot-game",
+  "status": "completed",
+  "objective": "使用内置启发式机器人完成一局八人酒馆战棋游戏。",
+  "command": [
+    "target/release/examples/play",
+    "1"
+  ],
+  "results": "results.json",
+  "raw_output": "events.txt",
+  "bot_policy": {
+    "implementation": "crates/taverngym/src/bot.rs",
+    "shared_decision_code_and_heuristic_parameters_across_bot_seats": true,
+    "seat_specific_strategy_styles": false,
+    "online_learning": false,
+    "behavior_variation_sources": [
+      "hero",
+      "shop",
+      "hand",
+      "warband",
+      "gold",
+      "game random events"
+    ],
+    "randomness": "One game RNG stream; different actions do not imply different bot policies.",
+    "same_as_paper_reality_calibrated_library_opponents": false,
+    "documentation": "../README.md#默认脚本机器人说明"
+  },
+  "record_group": "infra",
+  "record_path": "experiments/20261031-infra/20261031-scripted-bot-game"
+}

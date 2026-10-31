@@ -1,0 +1,12 @@
+{
+  "status": "passed",
+  "at": "2026-10-31T16:52:12.219130+08:00",
+  "learner_samples": 262144,
+  "sampling_seconds": 38.11223025700019,
+  "learner_samples_per_second": 6878.212013107031,
+  "native_steps": 1417,
+  "terminal_transitions": 237,
+  "native_seconds": 1.917383032021462,
+  "observation_seconds": 3.7641803860096843,
+  "reward_and_sink_seconds": 8.987499538125121
+}

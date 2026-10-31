@@ -1,0 +1,6 @@
+{
+  "reward_shaping": {
+    "operation_cost": 0.0001,
+    "cycle_cost": 0.0002
+  }
+}

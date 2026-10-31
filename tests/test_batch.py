@@ -100,3 +100,34 @@ def test_bad_arguments():
             BatchEnv(**kwargs)
     with pytest.raises(ValueError, match="hero_choice"):
         BatchEnv(1, config={"hero_choice": 4})
+
+
+def test_active_games_hold_every_other_state_exactly():
+    env = BatchEnv(3, seed=9, controlled=(0, 1, 2, 3, 4), rotate_seats=True, threads=3)
+    before = [env.save(i) for i in range(3)]
+    obs = env.observe()
+    actions = random_actions(obs, np.random.default_rng(5))
+    actions[5:] = N_ACTIONS + 5  # Even illegal actions in held games must be ignored.
+    rewards, dones, info = env.step(actions, active=[True, False, False])
+    assert env.save(0) != before[0]
+    assert [env.save(i) for i in (1, 2)] == before[1:]
+    assert not info["rejected"].any()
+    assert not rewards[5:].any() and not dones[5:].any()
+    with pytest.raises(ValueError, match="one flag"):
+        env.step(actions, active=[True])
+
+
+def test_rotated_roles_cover_seats_and_replay_across_threads():
+    a = BatchEnv(16, seed=9, controlled=range(5), rotate_seats=True, threads=1)
+    b = BatchEnv(16, seed=9, controlled=range(5), rotate_seats=True, threads=3)
+    seats = a.slot_seats.reshape(16, 5)
+    assert set(seats[:, 0]) == set(range(8))
+    assert all(len(set(row)) == 5 for row in seats)
+    np.testing.assert_array_equal(a.slot_seats, b.slot_seats)
+    for i in range(16):
+        b.load(i, a.save(i))
+    assert same(run(a, 120, seed=5), run(b, 120, seed=5))
+    assert any(a.episode_index(i) > 0 for i in range(16))
+    np.testing.assert_array_equal(a.slot_seats, b.slot_seats)
+    for i in range(16):
+        assert a.save(i) == b.save(i)

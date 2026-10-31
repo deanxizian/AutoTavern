@@ -1,0 +1,9 @@
+{
+  "supervisor_pid": 2329564,
+  "started_at": "2026-10-31T15:40:40.354998+08:00",
+  "configuration": "/home/eric/projects/AutoTavern/experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-v2/config.json",
+  "formal_training": true,
+  "planned_ppo_iterations": 100,
+  "planned_samples": 26214400,
+  "models_uploaded": false
+}

@@ -44,6 +44,9 @@ pub struct Episode {
     pub index: u64,
     /// Per controlled seat: its episode has ended (eliminated, or the game is over).
     pub finished: Vec<bool>,
+    /// Optional per-game role-to-seat map. Empty preserves the legacy fixed seats.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub seats: Vec<PlayerId>,
 }
 
 /// What [`BatchEnv::step`] reports for one slot.
@@ -68,6 +71,7 @@ pub struct BatchEnv {
     controlled: Vec<PlayerId>,
     episodes: Vec<Episode>,
     threads: usize,
+    rotate_seats: bool,
     /// Reward for a rejected action (the action is ignored).
     pub illegal_penalty: f32,
 }
@@ -179,10 +183,51 @@ impl BatchEnv {
             controlled,
             episodes: Vec::new(),
             threads: threads.max(1),
+            rotate_seats: false,
             illegal_penalty: -0.01,
         };
         env.episodes = (0..n_games).map(|i| env.fresh(i, 0)).collect();
         Ok(env)
+    }
+
+    /// As `new`, but independently shuffle role seats at every game reset. Role 0
+    /// remains the learner slot; uncontrolled seats still use the built-in bots.
+    pub fn new_rotating(
+        n_games: usize,
+        seed: u64,
+        cfg: RulesConfig,
+        controlled: Vec<PlayerId>,
+        threads: usize,
+    ) -> Result<BatchEnv, String> {
+        let mut env = Self::new(n_games, seed, cfg, controlled, threads)?;
+        env.rotate_seats = true;
+        env.episodes = (0..n_games).map(|i| env.fresh(i, 0)).collect();
+        Ok(env)
+    }
+
+    fn seats<'a>(&'a self, episode: &'a Episode) -> &'a [PlayerId] {
+        if episode.seats.is_empty() {
+            &self.controlled
+        } else {
+            &episode.seats
+        }
+    }
+
+    pub fn slot_seats(&self) -> Vec<PlayerId> {
+        self.episodes
+            .iter()
+            .flat_map(|e| self.seats(e).iter().copied())
+            .collect()
+    }
+
+    /// Training episodes end at the learner's elimination. Its placement/reward
+    /// was already reported; no opponent experience needs the remaining game.
+    pub fn reset_finished_first(&mut self) {
+        for i in 0..self.episodes.len() {
+            if self.episodes[i].finished[0] {
+                self.episodes[i] = self.fresh(i, self.episodes[i].index + 1);
+            }
+        }
     }
 
     fn game_seed(&self, game: usize, index: u64) -> u64 {
@@ -191,11 +236,26 @@ impl BatchEnv {
 
     fn fresh(&self, game: usize, index: u64) -> Episode {
         let mut g = Game::new(self.game_seed(game, index), self.cfg.clone());
-        advance(&mut g, &self.controlled);
+        let seats = if self.rotate_seats {
+            // A separate role RNG must not consume the simulator's card/combat RNG.
+            crate::rng::Rng::new(self.game_seed(game, index) ^ 0x726f_6c65_7365_6174)
+                .sample_indices(self.cfg.num_players, self.controlled.len())
+        } else {
+            vec![]
+        };
+        advance(
+            &mut g,
+            if seats.is_empty() {
+                &self.controlled
+            } else {
+                &seats
+            },
+        );
         Episode {
             game: g,
             index,
             finished: vec![false; self.controlled.len()],
+            seats,
         }
     }
 
@@ -249,7 +309,6 @@ impl BatchEnv {
             }
         }
         let k = self.controlled.len();
-        let controlled = &self.controlled;
         // One output row per slot, packed for the chunked workers.
         let mut rows: Vec<ObsRow> = floats
             .chunks_mut(OBS_FLOATS)
@@ -261,6 +320,7 @@ impl BatchEnv {
         let mut eps: Vec<&Episode> = self.episodes.iter().collect();
         par_chunks(self.threads, &mut eps, &mut rows, k, |_, eps, rows| {
             for (e, rows) in eps.iter().zip(rows.chunks_mut(k)) {
+                let controlled = self.seats(e);
                 for (j, (f, c, m, r)) in rows.iter_mut().enumerate() {
                     let p = controlled[j];
                     let o = observe(&e.game, p);
@@ -284,7 +344,21 @@ impl BatchEnv {
     /// Apply one action per slot (see the module documentation); `out` gets one result per
     /// slot.
     pub fn step(&mut self, actions: &[i64], out: &mut [SlotResult]) -> Result<(), String> {
+        self.step_active(actions, &vec![true; self.n_games()], out)
+    }
+
+    /// Hold inactive games completely unchanged while other games finish their
+    /// opponents' actions. This never creates an unrecorded learner transition.
+    pub fn step_active(
+        &mut self,
+        actions: &[i64],
+        active: &[bool],
+        out: &mut [SlotResult],
+    ) -> Result<(), String> {
         let n = self.n_slots();
+        if active.len() != self.n_games() {
+            return Err("active must contain one flag per game".into());
+        }
         if actions.len() != n || out.len() != n {
             return Err(format!(
                 "{} actions and {} results for {n} slots",
@@ -299,7 +373,13 @@ impl BatchEnv {
             let this = &*self;
             par_chunks(self.threads, &mut eps, &mut work, k, |first, eps, work| {
                 for (gi, (e, slots)) in eps.iter_mut().zip(work.chunks_mut(k)).enumerate() {
-                    this.step_game(first + gi, e, slots);
+                    if active[first + gi] {
+                        this.step_game(first + gi, e, slots);
+                    } else {
+                        for (_, result) in slots {
+                            **result = SlotResult::default();
+                        }
+                    }
                 }
             });
         }
@@ -309,15 +389,16 @@ impl BatchEnv {
 
     fn step_game(&self, gi: usize, e: &mut Episode, slots: &mut [(&i64, &mut SlotResult)]) {
         let n = e.game.players.len();
+        let controlled = self.seats(e).to_vec();
         // The seats that must act now, as the caller observed them. A seat that comes to
         // need an action while the others' actions are applied (a new turn's offer after
         // the last seat ended its turn) waits for the next `observe`.
         let ready: Vec<bool> = (0..self.controlled.len())
-            .map(|j| !e.finished[j] && !over(&e.game) && e.game.needs_action(self.controlled[j]))
+            .map(|j| !e.finished[j] && !over(&e.game) && e.game.needs_action(controlled[j]))
             .collect();
         for (j, (a, r)) in slots.iter_mut().enumerate() {
             **r = SlotResult::default();
-            let p = self.controlled[j];
+            let p = controlled[j];
             if !ready[j] || over(&e.game) || !e.game.needs_action(p) {
                 continue;
             }
@@ -333,9 +414,9 @@ impl BatchEnv {
                 }
             }
         }
-        advance(&mut e.game, &self.controlled);
+        advance(&mut e.game, &controlled);
         for (j, (_, r)) in slots.iter_mut().enumerate() {
-            let p = self.controlled[j];
+            let p = controlled[j];
             if !e.finished[j] && (over(&e.game) || !e.game.players[p].alive) {
                 e.finished[j] = true;
                 r.done = true;
@@ -371,6 +452,16 @@ impl BatchEnv {
                 e.finished.len(),
                 self.controlled.len()
             ));
+        }
+        if !e.seats.is_empty() {
+            let mut sorted = e.seats.clone();
+            sorted.sort_unstable();
+            sorted.dedup();
+            if sorted.len() != self.controlled.len()
+                || sorted.iter().any(|&p| p >= e.game.players.len())
+            {
+                return Err("invalid per-game role seats".into());
+            }
         }
         self.episodes[i] = e;
         Ok(())

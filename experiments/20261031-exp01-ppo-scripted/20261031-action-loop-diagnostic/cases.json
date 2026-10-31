@@ -1,0 +1,1710 @@
+[
+  {
+    "mode": "greedy",
+    "kind": "freeze_return",
+    "episode": {
+      "slot": 4,
+      "episode_index": 0
+    },
+    "turn": 1,
+    "snapshot": "cases/greedy-freeze_return-01.state.json",
+    "actions": [
+      2,
+      2
+    ],
+    "action_names": [
+      "Freeze",
+      "Freeze"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          1
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          1
+        ],
+        "frozen": true,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          1
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "greedy",
+    "kind": "freeze_return",
+    "episode": {
+      "slot": 6,
+      "episode_index": 0
+    },
+    "turn": 1,
+    "snapshot": "cases/greedy-freeze_return-02.state.json",
+    "actions": [
+      2,
+      2
+    ],
+    "action_names": [
+      "Freeze",
+      "Freeze"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Glim Guardian",
+            "atk": 1,
+            "hp": 4
+          }
+        ],
+        "board_eids": [
+          2
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 4,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Glim Guardian",
+            "atk": 1,
+            "hp": 4
+          }
+        ],
+        "board_eids": [
+          2
+        ],
+        "frozen": true,
+        "shop": [
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": 4,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Glim Guardian",
+            "atk": 1,
+            "hp": 4
+          }
+        ],
+        "board_eids": [
+          2
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 4,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "greedy",
+    "kind": "freeze_return",
+    "episode": {
+      "slot": 8,
+      "episode_index": 0
+    },
+    "turn": 1,
+    "snapshot": "cases/greedy-freeze_return-03.state.json",
+    "actions": [
+      2,
+      2
+    ],
+    "action_names": [
+      "Freeze",
+      "Freeze"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 3,
+            "card": null,
+            "name": "Lullabot",
+            "atk": 2,
+            "hp": 2
+          }
+        ],
+        "board_eids": [
+          3
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 3,
+            "card": null,
+            "name": "Lullabot",
+            "atk": 2,
+            "hp": 2
+          }
+        ],
+        "board_eids": [
+          3
+        ],
+        "frozen": true,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 3,
+            "card": null,
+            "name": "Lullabot",
+            "atk": 2,
+            "hp": 2
+          }
+        ],
+        "board_eids": [
+          3
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "greedy",
+    "kind": "move_return",
+    "episode": {
+      "slot": 15,
+      "episode_index": 0
+    },
+    "turn": 2,
+    "snapshot": "cases/greedy-move_return-01.state.json",
+    "actions": [
+      197,
+      203
+    ],
+    "action_names": [
+      "Move { from: 0, to: 1 }",
+      "Move { from: 1, to: 0 }"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 11,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 5,
+            "hp": 3
+          },
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          11,
+          44
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          },
+          {
+            "eid": 11,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 5,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          44,
+          11
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 11,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 5,
+            "hp": 3
+          },
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          11,
+          44
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "greedy",
+    "kind": "move_return",
+    "episode": {
+      "slot": 6,
+      "episode_index": 0
+    },
+    "turn": 2,
+    "snapshot": "cases/greedy-move_return-02.state.json",
+    "actions": [
+      197,
+      203
+    ],
+    "action_names": [
+      "Move { from: 0, to: 1 }",
+      "Move { from: 1, to: 0 }"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Glim Guardian",
+            "atk": 1,
+            "hp": 4
+          },
+          {
+            "eid": 38,
+            "card": null,
+            "name": "Aureate Laureate",
+            "atk": 2,
+            "hp": 2
+          }
+        ],
+        "board_eids": [
+          2,
+          38
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 37,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 39,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 38,
+            "card": null,
+            "name": "Aureate Laureate",
+            "atk": 2,
+            "hp": 2
+          },
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Glim Guardian",
+            "atk": 1,
+            "hp": 4
+          }
+        ],
+        "board_eids": [
+          38,
+          2
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 37,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 39,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Glim Guardian",
+            "atk": 1,
+            "hp": 4
+          },
+          {
+            "eid": 38,
+            "card": null,
+            "name": "Aureate Laureate",
+            "atk": 2,
+            "hp": 2
+          }
+        ],
+        "board_eids": [
+          2,
+          38
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 37,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 39,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "greedy",
+    "kind": "move_return",
+    "episode": {
+      "slot": 15,
+      "episode_index": 0
+    },
+    "turn": 2,
+    "snapshot": "cases/greedy-move_return-03.state.json",
+    "actions": [
+      197,
+      203,
+      197
+    ],
+    "action_names": [
+      "Move { from: 0, to: 1 }",
+      "Move { from: 1, to: 0 }",
+      "Move { from: 0, to: 1 }"
+    ],
+    "loop_start": 1,
+    "loop_end": 3,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 11,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 5,
+            "hp": 3
+          },
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          11,
+          44
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          },
+          {
+            "eid": 11,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 5,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          44,
+          11
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 11,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 5,
+            "hp": 3
+          },
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          11,
+          44
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 3,
+        "board": [
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          },
+          {
+            "eid": 11,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 5,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          44,
+          11
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "sampled",
+    "kind": "freeze_return",
+    "episode": {
+      "slot": 4,
+      "episode_index": 0
+    },
+    "turn": 1,
+    "snapshot": "cases/sampled-freeze_return-01.state.json",
+    "actions": [
+      2,
+      2
+    ],
+    "action_names": [
+      "Freeze",
+      "Freeze"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          1
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          1
+        ],
+        "frozen": true,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          1
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "sampled",
+    "kind": "freeze_return",
+    "episode": {
+      "slot": 8,
+      "episode_index": 0
+    },
+    "turn": 1,
+    "snapshot": "cases/sampled-freeze_return-02.state.json",
+    "actions": [
+      2,
+      2
+    ],
+    "action_names": [
+      "Freeze",
+      "Freeze"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          2
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          2
+        ],
+        "frozen": true,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 2,
+            "card": null,
+            "name": "Dune Dweller",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          2
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "sampled",
+    "kind": "freeze_return",
+    "episode": {
+      "slot": 13,
+      "episode_index": 0
+    },
+    "turn": 1,
+    "snapshot": "cases/sampled-freeze_return-03.state.json",
+    "actions": [
+      2,
+      2
+    ],
+    "action_names": [
+      "Freeze",
+      "Freeze"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 3,
+            "card": null,
+            "name": "Southsea Busker",
+            "atk": 3,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          3
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 3,
+            "card": null,
+            "name": "Southsea Busker",
+            "atk": 3,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          3
+        ],
+        "frozen": true,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": true
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 3,
+            "card": null,
+            "name": "Southsea Busker",
+            "atk": 3,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          3
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 1,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "sampled",
+    "kind": "move_return",
+    "episode": {
+      "slot": 0,
+      "episode_index": 0
+    },
+    "turn": 2,
+    "snapshot": "cases/sampled-move_return-01.state.json",
+    "actions": [
+      203,
+      197
+    ],
+    "action_names": [
+      "Move { from: 1, to: 0 }",
+      "Move { from: 0, to: 1 }"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 43,
+            "card": null,
+            "name": "Aureate Laureate",
+            "atk": 2,
+            "hp": 2
+          },
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Roach",
+            "atk": 2,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          43,
+          1
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 44,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Roach",
+            "atk": 2,
+            "hp": 3
+          },
+          {
+            "eid": 43,
+            "card": null,
+            "name": "Aureate Laureate",
+            "atk": 2,
+            "hp": 2
+          }
+        ],
+        "board_eids": [
+          1,
+          43
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 44,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 43,
+            "card": null,
+            "name": "Aureate Laureate",
+            "atk": 2,
+            "hp": 2
+          },
+          {
+            "eid": 1,
+            "card": null,
+            "name": "Roach",
+            "atk": 2,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          43,
+          1
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 44,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": null,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "sampled",
+    "kind": "move_return",
+    "episode": {
+      "slot": 15,
+      "episode_index": 0
+    },
+    "turn": 2,
+    "snapshot": "cases/sampled-move_return-02.state.json",
+    "actions": [
+      203,
+      197
+    ],
+    "action_names": [
+      "Move { from: 1, to: 0 }",
+      "Move { from: 0, to: 1 }"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          },
+          {
+            "eid": 12,
+            "card": null,
+            "name": "Southsea Busker",
+            "atk": 5,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          44,
+          12
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 12,
+            "card": null,
+            "name": "Southsea Busker",
+            "atk": 5,
+            "hp": 1
+          },
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          12,
+          44
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 44,
+            "card": null,
+            "name": "Cord Puller",
+            "atk": 1,
+            "hp": 1
+          },
+          {
+            "eid": 12,
+            "card": null,
+            "name": "Southsea Busker",
+            "atk": 5,
+            "hp": 1
+          }
+        ],
+        "board_eids": [
+          44,
+          12
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 43,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 45,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "mode": "sampled",
+    "kind": "move_return",
+    "episode": {
+      "slot": 24,
+      "episode_index": 0
+    },
+    "turn": 2,
+    "snapshot": "cases/sampled-move_return-03.state.json",
+    "actions": [
+      203,
+      197
+    ],
+    "action_names": [
+      "Move { from: 1, to: 0 }",
+      "Move { from: 0, to: 1 }"
+    ],
+    "loop_start": 0,
+    "loop_end": 2,
+    "exact_native_replay_verified": true,
+    "trace": [
+      {
+        "step": 0,
+        "board": [
+          {
+            "eid": 38,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 6
+          },
+          {
+            "eid": 4,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          38,
+          4
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 1,
+        "board": [
+          {
+            "eid": 4,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          },
+          {
+            "eid": 38,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 6
+          }
+        ],
+        "board_eids": [
+          4,
+          38
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      },
+      {
+        "step": 2,
+        "board": [
+          {
+            "eid": 38,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 6
+          },
+          {
+            "eid": 4,
+            "card": null,
+            "name": "Scarlet Survivor",
+            "atk": 3,
+            "hp": 3
+          }
+        ],
+        "board_eids": [
+          38,
+          4
+        ],
+        "frozen": false,
+        "shop": [
+          {
+            "eid": 2,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          },
+          {
+            "eid": 3,
+            "hid": null,
+            "card": null,
+            "frozen": false
+          }
+        ]
+      }
+    ]
+  }
+]

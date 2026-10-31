@@ -1,0 +1,24 @@
+{
+  "id": "20261031-ppo-small-tavernbench",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "status": "completed",
+  "protocol": "protocol.json",
+  "models": {
+    "ppo-init": {
+      "path": "runs/20261031-ppo-small-init/initial_model.zip",
+      "sha256": "3c8f024a0cfb1526298d0d9a105d4d5a2e283cc724eb0682b160f0a9a7d38e53"
+    },
+    "ppo-100": {
+      "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+    }
+  },
+  "weights_uploaded": false,
+  "completed_at": "2026-10-31T14:36:32.305341+08:00",
+  "results": "results.json",
+  "elapsed_seconds": 13.090748070004338,
+  "wandb_url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/5kmuhh3x",
+  "record_group": "exp01",
+  "record_path": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-tavernbench"
+}

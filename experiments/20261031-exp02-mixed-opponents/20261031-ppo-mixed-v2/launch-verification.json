@@ -1,0 +1,19 @@
+{
+  "supervisor_pid": 2330506,
+  "started_at": "2026-10-31T15:42:25.962288+08:00",
+  "configuration": "/home/eric/projects/AutoTavern/experiments/20261031-exp02-mixed-opponents/20261031-ppo-mixed-v2/config.json",
+  "formal_training": true,
+  "planned_ppo_iterations": 100,
+  "planned_samples": 26214400,
+  "models_uploaded": false,
+  "resumes_same_wandb_run": "pczkdfc4",
+  "previous_attempt": "attempts/weave-init-tls-failure",
+  "training_pid": 2330509,
+  "phase": "initial_evaluation",
+  "wandb_url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/pczkdfc4",
+  "weave_initialized": true,
+  "starting_model_weights_exact_match": true,
+  "initial_adam_state_empty": true,
+  "stage_counters_zero": true,
+  "source_model_unchanged": true
+}

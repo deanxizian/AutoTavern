@@ -1,0 +1,47 @@
+{
+  "verified_at": "2026-10-31T17:02:47.809980+08:00",
+  "status": "passed",
+  "training_pid_alive": 3428322,
+  "completed_ppo_iterations": 3,
+  "complete_iteration_samples": 786432,
+  "local_adam_points": 96,
+  "local_val_points": 1,
+  "wandb_url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/tgv920ha",
+  "wandb_server_state": "running",
+  "wandb_server_optimizer_step_observed": 96,
+  "wandb_server_loss_observed": 0.08560199197381735,
+  "wandb_server_baseline_observed": 2.5625,
+  "starting_model_weights_exact_match": true,
+  "initial_adam_state_empty": true,
+  "stage_counters_zero": true,
+  "source_model_unchanged": true,
+  "weave_initialized": false,
+  "models_uploaded": false,
+  "last_complete_iterations": [
+    {
+      "iteration": 1,
+      "rollout_seconds": 40.69369563699729,
+      "update_seconds": 16.781976049998775,
+      "train/approx_kl": 0.006725313548258782,
+      "train/learning_rate": 0.00029703
+    },
+    {
+      "iteration": 2,
+      "rollout_seconds": 40.36041932799708,
+      "update_seconds": 16.568641734993435,
+      "train/approx_kl": 0.004955575806221191,
+      "train/learning_rate": 0.00029405999999999996
+    },
+    {
+      "iteration": 3,
+      "rollout_seconds": 44.55104038499849,
+      "update_seconds": 16.729442939002183,
+      "train/approx_kl": 0.004840390451732901,
+      "train/learning_rate": 0.00029109
+    }
+  ],
+  "python_tests_passed": 99,
+  "rust_library_tests_passed": 15,
+  "rust_format": "passed",
+  "rust_clippy_libraries": "passed"
+}

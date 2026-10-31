@@ -1,0 +1,14 @@
+{
+  "training_started": true,
+  "forward_precision": "bf16",
+  "opponent_forward_precision": "bf16",
+  "frozen_opponents": 2,
+  "opponent_model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+  "opponent_model_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "reward_shaping": {
+    "operation_cost": 0.0001,
+    "cycle_cost": 0.0002
+  },
+  "sampling_driver": "unified_actor",
+  "active_experiment": "20261031-ppo-mixed-2v1-bf16-actor"
+}

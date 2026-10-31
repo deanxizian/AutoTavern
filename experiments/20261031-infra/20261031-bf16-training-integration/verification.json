@@ -1,0 +1,32 @@
+{
+  "status": "passed",
+  "verified_at": "2026-10-31T16:22:07.595417+08:00",
+  "python_tests": {
+    "passed": 92,
+    "seconds": 23.45,
+    "cuda_test_executed": true
+  },
+  "real_v1_gpu_validation": "gpu-validation.json",
+  "source_v1_unchanged": true,
+  "stopped_second_checkpoint_unchanged": true,
+  "second_training_restarted": false,
+  "frozen_opponents_next": 1,
+  "scripted_opponents_next": 6,
+  "learner_forward_precision": "bf16",
+  "opponent_forward_precision": "bf16",
+  "training_state_precision": "fp32",
+  "legacy_checkpoints_default": "fp32",
+  "new_initialization_default": "bf16",
+  "source_sha256": {
+    "python/taverngym/learning/precision.py": "a3a69e3cb5ab2ecf674472d948d0655482eee21c8e480dea543c92d5aae04298",
+    "python/taverngym/learning/policy.py": "8f8040a55b268d88f6738f09adcaafca66c831fafd65a185c02928b7dddff54f",
+    "python/taverngym/learning/ppo.py": "ff984da4ace7b5d1db4fe9e5210bda320ea459fa70f4f2f17d715caa1ada2b60",
+    "python/taverngym/learning/experiment.py": "afcf3371a3d420451c08e34e731213d86881a15fd0b30640e114ef9cefe5d701",
+    "python/taverngym/learning/initialize.py": "9ff2032b391c023155f37d4d952878f0f08a4bf97774207af4e2c1672be91e4c",
+    "python/taverngym/learning/train.py": "e501fc148992117b64313439aa453f10aeb1fbf285c449dce12d07e2868a22e9",
+    "tests/test_precision.py": "4cd9a9566473621d128ce7051e094bcaf92608fcf7e19e226f9d2369fdb7021f",
+    "tests/test_tracking.py": "4bc387682897f106112232d2e9ca8a0f1c90557a450844c1c7c18b2645f5181b",
+    "configs/ppo-small.json": "769b77a11deef3d883edbcd996968fde2bcf816afe75ebc5eca4bac46110157b",
+    "experiments/20261031-exp02-mixed-opponents/next-settings.json": "89884556060dc6cac9db83cbc8986b087390dccd79522afa8865a8d6464a293a"
+  }
+}

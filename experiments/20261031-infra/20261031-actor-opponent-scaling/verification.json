@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "result_sha256": "26cfbe9e529db67254945546d9ce2fa0d1a25c0b6e2538ede7c80d21115409cb",
+  "summary_recomputed": true,
+  "both_actors_bf16": true,
+  "models_unchanged": true,
+  "formal_training_still_stopped": true,
+  "next_settings_unchanged": true,
+  "targeted_command": ".venv/bin/python -m pytest -q tests/test_actor_sampling.py",
+  "targeted_tests_passed": 4,
+  "targeted_test_seconds": 3.38,
+  "optimizer_updates": 0,
+  "new_models": 0
+}

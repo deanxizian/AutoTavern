@@ -139,7 +139,7 @@
       "ppo_iterations": 300,
       "total_samples": 1258291200,
       "lr": "6e-6→5e-6，线性（历史配置）",
-      "source": "../experiments/20261031-ppo-small-paper300/config.json",
+      "source": "../experiments/20261031-infra/20261031-ppo-small-paper300/config.json",
       "minibatches_per_epoch": 512,
       "adam_updates_per_ppo": 512,
       "total_adam_updates": 153600
@@ -156,7 +156,7 @@
       "ppo_iterations": 100,
       "total_samples": 819200,
       "lr": "3e-4→3e-6，线性",
-      "source": "../experiments/20261031-ppo-small-v1-100-minibatches/config.json",
+      "source": "../experiments/20261031-infra/20261031-ppo-small-v1-100-minibatches/config.json",
       "minibatches_per_epoch": 1,
       "adam_updates_per_ppo": 1,
       "total_adam_updates": 100
@@ -193,7 +193,7 @@
       "total_samples": 26214400,
       "total_adam_updates": 3200,
       "lr": "3e-4→3e-6，线性",
-      "source": "../experiments/20261031-ppo-small-100ppo-32minibatches/config.json"
+      "source": "../experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/config.json"
     }
   ]
 }
