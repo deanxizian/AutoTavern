@@ -1,0 +1,26 @@
+{
+  "id": "20261031-ppo-v3-2v1-3v2-warmup",
+  "status": "completed",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "training_started": true,
+  "model_directory": "runs/20261031-ppo-v3-2v1-3v2-warmup",
+  "config": "config.json",
+  "weights_uploaded": false,
+  "initial_checkpoint": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+  "budget_correction": "attempts/20261031-1946-budget100-before-updates/correction.json",
+  "started_at": "2026-10-31T19:47:44.892418+08:00",
+  "supervisor_pid": 782599,
+  "training_pid": 782608,
+  "resumed_at": "2026-10-31T22:25:17.112098+08:00",
+  "completed_training_at": "2026-10-31T22:51:18.674112+08:00",
+  "completed_at": "2026-10-31T23:02:27.704432+08:00",
+  "results": "results.json",
+  "retained_model": {
+    "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "bytes": 51596105,
+    "ppo_iteration": 150,
+    "stage_optimizer_steps": 2400
+  }
+}

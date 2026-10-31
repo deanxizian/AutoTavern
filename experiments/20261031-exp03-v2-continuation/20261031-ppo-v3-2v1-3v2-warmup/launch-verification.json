@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-31T19:48:58.988204+08:00",
+  "starting_checkpoint": "runs/20261031-ppo-v3-2v1-3v2-warmup/starting_model.zip",
+  "new_stage_samples": 0,
+  "new_stage_optimizer_steps": 0,
+  "adam_total_steps": 3200,
+  "source_adam_moments_exactly_equal": true,
+  "target_ppo_iterations": 200,
+  "minibatches_per_ppo": 16,
+  "max_stage_adam_updates": 3200,
+  "total_new_samples": 26214400,
+  "warmup_ppo_iterations": 10,
+  "warmup_specific_tests": "6 passed, 8 deselected in 0.90s",
+  "wandb": {
+    "backend": "wandb",
+    "kind": "native",
+    "mode": "online",
+    "entity": "eric_eric_",
+    "project": "AutoTavern",
+    "run_id": "i4zs1jt0",
+    "url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/i4zs1jt0",
+    "x_axis": "optimizer_step",
+    "weave_project": "eric_eric_/AutoTavern",
+    "weave_initialized": true
+  }
+}

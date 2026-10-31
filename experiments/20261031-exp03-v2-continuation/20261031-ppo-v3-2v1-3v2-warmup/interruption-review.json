@@ -1,0 +1,41 @@
+{
+  "checked_at": "2026-10-31T22:21:49.472887+08:00",
+  "status": "interrupted",
+  "interrupted_at": "2026-10-31T22:10:21.750167+08:00",
+  "target_ppo_iterations": 200,
+  "completed_ppo_iterations": 177,
+  "stage_adam_steps": 2832,
+  "last_validation_ppo_iteration": 150,
+  "best_validation_mean_placement": 2.875,
+  "selection_condition": "mixed_sampled",
+  "opponents": "2 fixed V1 + 3 fixed V2 + 2 scripted",
+  "validation_games_per_condition": 64,
+  "learner_forward_precision": "bf16",
+  "final_evaluation_completed": false,
+  "weights_retained_only_best": false,
+  "interruption_cause": "Unknown; status handler recorded interruption, no failure traceback found.",
+  "automatic_restart_performed": false,
+  "checkpoints": {
+    "latest_model.zip": {
+      "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/latest_model.zip",
+      "num_timesteps": 23199744,
+      "full_ppo_boundary": true,
+      "completed_ppo_iterations": 177,
+      "sha256": "520042b42eb39a663b771c4b74c1ba722ccd40a68b30f8ac68920363838cb4ed"
+    },
+    "interrupted_model.zip": {
+      "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/interrupted_model.zip",
+      "num_timesteps": 23327012,
+      "full_ppo_boundary": false,
+      "completed_ppo_iterations": 177,
+      "sha256": "8ad1e1c4f4ecb41c69d4c259ec4e2ef39bbb6b941a7943093bdf4f4e3e0f23ec"
+    },
+    "20261031-194747-best_model.zip": {
+      "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "num_timesteps": 19660800,
+      "full_ppo_boundary": true,
+      "completed_ppo_iterations": 150,
+      "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1"
+    }
+  }
+}

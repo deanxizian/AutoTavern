@@ -101,23 +101,63 @@ def test_warm_start_keeps_weights_and_restarts_adam_and_sample_counts(tmp_path):
     env.close()
 
 
-def test_evaluation_matrix_has_four_bare_policy_conditions_and_flat_names():
+@pytest.mark.parametrize("include_scripted", [None, False, True])
+def test_evaluation_matrix_respects_scripted_scope_and_flat_names(include_scripted):
     from stable_baselines3.common.logger import configure
 
     model = small_model(NativeVectorEnv(1, seed=4))
     config = {"evaluation_matrix": True, "frozen_opponents": 4,
               "simulator_config": {"turn_action_caps": [3]}, "reward_shaping": {}}
+    if include_scripted is not None:
+        config["evaluation_include_scripted"] = include_scripted
     rng = torch.random.get_rng_state().clone()
     result = evaluate_suite(model, 2, 101, config, FirstLegalPolicy())
     assert torch.equal(rng, torch.random.get_rng_state())
-    assert set(result["conditions"]) == {"mixed_sampled", "mixed_greedy", "scripted_sampled", "scripted_greedy"}
+    expected = {"mixed_sampled", "mixed_greedy"}
+    if include_scripted is not False:
+        expected.update(("scripted_sampled", "scripted_greedy"))
+    assert set(result["conditions"]) == expected
+    assert all("4 frozen policies" in row["opponents"]
+               for name, row in result["conditions"].items() if name.startswith("mixed_"))
     assert result["mean_placement"] == result["conditions"]["mixed_sampled"]["mean_placement"]
     assert result["selection_condition"] == "mixed_sampled"
     assert all(row["games"] == 2 and "cycle_returns" in row for row in result["conditions"].values())
     logger = configure(format_strings=[])
     log_evaluation(logger, "val", result)
-    for prefix in ("", "greedy_", "scripted_", "scripted_greedy_"):
+    prefixes = ("", "greedy_")
+    if include_scripted is not False:
+        prefixes += ("scripted_", "scripted_greedy_")
+    for prefix in prefixes:
         assert f"val/{prefix}cycle_penalty" in logger.name_to_value
         assert f"val/{prefix}mean_placement" in logger.name_to_value
     assert all(name.count("/") == 1 for name in logger.name_to_value)
+    if include_scripted is False:
+        assert not any(name.startswith("val/scripted_") for name in logger.name_to_value)
+    model.env.close()
+
+
+def test_new_stage_retains_adam_moments_and_resets_only_local_clock(tmp_path):
+    import copy
+
+    torch.set_num_threads(2)
+    model = small_model(NativeVectorEnv(1, seed=4))
+    model.learn(16)
+    before = copy.deepcopy(model.policy.optimizer.state_dict())
+    weights = {name: value.clone() for name, value in model.policy.state_dict().items()}
+    model.start_new_stage(preserve_adam=True)
+    assert model.num_timesteps == model._n_updates == model.optimizer_step_count() == 0
+    assert model.optimizer_total_step_count() == 2
+    for key, state in before["state"].items():
+        for name, value in state.items():
+            torch.testing.assert_close(value, model.policy.optimizer.state_dict()["state"][key][name], rtol=0, atol=0)
+    assert all(torch.equal(value, weights[name]) for name, value in model.policy.state_dict().items())
+    model.learn(8, reset_num_timesteps=False)
+    path = tmp_path / "continued.zip"
+    model.save(path)
+    restored = EntityPPO.load(path, device="cpu")
+    assert restored.optimizer_step_count() == 1 and restored.optimizer_total_step_count() == 3
+    restored.start_new_stage(preserve_adam=True)
+    assert restored.optimizer_step_count() == 0 and restored.optimizer_total_step_count() == 3
+    restored.start_new_stage()
+    assert restored.optimizer_step_count() == restored.optimizer_total_step_count() == 0
     model.env.close()

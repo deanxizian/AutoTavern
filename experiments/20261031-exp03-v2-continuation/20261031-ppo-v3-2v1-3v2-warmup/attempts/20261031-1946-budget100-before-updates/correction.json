@@ -1,0 +1,10 @@
+{
+  "at": "2026-10-31T19:47:02.319060+08:00",
+  "reason": "Preserve prior total budget after halving environments/minibatches: double PPO iterations",
+  "old_iterations": 100,
+  "new_iterations": 200,
+  "actual_new_samples": 0,
+  "actual_new_adam_updates": 0,
+  "archived_model_directory": "runs/20261031-ppo-v3-2v1-3v2-warmup-budget100-before-updates",
+  "source_V2_unchanged": true
+}

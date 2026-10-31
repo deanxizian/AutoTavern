@@ -14,6 +14,7 @@ import torch
 
 import taverngym as tg
 from .rewards import ActionRewardShaper, RewardShapingConfig
+from .opponents import FrozenOpponentPool, OpponentGroup, opponent_groups
 from .vector_env import NativeVectorEnv
 
 
@@ -86,7 +87,9 @@ class UnifiedActorSampler:
         self.n_games, self.roles = n_games, frozen_opponents + 1
         # Separate policy identities even when the two snapshots initially have
         # identical weights. Later PPO updates must never change the fixed bot.
-        self.actors = {"learner": learner, "bot_v1": fixed}
+        groups = opponent_groups(fixed, frozen_opponents)
+        self.actors = {"learner": learner, **{group.name: group.policy for group in groups}}
+        self.role_names = np.array(["learner", *(group.name for group in groups for _ in range(group.count))])
         self.batch = tg.BatchEnv(n_games, seed=seed, controlled=tuple(range(self.roles)),
                                  config=config, threads=threads, rotate_seats=True)
         self.observations = self.batch.observe()
@@ -155,13 +158,12 @@ class UnifiedActorSampler:
             if not ready.any():
                 raise RuntimeError("Active rollout has no ready actor")
             actions = np.zeros(self.batch.n_slots, dtype=np.int64)
-            for identity, selected in (("learner", ready & (slots % self.roles == 0)),
-                                        ("bot_v1", ready & (slots % self.roles != 0))):
-                selected = np.flatnonzero(selected)
+            for identity, actor in self.actors.items():
+                selected = np.flatnonzero(ready & (self.role_names[slots % self.roles] == identity))
                 if not len(selected):
                     continue
                 obs = {key: value[selected] for key, value in full.items() if key != "ready"}
-                output = self.actors[identity].act(obs)
+                output = actor.act(obs)
                 actions[selected] = output.actions
                 if identity == "learner":
                     for row, slot in enumerate(selected):
@@ -249,10 +251,16 @@ class ActorOpponentVectorEnv(NativeVectorEnv):
 
     def _create_batch(self):
         costs = (vars(self.reward_shaping) if self.reward_shaping is not None else None)
-        self.sampler = UnifiedActorSampler(self.num_envs, None, PolicyActor(self.opponent_policy),
+        self.sampler = UnifiedActorSampler(self.num_envs, None, self._fixed_actors(),
             seed=self.base_seed, threads=self.threads, config=self.config,
             frozen_opponents=self.frozen_opponents, reward_shaping=costs)
         return self.sampler.batch
+
+    def _fixed_actors(self):
+        return FrozenOpponentPool(tuple(
+            OpponentGroup(group.name, PolicyActor(group.policy), group.count)
+            for group in opponent_groups(self.opponent_policy, self.frozen_opponents)
+        ))
 
     def _observe(self):
         self._obs = self.sampler.learner_observation()
@@ -260,14 +268,17 @@ class ActorOpponentVectorEnv(NativeVectorEnv):
 
     def collect_actors(self, policy, steps, sink):
         policy.set_training_mode(False)
-        self.sampler.actors = {"learner": PolicyActor(policy), "bot_v1": PolicyActor(self.opponent_policy)}
+        self.sampler.actors = {"learner": PolicyActor(policy), **{
+            group.name: group.policy for group in self._fixed_actors().groups
+        }}
         result = self.sampler.collect(steps, on_batch=sink)
-        self.opponent_decisions += sum(self.sampler.actors["bot_v1"].batch_sizes) - result["deferred_opponent_actions"]
+        self.opponent_decisions += sum(sum(actor.batch_sizes) for name, actor in self.sampler.actors.items()
+                                       if name != "learner") - result["deferred_opponent_actions"]
         self._observe()
         for identity, actor in self.sampler.actors.items():
             result[f"{identity}_forward_calls"] = len(actor.batch_sizes)
-            result[f"{identity}_batch_mean"] = float(np.mean(actor.batch_sizes))
-            result[f"{identity}_batch_median"] = float(np.median(actor.batch_sizes))
+            result[f"{identity}_batch_mean"] = float(np.mean(actor.batch_sizes)) if actor.batch_sizes else 0.0
+            result[f"{identity}_batch_median"] = float(np.median(actor.batch_sizes)) if actor.batch_sizes else 0.0
             result[f"{identity}_inference_seconds"] = actor.inference_seconds
         return result
 

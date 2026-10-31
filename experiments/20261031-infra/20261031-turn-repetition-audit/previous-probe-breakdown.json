@@ -1,0 +1,28 @@
+{
+  "source": "../20261031-turn-actions-over60",
+  "checkpoint_ppo_iteration": 144,
+  "games_per_mode": 64,
+  "detector": "Existing Move/Freeze-only cycle detector",
+  "conditions": {
+    "sampled": {
+      "tail_turns": 718,
+      "turns_with_detected_cycles": 668,
+      "turns_without_detected_cycles": 50,
+      "extra_non_end": 83593,
+      "cycle_actions": 16418,
+      "cycle_action_fraction": 0.19640400512004594,
+      "move_freeze_actions": 77189,
+      "other_actions": 6404
+    },
+    "greedy": {
+      "tail_turns": 888,
+      "turns_with_detected_cycles": 830,
+      "turns_without_detected_cycles": 58,
+      "extra_non_end": 124369,
+      "cycle_actions": 116167,
+      "cycle_action_fraction": 0.9340510899018244,
+      "move_freeze_actions": 116194,
+      "other_actions": 8175
+    }
+  }
+}

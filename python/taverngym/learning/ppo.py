@@ -96,21 +96,30 @@ class EntityPPO(MaskablePPO):
             "_after_update", "_after_optimizer_step", "_rollout_places", "_rollout_reward_components",
         ]
 
-    def optimizer_step_count(self):
+    def optimizer_total_step_count(self):
         """Read Adam's persisted counter on the shared, always-used identity table."""
         state = self.policy.optimizer.state.get(self.policy.network.identity.weight, {})
         value = state.get("step", 0)
         return int(value.item()) if torch.is_tensor(value) else int(value)
+
+    def optimizer_step_count(self):
+        """Actual updates in this stage; the underlying Adam clock may be older."""
+        return self.optimizer_total_step_count() - getattr(self, "_optimizer_step_offset", 0)
 
     def set_forward_precision(self, precision):
         self.policy.set_forward_precision(precision)
         # SB3 reconstructs the policy from this dict when loading a full model.
         self.policy_kwargs["forward_precision"] = self.policy.forward_precision
 
-    def start_new_stage(self):
-        """Keep network/text weights; discard old Adam moments and stage counters."""
+    def start_new_stage(self, *, preserve_adam=False):
+        """Reset local counters; optionally retain Adam moments and its global clock."""
+        if preserve_adam and not self.policy.optimizer.state:
+            raise ValueError("Preserving Adam requires a trained checkpoint with optimizer state")
+        total_steps = self.optimizer_total_step_count()
         self.policy.optimizer.zero_grad(set_to_none=True)
-        self.policy.optimizer.state.clear()
+        if not preserve_adam:
+            self.policy.optimizer.state.clear()
+        self._optimizer_step_offset = total_steps if preserve_adam else 0
         self.num_timesteps = self._n_updates = self._episode_num = 0
         self._total_timesteps = self._num_timesteps_at_start = 0
         self._last_obs = self._last_original_obs = None

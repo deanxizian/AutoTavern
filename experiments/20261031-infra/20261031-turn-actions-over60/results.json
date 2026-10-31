@@ -1,0 +1,101 @@
+{
+  "name": "20261031-turn-actions-over60",
+  "checkpoint_ppo_iteration": 144,
+  "snapshot_sha256": "5c041a419807518c602a8ffadb6f80b3f61c6f9379789d029d563dee44711b23",
+  "games_per_mode": 64,
+  "opponents": "2 fixed V1 + 3 fixed V2 + 2 scripted, all remain capped at 60",
+  "learner_diagnostic_cap": 200,
+  "learner_forward_precision": "bf16",
+  "training_started": false,
+  "weights_uploaded": false,
+  "modes": [
+    "sampled",
+    "greedy"
+  ],
+  "seed": 61000301,
+  "status": "completed",
+  "completed_at": "2026-10-31T21:46:11.210583+08:00",
+  "elapsed_seconds": 239.99123420499382,
+  "conditions": {
+    "sampled": {
+      "turns": 945,
+      "turns_over60": 721,
+      "fraction_over60": 0.762962962962963,
+      "mean_actions": 140.63703703703703,
+      "turns_continuing_after60": 718,
+      "fraction_continuing_after60": 0.7597883597883598,
+      "mean_extra_non_end_if_continued": 116.42479108635098,
+      "extra_non_end_p50_p90_p95_p99": [
+        140.0,
+        140.0,
+        140.0,
+        141.0
+      ],
+      "actions_p50_p90_p95_p99": [
+        201.0,
+        201.0,
+        201.0,
+        202.0
+      ],
+      "max_actions": 203,
+      "mean_tail_if_over60": 116.94036061026353,
+      "tail_p50_p90_p95_p99": [
+        141.0,
+        141.0,
+        141.0,
+        142.0
+      ],
+      "total_actions_after60": 84314,
+      "non_end_actions_after60": 83593,
+      "move_freeze_after60": 77189,
+      "cycles_after60": 16418,
+      "cycle_fraction_after60": 0.19472448229238323,
+      "forced_end_at200_turns": 489,
+      "forced_end_at200_fraction": 0.5174603174603175,
+      "end_with_alternatives_turns": 438
+    },
+    "greedy": {
+      "turns": 978,
+      "turns_over60": 888,
+      "fraction_over60": 0.9079754601226994,
+      "mean_actions": 184.01022494887525,
+      "turns_continuing_after60": 888,
+      "fraction_continuing_after60": 0.9079754601226994,
+      "mean_extra_non_end_if_continued": 140.05518018018017,
+      "extra_non_end_p50_p90_p95_p99": [
+        140.0,
+        140.0,
+        140.0,
+        141.13
+      ],
+      "actions_p50_p90_p95_p99": [
+        201.0,
+        201.0,
+        201.0,
+        202.0
+      ],
+      "max_actions": 203,
+      "mean_tail_if_over60": 141.05518018018017,
+      "tail_p50_p90_p95_p99": [
+        141.0,
+        141.0,
+        141.0,
+        142.13
+      ],
+      "total_actions_after60": 125257,
+      "non_end_actions_after60": 124369,
+      "move_freeze_after60": 116194,
+      "cycles_after60": 116167,
+      "cycle_fraction_after60": 0.9274292055533823,
+      "forced_end_at200_turns": 888,
+      "forced_end_at200_fraction": 0.9079754601226994,
+      "end_with_alternatives_turns": 74
+    }
+  },
+  "limitations": [
+    "Only the learner budget is relaxed; no training or action-loop filtering.",
+    "200 is a safety threshold; turns hitting it have unknown uncapped lengths.",
+    "Counts include EndTurn and pending choices; episode-ending partial turns are retained.",
+    "This observes behavior after relaxing the cap, not the benefit of the extra actions."
+  ]
+}

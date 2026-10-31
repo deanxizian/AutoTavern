@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "locked_at": "2026-10-31T23:05:10.034480+08:00",
+  "source_model": {
+    "version": "v3",
+    "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "ppo_iteration": 150,
+    "adam_total_steps": 5600,
+    "status": "locked after completed V3 retention"
+  },
+  "source_results": "experiments/20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/results.json",
+  "config_sha256": "799c6070b340e7b78f1390cfe4e9b3714865cebeb14e72a6505a026bb696fd0a",
+  "v3_best_only_retention_complete": true,
+  "model_finite_check_from_finalizer": true,
+  "training_started": false,
+  "weights_created": false
+}

@@ -43,6 +43,16 @@ Python 测试命名为 `test_*.py`；Rust 测试位于模块内及 `crates/taver
 
 训练默认将指标与配置记录到 W&B 项目 `eric_eric_/AutoTavern`；train 横轴为实际 Adam 步数，起点评估放在 val 的 step=0。
 每次汇报和表格须明确对手数量与版本、学习者随机／贪心模式及局数，例如“2 个固定 V1 + 5 个脚本，随机采样，64 局”。
+后续混合实验显式设置 `evaluation_include_scripted=false`，验证只保留混合随机／贪心两组，
+不额外跑七脚本对照；混合阵容中的脚本席位保留，历史运行的验证协议不改写。
+后续新训练使用仅循环奖励：`operation_cost=0`、`cycle_cost=0.0002`、
+`cycle_detection="all_actions"`，覆盖移动／冻结、出牌／选择／取消与技能菜单往返；不改当前轮旧参数。
+这些新设置归入 V4 准备版，各实验使用自身的 `config.json` 与版本记录，勿用通用模板覆盖旧实验。
+V4 入口为 `experiments/20261031-exp04-v4-cycle-only/`；准备配置不代表已授权启动训练。
+跨代方法见 `docs/TRAINING_METHODOLOGY.md`：从当前冠军继续、混入冻结历史冠军，统一晋级评估后才替换冠军。
+训练对手改变后的 val 不直接横比；保留历史池引用的旧冠军，自动循环须有明确预算与停止条件。
+当前 best 仅按混合随机验证的 `val/mean_placement` 严格降低时替换；
+first/top4、Greedy、循环与触顶率只作观察，独立 test 不选模。口径见 `docs/TRAINING_METRICS.md`。
 基准推理不得读取标签，封存预测后再评分；使用已有官方评分器，测试集不参与选模。
 
 ## 提交与 Pull Request

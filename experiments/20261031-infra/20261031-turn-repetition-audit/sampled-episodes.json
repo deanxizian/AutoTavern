@@ -1,0 +1,66 @@
+[
+  {
+    "lane": 6,
+    "placement": 3
+  },
+  {
+    "lane": 2,
+    "placement": 4
+  },
+  {
+    "lane": 9,
+    "placement": 4
+  },
+  {
+    "lane": 5,
+    "placement": 4
+  },
+  {
+    "lane": 7,
+    "placement": 5
+  },
+  {
+    "lane": 13,
+    "placement": 1
+  },
+  {
+    "lane": 3,
+    "placement": 2
+  },
+  {
+    "lane": 12,
+    "placement": 1
+  },
+  {
+    "lane": 0,
+    "placement": 5
+  },
+  {
+    "lane": 1,
+    "placement": 1
+  },
+  {
+    "lane": 10,
+    "placement": 3
+  },
+  {
+    "lane": 14,
+    "placement": 2
+  },
+  {
+    "lane": 15,
+    "placement": 1
+  },
+  {
+    "lane": 4,
+    "placement": 1
+  },
+  {
+    "lane": 11,
+    "placement": 1
+  },
+  {
+    "lane": 8,
+    "placement": 1
+  }
+]

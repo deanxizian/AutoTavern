@@ -20,6 +20,8 @@ from taverngym.learning.vector_env import NativeVectorEnv
 
 
 COSTS = {"operation_cost": 0.0001, "cycle_cost": 0.0002}
+ALL_ACTION_COSTS = {**COSTS, "cycle_detection": "all_actions"}
+CYCLE_ONLY_COSTS = {**ALL_ACTION_COSTS, "operation_cost": 0}
 
 
 def observation(game):
@@ -64,11 +66,12 @@ def execute(game, shaper, action):
 
 
 @pytest.mark.parametrize("actions", [[197, 203], [197, 205, 210], [2, 2], [197, 2, 203, 2]])
-def test_native_move_freeze_and_interleaved_cycles_receive_extra_cost(game, actions):
-    shaper = ActionRewardShaper(RewardShapingConfig(**COSTS))
+@pytest.mark.parametrize("costs", [COSTS, ALL_ACTION_COSTS, CYCLE_ONLY_COSTS])
+def test_native_move_freeze_and_interleaved_cycles_receive_extra_cost(game, actions, costs):
+    shaper = ActionRewardShaper(RewardShapingConfig(**costs))
     rewards = [execute(game, shaper, action) for action in actions]
-    assert rewards[:-1] == pytest.approx([-0.0001] * (len(actions) - 1))
-    assert rewards[-1] == pytest.approx(-0.0003)
+    assert rewards[:-1] == pytest.approx([-costs["operation_cost"]] * (len(actions) - 1))
+    assert rewards[-1] == pytest.approx(-costs["operation_cost"] - costs["cycle_cost"])
     # The reverse action remains a native legal action, even after being penalized.
     assert observation(game)["action_mask"][actions[0]]
 
@@ -91,8 +94,9 @@ def test_productive_action_and_visible_progress_reset_history(game):
     assert shaper.step(197, before, after, 0)[0] == pytest.approx(-0.0001)
 
 
-def test_completed_episode_and_explicit_reset_do_not_leak_history(game):
-    shaper = ActionRewardShaper(RewardShapingConfig(**COSTS))
+@pytest.mark.parametrize("costs", [COSTS, ALL_ACTION_COSTS])
+def test_completed_episode_and_explicit_reset_do_not_leak_history(game, costs):
+    shaper = ActionRewardShaper(RewardShapingConfig(**costs))
     execute(game, shaper, 197)
     execute(game, shaper, 203)
     obs = observation(game)
@@ -104,6 +108,102 @@ def test_completed_episode_and_explicit_reset_do_not_leak_history(game):
     assert execute(game, shaper, 197) == pytest.approx(-0.0001)
     shaper.reset()
     assert execute(game, shaper, 203) == pytest.approx(-0.0001)
+
+
+@pytest.mark.parametrize("card,actions", [
+    ("BG28_897", [46, 7]),  # Play targeted Banana, then cancel.
+    ("BG31_886", [46, 30, 7]),  # Forest's Bounty: play, choose mode, cancel targeting.
+])
+@pytest.mark.parametrize("costs", [ALL_ACTION_COSTS, CYCLE_ONLY_COSTS])
+def test_native_play_choose_cancel_cycles_and_legacy_compatibility(game, card, actions, costs):
+    game.debug(json.dumps({"cmd": "add_spell", "p": 0, "zone": "hand", "card": card}))
+    shaper = ActionRewardShaper(RewardShapingConfig(**costs))
+    original = observation(game)
+    rewards = [execute(game, shaper, action) for action in actions * 2]
+    # First return closes the loop; subsequently re-entering its known menu
+    # states counts too. No flat operation cost is added to these actions.
+    assert rewards[:len(actions) - 1] == [0] * (len(actions) - 1)
+    assert rewards[len(actions) - 1:] == pytest.approx([-0.0002] * (len(actions) + 1))
+    for key in ("features", "cards"):
+        np.testing.assert_array_equal(original[key], observation(game)[key])
+    assert shaper._totals["reversible_actions"] == 0
+    assert shaper._totals["operation_penalty"] == 0
+    assert shaper._totals["cycle_returns"] == len(actions) + 1
+    legacy = ActionRewardShaper(RewardShapingConfig(**COSTS))
+    assert legacy.config.cycle_detection == "reversible_segment"
+    assert [execute(game, legacy, action) for action in actions * 2] == [0] * (2 * len(actions))
+
+
+def test_native_hero_power_target_cancel_cycle_without_operation_cost(game):
+    game.debug(json.dumps({"cmd": "set_hero_power", "p": 0, "slot": 0,
+                           "card": "TB_BaconShop_HP_011"}))
+    shaper = ActionRewardShaper(RewardShapingConfig(**CYCLE_ONLY_COSTS))
+    # Galakrond's Greed: open Tavern-minion targeting, then back out.
+    assert execute(game, shaper, 4) == 0
+    assert execute(game, shaper, 7) == pytest.approx(-0.0002)
+    assert execute(game, shaper, 4) == pytest.approx(-0.0002)
+    assert shaper._totals["operation_penalty"] == 0
+
+
+def test_native_successful_spell_and_choice_are_not_repetition(game):
+    game.debug(json.dumps({"cmd": "add_spell", "p": 0, "zone": "hand", "card": "BG28_897"}))
+    shaper = ActionRewardShaper(RewardShapingConfig(**ALL_ACTION_COSTS))
+    assert execute(game, shaper, 46) == 0
+    target = int(np.flatnonzero(observation(game)["action_mask"][30:46])[0]) + 30
+    before = observation(game)
+    assert execute(game, shaper, target) == 0
+    assert not np.array_equal(before["features"], observation(game)["features"])
+    assert shaper._totals["cycle_returns"] == 0
+    assert execute(game, shaper, 197) == pytest.approx(-0.0001)
+    assert execute(game, shaper, 203) == pytest.approx(-0.0003)
+
+
+def test_all_action_history_ignores_mask_but_resets_at_turn_end_and_discontinuities(game):
+    shaper = ActionRewardShaper(RewardShapingConfig(**ALL_ACTION_COSTS))
+    base = observation(game)
+    pending = {k: v.copy() for k, v in base.items()}
+    pending["cards"][0] += 1
+    restored = {k: v.copy() for k, v in base.items()}
+    restored["action_mask"][:] = False
+    restored["action_mask"][0] = True
+    assert shaper.step(46, base, pending, 0)[0] == 0
+    assert shaper.step(7, pending, restored, 0)[0] == pytest.approx(-0.0002)
+    assert shaper.step(0, restored, restored, 0)[0] == 0
+    assert shaper.step(46, base, pending, 0)[0] == 0
+    shaper.reset()
+    assert shaper.step(7, pending, base, 0)[0] == 0
+    # Same public state on a different turn cannot revisit the prior turn.
+    for obs in (base, pending):
+        obs["features"][0] += 0.05
+    assert shaper.step(46, base, pending, 0)[0] == 0
+    # External resource changes must not inherit stale pre-restore history.
+    base["features"][7] += 1
+    assert shaper.step(7, base, pending, 0)[0] == 0
+
+
+@pytest.mark.parametrize("costs", [ALL_ACTION_COSTS, CYCLE_ONLY_COSTS])
+def test_native_batch_exposes_new_cycle_cost_without_changing_legality(game, costs):
+    game.debug(json.dumps({"cmd": "add_spell", "p": 0, "zone": "hand", "card": "BG31_886"}))
+    env = NativeVectorEnv(1, seed=7, reward_shaping=costs)
+    try:
+        env.reset()
+        state = json.loads(env.batch.save(0))
+        state["game"] = json.loads(game.state_json())
+        env.batch.load(0, json.dumps(state))
+        env._observe()
+        for action, expected in [(46, 0), (30, 0), (7, -0.0002), (46, -0.0002)]:
+            assert env.action_masks()[0, action]
+            _, rewards, dones, _ = env.step([action])
+            assert not dones[0]
+            assert float(rewards[0]) == pytest.approx(expected)
+        assert env._reward_shapers[0]._totals["cycle_returns"] == 2
+    finally:
+        env.close()
+
+
+def test_invalid_cycle_detection_fails_before_sampling():
+    with pytest.raises(ValueError, match="cycle_detection"):
+        NativeVectorEnv(1, reward_shaping={"cycle_detection": "unknown"})
 
 
 @pytest.mark.parametrize("costs", [{"operation_cost": -1}, {"cycle_cost": -1},
@@ -170,9 +270,10 @@ def test_gym_adapter_emits_costs_and_episode_components():
         pytest.fail("Native game did not finish")
 
 
-def test_shaped_rewards_reach_ppo_buffer_gae_and_episode_logs():
+@pytest.mark.parametrize("costs", [COSTS, ALL_ACTION_COSTS])
+def test_shaped_rewards_reach_ppo_buffer_gae_and_episode_logs(costs):
     torch.set_num_threads(2)
-    env = NativeVectorEnv(1, seed=4, threads=1, config={"turn_action_caps": [3]}, reward_shaping=COSTS)
+    env = NativeVectorEnv(1, seed=4, threads=1, config={"turn_action_caps": [3]}, reward_shaping=costs)
     model = EntityPPO(EntityPolicy, env, n_steps=128, batch_size=64, n_epochs=1,
                       gamma=1, gae_lambda=1, seed=4, device="cpu",
                       policy_kwargs={"model_config": asdict(ModelConfig(
@@ -204,7 +305,11 @@ def test_shaped_rewards_reach_ppo_buffer_gae_and_episode_logs():
             (9 - 2 * row[2][0]["placement"]) / 7 if row[1][0] else 0 for row in capture.records
         ])
         assert (native_rewards - buffer.rewards[:, 0])[reversible].min() >= 0.000099
-        np.testing.assert_allclose(native_rewards[~reversible], buffer.rewards[~reversible, 0], atol=1e-7)
+        if costs == COSTS:
+            np.testing.assert_allclose(native_rewards[~reversible], buffer.rewards[~reversible, 0], atol=1e-7)
+        else:
+            assert np.all(buffer.rewards[:, 0] <= native_rewards + 1e-7)
+            assert np.all(native_rewards - buffer.rewards[:, 0] <= 0.000301)
         with torch.no_grad():
             tensors, _ = model.policy.obs_to_tensor(model._last_obs)
             last_value = float(model.policy.predict_values(tensors).item())

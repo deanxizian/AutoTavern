@@ -1,0 +1,32 @@
+{
+  "at": "2026-10-31T22:24:24.954251+08:00",
+  "checkpoint": "runs/20261031-ppo-v3-2v1-3v2-warmup/latest_model.zip",
+  "checkpoint_sha256": "520042b42eb39a663b771c4b74c1ba722ccd40a68b30f8ac68920363838cb4ed",
+  "completed_ppo": 177,
+  "remaining_ppo": 23,
+  "stage_adam_steps": 2832,
+  "raw_adam_steps": 6032,
+  "optimizer_state_entries": 91,
+  "remaining_adam_steps_max": 368,
+  "remaining_samples": 3014656,
+  "initial_resume_lr": 5.6052631578947374e-06,
+  "next_update_lr": 5.578947368421053e-06,
+  "reward_shaping_effective": {
+    "operation_cost": 0.0001,
+    "cycle_cost": 0.0002,
+    "cycle_detection": "reversible_segment"
+  },
+  "validation_conditions": 4,
+  "config_original_sha256": "028151d7d69817502e54f08b747a68c848346e6cf106d26fe1b4b6dcd5583cff",
+  "wandb_run_id": "i4zs1jt0",
+  "environment_rng_reinitialized": true,
+  "source_changes": {
+    "experiment": "retain stage provenance on resume; log interruption signal",
+    "run": "log supervisor signals; no training parameter changes"
+  },
+  "source_sha256": {
+    "python/taverngym/learning/experiment.py": "92266a47c55da222e06fd5c6ba074cf8f177791d43023236e3e44c8b0680fb71",
+    "python/taverngym/learning/rewards.py": "30756e55f43864d5bd84e5df972d203f5d9f4fdd8d35c356dd80f727260f70e4",
+    "experiments/20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/run.py": "ffc654471dd6a486c850a8474689d179bde11d6b58bfcbca966a6bc8862b4d41"
+  }
+}

@@ -22,5 +22,9 @@
 | [批量动作失效修复](20261031-batch-action-deferral/README.md) | 跨席位死亡触发发现时刷新旧决策，103 项测试通过；从第 22 轮继续 |
 | [主动 EndTurn 短测](20261031-endturn-behavior/results.json) | PPO 66，2 固定 V1 + 5 脚本；16 局 × 128 步／模式，随机与贪心均观察到仍有其他合法动作时主动 End；非整局比例 |
 | [每局步数分位数](20261031-episode-length-quantiles/results.json) | PPO 25／50／75／81 的四个最近 100 局窗口；2 固定 V1 + 5 脚本、学习者随机采样；P50／P90／P95／P99 与原始长度，无新增训练 |
+| [多策略角色池与 warmup](20261031-multi-policy-warmup/README.md) | 通用版本组合、固定策略隔离、保留 Adam 的新阶段与 LR warmup；116 项测试与完整 PPO 预检 |
+| [单回合超过 60 步](20261031-turn-actions-over60/README.md) | 仅放宽 V3 学习者至 200，对手仍为 60；随机／贪心各 64 局，逐回合统计额外操作及重复 |
+| [超过 60 步的重复复核](20261031-turn-repetition-audit/README.md) | PPO150、随机／贪心各 16 局；扩展到所有动作，发现出牌／取消循环，区分回合重复率与动作重复率 |
+| [全动作循环奖励](20261031-all-action-cycle-reward/README.md) | 补齐出牌／选择／取消等循环惩罚；旧模式兼容，128 项测试通过，未改实验 03 |
 
 正式模型实验从 [exp01](../20261031-exp01-ppo-scripted/README.md) 开始；原始测量和停止的试跑均保留。

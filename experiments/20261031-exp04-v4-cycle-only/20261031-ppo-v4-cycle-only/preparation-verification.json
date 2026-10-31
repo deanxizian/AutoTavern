@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "checked_at": "2026-10-31T22:45:23.171958+08:00",
+  "kind": "configuration and documentation validation only",
+  "v4_config_sha256": "852f16d204e7867eb86f5af60b6694a665739445201f05df768be223d15e2550",
+  "v3_config_unchanged": true,
+  "reward_config_valid": true,
+  "rollout_and_minibatch_budget_valid": true,
+  "opponent_count_valid": true,
+  "schedule_valid": true,
+  "relative_links_valid": true,
+  "initial_weights_pending": true,
+  "training_started": false,
+  "models_or_wandb_created": false
+}

@@ -20,7 +20,8 @@ from .buffer import CompactPlacementBuffer
 from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO, PlacementBuffer
 from .precision import FORWARD_PRECISIONS, configure_precision
 from .rewards import REWARD_METRICS, RewardShapingConfig
-from .schedule import LinearLearningRate
+from .schedule import learning_rate_schedule
+from .opponents import FrozenOpponentPool, OpponentGroup, opponent_groups
 from .tracking import WandbOutputFormat, WandbTracker, tracking_settings
 from .vector_env import MixedOpponentVectorEnv, NativeVectorEnv
 from .actor_sampling import ActorOpponentVectorEnv
@@ -89,6 +90,12 @@ def _evaluate(model, games, seed, n_envs, threads, simulator_config, reward_shap
               "opponents": "seven identical scripted bots"}
     if opponent_policy is not None:
         result["opponents"] = f"{frozen_opponents} frozen policies and {7 - frozen_opponents} scripted bots"
+        if isinstance(opponent_policy, FrozenOpponentPool):
+            result["opponent_groups"] = [{"name": g.name, "count": g.count, "deterministic": False}
+                                         for g in opponent_policy.groups]
+            result["opponents"] = " + ".join(
+                [*(f"{g.count} fixed {g.name}" for g in opponent_policy.groups),
+                 f"{7 - frozen_opponents} scripted bots"])
     if components:
         result.update({name: float(np.mean([row[name] for row in components]))
                        for name in EVALUATION_METRICS})
@@ -109,6 +116,29 @@ def load_frozen_policy(path, device, forward_precision=None):
     return policy
 
 
+def load_frozen_opponents(config, device):
+    """Load each version once; all seats of that version share its frozen policy."""
+    if config.get("opponent_pool"):
+        groups = []
+        for spec in config["opponent_pool"]:
+            path = Path(spec["model"])
+            source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+            if source_hash != spec["sha256"]:
+                raise ValueError(f"Frozen opponent checkpoint hash changed: {spec['name']}")
+            groups.append(OpponentGroup(spec["name"], load_frozen_policy(path, device), spec["count"]))
+        pool = FrozenOpponentPool(tuple(groups))
+        opponent_groups(pool, config["frozen_opponents"])
+        return pool
+    if config.get("opponent_model"):
+        path = Path(config["opponent_model"])
+        source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
+        if config.get("opponent_model_sha256", source_hash) != source_hash:
+            raise ValueError("Frozen opponent checkpoint hash changed")
+        config["opponent_model_sha256"] = source_hash
+        return load_frozen_policy(path, device)
+    return None
+
+
 def evaluate_suite(model, games, seed, config, opponent_policy=None):
     # Standalone held-out evaluation must use the same configured precision as
     # training validation, even when opponents originate from an old FP32 file.
@@ -119,11 +149,14 @@ def evaluate_suite(model, games, seed, config, opponent_policy=None):
         return evaluate(model, games, seed, **options)
     if opponent_policy is None:
         raise ValueError("The mixed evaluation matrix requires the frozen opponent")
+    cases = [("mixed_sampled", opponent_policy, False),
+             ("mixed_greedy", opponent_policy, True)]
+    # Historical configs keep their four-condition protocol. New templates
+    # explicitly disable the additional seven-scripted-opponent evaluations.
+    if config.get("evaluation_include_scripted", True):
+        cases.extend((("scripted_sampled", None, False), ("scripted_greedy", None, True)))
     conditions = {}
-    for name, opponent, greedy in (("mixed_sampled", opponent_policy, False),
-                                    ("mixed_greedy", opponent_policy, True),
-                                    ("scripted_sampled", None, False),
-                                    ("scripted_greedy", None, True)):
+    for name, opponent, greedy in cases:
         conditions[name] = evaluate(
             model, games, seed, opponent_policy=opponent, deterministic=greedy,
             frozen_opponents=config.get("frozen_opponents", 4), rotate_seats=True, **options,
@@ -252,8 +285,16 @@ def main():
     stage = parser.add_mutually_exclusive_group()
     stage.add_argument("--resume", action="store_true", help="Resume a fully updated iteration checkpoint")
     stage.add_argument("--warm-start", action="store_true", help="Start a new stage from trained weights with fresh Adam")
+    stage.add_argument("--continue-stage", action="store_true",
+                       help="Start a new stage keeping trained weights and Adam, with fresh local counters")
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
+    schedule = learning_rate_schedule(config)
+    if config.get("preserve_optimizer_state") and not (args.continue_stage or args.resume):
+        raise ValueError("This configuration requires --continue-stage (or --resume within that stage)")
+    if not args.resume and config.get("initial_model_sha256"):
+        if hashlib.sha256(args.model.read_bytes()).hexdigest() != config["initial_model_sha256"]:
+            raise ValueError("Initial model differs from the configured V2 source")
     if args.forward_precision is not None:
         config["forward_precision"] = args.forward_precision
     config.setdefault("micro_batch_size", DEFAULT_MICRO_BATCH_SIZE)
@@ -274,13 +315,7 @@ def main():
     torch.set_float32_matmul_precision("high")
     if args.device == "cuda":
         torch.cuda.reset_peak_memory_stats()
-    opponent_policy = None
-    if config.get("opponent_model"):
-        source_hash = hashlib.sha256(Path(config["opponent_model"]).read_bytes()).hexdigest()
-        if config.get("opponent_model_sha256", source_hash) != source_hash:
-            raise ValueError("Frozen opponent checkpoint hash changed")
-        config["opponent_model_sha256"] = source_hash
-        opponent_policy = load_frozen_policy(config["opponent_model"], args.device)
+    opponent_policy = load_frozen_opponents(config, args.device)
     options = dict(seed=config["seed"], threads=config["env_threads"],
                    config=config.get("simulator_config"), reward_shaping=config.get("reward_shaping"))
     driver = config.get("sampling_driver", "synchronous")
@@ -294,18 +329,25 @@ def main():
            if opponent_policy is not None else NativeVectorEnv(config["n_envs"], **options))
     model = EntityPPO.load(
         args.model, env=env, device=args.device,
-        learning_rate=LinearLearningRate(config["learning_rate_start"], config["learning_rate_end"]),
+        learning_rate=schedule,
         n_steps=config["n_steps"], batch_size=config["batch_size"], n_epochs=config["n_epochs"],
         micro_batch_size=config["micro_batch_size"], rollout_buffer_class=CompactPlacementBuffer,
         rollout_buffer_kwargs={}, seed=config["seed"],
     )
     configure_precision(model, config, opponent_policy)
     total_decisions = config["iterations"] * expected
-    if args.warm_start:
+    if args.warm_start or args.continue_stage:
         config["warm_start_source_timesteps"] = model.num_timesteps
         config["warm_start_source_optimizer_steps"] = model.optimizer_step_count()
-        model.start_new_stage()
-        config["stage_initialization"] = "inherited network and text; fresh Adam and stage counters"
+        config["stage_source_adam_total_steps"] = model.optimizer_total_step_count()
+        old_budget = getattr(model, "experiment_config", {}).get("decisions_per_iteration")
+        if args.continue_stage and old_budget and model.num_timesteps % old_budget:
+            raise ValueError("Continuation requires a fully updated source PPO iteration")
+        model.start_new_stage(preserve_adam=args.continue_stage)
+        config["preserve_optimizer_state"] = args.continue_stage
+        config["stage_initialization"] = (
+            "inherited network, text and Adam moments/clock; fresh stage counters"
+            if args.continue_stage else "inherited network and text; fresh Adam and stage counters")
     if not args.resume and model.num_timesteps != 0:
         raise ValueError("This experiment must start from the zero-step initialization")
     if model.num_timesteps % expected:
@@ -315,6 +357,12 @@ def main():
         prior_config = json.loads(prior_path.read_text()) if prior_path.exists() else {}
         config["best_model_filename"] = prior_config.get(
             "best_model_filename", model.experiment_config.get("best_model_filename", "best_model.zip"))
+        for name in ("stage_source_adam_total_steps", "warm_start_source_timesteps",
+                     "warm_start_source_optimizer_steps"):
+            if name in prior_config:
+                config[name] = prior_config[name]
+            elif name in model.experiment_config:
+                config[name] = model.experiment_config[name]
     else:
         stamp = datetime.now(ZoneInfo("Asia/Shanghai")).strftime("%Y%m%d-%H%M%S")
         config["best_model_filename"] = f"{stamp}-best_model.zip"
@@ -395,7 +443,8 @@ def main():
             values = {f"train/{name}": value for name, value in metrics.items()}
             values.update({"train/learning_rate": current.policy.optimizer.param_groups[0]["lr"],
                            "train/ppo_iteration": current.num_timesteps // expected,
-                           "train/sampled_decisions": current.num_timesteps})
+                           "train/sampled_decisions": current.num_timesteps,
+                           "train/adam_total_steps": current.optimizer_total_step_count()})
             if tracker is not None:
                 tracker.log(values, step)
             if adam_writer is not None:
@@ -408,6 +457,10 @@ def main():
     write_json(args.experiment_dir / "process.json", {"pid": os.getpid(), "started_at": now()})
 
     def stop(signum, frame):
+        write_json(args.experiment_dir / "last-interruption-signal.json", {
+            "received_at": now(), "pid": os.getpid(), "signal": signal.Signals(signum).name,
+            "signal_number": signum, "sender": "not available from Python signal handler",
+        })
         raise KeyboardInterrupt
 
     signal.signal(signal.SIGTERM, stop)

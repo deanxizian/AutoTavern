@@ -1,8 +1,9 @@
-"""Training rewards for reversible actions; observations and legality stay native.
+"""Training rewards for action cycles; observations and legality stay native.
 
 Only public observation arrays enter cycle detection. History is reward bookkeeping,
 not an inference filter or an extra model input. A cycle is a return to an identical
-visible state within an uninterrupted Move/Freeze segment with no other progress.
+visible state. Legacy configs retain the original Move/Freeze segment detector;
+new configs can opt into checking every action within a recruit turn.
 """
 
 from dataclasses import dataclass
@@ -23,11 +24,15 @@ class RewardShapingConfig:
     # Positive magnitudes: these amounts are subtracted from native reward.
     operation_cost: float = 0.0001
     cycle_cost: float = 0.0002
+    # Missing in historical experiment configs: preserve their reward semantics.
+    cycle_detection: str = "reversible_segment"
 
     def __post_init__(self):
         if any(not math.isfinite(value) or value < 0
                for value in (self.operation_cost, self.cycle_cost)):
             raise ValueError("Reward costs must be finite and nonnegative")
+        if self.cycle_detection not in ("reversible_segment", "all_actions"):
+            raise ValueError("cycle_detection must be 'reversible_segment' or 'all_actions'")
 
 
 class ActionRewardShaper:
@@ -41,18 +46,25 @@ class ActionRewardShaper:
     def _clear_history(self):
         self._context = None
         self._seen = set()
+        self._turn = None
+        self._last_visible = None
 
     def reset(self):
         self._clear_history()
         self._totals = dict.fromkeys(REWARD_METRICS, 0.0)
 
-    def _state(self, obs):
+    @staticmethod
+    def _visible(obs):
         features, cards = obs["features"], obs["cards"]
         if features.ndim != 1 or cards.ndim != 1:
             raise ValueError("Reward history requires one unbatched player observation")
         # Ignore the legal mask: action counters can change legality while the
         # board/shop still repeats. Keep full visible state for the cycle key.
-        visible = hashlib.sha256(features.tobytes() + cards.tobytes()).digest()
+        return hashlib.sha256(features.tobytes() + cards.tobytes()).digest()
+
+    def _state(self, obs):
+        visible = self._visible(obs)
+        features, cards = obs["features"], obs["cards"]
         context_f, context_c = features.copy(), cards.copy()
         span, count, width = self.layout.floats["board"]
         board = features[span].reshape(count, width)
@@ -67,6 +79,22 @@ class ActionRewardShaper:
         context = hashlib.sha256(context_f.tobytes() + context_c.tobytes()).digest()
         return context, visible
 
+    def _all_actions_cycle(self, before, after):
+        old_visible, visible = self._visible(before), self._visible(after)
+        turn = float(before["features"][0])
+        if turn != float(after["features"][0]):
+            self._clear_history()
+            return False
+        if self._turn != turn or self._last_visible != old_visible:
+            # A restored state or intervening public changes break continuity.
+            self._clear_history()
+        self._turn = turn
+        self._seen.add(old_visible)
+        cycle = visible in self._seen
+        self._seen.add(visible)
+        self._last_visible = visible
+        return cycle
+
     def step(self, action, before, after, native_reward, *, done=False):
         """Return (training reward, completed-episode metrics or None).
 
@@ -78,7 +106,12 @@ class ActionRewardShaper:
         move_stop = move_start + self.layout.native["N_BOARD"] ** 2
         reversible = action == 2 or move_start <= action < move_stop
         cycle = False
-        if reversible and not done:
+        if done or action == self.layout.native["A_END"]:
+            # End and terminal/reset observations never receive a cycle cost.
+            self._clear_history()
+        elif self.config.cycle_detection == "all_actions":
+            cycle = self._all_actions_cycle(before, after)
+        elif reversible:
             old_context, old_visible = self._state(before)
             context, visible = self._state(after)
             if old_context != self._context:
@@ -94,8 +127,7 @@ class ActionRewardShaper:
                 self._context = context
             self._seen.add(visible)
         else:
-            # Purchases, plays, refreshes, choices and EndTurn start a fresh
-            # decision segment even if their visible result happens to match.
+            # Preserve historical non-reversible-action reset behavior.
             self._clear_history()
         operation_penalty = -self.config.operation_cost if reversible else 0.0
         cycle_penalty = -self.config.cycle_cost if cycle else 0.0

@@ -1,0 +1,17 @@
+{
+  "id": "20261031-ppo-v3-2v1-3v2-warmup",
+  "status": "interrupted",
+  "date": "2026-10-31",
+  "timezone": "Asia/Shanghai",
+  "training_started": true,
+  "model_directory": "runs/20261031-ppo-v3-2v1-3v2-warmup",
+  "config": "config.json",
+  "weights_uploaded": false,
+  "initial_checkpoint": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+  "budget_correction": "attempts/20261031-1946-budget100-before-updates/correction.json",
+  "started_at": "2026-10-31T19:47:44.892418+08:00",
+  "supervisor_pid": 1929113,
+  "training_pid": 1929122,
+  "exited_at": "2026-10-31T22:10:27.556056+08:00",
+  "exit_code": 0
+}

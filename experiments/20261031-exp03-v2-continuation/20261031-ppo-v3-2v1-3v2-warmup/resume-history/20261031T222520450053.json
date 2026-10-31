@@ -1,0 +1,12 @@
+{
+  "resumed_at": "2026-10-31T22:25:20.450121+08:00",
+  "source_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v3-2v1-3v2-warmup/latest_model.zip",
+  "source_model_sha256": "520042b42eb39a663b771c4b74c1ba722ccd40a68b30f8ac68920363838cb4ed",
+  "completed_iterations": 177,
+  "target_iterations": 200,
+  "remaining_decisions": 3014656,
+  "initial_optimizer_lr": 5.6052631578947374e-06,
+  "policy_and_adam_restored": true,
+  "environment_and_rng_reinitialized": true,
+  "log_directory": "/home/eric/projects/AutoTavern/experiments/20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/sessions/resume-0177-20261031T222520450053"
+}

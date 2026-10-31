@@ -1,0 +1,7 @@
+{
+  "reward_shaping": {
+    "operation_cost": 0,
+    "cycle_cost": 0.0002,
+    "cycle_detection": "all_actions"
+  }
+}

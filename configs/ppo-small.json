@@ -17,6 +17,7 @@
   "n_envs": 8,
   "forward_precision": "bf16",
   "opponent_forward_precision": "bf16",
+  "evaluation_include_scripted": false,
   "ppo": {
     "learning_rate": 0.0003,
     "n_steps": 256,
@@ -32,10 +33,11 @@
     "max_grad_norm": 1.0,
     "aux_coef": 0.1
   },
-  "reward": "native placement utility (9 - 2 * placement) / 7 minus reversible-operation and no-progress cycle costs",
+  "reward": "native placement utility (9 - 2 * placement) / 7 minus visible-state cycle costs; no per-operation cost",
   "reward_shaping": {
-    "operation_cost": 0.0001,
-    "cycle_cost": 0.0002
+    "operation_cost": 0,
+    "cycle_cost": 0.0002,
+    "cycle_detection": "all_actions"
   },
   "stage_kl_anchor": null,
   "opponents": "seven identical built-in scripted policies",

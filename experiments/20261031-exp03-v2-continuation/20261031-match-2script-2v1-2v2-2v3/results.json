@@ -1,0 +1,258 @@
+{
+  "status": "completed",
+  "completed_at": "2026-10-31T22:49:59.667176+08:00",
+  "config": {
+    "name": "20261031-match-2script-2v1-2v2-2v3",
+    "games": 256,
+    "parallel_games": 64,
+    "seed": 61000401,
+    "threads": 4,
+    "lineup": {
+      "scripted": 2,
+      "v1": 2,
+      "v2": 2,
+      "v3": 2
+    },
+    "policy_mode": "stochastic for V1, V2 and V3",
+    "forward_precision": "bf16",
+    "simulator_config": {
+      "turn_action_caps": [
+        60
+      ]
+    },
+    "models": {
+      "v1": {
+        "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+        "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+        "ppo_iteration": 100
+      },
+      "v2": {
+        "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+        "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+        "ppo_iteration": 100,
+        "selection": "best fixed validation mean placement against 2 V1 + 5 scripted; not selected on this match"
+      },
+      "v3": {
+        "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+        "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+        "ppo_iteration": 150,
+        "selection": "best mixed-stochastic validation mean placement among PPO0/50/100/150/200; not selected on this match"
+      }
+    },
+    "seat_assignment": "native random physical seats; interleaved roles; first-policy priority rotates across lanes and episodes",
+    "action_filter": false,
+    "combat_search": false,
+    "training_started": false,
+    "tracking": {
+      "backend": "wandb",
+      "entity": "eric_eric_",
+      "project": "AutoTavern",
+      "weave_project": "eric_eric_/AutoTavern",
+      "mode": "online"
+    }
+  },
+  "lobbies": 256,
+  "groups": {
+    "v1": {
+      "seats_per_lobby": 2,
+      "player_games": 512,
+      "first_places": 44,
+      "first_rate": 0.0859375,
+      "top4_rate": 0.509765625,
+      "mean_placement": 4.326171875,
+      "lobby_win_share": 0.171875,
+      "placement_counts": {
+        "1": 44,
+        "2": 52,
+        "3": 73,
+        "4": 92,
+        "5": 106,
+        "6": 81,
+        "7": 48,
+        "8": 16
+      },
+      "first_rate_ci95": [
+        0.064453125,
+        0.109375
+      ],
+      "mean_placement_ci95": [
+        4.171875,
+        4.474609375
+      ],
+      "lobby_win_share_ci95": [
+        0.12890625,
+        0.21875
+      ]
+    },
+    "v2": {
+      "seats_per_lobby": 2,
+      "player_games": 512,
+      "first_places": 79,
+      "first_rate": 0.154296875,
+      "top4_rate": 0.662109375,
+      "mean_placement": 3.6953125,
+      "lobby_win_share": 0.30859375,
+      "placement_counts": {
+        "1": 79,
+        "2": 91,
+        "3": 80,
+        "4": 89,
+        "5": 65,
+        "6": 61,
+        "7": 32,
+        "8": 15
+      },
+      "first_rate_ci95": [
+        0.126953125,
+        0.18359375
+      ],
+      "mean_placement_ci95": [
+        3.5390625,
+        3.849609375
+      ],
+      "lobby_win_share_ci95": [
+        0.25390625,
+        0.3671875
+      ]
+    },
+    "v3": {
+      "seats_per_lobby": 2,
+      "player_games": 512,
+      "first_places": 122,
+      "first_rate": 0.23828125,
+      "top4_rate": 0.76171875,
+      "mean_placement": 3.083984375,
+      "lobby_win_share": 0.4765625,
+      "placement_counts": {
+        "1": 122,
+        "2": 111,
+        "3": 97,
+        "4": 60,
+        "5": 56,
+        "6": 45,
+        "7": 14,
+        "8": 7
+      },
+      "first_rate_ci95": [
+        0.20703125,
+        0.2676269531249993
+      ],
+      "mean_placement_ci95": [
+        2.955078125,
+        3.220703125
+      ],
+      "lobby_win_share_ci95": [
+        0.4140625,
+        0.5352539062499986
+      ]
+    },
+    "scripted": {
+      "seats_per_lobby": 2,
+      "player_games": 512,
+      "first_places": 11,
+      "first_rate": 0.021484375,
+      "top4_rate": 0.06640625,
+      "mean_placement": 6.89453125,
+      "lobby_win_share": 0.04296875,
+      "placement_counts": {
+        "1": 11,
+        "2": 2,
+        "3": 6,
+        "4": 15,
+        "5": 29,
+        "6": 69,
+        "7": 162,
+        "8": 218
+      },
+      "first_rate_ci95": [
+        0.009765625,
+        0.03515625
+      ],
+      "mean_placement_ci95": [
+        6.78515625,
+        6.99609375
+      ],
+      "lobby_win_share_ci95": [
+        0.01953125,
+        0.0703125
+      ]
+    }
+  },
+  "v2_vs_v1": {
+    "pairwise_ahead_rate": 0.60546875,
+    "pairs_per_lobby": 4,
+    "pair_comparisons": 1024,
+    "mean_placement_delta_newer_minus_older": -0.630859375,
+    "pairwise_ahead_rate_ci95": [
+      0.564453125,
+      0.646484375
+    ],
+    "mean_placement_delta_ci95": [
+      -0.890625,
+      -0.37109375
+    ]
+  },
+  "v3_vs_v1": {
+    "pairwise_ahead_rate": 0.6796875,
+    "pairs_per_lobby": 4,
+    "pair_comparisons": 1024,
+    "mean_placement_delta_newer_minus_older": -1.2421875,
+    "pairwise_ahead_rate_ci95": [
+      0.6416015625,
+      0.716796875
+    ],
+    "mean_placement_delta_ci95": [
+      -1.48046875,
+      -0.99609375
+    ]
+  },
+  "v3_vs_v2": {
+    "pairwise_ahead_rate": 0.5927734375,
+    "pairs_per_lobby": 4,
+    "pair_comparisons": 1024,
+    "mean_placement_delta_newer_minus_older": -0.611328125,
+    "pairwise_ahead_rate_ci95": [
+      0.5556640625,
+      0.62890625
+    ],
+    "mean_placement_delta_ci95": [
+      -0.841796875,
+      -0.37109375
+    ]
+  },
+  "confidence_method": "10,000 whole-lobby bootstrap samples; percentile 95% intervals",
+  "elapsed_seconds": 123.07882697200694,
+  "vector_steps": 4786,
+  "deferred_actions": 0,
+  "rejected_actions": 0,
+  "weights_unchanged": true,
+  "training_started": false,
+  "optimizer_updates": 0,
+  "forward_batch_sizes": {
+    "v1": {
+      "calls": 4785,
+      "mean": 72.8528735632184,
+      "p50": 78.0,
+      "max": 128
+    },
+    "v2": {
+      "calls": 4693,
+      "mean": 82.12657148945237,
+      "p50": 88.0,
+      "max": 128
+    },
+    "v3": {
+      "calls": 4785,
+      "mean": 86.52497387669801,
+      "p50": 95.0,
+      "max": 128
+    }
+  },
+  "peak_gpu_allocated_bytes": 288487424,
+  "limitations": [
+    "Results apply to this 2-script/2-V1/2-V2/2-V3 stochastic BF16 lobby composition.",
+    "Player seats in a lobby are correlated; confidence intervals resample whole lobbies.",
+    "Script ranks are the exact unordered complement of the six unique model ranks.",
+    "Pairwise ahead rate compares final placements, not individual combat outcomes."
+  ]
+}

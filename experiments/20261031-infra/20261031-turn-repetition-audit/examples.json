@@ -1,0 +1,408 @@
+{
+  "sampled": {
+    "two_action_visible_loops": [
+      [
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 60,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "c83c4461adee9db22644da6dc6a65028e577066e3dbb4915bc09e1a51d5cb0ad",
+          "after_hash": "0ac96f80fccf49c09ab805735a4b42b06570903737bc35b77605d321167538db",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 61,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "0ac96f80fccf49c09ab805735a4b42b06570903737bc35b77605d321167538db",
+          "after_hash": "c83c4461adee9db22644da6dc6a65028e577066e3dbb4915bc09e1a51d5cb0ad",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ],
+      [
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 61,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "0ac96f80fccf49c09ab805735a4b42b06570903737bc35b77605d321167538db",
+          "after_hash": "c83c4461adee9db22644da6dc6a65028e577066e3dbb4915bc09e1a51d5cb0ad",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 62,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "c83c4461adee9db22644da6dc6a65028e577066e3dbb4915bc09e1a51d5cb0ad",
+          "after_hash": "0ac96f80fccf49c09ab805735a4b42b06570903737bc35b77605d321167538db",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ],
+      [
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 62,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "c83c4461adee9db22644da6dc6a65028e577066e3dbb4915bc09e1a51d5cb0ad",
+          "after_hash": "0ac96f80fccf49c09ab805735a4b42b06570903737bc35b77605d321167538db",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 63,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "0ac96f80fccf49c09ab805735a4b42b06570903737bc35b77605d321167538db",
+          "after_hash": "c83c4461adee9db22644da6dc6a65028e577066e3dbb4915bc09e1a51d5cb0ad",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ],
+      [
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 63,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "0ac96f80fccf49c09ab805735a4b42b06570903737bc35b77605d321167538db",
+          "after_hash": "c83c4461adee9db22644da6dc6a65028e577066e3dbb4915bc09e1a51d5cb0ad",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 64,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "c83c4461adee9db22644da6dc6a65028e577066e3dbb4915bc09e1a51d5cb0ad",
+          "after_hash": "0ac96f80fccf49c09ab805735a4b42b06570903737bc35b77605d321167538db",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ],
+      [
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 66,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "after_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "sampled",
+          "lane": 0,
+          "turn": 1,
+          "step": 67,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "after_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ]
+    ],
+    "gold_spending_after60": [
+      {
+        "mode": "sampled",
+        "lane": 13,
+        "turn": 3,
+        "step": 74,
+        "action": 11,
+        "action_type": "Buy",
+        "before_hash": "c8d5440622013ec34a79cd79963eb8a23d8964ba81c12071927751b668e18a7c",
+        "after_hash": "1536e9be4928363576509fba06cd4eb49db807453ba0a02e942a18e399b36bbb",
+        "visible_revisit": false,
+        "move_freeze_cycle": false,
+        "gold_before": 1.0000000149011612,
+        "gold_after": 0.0,
+        "forced": false
+      },
+      {
+        "mode": "sampled",
+        "lane": 5,
+        "turn": 2,
+        "step": 139,
+        "action": 1,
+        "action_type": "Refresh",
+        "before_hash": "04988f7f36c0503678ab38b97ac62a3239dadae7f3033c652e77b5dbef761671",
+        "after_hash": "fe2bee5fad7a09b20d8ce60e96412875df8bd74f0968ced21127bd47a3a84f12",
+        "visible_revisit": false,
+        "move_freeze_cycle": false,
+        "gold_before": 3.0000001192092896,
+        "gold_after": 2.0000000298023224,
+        "forced": false
+      },
+      {
+        "mode": "sampled",
+        "lane": 5,
+        "turn": 2,
+        "step": 140,
+        "action": 11,
+        "action_type": "Buy",
+        "before_hash": "fe2bee5fad7a09b20d8ce60e96412875df8bd74f0968ced21127bd47a3a84f12",
+        "after_hash": "b579ab8da6e7e74f61454ed38d181eeedaf36d4dcaff513e021b16e25e619ede",
+        "visible_revisit": false,
+        "move_freeze_cycle": false,
+        "gold_before": 2.0000000298023224,
+        "gold_after": 1.0000000149011612,
+        "forced": false
+      },
+      {
+        "mode": "sampled",
+        "lane": 0,
+        "turn": 2,
+        "step": 120,
+        "action": 1,
+        "action_type": "Refresh",
+        "before_hash": "b2a30f2f70a6eed46090f5a8bbc78b2e0b8c1eeb5577c95d2bbe3572f4ddcff2",
+        "after_hash": "e6b1b4022b4a69c9bb06c0059bfb20e055a7cdb3531859b620d94c3b8202bffc",
+        "visible_revisit": false,
+        "move_freeze_cycle": false,
+        "gold_before": 2.0000000298023224,
+        "gold_after": 1.0000000149011612,
+        "forced": false
+      },
+      {
+        "mode": "sampled",
+        "lane": 0,
+        "turn": 2,
+        "step": 126,
+        "action": 11,
+        "action_type": "Buy",
+        "before_hash": "e6b1b4022b4a69c9bb06c0059bfb20e055a7cdb3531859b620d94c3b8202bffc",
+        "after_hash": "f96510599cce750282228312059e446d12f26610a4de20ffb59f99b9c885fa92",
+        "visible_revisit": false,
+        "move_freeze_cycle": false,
+        "gold_before": 1.0000000149011612,
+        "gold_after": 0.0,
+        "forced": false
+      }
+    ]
+  },
+  "greedy": {
+    "two_action_visible_loops": [
+      [
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 60,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "after_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 61,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "after_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ],
+      [
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 61,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "after_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 62,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "after_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ],
+      [
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 62,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "after_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 63,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "after_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ],
+      [
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 63,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "after_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 64,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "after_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ],
+      [
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 64,
+          "action": 46,
+          "action_type": "Play",
+          "before_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "after_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        },
+        {
+          "mode": "greedy",
+          "lane": 0,
+          "turn": 1,
+          "step": 65,
+          "action": 7,
+          "action_type": "Cancel",
+          "before_hash": "2a23965aede6d6abb70587f174f9917747053fccd05141f53ecc2385fb36b58d",
+          "after_hash": "c982ea6d413cb525b2bba000314b374f332e9b9c6ee096dde90ba5f578f3c99d",
+          "visible_revisit": true,
+          "move_freeze_cycle": false,
+          "gold_before": 0.0,
+          "gold_after": 0.0,
+          "forced": false
+        }
+      ]
+    ],
+    "gold_spending_after60": []
+  }
+}

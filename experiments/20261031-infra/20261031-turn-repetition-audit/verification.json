@@ -1,0 +1,6 @@
+{
+  "status": "passed",
+  "unique_turns_and_action_counters": true,
+  "all_action_revisits_verified": true,
+  "move_freeze_revisits_verified": true
+}

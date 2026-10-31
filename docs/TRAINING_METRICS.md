@@ -19,6 +19,38 @@ Weave 初始化遇到网络／TLS 错误时，错误写入 `wandb.json` 的 `wea
 `wandb.json` 保存 run ID 和链接；续训复用同一个 run。
 鉴权沿用机器已有 W&B 凭据，不写入仓库或实验配置。
 
+## 关键测评指标与 best 选择
+
+当前 V3 的混合验证对手为 **2 个固定 V1 + 3 个固定 V2 + 2 个脚本**，
+学习者随机／贪心各 **64 局／验证点**，所有模型 BF16 前向；固定模型对手始终随机采样。
+后续实验须按自己的对手与局数解释指标，不能照搬这个阵容。
+
+| 指标 | 如何理解 | 用途／是否参与选 best |
+| --- | --- | --- |
+| `val/mean_placement` ↓ | 随机采样组所有验证局的最终名次平均值 | **唯一选模指标，越低越好** |
+| `val/first_rate` ↑ | 第一名局数／验证局数 | 观察吃鸡能力；不参与选模，也不用于打破平局 |
+| `val/top4_rate` ↑ | 前四名局数／验证局数 | 观察稳定性；不参与选模 |
+| `val/greedy_mean_placement` ↓ | 同一混合对手下，学习者每次选概率最高合法动作时的平均名次 | 观察贪心推理效果；当前不参与选模 |
+| `val/cycle_returns` ↓、`val/greedy_cycle_returns` ↓ | 每局被奖励检测器识别的可见状态返回次数，再对验证局求平均 | 行为质量诊断；受 `cycle_detection` 模式影响，不参与选模 |
+| `val/cap_end_rate` ↓、`val/greedy_cap_end_rate` ↓ | 每局因操作预算强制 End 的回合比例，再对验证局求平均 | 检查对外部上限的依赖；不参与选模，不等于胜率 |
+| `val/actions_per_game` | 每个学习者 episode 的操作数均值 | 解释操作成本与吞吐；没有越少越好的绝对目标 |
+| `val/total_reward` ↑ | 名次效用加操作／循环惩罚后的回报 | 解释训练目标；当前不用它选 best |
+| `train/loss`、`train/approx_kl`、`train/learning_rate` | 优化损失、策略漂移、实际学习率 | 训练健康检查，不能替代对战实力评估 |
+| `test/*` | 独立种子上的 initial／best／final 结果；V3 计划各条件各 128 局 | 最终复核，不反过来选模 |
+
+`mean_placement = 最终名次之和 / 对局数`，取值在 1 到 8 之间。
+例如四局第 1、2、4、5 名，平均名次为 `(1+2+4+5)/4 = 3.0`。
+它不是胜率，2.875 也不表示每局都拿第三名。
+
+代码仅在新验证的 `mean_placement` **严格小于**此前最佳值时覆盖 best；
+相等保留较早版本，不根据 first/top4、贪心表现或循环次数追加排序。
+step=0 的继承模型也参加比较，因此续训没有进步时可保留起点。
+贪心验证同样不构建梯度，区别是选动作方式；最佳模型当前依据随机采样组。
+
+未来改变选模目标（例如改为 Greedy 或加入循环约束）必须另写实验配置与规则，
+不能修改既有 run 的历史结论。64 局估计有波动，应连同对手、模式、局数和种子报告。
+实现见 [evaluate_suite 与 Recorder](../python/taverngym/learning/experiment.py)。
+
 ## 横轴与分组
 
 所有曲线的默认横轴是 **实际累计 Adam optimizer step**，键为 `optimizer_step`。
@@ -36,7 +68,7 @@ rollout 的对局结果放入 `train/*`；baseline 合入 `val/*` 的 step=0。
 例如“2 个固定 V1 + 5 个脚本，学习者随机采样，64 局”。不能只用 `val`、`mixed` 或“胜率”代替评测条件。
 跨时间比较须确认对手组成与策略模式一致；baseline 另外注明学习者权重来源，step=0 仅指当前阶段尚未更新。
 
-当前 2 V1 实验的对应关系如下；其他 run 必须按各自配置说明，不能照搬对手数量：
+第二轮 2 V1 实验的历史对应关系如下；其他 run 必须按各自配置说明，不能照搬对手数量：
 
 | 当前指标前缀／示例 | 对手 | 学习者选动作 |
 | --- | --- | --- |
@@ -48,7 +80,12 @@ rollout 的对局结果放入 `train/*`；baseline 合入 `val/*` 的 step=0。
 同组其他指标沿用相同对手条件。混合组中的固定 V1 对手均随机采样，`greedy` 只改变学习者。
 后续新实验的图例也应直接标注对手组合；当前运行中的指标键继续沿用已有名称，以保持曲线连续。
 
-当前 100 PPO 实验采用 256 环境 × 1,024 步、每 PPO 最多 32 次 Adam：
+后续新混合实验设置 `evaluation_include_scripted=false`，只保留前两类混合对手曲线：
+`val/*` 为学习者随机采样，`val/greedy_*` 为学习者贪心，两组对手组成相同。
+不再追加七脚本随机／贪心对照，不影响混合阵容本身的脚本数量。
+各曲线仍包含 step=0 和原定周期验证点；缺少开关的历史配置保留原四组协议。
+
+第一轮历史 100 PPO 实验采用 256 环境 × 1,024 步、每 PPO 最多 32 次 Adam：
 
 | 组 | 记录时机 | 点数／横轴 |
 | --- | --- | --- |
@@ -87,7 +124,7 @@ rollout 的对局结果放入 `train/*`；baseline 合入 `val/*` 的 step=0。
 | `test/*` | 未用于选模的独立种子结果，分开报告 initial/best/final | 必需，复核泛化 |
 
 固定验证集用于选模，test 不参与选择。64 局验证的估计有波动，应连同局数和种子解读。
-当前规则与对手为本地脚本基线，分数不是论文校准对手库上的结果。
+各实验使用本地配置的脚本或冻结模型对手，分数不是论文校准对手库上的结果。
 
 ## 启用操作／循环成本后的指标
 
@@ -98,17 +135,17 @@ rollout 的对局结果放入 `train/*`；baseline 合入 `val/*` 的 step=0。
 | `train/`、`val/` 下的同名指标 | 含义 |
 | --- | --- |
 | `placement_reward` | 原始终局名次效用，始终与真实名次对应 |
-| `operation_penalty` | 每局 Move / Freeze 的累计负成本 |
+| `operation_penalty` | 每局 Move / Freeze 的累计负成本；后续仅循环配置设 `operation_cost=0`，此项为 0，历史轮次保持旧值 |
 | `cycle_penalty` | 每局无进展状态往返的累计负成本 |
 | `total_reward` | 上述三项之和；训练的 GAE / critic 使用这个奖励 |
 | `reversible_actions` | 每局 Move / Freeze 总次数 |
-| `cycle_returns` | 每局返回已见完整可见状态的次数；连续返回可以重叠计数 |
+| `cycle_returns` | 每局返回已见完整可见状态的次数；连续返回可以重叠计数；覆盖范围由 `cycle_detection` 指定 |
 | `actions_per_game` | 每局全部决策操作数 |
 | `cap_end_rate` | 每局达到动作上限后被迫 EndTurn 的招募回合比例，再取整局均值 |
 
 第二轮增加四个验证条件，主组沿用 `val/*`；混合贪心、全脚本随机、全脚本贪心
 分别使用 `val/greedy_*`、`val/scripted_*`、`val/scripted_greedy_*`，各有初始点加 4 次周期点。
-训练采样默认随机，四个冻结旧模型只推理，`train/opponent_decisions` 记录其每轮操作数，
+训练采样默认随机，冻结旧模型只推理，`train/opponent_decisions` 记录其每轮操作数，
 不把它们计入学习者 sample 或 Adam step。
 
 本地 `metrics.jsonl` 中对应键为 `rollout/*`，W&B 会映射为一层 `/` 的 `train/*`。
@@ -116,9 +153,9 @@ rollout 的对局结果放入 `train/*`；baseline 合入 `val/*` 的 step=0。
 相同种子、相同动作下，启用奖励不会改变模拟器状态、合法掩码、终局名次或验证随机流。
 这项改动不会补写第一次实验的历史 W&B 曲线；下一轮启动时会直接记录。
 
-## 当前训练的迁移
+## 第一轮历史日志迁移
 
-当前实验：[100 PPO × 32 minibatches](../experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/README.md)。
+历史实验：[100 PPO × 32 minibatches](../experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/README.md)。
 [在线 run](https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/4xw0tzgd)。
 
 这次训练启动时已在写两个 TensorBoard 文件。保留训练进程，使用独立进程读取旧文件，

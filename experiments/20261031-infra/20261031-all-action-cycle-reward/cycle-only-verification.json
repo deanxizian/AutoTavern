@@ -1,0 +1,21 @@
+{
+  "status": "passed",
+  "verified_at": "2026-10-31T22:43:27.085601+08:00",
+  "command": ".venv/bin/python -m pytest -q tests/test_reward_shaping.py",
+  "tests_passed": 33,
+  "elapsed_seconds": 3.04,
+  "new_template_reward_shaping": {
+    "operation_cost": 0,
+    "cycle_cost": 0.0002,
+    "cycle_detection": "all_actions"
+  },
+  "current_round_original_config_sha256": "028151d7d69817502e54f08b747a68c848346e6cf106d26fe1b4b6dcd5583cff",
+  "current_round_effective_reward": {
+    "operation_cost": 0.0001,
+    "cycle_cost": 0.0002,
+    "cycle_detection": "reversible_segment"
+  },
+  "training_restarted": false,
+  "early_termination_added": false,
+  "native_hero_power_fixture": "Galakronds Greed: target / cancel loop"
+}

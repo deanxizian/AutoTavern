@@ -13,7 +13,7 @@ from taverngym.learning.buffer import CompactPlacementBuffer, DiskPlacementBuffe
 from taverngym.learning.ppo import EntityPPO
 from taverngym.learning.policy import EntityPolicy
 from taverngym.learning.model import ModelConfig
-from taverngym.learning.schedule import LinearLearningRate
+from taverngym.learning.schedule import LinearLearningRate, WarmupLinearLearningRate, learning_rate_schedule
 from taverngym.learning.vector_env import NativeVectorEnv
 
 
@@ -114,6 +114,89 @@ def test_linear_scheduler_endpoints_and_clamping():
     assert schedule(-1) == schedule(0)
 
 
+def test_warmup_schedule_has_one_peak_and_roundtrips():
+    import pickle
+
+    schedule = learning_rate_schedule({"learning_rate_schedule": "warmup_linear",
+        "learning_rate_start": 3e-6, "learning_rate_peak": 1e-5,
+        "learning_rate_end": 5e-6, "learning_rate_warmup_fraction": .05})
+    values = np.array([schedule(1 - i / 100) for i in range(101)])
+    assert values[0] == pytest.approx(3e-6)
+    assert values[1] == pytest.approx(4.4e-6)
+    assert values[5] == pytest.approx(1e-5)
+    assert values[-1] == pytest.approx(5e-6)
+    assert [schedule(1 - i / 200) for i in (1, 10, 200)] == pytest.approx([3.7e-6, 1e-5, 5e-6])
+    assert np.all(np.diff(values[:6]) > 0) and np.all(np.diff(values[5:]) < 0)
+    restored = pickle.loads(pickle.dumps(schedule))
+    assert [restored(p) for p in (2, 1, .99, .95, .5, 0, -1)] == [
+        schedule(p) for p in (2, 1, .99, .95, .5, 0, -1)]
+
+
+@pytest.mark.parametrize("settings", [
+    {"warmup_fraction": 0}, {"warmup_fraction": 1}, {"peak": 1e-6},
+    {"initial": -1e-6}, {"final": float("nan")},
+])
+def test_invalid_warmup_settings_are_rejected(settings):
+    with pytest.raises(ValueError):
+        WarmupLinearLearningRate(**settings)
+
+
+def test_continuation_cli_preserves_adam_and_batches_two_versions(tmp_path):
+    import hashlib
+    import json
+    import subprocess
+    import sys
+
+    torch.set_num_threads(2)
+    model = model_for(NativeVectorEnv(2, seed=4))
+    model.learn(32)
+    model.experiment_config = {"decisions_per_iteration": 32}
+    source = tmp_path / "source.zip"
+    model.save(source)
+    source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
+    source_steps = model.optimizer_total_step_count()
+    config = {
+        "name": "continue-test", "iterations": 4, "decisions_per_iteration": 32,
+        "n_envs": 2, "n_steps": 16, "batch_size": 16, "micro_batch_size": 4, "n_epochs": 1,
+        "learning_rate_schedule": "warmup_linear", "learning_rate_start": 3e-6,
+        "learning_rate_peak": 1e-5, "learning_rate_end": 5e-6, "learning_rate_warmup_fraction": .5,
+        "preserve_optimizer_state": True, "initial_model_sha256": source_hash,
+        "sampling_driver": "unified_actor", "frozen_opponents": 5,
+        "opponent_pool": [{"name": name, "count": count, "model": str(source), "sha256": source_hash}
+                          for name, count in (("bot_v1", 2), ("bot_v2", 3))],
+        "seed": 4, "env_threads": 1, "checkpoint_every_iterations": 1,
+        "evaluation_every_iterations": 1, "evaluation_games": 0,
+        "initial_evaluation_games": 0, "final_evaluation_games": 0,
+        "evaluation_seed": 101, "final_evaluation_seed": 102,
+        "simulator_config": {"turn_action_caps": [3]}, "tracking_backend": "none",
+    }
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps(config))
+    folder, run = tmp_path / "experiment", tmp_path / "run"
+    command = [sys.executable, "-m", "taverngym.learning.experiment", "--config", str(config_path),
+               "--model", str(source), "--experiment-dir", str(folder), "--run-dir", str(run),
+               "--device", "cpu", "--continue-stage"]
+    subprocess.run(command, check=True, capture_output=True, text=True)
+    saved = EntityPPO.load(run / "final_model.zip", device="cpu", n_envs=1, n_steps=2, batch_size=2)
+    assert saved.num_timesteps == 128 and saved.optimizer_step_count() == 8
+    assert saved.optimizer_total_step_count() == source_steps + 8
+    baseline = EntityPPO.load(run / "starting_model.zip", device="cpu", n_envs=1, n_steps=2, batch_size=2)
+    assert baseline.optimizer_step_count() == baseline.num_timesteps == 0
+    for key, state in model.policy.optimizer.state_dict()["state"].items():
+        for name, value in state.items():
+            torch.testing.assert_close(value, baseline.policy.optimizer.state_dict()["state"][key][name], rtol=0, atol=0)
+    records = [json.loads(line) for line in (folder / "metrics.jsonl").read_text().splitlines()]
+    assert [r["train/optimizer_steps"] for r in records] == [2, 4, 6, 8]
+    assert [r["train/learning_rate"] for r in records] == pytest.approx([6.5e-6, 1e-5, 7.5e-6, 5e-6])
+    assert all(r["system/actor_bot_v1_forward_calls"] > 0 and r["system/actor_bot_v2_forward_calls"] > 0
+               for r in records)
+    resolved = json.loads((folder / "resolved-config.json").read_text())
+    assert resolved["stage_source_adam_total_steps"] == source_steps
+    assert resolved["preserve_optimizer_state"] is True
+    assert hashlib.sha256(source.read_bytes()).hexdigest() == source_hash
+    model.env.close()
+
+
 def test_evaluation_is_reproducible_and_preserves_training_rng():
     from taverngym.learning.experiment import evaluate
 
@@ -127,12 +210,17 @@ def test_evaluation_is_reproducible_and_preserves_training_rng():
     model.env.close()
 
 
-def test_experiment_resume_preserves_completed_iterations_and_optimizer(tmp_path):
+@pytest.mark.parametrize("continued_stage", [False, True])
+def test_experiment_resume_preserves_completed_iterations_and_optimizer(tmp_path, continued_stage):
     import json
     import subprocess
     import sys
 
     model = model_for(NativeVectorEnv(2, seed=4))
+    if continued_stage:
+        model.learn(32)
+    source_timesteps = model.num_timesteps
+    source_adam_steps = model.optimizer_total_step_count()
     initial = tmp_path / "initial.zip"
     model.save(initial)
     config = {
@@ -155,7 +243,8 @@ def test_experiment_resume_preserves_completed_iterations_and_optimizer(tmp_path
     experiment, run = tmp_path / "experiment", tmp_path / "run"
     base = [sys.executable, "-m", "taverngym.learning.experiment", "--config", str(config_path),
             "--experiment-dir", str(experiment), "--run-dir", str(run), "--device", "cpu"]
-    subprocess.run(base + ["--model", str(initial)], check=True, capture_output=True, text=True)
+    first = base + ["--model", str(initial)] + (["--continue-stage"] if continued_stage else [])
+    subprocess.run(first, check=True, capture_output=True, text=True)
     original_best_name = json.loads((experiment / "resolved-config.json").read_text())["best_model_filename"]
     source = tmp_path / "first-iteration.zip"
     source.write_bytes((run / "latest_model.zip").read_bytes())
@@ -165,6 +254,11 @@ def test_experiment_resume_preserves_completed_iterations_and_optimizer(tmp_path
     config_path.write_text(json.dumps(config))
     subprocess.run(base + ["--model", str(source), "--resume"], check=True, capture_output=True, text=True)
     assert json.loads((experiment / "resolved-config.json").read_text())["best_model_filename"] == original_best_name
+    if continued_stage:
+        resolved = json.loads((experiment / "resolved-config.json").read_text())
+        assert resolved["stage_source_adam_total_steps"] == source_adam_steps
+        assert resolved["warm_start_source_timesteps"] == source_timesteps
+        assert resolved["warm_start_source_optimizer_steps"] == source_adam_steps
     after = EntityPPO.load(run / "final_model.zip", device="cpu")
     assert after.num_timesteps == 96 and after._n_updates == 3
     records = [json.loads(line) for line in (experiment / "metrics.jsonl").read_text().splitlines()]

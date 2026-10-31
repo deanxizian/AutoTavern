@@ -63,6 +63,7 @@ guard-*.json
 /experiments/**/sessions/
 /experiments/**/process.json
 /experiments/**/launcher.json
+/experiments/**/resume-launch.json
 /experiments/**/progress.json
 /experiments/**/progress.csv
 /experiments/**/training.json

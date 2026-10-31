@@ -1,0 +1,26 @@
+{
+  "at": "2026-10-31T21:46:43.661559+08:00",
+  "status": "passed",
+  "episodes_and_unique_turns_verified": true,
+  "tail_counters_verified": true,
+  "conditions": {
+    "sampled": {
+      "turns": 945,
+      "games": 64,
+      "fraction_continuing": 0.7597883597883598,
+      "extra_non_end_mean": 116.42479108635098,
+      "forced200_conditional_on_continuing": 0.6810584958217271,
+      "move_freeze_fraction_extra_non_end": 0.9233907145335136,
+      "cycle_fraction_extra_non_end": 0.19640400512004594
+    },
+    "greedy": {
+      "turns": 978,
+      "games": 64,
+      "fraction_continuing": 0.9079754601226994,
+      "extra_non_end_mean": 140.05518018018017,
+      "forced200_conditional_on_continuing": 1.0,
+      "move_freeze_fraction_extra_non_end": 0.9342681858019282,
+      "cycle_fraction_extra_non_end": 0.9340510899018244
+    }
+  }
+}

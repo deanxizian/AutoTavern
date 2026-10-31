@@ -8,6 +8,7 @@ pytest.importorskip("sb3_contrib")
 
 from taverngym.learning.actor_sampling import ActorOutput, UnifiedActorSampler
 from taverngym.learning.vector_env import MixedOpponentVectorEnv
+from taverngym.learning.opponents import FrozenOpponentPool, OpponentGroup
 
 
 class RuleActor:
@@ -33,12 +34,23 @@ def copy_obs(obs, row=None):
 
 
 @pytest.mark.parametrize("threads", [1, 3])
-@pytest.mark.parametrize("frozen_opponents", [1, 2])
+@pytest.mark.parametrize("frozen_opponents", [1, 2, 3, 5])
 def test_independent_games_match_synchronous_trajectories_across_two_rollouts(threads, frozen_opponents):
     options = dict(seed=12, threads=threads, config={"turn_action_caps": [6]}, reward_shaping={})
     learner, fixed = RuleActor(), RuleActor(slow=True)
+    actor_fixed = RuleActor(slow=True)
+    if frozen_opponents == 5:
+        fixed = FrozenOpponentPool((OpponentGroup("bot_v1", RuleActor(True), 2),
+                                    OpponentGroup("bot_v2", RuleActor(), 3)))
+        actor_fixed = FrozenOpponentPool((OpponentGroup("bot_v1", RuleActor(True), 2),
+                                          OpponentGroup("bot_v2", RuleActor(), 3)))
+    elif frozen_opponents == 3:
+        fixed = FrozenOpponentPool(tuple(OpponentGroup(f"snapshot_{i}", RuleActor(i % 2 == 0), 1)
+                                         for i in range(3)))
+        actor_fixed = FrozenOpponentPool(tuple(OpponentGroup(f"snapshot_{i}", RuleActor(i % 2 == 0), 1)
+                                               for i in range(3)))
     env = MixedOpponentVectorEnv(3, opponent_policy=fixed, frozen_opponents=frozen_opponents, **options)
-    sampler = UnifiedActorSampler(3, RuleActor(), RuleActor(slow=True),
+    sampler = UnifiedActorSampler(3, RuleActor(), actor_fixed,
                                   frozen_opponents=frozen_opponents, **options)
     expected = [[] for _ in range(3)]
     actual = [[] for _ in range(3)]

@@ -8,6 +8,7 @@ from stable_baselines3.common.vec_env import VecEnv
 import taverngym as tg
 from .env import TavernGymEnv
 from .rewards import ActionRewardShaper, RewardShapingConfig
+from .opponents import opponent_groups
 
 
 class NativeVectorEnv(VecEnv):
@@ -156,8 +157,11 @@ class MixedOpponentVectorEnv(NativeVectorEnv):
         if not 1 <= frozen_opponents <= 7:
             raise ValueError("frozen_opponents must be in 1..7")
         self.opponent_policy = opponent_policy
+        self.opponent_groups = opponent_groups(opponent_policy, frozen_opponents)
         self.frozen_opponents = frozen_opponents
         self.roles = frozen_opponents + 1
+        self.role_names = np.array(["learner", *(group.name for group in self.opponent_groups
+                                                for _ in range(group.count))])
         self.opponent_decisions = 0
         self.waiting_rounds = 0
         self._all_obs = None
@@ -184,11 +188,14 @@ class MixedOpponentVectorEnv(NativeVectorEnv):
         actions = np.zeros(self.batch.n_slots, dtype=np.int64)
         if learner_actions is not None:
             actions[::self.roles] = learner_actions
-        if len(opponent_slots):
-            obs = {key: value[opponent_slots] for key, value in full.items() if key != "ready"}
-            predicted, _ = self.opponent_policy.predict(obs, deterministic=False)
-            actions[opponent_slots] = predicted
-            self.opponent_decisions += len(opponent_slots)
+        for group in self.opponent_groups:
+            selected = opponent_slots[self.role_names[opponent_slots % self.roles] == group.name]
+            if not len(selected):
+                continue
+            obs = {key: value[selected] for key, value in full.items() if key != "ready"}
+            predicted, _ = group.policy.predict(obs, deterministic=False)
+            actions[selected] = predicted
+            self.opponent_decisions += len(selected)
         rewards, dones, metadata = self.batch.step(actions, active=active)
         self._validate_result(dones, metadata)
         self.opponent_decisions -= int(metadata["deferred"][opponent_slots].sum())

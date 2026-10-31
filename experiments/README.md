@@ -8,12 +8,29 @@
 | [20261031-scripted-baseline/](20261031-scripted-baseline/README.md) | 独立参考策略评测 | 脚本机器人 TavernBench 基线 |
 | [20261031-exp01-ppo-scripted/](20261031-exp01-ppo-scripted/README.md) | **第一次正式模型实验**的训练与评测 | 100 PPO × 32 minibatch；整局测试和 TavernBench |
 | [20261031-exp02-mixed-opponents/](20261031-exp02-mixed-opponents/README.md) | **第二次正式模型实验** | 2 V1 + BF16 + 独立 Actor 已完成；含 TavernBench 与 2 脚本 + 3 V1 + 3 V2 对战 |
+| [20261031-exp03-v2-continuation/](20261031-exp03-v2-continuation/README.md) | **第三次正式模型实验** | 从 V2 保留 Adam；128 环境，2 脚本 + 2 V1 + 3 V2；warmup 峰值 1e-5 |
+| [20261031-exp04-v4-cycle-only/](20261031-exp04-v4-cycle-only/README.md) | **第四次实验准备版，尚未训练** | V4 只罚全动作循环，操作成本 0；混合随机／贪心两组验证 |
 
 查第一次正式实验，直接进入 **[20261031-exp01-ppo-scripted](20261031-exp01-ppo-scripted/README.md)**。
 安装验证、旧 300 轮预演和 100 次 Adam 小试跑都归入 infra，不占正式实验编号。
 
 每个日期目录保留 README、配置、状态、原始指标、评估结果和必要的复现脚本。
 同一正式实验的训练和后续 benchmark 放在同一个 expXX 组；不同训练方案另开下一组。
+
+## 实验版本与配置
+
+各版本使用自己的完整配置；通用初始化模板不是旧实验的配置来源。
+新方案准备在新目录，已有实验的配置和 provenance 不随新版本改写。
+
+| 版本 | 独立配置 | 奖励方案 | 阶段 |
+| --- | --- | --- | --- |
+| V1 | [exp01 配置](20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/config.json) | 原始名次奖励 | 已训练版本 |
+| V2 | [exp02 配置](20261031-exp02-mixed-opponents/20261031-ppo-mixed-2v1-bf16-actor/config.json) | 名次 + Move／Freeze 成本 + 连续片段循环成本 | 已训练版本 |
+| V3 | [exp03 配置](20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/config.json) | 保留 V2 奖励；继承 Adam 并 warmup | 已完成 200 PPO；保留 PPO150 best |
+| V4 | [exp04 配置草案](20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/config.json) | 名次 + 全动作循环成本；无操作成本 | prepared，已绑定 V3 best，未启动 |
+
+每次正式启动使用本实验的 `--config`，记录源码 commit／脏工作区摘要、模型路径和 SHA-256。
+通用代码保留旧模式兼容；不同配置对应不同训练规则，不需要为每个实验复制整套训练代码。
 
 ## 模型与日志
 

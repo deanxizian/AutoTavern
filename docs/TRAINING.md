@@ -1,5 +1,11 @@
 # PPO 开发环境与训练产物
 
+跨版本的历史对手池、冠军晋级、agent 监控与自动循环设计，见
+[训练方法论](TRAINING_METHODOLOGY.md)。当前仅有流程与角色草案，尚未启用跨代自动运行。
+
+游戏操作、回合、episode 与训练样本、rollout、PPO、Adam 等名词的统一定义，以及上限和奖励口径，
+见 [README：术语与计数](../README.md#terminology)。
+
 本轮改进、当前默认值、实测边界与 Git 忽略策略见 [训练基础设施](TRAINING_INFRA.md)。
 PPO iteration、epoch、sample、minibatch 和 Adam step 的区别，以及论文／其他项目的统一对照，
 见 [PPO 批次与预算对照表](PPO_BATCH_COMPARISON.md)。
@@ -12,20 +18,77 @@ PPO iteration、epoch、sample、minibatch 和 Adam step 的区别，以及论�
 下一轮已确认使用训练奖励减少无效操作，见
 [实验 02 奖励配置](../experiments/20261031-exp02-mixed-opponents/README.md) 和
 [实现验证](../experiments/20261031-infra/20261031-reward-shaping/README.md)。
-新初始化模板 `configs/ppo-small.json` 启用操作成本 `0.0001` 与循环成本 `0.0002`；
+新初始化模板 `configs/ppo-small.json` 仅启用循环成本 `0.0002`，操作成本明确设为 `0`；
 旧实验配置与既有模型保持历史奖励，缺少 `reward_shaping` 或设为 `null` 时不启用。
 
 正式实验入口 `learning.experiment` 读取独立实验配置中的这一段：
 
 ```json
-"reward_shaping": {"operation_cost": 0.0001, "cycle_cost": 0.0002}
+"reward_shaping": {
+  "operation_cost": 0,
+  "cycle_cost": 0.0002,
+  "cycle_detection": "all_actions"
+}
 ```
 
 它不会从旧模型中自动推断这一设置；下一轮完整配置需合入已确认的配置片段。
-通用入口 `learning.train` 沿用检查点配置，也可用 `--operation-cost 0.0001 --cycle-cost 0.0002`
+通用入口 `learning.train` 沿用检查点配置，也可用
+`--operation-cost 0 --cycle-cost 0.0002 --cycle-detection all_actions`
 为旧检查点显式开启；两个参数均为非负的成本绝对值，实际 reward 中相减。
 所有设置写入实验配置与新检查点的 `experiment_config`。
 奖励在环境采样时加入，不更改动作或掩码，推理无须接入额外筛选器。
+
+新模板使用 `cycle_detection="all_actions"`：在同一回合内，对所有非 End 动作检查
+是否返回先前见过的完整可见状态，覆盖出牌→取消、出牌→选择→取消及英雄技能菜单循环。
+正常买卖、出牌或选择导致的新状态，不会仅因重复使用相同动作类型被扣分。
+每次状态返回扣 `0.0002`；所有动作均不收固定操作成本，普通移动／冻结也不会仅因执行一次被罚。
+真实回合结束、终局、显式 reset 或观测不连续时清空循环历史；跨 rollout 保留同回合历史。
+End 本身不收循环成本，没有增加 60 步触顶惩罚。
+
+旧配置缺少 `cycle_detection` 时使用 `reversible_segment`，保持旧版 Move／Freeze 连续片段规则。
+当前实验 03 的配置、进程与奖励不变，包括随后启动的独立评估；后续新阶段需显式合入上述字段。
+通用训练入口可用 `--cycle-detection all_actions` 开启；检测模式会随奖励配置写入检查点、W&B 与评估记录。
+从旧配置续训时还需显式设 `operation_cost=0`；仅切换检测模式不会自动清除旧操作成本。
+`train/cycle_returns`、`train/cycle_penalty` 和对应 `val/*` 继续沿用，不拆出另一个基线曲线。
+新旧模式的循环次数覆盖范围不同，比较时必须注明模式。
+
+检测只读取模型可见 features/cards，忽略合法掩码；不读取隐藏计数器或 RNG，因此可见状态重复
+不是完整模拟器状态等价证明。实现与回归验证见
+[全动作循环奖励](../experiments/20261031-infra/20261031-all-action-cycle-reward/README.md)。
+
+上述“只罚全动作循环”与混合两组验证归入
+[V4 独立准备版](../experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/README.md)。
+各版本以各自实验 `config.json` 为准；通用初始化模板不回写 V1／V2／V3。
+V4 尚未启动，初始权重已锁定为 V3 最终保留的 PPO150 best。
+
+## 保留 Adam 的新阶段与通用对手池
+
+后续混合对手验证只保留随机与贪心两组，不额外运行七脚本对照：
+
+```json
+"evaluation_matrix": true,
+"evaluation_include_scripted": false
+```
+
+新模板已设置 `evaluation_include_scripted=false`。这不改变混合阵容中的脚本席位，
+也不改变验证频率、局数、step=0 起点或随机组选 best 的规则。
+W&B 保留 `val/*` 和 `val/greedy_*`，不新增 `val/scripted_*`、`val/scripted_greedy_*`。
+独立评估入口使用相同开关；历史配置缺少字段时仍按四组运行，当前训练不重启、不改历史记录。
+
+从已训练模型启动新阶段时，`learning.experiment --continue-stage` 保留网络、Adam moments 和原始
+Adam step；阶段样本、PPO 与优化器更新日志从零计数。`--resume` 用于同一阶段完整检查点的断点续训，
+`--warm-start` 仍会清空 Adam。
+
+实验配置可使用 `opponent_pool` 数组，每项指定 `name`、`model`、`sha256` 和 `count`；
+`frozen_opponents` 必须等于各项 count 之和。每版本只载入一份固定模型，所有对应席位共享，
+按策略标识跨局合批；剩余席位为原生脚本。包含学习者在内最多 8 个席位。
+固定版本始终 `requires_grad=False`；学习者采样也不保留计算图，只在 PPO 重算时反向。
+
+`learning_rate_schedule="warmup_linear"` 需要 `learning_rate_start`、`learning_rate_peak`、
+`learning_rate_end`、`learning_rate_warmup_fraction`。调度按阶段采样进度更新，且同一 PPO 的
+所有 minibatch 共用当次 LR；每个真实 Adam 点继续记录 `train/learning_rate`。
+`train/adam_total_steps` 显示包含继承历史的 Adam 计数，图表横轴仍是阶段内实际 Adam 次数。
+完整参数与预期 LR 见 [实验 03](../experiments/20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/README.md)。
 
 ## 前向精度
 
@@ -52,7 +115,7 @@ BF16 的反向算子随前向算子精度执行，最终累积到 FP32 参数梯
 
 BF16 前向概率差异的整局对照见
 [第一轮精度评估](../experiments/20261031-exp01-ppo-scripted/20261031-bf16-match-evaluation/README.md)。
-第二轮已启动 5 脚本 + 2 V1 + 1 学习者，使用 BF16 与独立 Actor 调度，配置入口见
+第二轮已完成 5 脚本 + 2 V1 + 1 学习者的 BF16 与独立 Actor 调度训练，历史配置入口见
 [next-settings.json](../experiments/20261031-exp02-mixed-opponents/next-settings.json)。
 原有 4+3 试跑的配置与停训检查点不自动转换、不自动续训。
 
@@ -60,7 +123,7 @@ BF16 前向概率差异的整局对照见
 `weave.init('eric_eric_/AutoTavern')`。不再启动 TensorBoard 或为新训练生成事件文件。
 最近完成的一次训练通过旁路进程补录、持续同步原有日志，训练进程未重启。
 
-最近一版已完成 **100 次 PPO iteration、每个 epoch 32 个 minibatch、epoch=1**，
+实验 01 已完成 **100 次 PPO iteration、每个 epoch 32 个 minibatch、epoch=1**，
 共 26,214,400 条新样本、3,200 次 Adam 更新，总耗时约 57 分钟。
 最终独立 128 局平均名次 1.765625、前四率 93.75%、第一名率 58.59375%，对手为七个脚本机器人。
 参数、循环层级和结果见 [实验记录](../experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/README.md)。

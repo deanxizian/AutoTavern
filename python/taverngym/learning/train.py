@@ -34,6 +34,8 @@ def main():
                         help="Neural forward precision; missing inherits checkpoint")
     parser.add_argument("--operation-cost", type=float, help="Move/Freeze reward cost; enables reward shaping")
     parser.add_argument("--cycle-cost", type=float, help="Additional no-progress return cost; enables reward shaping")
+    parser.add_argument("--cycle-detection", choices=("reversible_segment", "all_actions"),
+                        help="Cycle detection scope; enables reward shaping")
     args = parser.parse_args()
     experiment_dir = args.experiment_dir or Path("experiments") / args.run_dir.name
     if args.run_dir.exists():
@@ -50,12 +52,15 @@ def main():
         config["ppo"] = {**config["ppo"], "micro_batch_size": args.micro_batch_size}
     else:
         config["micro_batch_size"] = args.micro_batch_size
-    if args.operation_cost is not None or args.cycle_cost is not None:
+    if (args.operation_cost is not None or args.cycle_cost is not None
+            or args.cycle_detection is not None):
         costs = dict(config.get("reward_shaping") or {})
         if args.operation_cost is not None:
             costs["operation_cost"] = args.operation_cost
         if args.cycle_cost is not None:
             costs["cycle_cost"] = args.cycle_cost
+        if args.cycle_detection is not None:
+            costs["cycle_detection"] = args.cycle_detection
         config["reward_shaping"] = asdict(RewardShapingConfig(**costs))
     elif config.get("reward_shaping") is not None:
         config["reward_shaping"] = asdict(RewardShapingConfig(**config["reward_shaping"]))

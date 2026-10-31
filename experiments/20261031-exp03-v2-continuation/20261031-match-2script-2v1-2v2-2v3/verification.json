@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "completed_lobbies": 256,
+  "player_games_per_group": 512,
+  "unique_lobbies_and_lane_quotas": true,
+  "exact_ranks_and_seats": true,
+  "group_and_pairwise_metrics_recounted": true,
+  "source_weights_unchanged": true,
+  "no_training_or_rejected_actions": true,
+  "first_policy_priority_counts": {
+    "0": 86,
+    "2": 85,
+    "1": 85
+  }
+}

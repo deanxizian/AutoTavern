@@ -1,0 +1,47 @@
+{
+  "status": "passed",
+  "tests": {
+    "command": ".venv/bin/python -m pytest -q",
+    "passed": 128,
+    "elapsed_seconds": 38.72,
+    "wandb_mode": "offline",
+    "formal_training_started": false
+  },
+  "new_template_reward_shaping": {
+    "operation_cost": 0.0001,
+    "cycle_cost": 0.0002,
+    "cycle_detection": "all_actions"
+  },
+  "historical_active_configs_read_only": {
+    "experiments/20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/config.json": {
+      "sha256": "028151d7d69817502e54f08b747a68c848346e6cf106d26fe1b4b6dcd5583cff",
+      "reward_shaping": {
+        "operation_cost": 0.0001,
+        "cycle_cost": 0.0002
+      },
+      "effective_cycle_detection": "reversible_segment"
+    },
+    "experiments/20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/resolved-config.json": {
+      "sha256": "333961b67194137bd0365a007ad2a170110e684212d63d8af7aadb83226c77af",
+      "reward_shaping": {
+        "operation_cost": 0.0001,
+        "cycle_cost": 0.0002
+      },
+      "effective_cycle_detection": "reversible_segment"
+    }
+  },
+  "new_cycle_penalty": -0.0002,
+  "operation_penalty_scope": "Move/Freeze only; unchanged",
+  "coverage": [
+    "native Play/Cancel loop",
+    "native Play/Choose/Cancel loop",
+    "legacy config compatibility",
+    "successful spell/target choice no cycle cost",
+    "Move/Freeze loops",
+    "End/turn/episode/reset isolation",
+    "mask independence and discontinuity reset",
+    "native batch legality and rewards",
+    "PPO reward/GAE/returns",
+    "W&B train/val mode configuration"
+  ]
+}

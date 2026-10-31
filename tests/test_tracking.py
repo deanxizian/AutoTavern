@@ -111,7 +111,8 @@ def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_pa
     }
     if sampling_driver == "unified_actor":
         config.update(sampling_driver=sampling_driver, opponent_model=str(initial),
-                      frozen_opponents=2, evaluation_matrix=True)
+                      frozen_opponents=2, evaluation_matrix=True, evaluation_include_scripted=False)
+        config["reward_shaping"]["cycle_detection"] = "all_actions"
     config_path = tmp_path / "config.json"
     config_path.write_text(json.dumps(config))
     folder, runs = tmp_path / "experiment", tmp_path / "models"
@@ -134,7 +135,15 @@ def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_pa
     assert not list(folder.rglob("events.out.tfevents.*"))
     assert not (folder / "tensorboard").exists()
     resolved = json.loads((folder / "resolved-config.json").read_text())
-    assert resolved["reward_shaping"] == config["reward_shaping"]
+    assert resolved["reward_shaping"] == {
+        "cycle_detection": "reversible_segment", **config["reward_shaping"]}
+    evaluation = json.loads((folder / "evaluation-0002.json").read_text())
+    conditions = evaluation.get("conditions", {"scripted": evaluation})
+    assert all(condition["reward_shaping"] == resolved["reward_shaping"]
+               for condition in conditions.values())
+    if sampling_driver == "unified_actor":
+        assert set(conditions) == {"mixed_sampled", "mixed_greedy"}
+        assert not any(key.startswith("val/scripted_") for row in rows for key in row)
     assert resolved["forward_precision"] == "bf16"
     assert resolved["precision_settings"]["learner_sampling_forward"] == "bf16"
     assert resolved["precision_settings"]["learner_update_forward"] == "bf16"
@@ -142,7 +151,7 @@ def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_pa
         assert resolved["sampling_driver"] == sampling_driver and resolved["frozen_opponents"] == 2
         assert resolved["precision_settings"]["opponent_forward"] == "bf16"
         assert all(f"val/{prefix}mean_placement" in row for row in validation
-                   for prefix in ("", "greedy_", "scripted_", "scripted_greedy_"))
+                   for prefix in ("", "greedy_"))
         assert all(row["system/actor_learner_samples"] == 32 for row in rows if "system/actor_learner_samples" in row)
     best_path = runs / resolved["best_model_filename"]
     assert best_path.is_file() and list(runs.glob("*-best_model.zip")) == [best_path]
