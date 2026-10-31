@@ -146,8 +146,16 @@ pip install ".[bench]"
 | [PPO training](docs/TRAINING.md) | Independent training implementation; [u23 pause and recovery handoff](docs/TRAINING_CHECKPOINT_20261030.md). |
 | [macOS companion](docs/CLIENT_WINDOW.md) | Local log reading and manual advice, [model integration](docs/CLIENT_MODEL.md), and [recorded-match validation](docs/CLIENT_MATCH_20261030.md). |
 
-For development, run `pip install -e ".[test]"` and `pytest`. The Rust crate also works on its
-own with `cargo test --release`.
+For the full Python suite, including model and client regressions:
+
+```bash
+python -m pip install -e ".[test,client-model]" tensorboard
+bash script/build_client_native.sh
+python -m pytest -q
+```
+
+CI installs the CPU build of PyTorch before these steps. The Rust crate also works
+on its own with `cargo test --release`.
 
 ## Citation
 

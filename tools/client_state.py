@@ -21,7 +21,7 @@ import plistlib
 import re
 import time
 
-from hearthstone.enums import BlockType, CardType, GameTag, Zone, State
+from hearthstone.enums import BlockType, CardType, GameTag, Zone, State, Step
 from hslog import LogParser, packets
 from hslog.export import BaseExporter, FriendlyPlayerExporter
 from hslog.parser import OptionsHandler
@@ -37,7 +37,19 @@ else:
 
 CREATE = re.compile(rb"GameState\.DebugPrintPower\(\)\s*-\s*CREATE_GAME\s*$")
 DUPLICATE = re.compile(rb"^[DIEW] \d{2}:\d{2}:\d{2}\.\d+ PowerTaskList\.")
-MAX_GAME_BYTES = 64 * 1024 * 1024
+CLIENT_COMBAT = re.compile(rb"PowerTaskList\.DebugPrintPower\(\)\s*-\s*TAG_CHANGE Entity=GameEntity tag=BACON_IN_COMBAT_PHASE value=([01])\s*$")
+CLIENT_COMPLETE = re.compile(rb"PowerTaskList\.DebugPrintPower\(\)\s*-\s*TAG_CHANGE Entity=GameEntity tag=STATE value=COMPLETE\s*$")
+MAX_GAME_BYTES = 128 * 1024 * 1024
+
+
+def client_phase_after(raw, previous):
+    # GameState can contain the next recruit turn while combat is still playing.
+    # Read only this presentation marker from PowerTaskList, not duplicate state.
+    if b"BACON_IN_COMBAT_PHASE" in raw and (match := CLIENT_COMBAT.search(raw)):
+        return "combat" if match[1] == b"1" else "recruit"
+    if b"STATE value=COMPLETE" in raw and CLIENT_COMPLETE.search(raw):
+        return "game_over"
+    return previous
 
 
 @lru_cache(maxsize=4096, typed=True)
@@ -72,6 +84,7 @@ class VisibleExporter(BaseExporter):
         self.reset_seen = False
         self.dirty = set()
         self.projected = {}
+        self.entity_fingerprint = None
         self.actions = deque(maxlen=32)
         self.action_counts = Counter()
         self._server_actions = set()
@@ -162,6 +175,11 @@ class VisibleExporter(BaseExporter):
     def handle_tag_change(self, packet):
         row = self.lookup(packet.entity)
         previous = row["tags"].get(packet.tag)
+        if previous != packet.value and (
+            (packet.tag == GameTag.STEP and packet.value == Step.MAIN_END)
+            or (packet.tag == GameTag.BACON_IN_COMBAT_PHASE and packet.value == 1)
+        ):
+            self.finish_input_window()
         if previous != packet.value:
             if self.affects_options(row): self.changed()
             self.decision_changes.append(enum_name(packet.tag, GameTag))
@@ -211,8 +229,9 @@ class VisibleExporter(BaseExporter):
                 self._server_actions.add(event["sequence"])
 
     def confirm_actions(self):
-        """A later server menu plus an entity transition confirms an input.
+        """Server evidence within an input's response window confirms it.
 
+        A later retry or combat must not lend its transitions to an old input.
         Merely emitting SendOption never advances decoding history.
         """
         for event in self.actions:
@@ -223,6 +242,8 @@ class VisibleExporter(BaseExporter):
             current = self.reference(main.get("entity_id"))
             target_now = self.reference(target.get("entity_id"))
             before = self._input_before.get(seq, {})
+            if before.get("closed"):
+                continue
             proof = seq in self._server_actions
             if kind in ("play_minion", "cast_spell"):
                 proof |= main.get("zone") == "HAND" and current.get("zone") != "HAND"
@@ -240,7 +261,7 @@ class VisibleExporter(BaseExporter):
                 proof |= bool(old) and all(self.entities.get(eid, {}).get("tags", {}).get(GameTag.FROZEN, 0) != value for eid, value in old.items())
             if not proof: continue
             event["execution_verified"] = True
-            event["evidence"] = "server_power_or_entity_transition_then_menu"
+            event["evidence"] = "server_power_or_entity_transition_within_input_window"
             confirmations = self.public_history.setdefault("confirmed_actions", [])
             confirmations.append({"sequence": seq, "kind": kind, "entity_id": main.get("entity_id"),
                 "target_entity_id": target.get("entity_id"), "position": event.get("position"),
@@ -252,6 +273,15 @@ class VisibleExporter(BaseExporter):
                     "sell": ("minions_sold",), "refresh": ("refreshes",),
                     "play_minion": ("cards_played",), "cast_spell": ("cards_played",)}.get(kind, ())
                 for key in keys: stats[key] = stats.get(key, 0)+1
+
+    def finish_input_window(self):
+        # Preserve any response already received before closing the window. This
+        # also handles rapid inputs whose next menu has not yet been exported.
+        self.confirm_actions()
+        for event in self.actions:
+            before = self._input_before.get(event["sequence"])
+            if before is not None and not event.get("execution_verified"):
+                before["closed"] = True
 
     def remember_combat(self):
         from copy import deepcopy
@@ -288,7 +318,7 @@ class VisibleExporter(BaseExporter):
         self.confirm_actions()
         if self.actions:
             event = self.actions[-1]
-            if event["kind"] == "board_position" and event.get("position") != event["main"].get("position"):
+            if event["kind"] == "board_position" and event.get("execution_verified") and event.get("position") != event["main"].get("position"):
                 row = self.entities.get(event["main"]["entity_id"], {})
                 if row.get("tags", {}).get(GameTag.ZONE_POSITION) == event["position"]:
                     p = next((x for x in self.players if x["player_id"] == event["main"]["controller"]), None)
@@ -302,6 +332,7 @@ class VisibleExporter(BaseExporter):
         self.decision_changes = []
 
     def handle_send_option(self, packet):
+        self.finish_input_window()
         option = next((o for o in (self.options or {}).get("options", [])
                        if o["id"] == packet.option), {})
         main = self.reference(option.get("entity_id"))
@@ -353,6 +384,7 @@ class VisibleExporter(BaseExporter):
                 "activate_cost": tags.get(GameTag.INTERACTABLE_OBJECT_COST)}
 
     def render_entities(self, cards):
+        changed = bool(self.dirty)
         for key in self.dirty:
             entity = self.entities[key]
             tags, card_id = entity["tags"], entity["card_id"]
@@ -371,7 +403,10 @@ class VisibleExporter(BaseExporter):
                 "catalog_category": category,
                 "tags": {enum_name(k, GameTag): int(v) for k, v in tags.items()}}
         self.dirty.clear()
-        return [self.projected[k] for k in sorted(self.entities)]
+        rows = [self.projected[k] for k in sorted(self.entities)]
+        if changed or self.entity_fingerprint is None:
+            self.entity_fingerprint = content_id(rows)
+        return rows
 
     def handle_choices(self, packet):
         self.confirm_actions()
@@ -388,6 +423,7 @@ class VisibleExporter(BaseExporter):
 
     def handle_send_choices(self, packet):
         if type(packet) is packets.SendChoices:
+            self.finish_input_window()
             key = (packet.id, str(packet.ts))
             if key not in self._choice_events:
                 self.action_counts["choice"] += 1
@@ -538,6 +574,8 @@ def populate_snapshot(result, exported, parser, cards, player_id, perspective_so
     result["entities"] = exported.render_entities(cards)
     from copy import deepcopy
     result["public_history"] = deepcopy(exported.public_history)
+    result["model_snapshot_id"] = content_id({"entities": exported.entity_fingerprint,
+        "public_history": result["public_history"], "player_id": player_id})
     def identities(category):
         return sorted({e["card_id"] for e in result["entities"] if e["catalog_category"] == category})
     result["unknown_card_ids"] = identities("unknown_card")
@@ -585,7 +623,9 @@ def snapshot(path, *, player_id=None, installed_build=None, max_age=DEFAULT_MAX_
         result["source"]["last_complete_line"] = rows[-1][0]
         result["source"]["parsed_game_sha256"] = hashlib.sha256(b"".join(r for _, r in rows)).hexdigest()
         parser = DiagnosticParser()
+        client_phase = None
         for line_number, raw in rows:
+            client_phase = client_phase_after(raw, client_phase)
             if raw.strip() and not DUPLICATE.match(raw):
                 parser.read_line(raw.decode("utf-8"))
         parser.flush()
@@ -597,6 +637,7 @@ def snapshot(path, *, player_id=None, installed_build=None, max_age=DEFAULT_MAX_
         else:
             perspective_source = "explicit_player_id"
         populate_snapshot(result, exported, parser, cards, player_id, perspective_source, open_blocks(tree))
+        result["client_phase"] = client_phase
     except FileNotFoundError:
         result["status"] = "missing_log"
     except Exception as error:

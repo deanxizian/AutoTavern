@@ -91,8 +91,9 @@ def project_live_cards(snapshot):
         phase = "本局已结束"
     elif choice_ids and combat is None:
         phase = "选择中"
+    perspective_source = "客户端读取" if snapshot.get("perspective", {}).get("source") == "hearthmirror" else "日志推断"
     facts = [{"label": "记录阶段", "value": phase},
-             {"label": "玩家视角", "value": f"玩家 {player_id} · 日志推断" if me else "尚未确定"}]
+             {"label": "玩家视角", "value": f"玩家 {player_id} · {perspective_source}" if me else "尚未确定"}]
     if me:
         tags = me.get("tags", {})
         if tags.get("PLAYER_TECH_LEVEL"):

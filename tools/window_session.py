@@ -137,7 +137,7 @@ def rehearsal_frame(index):
 
 
 class WindowSession:
-    def __init__(self, feed, *, receipt_file=None, clock=time.time, ttl=60, model_bridge=None):
+    def __init__(self, feed, *, receipt_file=None, clock=time.time, ttl=60, model_bridge=None, race_reader=None, memory_reader=None):
         self.feed, self.receipt_file, self.clock, self.ttl = feed, receipt_file, clock, ttl
         self.lock = threading.RLock()
         self.mode = "live"
@@ -148,6 +148,8 @@ class WindowSession:
         self.message = None
         self.history = []
         self.model_bridge = model_bridge
+        self.race_reader = race_reader
+        self.memory_reader = memory_reader
         self.game_key = None
         self.lobby_races = None
         self.lobby_races_source = None
@@ -157,6 +159,8 @@ class WindowSession:
         if self.races_file:
             try: self.race_records = json.loads(self.races_file.read_text())
             except (OSError, ValueError): pass
+        if self.race_reader:
+            self.race_reader.restore_bindings(self.race_records)
         _, self.catalog = load_catalog()
 
     def set_lobby_races(self, game_key, races, source="user_confirmed_for_game"):
@@ -168,15 +172,21 @@ class WindowSession:
                 raise WindowError("stale_game", "对局已切换，请确认新一局的种族。")
             if not isinstance(values, list) or len(values) != 5 or len(set(values)) != 5 or not set(values) <= allowed:
                 raise WindowError("invalid_races", "请选择本局显示的 5 个种族。")
-            self.lobby_races = sorted(values)
-            self.lobby_races_source = source if source == "visible_hero_banner" else "user_confirmed_for_game"
-            self.race_records[self.game_key] = {"races": self.lobby_races, "source": self.lobby_races_source}
-            self.race_records = dict(list(self.race_records.items())[-8:])
-            if self.races_file:
-                from tools.client_common import write_private_json
-                write_private_json(self.races_file, self.race_records)
+            # Memory provenance can only come from the local reader, not this API.
+            self._remember_races(values, "user_confirmed_for_game")
             self.dismissed_frame = None
             return self.state()
+
+    def _remember_races(self, races, source, evidence=None):
+        self.lobby_races, self.lobby_races_source = sorted(races), source
+        self.race_records[self.game_key] = {"races": self.lobby_races, "source": source}
+        if evidence:
+            self.race_records[self.game_key]["evidence"] = {
+                k: evidence[k] for k in ("pid", "game_handle", "log_session") if k in evidence}
+        self.race_records = dict(list(self.race_records.items())[-8:])
+        if self.races_file:
+            from tools.client_common import write_private_json
+            write_private_json(self.races_file, self.race_records)
 
     def _expire(self):
         if self.proposal and self.clock() >= self.proposal["expires_at"]:
@@ -267,23 +277,55 @@ class WindowSession:
             status = snap.get("status", "no_log")
             live = self.mode == "live"
             source = snap.get("source", {})
-            from tools.client_common import content_id
+            from tools.client_common import content_id, log_game_key
             from tools.client_actions import frame_identity
-            game_key = content_id([source.get(k) for k in ("path", "device", "inode", "game_start_line")]) if source.get("game_start_line") else None
+            game_key = log_game_key(source)
             if game_key != self.game_key:
                 self.game_key, self.dismissed_frame = game_key, None
                 record = self.race_records.get(game_key)
                 self.lobby_races = record.get("races") if isinstance(record, dict) else record
                 self.lobby_races_source = record.get("source") if isinstance(record, dict) else "user_confirmed_for_game"
                 if live: self.proposal = None
+            needs_races = live and bool(self.game_key) and not self.lobby_races and snap.get("game_status") == "running"
+            race_status = None
+            if self.race_reader:
+                race_status = self.race_reader.sample(self.game_key, source,
+                    enabled=needs_races and reading.get("running") is not False)
+                if (needs_races and race_status.get("status") == "ready"
+                        and race_status.get("game_key") == self.game_key):
+                    self._remember_races(race_status["races"], "hearthmirror", race_status)
+                    needs_races = False
             if self.lobby_races:
                 snap = {**snap, "lobby_races": self.lobby_races, "lobby_races_source": self.lobby_races_source}
+            memory_status, scene_source = None, "loading_screen_log"
+            if self.memory_reader:
+                from tools.client_memory import merge_public_state
+                memory = self.memory_reader.sample(self.game_key, source,
+                    enabled=live and reading.get("running") is not False)
+                record = self.race_records.get(self.game_key)
+                evidence = record.get("evidence") if isinstance(record, dict) else None
+                snap, scene, memory_status = merge_public_state(snap, memory, evidence)
+                if scene:
+                    reading = {**reading, "scene": scene}
+                    scene_source = "hearthmirror"
+            combat = snap.get("game_status") != "complete" and (
+                snap.get("client_phase") == "combat" or any(e.get("type") == "GAME" and
+                    e.get("tags", {}).get("BACON_IN_COMBAT_PHASE") == 1 for e in snap.get("entities", [])))
+            memory_blocks = bool(memory_status and memory_status.get("blocks_actions"))
             model_state = self.model_bridge.sample(snap, enabled=live and reading.get("running") is not False
-                and snap.get("freshness", {}).get("status") == "recent") if self.model_bridge else None
+                and not combat and not memory_blocks and snap.get("freshness", {}).get("status") == "recent") if self.model_bridge else None
             model_title, model_detail, model_blockers = model_summary(model_state)
+            if needs_races and race_status:
+                model_title = "正在读取本局种族"
+                model_detail = race_status["detail"]
+                model_blockers = [model_detail]
+            if live and combat:
+                model_title, model_detail, model_blockers = "正在战斗", "回到酒馆后自动更新操作建议。", []
+            if live and memory_blocks:
+                model_title, model_detail, model_blockers = "等待对局界面", "进入本局操作界面后自动更新建议。", []
             if live:
                 key = frame_identity(snap)
-                fresh = reading.get("running") is not False and snap.get("freshness", {}).get("status") == "recent" and snap.get("game_status") != "complete"
+                fresh = not combat and not memory_blocks and reading.get("running") is not False and snap.get("freshness", {}).get("status") == "recent" and snap.get("game_status") != "complete"
                 if self.proposal and (not fresh or self.proposal["frame_id"] != key):
                     self.proposal = None
                     self.message = None
@@ -305,7 +347,7 @@ class WindowSession:
             if live:
                 cards, facts = project_live_cards(snap)
                 facts.extend([{"label": "客户端", "value": reading.get("build") or "待确认"},
-                         {"label": "最近界面记录", "value": reading.get("scene") or "待核对"},
+                         {"label": "当前界面" if scene_source == "hearthmirror" else "最近界面记录", "value": reading.get("scene") or "待核对"},
                          {"label": "日志会话", "value": log_session or "尚未发现"},
                          {"label": "日志大小", "value": f"{source.get('bytes', 0):,} 字节" if "bytes" in source else "尚未生成"}])
                 if snap.get("performance"):
@@ -352,19 +394,25 @@ class WindowSession:
             return {"schema": "autotavern.window.v1", "mode": self.mode,
                 "revision": content_id((self.mode, self.game_key, self.lobby_races, snap.get("snapshot_id"), status, snap.get("freshness", {}).get("status"),
                                   source.get("path"), source.get("bytes"),
-                                  reading.get("scene"), reading.get("running"), self.message,
-                                  model_title, model_detail, model_state,
+                                  reading.get("scene"), scene_source, snap.get("perspective"), reading.get("running"), self.message,
+                                  model_title, model_detail, model_state, race_status and race_status.get("status"),
                                   self.proposal and self.proposal["id"], len(self.history))),
                 "mode_label": {"live": "真实日志", "rehearsal": "操作演练", "replay": "模拟器回放"}[self.mode],
                 "client_running": reading.get("running"), "client_build": reading.get("build"),
                 "client_scene": reading.get("scene"),
+                "client_scene_source": scene_source,
+                "perspective": deepcopy(snap.get("perspective")),
+                "memory_reader": memory_status,
+                "client_phase": "combat" if combat else snap.get("client_phase"),
                 "game_status": snap.get("game_status"),
                 "recent_operations": operations,
                 "state_title": ("本局已结束" if snap.get("game_status") == "complete" else titles.get(status, "等待局面")) if live else f"演练第 {self.index + 1} / 4 步" if self.mode == "rehearsal" else "模拟器动作预览",
                 "state_detail": model_detail if live else "固定局面用于检查指令与反馈，不会操作游戏。",
                 "model_status": {"title": model_title, "detail": model_detail},
                 "game_key": self.game_key, "lobby_races": self.lobby_races,
-                "needs_lobby_races": live and bool(self.game_key) and not self.lobby_races and snap.get("game_status") != "complete",
+                "lobby_races_source": self.lobby_races_source,
+                "race_reader": race_status,
+                "needs_lobby_races": bool(needs_races),
                 "read_status": status, "freshness": snap.get("freshness", {}).get("status", "unknown"),
                 "model_ready": bool((model_state or {}).get("policy")), "live_ready": bool(live and self.proposal),
                 "proposal": deepcopy(self.proposal), "message": self.message,

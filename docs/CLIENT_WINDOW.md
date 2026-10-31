@@ -52,10 +52,11 @@ again to reopen it. It does not start, stop, restart or change the game client.
 
 - **真实日志** detects the running client and latest session, then follows actual
   Power.log changes. Missing, partial, old or unparseable recordings are labeled.
-  It also displays the last completed recognized `currMode` from LoadingScreen.log
-  (for example, the main or pack-opening screen). This is a recorded navigation
-  mode, not proof of the current screen or a replacement for game-state packets.
-  The card list groups the inferred local player's hand/board and current visible
+  HearthMirror supplies the current scene and confirms the local player when a
+  matching game binding is available. If unavailable, the UI falls back to the
+  last recognized `currMode` from LoadingScreen.log and labels it as a recorded
+  scene. Card entities and their positions always come from Power.log.
+  The card list groups the local player's hand/board and current visible
   shop or combat opponent using controller, player/hero linkage and combat phase.
   The shared dummy controller is never treated as the shop during combat. Inactive
   entities are omitted; unresolved choices remain visible. Unknown ownership stays
@@ -80,14 +81,32 @@ one, and its frame must still match the current game. Expired instructions do no
 reappear on unchanged input. Source changes, stale logs and game completion clear
 the instruction. Model loading does not certify model strength.
 
-Lobby tribe controls show a checkmark and a selected count. Confirm exactly five
-tribes once per game; the selection survives companion restarts and cannot carry
-over to another game. An optional Vision reader uses only the visible Hearthstone
-hero-selection banner, with existing Screen Recording permission. Its button can
-request that permission; automatic polling never presents the permission prompt.
-Vision pixel tests cover the banner and five-name parser, including its Chinese
-confidence threshold. Capture permission and a new live selection screen remain
-part of field validation; no permission is granted automatically.
+Lobby tribes are read automatically through the HearthSim-signed HearthMirror
+framework in the locally installed HSTracker app. A separate native helper checks
+the client process, log session and game handle; the backend retries and requires
+two consistent reads before caching the five tribes for this log game. The UI
+does not capture screens, use OCR, or request Screen Recording permission.
+Manual entry remains in a collapsed disclosure as a fallback. The source and
+reader status are available in the API, and failures are recorded locally.
+See [CLIENT_RACES.md](CLIENT_RACES.md) for dependencies, permissions and validation,
+and [CLIENT_DATA_SOURCES.md](CLIENT_DATA_SOURCES.md) for the source of each field.
+
+## Recording a live session
+
+The recorder follows logs independently of the window, including while the
+companion restarts. It stores private raw logs, compressed model-input snapshots,
+the actual window output and a SHA256 manifest under a new local directory:
+
+```bash
+runs/model-env/bin/python -m tools.client_record \
+  --logs "/Applications/Hearthstone/Logs" \
+  --out "runs/client-observation/my-session"
+```
+
+Use the log directory shown in the companion if the game is installed elsewhere.
+The recorder stops after a completed game or on Ctrl-C. Replaced/truncated logs
+receive separate archive files, and window metadata is attached only to snapshots
+from the same game. Recordings and model weights stay outside version control.
 
 ## Feedback is not a game action
 
@@ -116,7 +135,7 @@ connection file automatically; the user does not configure API keys.
 | --- | --- |
 | `GET /api/state` | Current diagnostic / preview state; no private opponent projection. |
 | `POST /api/refresh` | Force another local read. |
-| `POST /api/lobby-races` | Set five tribes for the exact `game_key`; retain their source. |
+| `POST /api/lobby-races` | Manually set five tribes for the exact `game_key`; cannot claim a memory source. |
 | `POST /api/mode` | Switch between `live` and `rehearsal`; invalidate prior proposals. |
 | `POST /api/preview` | Validate and display a simulator-only view/action recording. |
 | `POST /api/feedback` | Record `proposal_id` plus `executed` or `not_executed`. |

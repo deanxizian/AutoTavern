@@ -32,7 +32,7 @@ features = ["pyo3/extension-module"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-pythonpath = ["python"]
+pythonpath = ["python", "."]
 
 [tool.ruff]
 line-length = 100

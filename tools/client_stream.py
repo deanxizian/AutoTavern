@@ -18,11 +18,11 @@ from hearthstone.enums import BlockType
 if __package__:
     from .client_common import DEFAULT_MAX_AGE, load_catalog
     from .client_state import (CREATE, DUPLICATE, MAX_GAME_BYTES, DiagnosticParser, VisibleExporter,
-        base_snapshot, file_signature, populate_snapshot, validate_snapshot)
+        base_snapshot, file_signature, populate_snapshot, validate_snapshot, client_phase_after)
 else:
     from client_common import DEFAULT_MAX_AGE, load_catalog
     from client_state import (CREATE, DUPLICATE, MAX_GAME_BYTES, DiagnosticParser, VisibleExporter,
-        base_snapshot, file_signature, populate_snapshot, validate_snapshot)
+        base_snapshot, file_signature, populate_snapshot, validate_snapshot, client_phase_after)
 
 
 MUTABLE = (packets.CreateGame, packets.FullEntity, packets.ShowEntity, packets.ChangeEntity,
@@ -101,6 +101,7 @@ class IncrementalReader:
         self.pending = self.prefix = self.anchor = b""
         self.identity = self.signature = self.cached = self.error = None
         self.parser = self.cursor = None
+        self.client_phase = None
         self.digest = hashlib.sha256()
         self.reset_reason = reason
 
@@ -116,6 +117,7 @@ class IncrementalReader:
             self.line_number += 1
             if b"CREATE_GAME" in raw and CREATE.search(raw):
                 self.parser = DiagnosticParser()
+                self.client_phase = None
                 self.cursor = None
                 self.error = None
                 self.game_start, self.game_bytes = self.line_number, 0
@@ -123,6 +125,7 @@ class IncrementalReader:
             if not self.game_start:
                 continue
             self.digest.update(raw)
+            self.client_phase = client_phase_after(raw, self.client_phase)
             self.game_bytes += len(raw)
             if self.game_bytes > MAX_GAME_BYTES:
                 self.error = {"type": "ValueError", "line": self.line_number}
@@ -191,6 +194,8 @@ class IncrementalReader:
                     after = os.fstat(stream.fileno())
                 current = path.stat()
                 changed = file_signature(before) != file_signature(after) or file_signature(before) != file_signature(current)
+                appended = (identity == (after.st_dev, after.st_ino) == (current.st_dev, current.st_ino)
+                    and before.st_size <= after.st_size <= current.st_size and before.st_size < current.st_size)
                 self.identity, self.signature = identity, file_signature(before)
                 tick = time.perf_counter()
                 self._feed(data)
@@ -215,8 +220,11 @@ class IncrementalReader:
                     perspective = "explicit_player_id" if self.player_id is not None else "hslog_inference_unvalidated_for_this_game"
                     populate_snapshot(result, self.cursor.exported, self.parser, self.cards,
                                       player, perspective, self.cursor.open_blocks)
-                if changed:
-                    # Never reuse an uncertain prefix after concurrent writes or replacement.
+                    result["client_phase"] = self.client_phase
+                if changed and not appended:
+                    # Replacement/rewrite invalidates the prefix. Concurrent append
+                    # leaves this bounded prefix intact: withhold this snapshot, then
+                    # read only its new tail on the next poll instead of the whole game.
                     self._reset("changed_during_read")
         except FileNotFoundError:
             self._reset("missing")

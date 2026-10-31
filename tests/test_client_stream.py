@@ -36,7 +36,7 @@ def game(entity=40):
 
 COMPARE = ("status", "entities", "players", "perspective", "last_options", "last_choices",
            "options_after_last_state_change", "choices_after_last_state_change", "open_blocks",
-           "recent_actions", "action_counts", "game_status", "parser_diagnostics")
+           "recent_actions", "action_counts", "game_status", "parser_diagnostics", "client_phase", "model_snapshot_id")
 
 
 def assert_batch_matches(reader, path):
@@ -110,6 +110,147 @@ def test_submission_needs_server_transition_before_execution_confirmation(tmp_pa
     with path.open("a") as stream:
         stream.write(line("option 1 type=POWER mainEntity=40 error=NONE errorParam=", "DebugPrintOptions"))
     assert reader.read(path)["public_history"]["stats"]["2"]["cards_played"] == 1
+
+
+@pytest.mark.parametrize("boundary", [None, "STEP value=MAIN_END", "BACON_IN_COMBAT_PHASE value=1"])
+def test_retried_spell_does_not_confirm_the_previous_rejected_input(tmp_path, boundary):
+    # Live 2026-10-31: a Blood Gem submitted at the rope stayed in hand. Its
+    # successful cast next turn used a different target and must count only once.
+    text = game().replace("CardID=AT_121", "CardID=BG20_GEM").replace("value=MINION", "value=SPELL")
+    text += line("id=8", "DebugPrintOptions")
+    text += line("option 0 type=POWER mainEntity=40 error=NONE errorParam=", "DebugPrintOptions")
+    text += line("selectedOption=0 selectedSubOption=-1 selectedTarget=42 selectedPosition=0", "SendOption")
+    if boundary:
+        text += line(f"TAG_CHANGE Entity=1 tag={boundary}")
+    text += line("id=9", "DebugPrintOptions")
+    text += line("option 0 type=POWER mainEntity=40 error=NONE errorParam=", "DebugPrintOptions")
+    text += line("selectedOption=0 selectedSubOption=-1 selectedTarget=43 selectedPosition=0", "SendOption")
+    text += line("TAG_CHANGE Entity=40 tag=ZONE value=GRAVEYARD")
+    text += line("id=10", "DebugPrintOptions")
+    text += line("option 0 type=END_TURN mainEntity=0 error=NONE errorParam=", "DebugPrintOptions")
+    path = tmp_path / "Power.log"
+    path.touch()
+    reader = IncrementalReader()
+    for chunk in text.splitlines(keepends=True):
+        with path.open("a") as stream: stream.write(chunk)
+        state = assert_batch_matches(reader, path)
+    assert not state["recent_actions"][0].get("execution_verified")
+    assert state["recent_actions"][1]["execution_verified"]
+    assert state["public_history"]["stats"]["2"]["cards_played"] == 1
+    assert [e["sequence"] for e in state["public_history"]["confirmed_actions"]] == [2]
+
+
+def test_rapid_inputs_keep_evidence_received_before_the_next_input(tmp_path):
+    text = game() + "".join(line(t) for t in [
+        "FULL_ENTITY - Creating ID=41 CardID=AT_121", "tag=CARDTYPE value=MINION",
+        "tag=CONTROLLER value=2", "tag=ZONE value=HAND", "tag=ZONE_POSITION value=2"])
+    text += line("id=8", "DebugPrintOptions")
+    for i, entity in enumerate((40, 41)):
+        text += line(f"option {i} type=POWER mainEntity={entity} error=NONE errorParam=", "DebugPrintOptions")
+    for i, entity in enumerate((40, 41)):
+        text += line(f"selectedOption={i} selectedSubOption=-1 selectedTarget=0 selectedPosition={i+1}", "SendOption")
+        text += line(f"TAG_CHANGE Entity={entity} tag=ZONE value=PLAY")
+    text += line("id=9", "DebugPrintOptions")
+    text += line("option 0 type=END_TURN mainEntity=0 error=NONE errorParam=", "DebugPrintOptions")
+    path = tmp_path / "Power.log"
+    path.write_text(text)
+    state = assert_batch_matches(IncrementalReader(), path)
+    assert all(e["execution_verified"] for e in state["recent_actions"])
+    assert state["public_history"]["stats"]["2"]["cards_played"] == 2
+
+
+def test_expired_move_cannot_be_confirmed_by_later_board_changes(tmp_path):
+    text = game().replace("value=HAND", "value=PLAY")
+    text += line("id=8", "DebugPrintOptions")
+    text += line("option 0 type=POWER mainEntity=40 error=NONE errorParam=", "DebugPrintOptions")
+    text += line("selectedOption=0 selectedSubOption=-1 selectedTarget=0 selectedPosition=2", "SendOption")
+    text += line("TAG_CHANGE Entity=1 tag=STEP value=MAIN_END")
+    text += line("TAG_CHANGE Entity=40 tag=ZONE_POSITION value=2")
+    text += line("id=9", "DebugPrintOptions")
+    text += line("option 0 type=END_TURN mainEntity=0 error=NONE errorParam=", "DebugPrintOptions")
+    path = tmp_path / "Power.log"
+    path.write_text(text)
+    state = assert_batch_matches(IncrementalReader(), path)
+    assert not state["recent_actions"][0].get("execution_verified")
+    assert "confirmed_move" not in state["public_history"]
+
+
+def test_animation_phase_waits_for_execution_stream_and_complete_lines(tmp_path):
+    def animation(text):
+        return line(text).replace("GameState.", "PowerTaskList.")
+    text = game() + line("TAG_CHANGE Entity=1 tag=BACON_IN_COMBAT_PHASE value=1")
+    text += animation("TAG_CHANGE Entity=GameEntity tag=BACON_IN_COMBAT_PHASE value=1")
+    # The server has already sent next turn; client combat animation is ongoing.
+    text += line("TAG_CHANGE Entity=1 tag=BACON_IN_COMBAT_PHASE value=0")
+    text += animation("TAG_CHANGE Entity=40 tag=ATK value=999")
+    path = tmp_path / "Power.log"
+    path.write_text(text)
+    reader = IncrementalReader()
+    state = assert_batch_matches(reader, path)
+    assert state["client_phase"] == "combat"
+    assert next(e for e in state["entities"] if e["entity_id"] == 1)["tags"]["BACON_IN_COMBAT_PHASE"] == 0
+    assert next(e for e in state["entities"] if e["entity_id"] == 40)["tags"]["ATK"] == 4
+    with path.open("a") as stream:
+        stream.write(animation("TAG_CHANGE Entity=GameEntity tag=BACON_IN_COMBAT_PHASE value=0").rstrip("\n"))
+    assert assert_batch_matches(reader, path)["client_phase"] == "combat"
+    with path.open("a") as stream: stream.write("\n")
+    assert assert_batch_matches(reader, path)["client_phase"] == "recruit"
+    with path.open("a") as stream:
+        stream.write(animation("TAG_CHANGE Entity=GameEntity tag=STATE value=COMPLETE"))
+    assert assert_batch_matches(reader, path)["client_phase"] == "game_over"
+    with path.open("a") as stream: stream.write(game(55))
+    assert assert_batch_matches(reader, path)["client_phase"] is None
+
+
+def test_animation_only_writes_do_not_invalidate_unchanged_model_input(tmp_path):
+    from tools.client_actions import frame_identity
+    path = tmp_path / "Power.log"
+    path.write_text(game())
+    reader = IncrementalReader()
+    before = assert_batch_matches(reader, path)
+    with path.open("a") as stream:
+        stream.write(line("TAG_CHANGE Entity=40 tag=ATK value=999").replace("GameState.", "PowerTaskList."))
+    animation = assert_batch_matches(reader, path)
+    assert animation["snapshot_id"] != before["snapshot_id"]  # The raw recording remains distinct.
+    assert frame_identity(animation) == frame_identity(before)
+    with path.open("a") as stream:
+        stream.write(line("TAG_CHANGE Entity=40 tag=ATK value=7"))
+    changed = assert_batch_matches(reader, path)
+    assert frame_identity(changed) != frame_identity(before)
+    # An open choice may already be incomplete_snapshot. A new partial line
+    # must still retract its instruction even when no complete entity changed.
+    changed["status"] = "incomplete_snapshot"
+    key = frame_identity(changed)
+    for flag in ("partial_trailing_line", "changed_while_reading"):
+        partial = deepcopy(changed)
+        partial["source"][flag] = True
+        assert frame_identity(partial) != key
+
+
+def test_concurrent_append_withholds_frame_but_keeps_incremental_cursor(tmp_path, monkeypatch):
+    path = tmp_path / "Power.log"
+    path.write_text(game())
+    reader = IncrementalReader()
+    reader.read(path)
+    addition = line("TAG_CHANGE Entity=40 tag=ATK value=7")
+    tail = line("TAG_CHANGE Entity=40 tag=HEALTH value=9")
+    with path.open("a") as stream: stream.write(addition)
+    original, calls = os.fstat, [0]
+    def append_during_read(fd):
+        calls[0] += 1
+        if calls[0] == 2:
+            with path.open("a") as stream: stream.write(tail)
+        return original(fd)
+    monkeypatch.setattr(os, "fstat", append_during_read)
+    unstable = reader.read(path)
+    assert unstable["source"]["changed_while_reading"]
+    assert unstable["status"] == "incomplete_snapshot"
+    assert unstable["performance"]["read_bytes"] == len(addition.encode())
+    monkeypatch.setattr(os, "fstat", original)
+    stable = assert_batch_matches(reader, path)
+    assert not stable["source"]["changed_while_reading"]
+    assert stable["performance"]["read_bytes"] == len(tail.encode())
+    assert next(e for e in stable["entities"] if e["entity_id"] == 40)["tags"]["HEALTH"] == 9
 
 
 @pytest.mark.parametrize("change", ["new_game", "replace", "truncate", "rewrite", "missing", "new_session"])

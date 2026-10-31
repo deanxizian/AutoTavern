@@ -68,7 +68,7 @@ def replay(path, player_id, races, output):
         actual = reader.read(target)
         inspect(actual)
         expected = snapshot(target, player_id=player_id)
-        for key in ("entities", "players", "last_options", "last_choices", "action_counts", "public_history", "game_status"):
+        for key in ("entities", "players", "last_options", "last_choices", "action_counts", "public_history", "game_status", "client_phase", "model_snapshot_id"):
             if actual[key] != expected[key]: raise AssertionError("Stream/batch mismatch: " + key)
     report = {"source": str(path), "scope": "timestamped_offline_stream_replay", "source_bytes": len(raw),
         "total_stream_bytes_read": read_bytes, "chunks": len(timings), "final_batch_equivalence": True,

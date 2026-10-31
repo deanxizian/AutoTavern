@@ -33,6 +33,13 @@ def content_id(value):
     return hashlib.sha256(data).hexdigest()
 
 
+def log_game_key(source):
+    """Identify one game within a particular client log, including file rotation."""
+    if not source.get("game_start_line"):
+        return None
+    return content_id([source.get(k) for k in ("path", "device", "inode", "game_start_line")])
+
+
 def freshness(observed_at, *, now=None, max_age=DEFAULT_MAX_AGE):
     """A recording age check, never proof that the game still shows this state."""
     if not math.isfinite(max_age) or max_age <= 0:
