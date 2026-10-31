@@ -25,6 +25,14 @@ export CLANG_MODULE_CACHE_PATH="$BUILD_DIR/ModuleCache"
 swift build --package-path "$ROOT_DIR/client_window" --scratch-path "$BUILD_DIR"
 BIN_DIR="$(swift build --package-path "$ROOT_DIR/client_window" --scratch-path "$BUILD_DIR" --show-bin-path)"
 cp "$BIN_DIR/$APP_NAME" "$APP_BUNDLE/Contents/MacOS/$APP_NAME"
+# Link only Apple frameworks; load the installed HearthSim-signed reader at
+# runtime. Never copy a vendor binary into the application or repository.
+xcrun clang++ -std=c++17 -fobjc-arc -O2 -framework AppKit -framework Security \
+  "$ROOT_DIR/tools/client_mirror/main.mm" -o "$APP_BUNDLE/Contents/MacOS/AutoTavernMirrorReader"
+/usr/bin/codesign --force --sign - --entitlements "$ROOT_DIR/tools/client_mirror/reader.entitlements" \
+  "$APP_BUNDLE/Contents/MacOS/AutoTavernMirrorReader"
+# Remove the obsolete generated helper when upgrading an existing app bundle.
+rm -f "$APP_BUNDLE/Contents/MacOS/AutoTavernRaceReader"
 "$CLIENT_PYTHON" - "$APP_BUNDLE/Contents/Info.plist" <<'PY'
 import plistlib, sys
 from pathlib import Path

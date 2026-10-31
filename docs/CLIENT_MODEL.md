@@ -153,8 +153,9 @@ The adapter also handles explicit multiple-power links, secondary-race tags,
 special Gem variants, paired/grouped hand cards, held cards, persistent effects,
 and health purchases. Submitted operations are confirmed only after server evidence;
 the operation list exposes the distinction. This does not certify universal future
-patch coverage. Vision is tested with real OCR on generated banner pixels; live
-capture permission and a new hero-selection screen still need field validation.
+patch coverage. Lobby races now come from the installed macOS HearthMirror reader,
+with per-game binding and retry tests; OCR has been removed. See
+[CLIENT_RACES.md](CLIENT_RACES.md) for the separate live-reading validation boundary.
 
 The model and its frozen native engine were not retrained or replaced by these
 client fixes. Numerical encoder parity is checked against native observations

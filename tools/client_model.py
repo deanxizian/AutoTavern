@@ -55,7 +55,10 @@ class PolicyRuntime:
         torch.set_num_threads(threads)
         started = time.perf_counter()
         with self.path.open("rb") as handle:
-            self.sha256 = hashlib.file_digest(handle, "sha256").hexdigest()
+            digest = hashlib.sha256()
+            for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+                digest.update(chunk)
+            self.sha256 = digest.hexdigest()
             if expected_sha256 is not None and self.sha256 != expected_sha256:
                 raise ModelUnavailable("Checkpoint checksum changed")
             if tg.build_is_current() is not True:

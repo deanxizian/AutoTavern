@@ -9,9 +9,6 @@ import UniformTypeIdentifiers
     var errorMessage: String?
     private var api: WindowAPI?
     private var generation = 0
-    private var raceScanRunning = false
-    private var raceScanAt = Date.distantPast
-    var raceScanMessage: String?
 
     init() {
         let args = CommandLine.arguments
@@ -44,37 +41,10 @@ import UniformTypeIdentifiers
                 errorMessage = nil
             }
             connected = true
-            if latest.needsLobbyRaces == true && CGPreflightScreenCaptureAccess()
-                && !raceScanRunning && Date().timeIntervalSince(raceScanAt) > 2 {
-                Task { await scanLobbyRaces() }
-            }
         } catch {
             guard requestedGeneration == generation, !busy else { return }
             connected = false
             errorMessage = "本机连接中断，指引已暂停。请重新读取或重新打开助手。"
-        }
-    }
-
-    func scanLobbyRaces(requestAccess: Bool = false) async {
-        guard !raceScanRunning, let game = state?.gameKey else { return }
-        if !CGPreflightScreenCaptureAccess() {
-            if requestAccess { _ = CGRequestScreenCaptureAccess() }
-            raceScanMessage = "允许读取屏幕后，开局种族将自动识别。"
-            return
-        }
-        raceScanRunning = true
-        raceScanAt = Date()
-        defer { raceScanRunning = false }
-        do {
-            guard let races = try await LobbyRaceReader.read() else {
-                raceScanMessage = "等待游戏显示选英雄时的种族名单。"
-                return
-            }
-            guard state?.gameKey == game && state?.needsLobbyRaces == true else { return }
-            await send("lobby-races", values: ["game_key": game, "races": races.joined(separator: ","), "source": "visible_hero_banner"])
-            raceScanMessage = "已从游戏画面读取本局种族。"
-        } catch {
-            raceScanMessage = "暂未读到游戏窗口，可以在名单出现时重试。"
         }
     }
 

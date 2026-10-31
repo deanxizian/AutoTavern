@@ -128,7 +128,13 @@ def main():
     if args.model_config.is_file():
         from tools.client_model_bridge import ModelBridge
         model_bridge = ModelBridge(json.loads(args.model_config.read_text()))
-    session = WindowSession(LogFeed(logs, app), receipt_file=run / "feedback.jsonl", model_bridge=model_bridge)
+    from tools.client_races import RaceReader
+    from tools.client_memory import PublicStateReader
+    helper = args.bundle / "Contents/MacOS/AutoTavernMirrorReader"
+    race_reader = RaceReader(helper, diagnostic_file=run / "races.jsonl")
+    memory_reader = PublicStateReader(helper, diagnostic_file=run / "memory.jsonl")
+    session = WindowSession(LogFeed(logs, app), receipt_file=run / "feedback.jsonl",
+                            model_bridge=model_bridge, race_reader=race_reader, memory_reader=memory_reader)
     token = secrets.token_urlsafe(32)
     server = make_server(session, token)
     connection = run / "connection.json"
@@ -160,6 +166,8 @@ def main():
         native_session.cleanup()
         if model_bridge:
             model_bridge.close()
+        race_reader.close()
+        memory_reader.close()
 
 
 if __name__ == "__main__":

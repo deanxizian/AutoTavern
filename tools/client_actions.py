@@ -39,9 +39,12 @@ class ActionMap:
 def frame_identity(snapshot):
     # Include packet freshness and completion, which can change without new tags.
     source = snapshot.get("source", {})
-    return content_id({"snapshot": snapshot.get("snapshot_id"),
+    return content_id({"snapshot": snapshot.get("model_snapshot_id", snapshot.get("snapshot_id")),
         "session": [source.get(k) for k in ("path", "device", "inode", "game_start_line")],
+        "partial_source": [bool(source.get(k)) for k in ("partial_trailing_line", "changed_while_reading")],
         "status": snapshot.get("status"), "game_status": snapshot.get("game_status"),
+        "client_phase": snapshot.get("client_phase"),
+        "player_id": snapshot.get("perspective", {}).get("player_id"),
         "lobby_races": snapshot.get("lobby_races"),
         "options": snapshot.get("last_options"), "choices": snapshot.get("last_choices"),
         "options_current": snapshot.get("options_after_last_state_change"),

@@ -16,46 +16,48 @@ struct GuidanceView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 18) {
-            if let state = store.state, !state.isLive || proposal != nil {
+            if let state = store.state, !state.isLive {
                 Text(state.stateTitle).font(.system(size: 13, weight: .medium)).foregroundStyle(.secondary)
             }
             VStack(alignment: .leading, spacing: compact ? 14 : 18) {
-                if let proposal {
-                    if !compact {
-                        Label("当前这一步", systemImage: "arrow.turn.down.right")
-                            .font(.system(size: 12, weight: .medium)).foregroundStyle(.tint)
-                    }
-                    Text(proposal.title).font(.system(size: compact ? 22 : 26, weight: .semibold))
-                    Text(proposal.instruction)
-                        .font(.system(size: compact ? 16 : 18, weight: .medium)).lineSpacing(compact ? 4 : 6)
-                        .fixedSize(horizontal: false, vertical: true)
-                        .accessibilityIdentifier("current-instruction")
-                    if let cost = proposal.cost, !compact {
-                        Label(cost.label, systemImage: "circle.circle")
-                            .font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary)
-                    }
-                } else {
-                    Image(systemName: store.state?.message == nil ? "hourglass" : "checkmark.circle")
-                        .font(.system(size: 29, weight: .light)).foregroundStyle(.secondary)
-                    Text(emptyTitle).font(.system(size: 25, weight: .semibold))
-                    Text(emptyDetail).font(.system(size: 14)).foregroundStyle(.secondary)
-                        .lineSpacing(5).fixedSize(horizontal: false, vertical: true)
+                // Keep the same text slots while a new frame is being evaluated.
+                // Old instructions still disappear immediately; the card does not move.
+                if !compact {
+                    Label(proposal == nil ? "局面状态" : "当前这一步",
+                          systemImage: proposal == nil ? "hourglass" : "arrow.turn.down.right")
+                        .font(.system(size: 12, weight: .medium)).foregroundStyle(.tint)
+                }
+                Text(proposal?.title ?? emptyTitle)
+                    .font(.system(size: compact ? 22 : 26, weight: .semibold))
+                    .frame(minHeight: compact ? 28 : 32, alignment: .topLeading)
+                Text(proposal?.instruction ?? emptyDetail)
+                    .font(.system(size: compact ? 16 : 18, weight: .medium))
+                    .foregroundStyle(proposal == nil ? .secondary : .primary)
+                    .lineSpacing(compact ? 4 : 6)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .frame(minHeight: compact ? 84 : 108, alignment: .topLeading)
+                    .accessibilityIdentifier("current-instruction")
+                if !compact {
+                    Label(proposal?.cost?.label ?? " ", systemImage: "circle.circle")
+                        .font(.system(size: 13, weight: .semibold)).foregroundStyle(.secondary)
+                        .opacity(proposal?.cost == nil ? 0 : 1)
+                        .accessibilityHidden(proposal?.cost == nil)
                 }
                 if store.state?.isLive != true {
-                Divider().padding(.top, 4)
-                HStack(spacing: 10) {
-                    Button("已执行") {
-                        if let proposal { Task { await store.send("feedback", values: ["proposal_id": proposal.id, "outcome": "executed"]) } }
+                    Divider().padding(.top, 4)
+                    HStack(spacing: 10) {
+                        Button("已执行") {
+                            if let proposal { Task { await store.send("feedback", values: ["proposal_id": proposal.id, "outcome": "executed"]) } }
+                        }
+                        .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
+                        .accessibilityIdentifier("feedback-executed")
+                        Button("未执行") {
+                            if let proposal { Task { await store.send("feedback", values: ["proposal_id": proposal.id, "outcome": "not_executed"]) } }
+                        }
+                        .buttonStyle(.bordered).frame(maxWidth: .infinity)
+                        .accessibilityIdentifier("feedback-not-executed")
                     }
-                    .buttonStyle(.borderedProminent).frame(maxWidth: .infinity)
-                    .accessibilityIdentifier("feedback-executed")
-                    Button("未执行") {
-                        if let proposal { Task { await store.send("feedback", values: ["proposal_id": proposal.id, "outcome": "not_executed"]) } }
-                    }
-                    .buttonStyle(.bordered).frame(maxWidth: .infinity)
-                    .accessibilityIdentifier("feedback-not-executed")
-                }
-                .controlSize(.large).disabled(proposal == nil || store.busy)
+                    .controlSize(.large).disabled(proposal == nil || store.busy)
                 }
             }
             .padding(compact ? 16 : 22).frame(maxWidth: .infinity, alignment: .leading)
@@ -65,25 +67,24 @@ struct GuidanceView: View {
             if let state = store.state {
                 if state.needsLobbyRaces == true {
                     VStack(alignment: .leading, spacing: 10) {
-                        Button("从游戏画面读取种族") { Task { await store.scanLobbyRaces(requestAccess: true) } }
-                        if let message = store.raceScanMessage { Text(message).font(.caption).foregroundStyle(.secondary) }
-                        Text("确认本局种族 · 已选 \(selectedRaces.count) / 5").font(.headline)
-                        Text("开局确认一次，之后自动跟随局面更新。").font(.caption).foregroundStyle(.secondary)
-                        LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))], spacing: 8) {
-                            ForEach(races, id: \.0) { race in
-                                Button {
-                                    if selectedRaces.contains(race.0) { selectedRaces.remove(race.0) }
-                                    else if selectedRaces.count < 5 { selectedRaces.insert(race.0) }
-                                } label: {
-                                    Label(race.1, systemImage: selectedRaces.contains(race.0) ? "checkmark.circle.fill" : "circle")
-                                        .frame(maxWidth: .infinity)
-                                }.tint(selectedRaces.contains(race.0) ? .accentColor : .secondary)
-                                    .buttonStyle(.bordered)
+                        DisclosureGroup("手动填写种族") {
+                            Text("已选 \(selectedRaces.count) / 5").font(.headline)
+                            LazyVGrid(columns: [GridItem(.adaptive(minimum: 70))], spacing: 8) {
+                                ForEach(races, id: \.0) { race in
+                                    Button {
+                                        if selectedRaces.contains(race.0) { selectedRaces.remove(race.0) }
+                                        else if selectedRaces.count < 5 { selectedRaces.insert(race.0) }
+                                    } label: {
+                                        Label(race.1, systemImage: selectedRaces.contains(race.0) ? "checkmark.circle.fill" : "circle")
+                                            .frame(maxWidth: .infinity)
+                                    }.tint(selectedRaces.contains(race.0) ? .accentColor : .secondary)
+                                        .buttonStyle(.bordered)
+                                }
                             }
+                            Button("确认种族，开始建议") {
+                                Task { await store.send("lobby-races", values: ["game_key": state.gameKey ?? "", "races": selectedRaces.sorted().joined(separator: ",")]) }
+                            }.buttonStyle(.borderedProminent).disabled(selectedRaces.count != 5 || store.busy)
                         }
-                        Button("确认种族，开始建议") {
-                            Task { await store.send("lobby-races", values: ["game_key": state.gameKey ?? "", "races": selectedRaces.sorted().joined(separator: ",")]) }
-                        }.buttonStyle(.borderedProminent).disabled(selectedRaces.count != 5 || store.busy)
                     }
                 }
                 if state.canNextFrame {
@@ -99,6 +100,8 @@ struct GuidanceView: View {
                         Text(state.modelStatus?.title ?? "尚未选择模型").font(.system(size: 13, weight: .semibold))
                         Text(state.modelStatus?.detail ?? state.stateDetail)
                             .font(.system(size: 12)).foregroundStyle(.secondary).lineSpacing(4)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .frame(minHeight: 54, alignment: .topLeading)
                     }
                     .padding(.horizontal, 2)
                 } else {
@@ -112,9 +115,10 @@ struct GuidanceView: View {
     private var emptyTitle: String {
         if !store.connected { return store.state == nil ? "正在连接" : "连接已暂停" }
         if store.state?.isLive == true && store.state?.gameStatus == "complete" { return "本局已结束" }
+        if store.state?.isLive == true && store.state?.clientPhase == "combat" { return "正在战斗" }
         if store.state?.message != nil { return "等待新的局面" }
         if store.state?.freshness == "stale" { return "上次局面已过期" }
-        if store.state?.needsLobbyRaces == true { return "确认本局种族" }
+        if store.state?.needsLobbyRaces == true { return "正在读取本局种族" }
         if store.state?.readStatus == "snapshot" { return store.state?.modelStatus?.title ?? "正在更新建议" }
         if store.state?.readStatus == "incomplete_snapshot" { return "等待局面稳定" }
         if store.state?.readStatus == "read_or_parse_error" { return "日志需要核对" }
@@ -124,9 +128,11 @@ struct GuidanceView: View {
     private var emptyDetail: String {
         if !store.connected { return "连接恢复前，操作指引会保持暂停。" }
         if store.state?.isLive == true && store.state?.gameStatus == "complete" { return "本局记录已读取。新对局开始后，助手会自动切换到新的局面。" }
+        if store.state?.isLive == true && store.state?.clientPhase == "combat" { return "回到酒馆后自动更新操作建议。" }
         if let message = store.state?.message { return message }
         if store.state?.clientRunning == false { return "打开炉石后，助手会自动检测新的日志会话。" }
         if store.state?.freshness == "stale" { return "当前记录已过期。等待客户端写入新的局面，旧指引不会继续使用。" }
+        if store.state?.needsLobbyRaces == true { return store.state?.raceReader?.detail ?? "正在自动读取本局种族。" }
         if store.state?.readStatus == "snapshot" { return store.state?.modelStatus?.detail ?? "已读取日志中的可见实体，请在“局面核对”查看。" }
         if store.state?.readStatus == "incomplete_snapshot" { return "日志仍在更新，等待完整局面后重新核对。" }
         if store.state?.readStatus == "read_or_parse_error" { return "当前日志无法完整解析，请保留当前会话以便检查。" }

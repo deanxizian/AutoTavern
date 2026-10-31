@@ -14,6 +14,7 @@ struct WindowState: Decodable, Sendable {
     let clientRunning: Bool?
     let clientBuild: String?
     let clientScene: String?
+    let clientPhase: String?
     let stateTitle: String
     let stateDetail: String
     let readStatus: String
@@ -22,6 +23,8 @@ struct WindowState: Decodable, Sendable {
     let modelStatus: ModelStatus?
     let gameKey: String?
     let lobbyRaces: [String]?
+    let lobbyRacesSource: String?
+    let raceReader: RaceReaderStatus?
     let needsLobbyRaces: Bool?
     let liveReady: Bool
     let proposal: Proposal?
@@ -35,6 +38,11 @@ struct WindowState: Decodable, Sendable {
     let polledAt: Double
 
     var isLive: Bool { mode == "live" }
+}
+
+struct RaceReaderStatus: Decodable, Sendable {
+    let status: String
+    let detail: String
 }
 
 struct ModelStatus: Decodable, Sendable {

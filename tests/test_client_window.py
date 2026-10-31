@@ -186,6 +186,25 @@ class LiveBridge:
             "inference_ms": 8., "binding": {"cost": 4}}} if enabled else {"status": "waiting_for_game"}
 
 
+def test_combat_animation_hides_next_turn_advice_until_return_to_tavern():
+    feed = LiveFeed()
+    feed.snap["client_phase"] = "recruit"
+    feed.snap["entities"] = [{"entity_id": 1, "type": "GAME", "tags": {"BACON_IN_COMBAT_PHASE": 0}}]
+    session = WindowSession(feed, model_bridge=LiveBridge())
+    before = session.state()
+    assert before["live_ready"]
+    feed.snap["client_phase"] = "combat"  # Same server state, animation still playing.
+    during = session.state()
+    assert not during["live_ready"] and during["proposal"] is None
+    assert during["model_status"]["title"] == "正在战斗"
+    assert during["revision"] != before["revision"]
+    feed.snap["client_phase"] = "recruit"
+    assert session.state()["live_ready"]
+    # A server combat boundary also retracts advice before the animation starts.
+    feed.snap["entities"][0]["tags"]["BACON_IN_COMBAT_PHASE"] = 1
+    assert not session.state()["live_ready"]
+
+
 def test_live_proposal_expiry_never_reissues_same_frame_and_game_end_clears_it():
     clock, feed = [100.], LiveFeed()
     session = WindowSession(feed, clock=lambda: clock[0], ttl=10, model_bridge=LiveBridge())
@@ -206,12 +225,12 @@ def test_race_selection_changes_ui_revision_survives_restart_and_is_scoped_to_ga
     session = WindowSession(feed, receipt_file=receipts)
     initial = session.state()
     races = ["UNDEAD", "ELEMENTAL", "QUILBOAR", "MURLOC", "DRAGON"]
-    selected = session.set_lobby_races(initial["game_key"], races, "visible_hero_banner")
+    selected = session.set_lobby_races(initial["game_key"], races, "hearthmirror")
     assert initial["revision"] != selected["revision"]
     assert not selected["needs_lobby_races"] and selected["lobby_races"] == sorted(races)
     restarted = WindowSession(feed, receipt_file=tmp_path / "sessions" / "second" / "feedback.jsonl")
     assert restarted.state()["lobby_races"] == sorted(races)
-    assert restarted.lobby_races_source == "visible_hero_banner"
+    assert restarted.lobby_races_source == "user_confirmed_for_game"
     feed.snap["source"]["game_start_line"] = 20000
     assert restarted.state()["needs_lobby_races"]
     assert restarted.state()["lobby_races"] is None

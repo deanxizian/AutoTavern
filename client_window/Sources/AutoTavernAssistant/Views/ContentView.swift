@@ -48,14 +48,6 @@ struct ContentView: View {
                 }
                 .padding(20)
             }
-            Divider()
-            HStack {
-                Label("你控制游戏，助手只读局面", systemImage: "hand.raised")
-                Spacer()
-                if store.busy { ProgressView().controlSize(.mini) }
-            }
-            .font(.system(size: 11)).foregroundStyle(.secondary)
-            .padding(.horizontal, 20).padding(.vertical, 12)
         }
         .frame(minWidth: 360, minHeight: 500)
         .containerBackground(.regularMaterial, for: .window)
@@ -104,6 +96,7 @@ struct ContentView: View {
                 .font(.system(size: 11)).foregroundStyle(.secondary)
             }
             Spacer()
+            if store.busy { ProgressView().controlSize(.mini) }
         }
         .padding(.horizontal, 20).padding(.top, 18).padding(.bottom, 16)
     }
