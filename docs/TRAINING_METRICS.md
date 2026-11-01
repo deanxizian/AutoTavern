@@ -21,6 +21,14 @@ Weave 初始化遇到网络／TLS 错误时，错误写入 `wandb.json` 的 `wea
 
 ## 关键测评指标与 best 选择
 
+V7 移动成本准备版（2026-11-01，未启动）新增独立 `move_cost=0.0005`，不复用同时处罚
+Move／Freeze 的 `operation_cost`。保留循环成本 0.01；实际移动又命中循环时合计扣 0.0105。
+新增 `move_actions`（每局实际招募 Move 次数）、`move_penalty`（累计移动罚分）、
+`move_action_fraction`（先算每局 Move／策略转移数，再按局平均），进入 train／val／greedy。
+`total_reward = placement_reward + operation_penalty + cycle_penalty + move_penalty`。
+历史缺 `move_cost` 等同 0，不补造旧日志的移动指标；这些新增观察不改变随机平均名次严格降低的 best 规则。
+准备方案见 [V7 配置说明](../experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend/README.md)。
+
 当前 V3 的混合验证对手为 **2 个固定 V1 + 3 个固定 V2 + 2 个脚本**，
 学习者随机／贪心各 **64 局／验证点**，所有模型 BF16 前向；固定模型对手始终随机采样。
 后续实验须按自己的对手与局数解释指标，不能照搬这个阵容。
@@ -50,6 +58,17 @@ step=0 的继承模型也参加比较，因此续训没有进步时可保留起�
 未来改变选模目标（例如改为 Greedy 或加入循环约束）必须另写实验配置与规则，
 不能修改既有 run 的历史结论。64 局估计有波动，应连同对手、模式、局数和种子报告。
 实现见 [evaluate_suite 与 Recorder](../python/taverngym/learning/experiment.py)。
+
+V4–V6 显式启用三次完整循环与第 61 次回合动作请求判负后，新增
+`cycle_forfeit_rate`、`action_limit_forfeit_rate`，分别表示完成局中两种判负的比例。
+对应 `*_forfeit_turn`、`*_forfeit_placement` 对未触发局填零；其全局均值除以对应 rate，
+才得到触发局的条件平均回合／名次。`max_consecutive_cycles` 是每局连续闭环数的峰值。
+这些键进入 `train/*`、随机 `val/*` 和 `val/greedy_*`，仅作观察，不改变选 best 规则。
+`cap_end_rate` 继续只统计实际强制 End，超限请求被拦截判负不计入此指标。
+原始终局 info 记录 `termination_reason`，区分 `cycle_forfeit` 与 `action_limit_forfeit`。
+
+此处“循环”指可见状态闭环，`cycle_returns` 仍是每次返回已见状态的次数，两者不能混用。
+V3 起点须在 V4 新规则下重评后比较；原 V3 历史结果不回写。
 
 ## 横轴与分组
 

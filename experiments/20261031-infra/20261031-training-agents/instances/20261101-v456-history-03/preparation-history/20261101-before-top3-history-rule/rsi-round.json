@@ -1,0 +1,46 @@
+{
+  "created_at": "2026-11-01T00:26:48.162020+08:00",
+  "instance_id": "20261101-v456-history-03",
+  "goal": "Train fixed .01 cycle-return penalties with normal forced-End play on corrected historical pools",
+  "hypothesis": "Dense per-return penalties can discourage old loops while preserving natural match outcomes and inherited Adam",
+  "baseline": "original V3 PPO150 best Adam5600; development start evaluation required before official launch",
+  "changes": [
+    "fixed cycle_cost .01; no early forfeits",
+    "per-game repeat fraction and longest consecutive visible return metrics",
+    "native turn_action_caps60 forced End retained",
+    "future frozen V4+ follow actual new source protocol",
+    "conditional health gate uses no unrequested repeat/greedy threshold"
+  ],
+  "training_started": false,
+  "validation_status": "full Python240 passed including actual CUDA and W&B; final gate17 passed; native862 current; 128 complete development games verified",
+  "adoption_decision": "ready for parent monitor-ready release",
+  "remaining_primary_budget": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "reserved_conditional_budget": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "superseded_resources": {
+    "instance01": {
+      "status": "stopped_by_user",
+      "committed_ppo": 3,
+      "committed_samples": 393216,
+      "actual_samples_including_partial": 435339,
+      "new_adam": 48,
+      "charged_to_new_chain": false
+    },
+    "instance02": {
+      "status": "stopped_by_user",
+      "committed_ppo": 12,
+      "committed_samples": 1572864,
+      "actual_samples_including_partial": 1618196,
+      "new_adam": 192,
+      "charged_to_new_chain": false
+    }
+  },
+  "development_baseline": "development-initial-validation.json"
+}

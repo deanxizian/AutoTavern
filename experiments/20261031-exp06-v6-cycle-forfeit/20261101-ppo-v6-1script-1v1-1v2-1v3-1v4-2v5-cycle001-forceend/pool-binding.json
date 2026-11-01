@@ -1,0 +1,15 @@
+{
+  "status": "completed",
+  "created_at": "2026-11-01T06:32:30.401517+08:00",
+  "ranking": "ranking-results.json",
+  "pool_selection": "top3",
+  "selected_versions": [
+    "v5",
+    "v4",
+    "v3"
+  ],
+  "removed_version": null,
+  "protected_version": null,
+  "previous_config_sha256": "4ac621a6078bdc393f1ff35f0eb45ff1e07334eaaca60ff63ba8548ff6597cd4",
+  "config_sha256": "21589d8f0200cea164993b92c94954e8486271a9939a2e79d793b9e7dae74bc9"
+}

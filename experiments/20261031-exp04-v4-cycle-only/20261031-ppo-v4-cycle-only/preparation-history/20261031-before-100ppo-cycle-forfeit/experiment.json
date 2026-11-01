@@ -1,0 +1,39 @@
+{
+  "id": "20261031-ppo-v4-cycle-only",
+  "model_version": "v4",
+  "status": "prepared",
+  "prepared_at": "2026-10-31T22:45:03.865357+08:00",
+  "training_started": false,
+  "parameters_status": "draft; V3 training budget, LR and opponents provisionally inherited",
+  "config": "config.json",
+  "model_directory": "runs/20261031-ppo-v4-cycle-only",
+  "weights_created": false,
+  "weights_uploaded": false,
+  "wandb_run_created": false,
+  "based_on": {
+    "version": "v3",
+    "config": "experiments/20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/config.json",
+    "config_sha256": "028151d7d69817502e54f08b747a68c848346e6cf106d26fe1b4b6dcd5583cff"
+  },
+  "source_model": {
+    "version": "v3",
+    "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "ppo_iteration": 150,
+    "adam_total_steps": 5600,
+    "status": "locked after completed V3 retention"
+  },
+  "confirmed_changes": {
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.0002,
+      "cycle_detection": "all_actions"
+    },
+    "evaluation_include_scripted": false
+  },
+  "not_enabled": [
+    "early termination on repeated loops",
+    "new operation count penalty"
+  ],
+  "historical_experiments_modified": false
+}

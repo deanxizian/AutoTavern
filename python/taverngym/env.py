@@ -39,6 +39,14 @@ class BattlegroundsEnv:
         self._env.reset(self._seed)
         return self._obs(), {"turn": self._env.turn}
 
+    def forfeit(self):
+        """Explicitly surrender and receive the native current elimination rank."""
+        reward = self._env.forfeit()
+        return self._obs(), reward, True, False, {
+            "turn": self._env.turn, "placement": self._env.placement, "illegal": None,
+            "termination_reason": "forfeit",
+        }
+
     def step(self, action):
         reward, done, illegal = self._env.step(int(action))
         info = {"turn": self._env.turn, "placement": self._env.placement, "illegal": illegal}

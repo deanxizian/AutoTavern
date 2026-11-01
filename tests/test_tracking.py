@@ -21,6 +21,32 @@ def test_flat_metric_names_share_baseline_and_validation():
     assert metric_name("train/rollout/top4_rate") == "train/rollout_top4_rate"
 
 
+def test_move_metrics_follow_train_val_greedy_journal_without_training(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from taverngym.learning.tracking import WandbTracker
+
+    logs = []
+    run = SimpleNamespace(entity="eric_eric_", project="AutoTavern", id="fake", url="offline",
+        define_metric=lambda *a, **k: None, log=logs.append, finish=lambda **k: None)
+    monkeypatch.setitem(sys.modules, "wandb", SimpleNamespace(init=lambda **k: run,
+                                                             Settings=lambda **k: k))
+    tracker = WandbTracker(tmp_path, {"tracking": {"mode": "offline"}})
+    try:
+        tracker.log({"rollout/move_actions": 3, "rollout/move_penalty": -.0015,
+                     "rollout/move_action_fraction": .25}, 0)
+        tracker.log({"val/move_actions": 4, "val/move_penalty": -.002,
+                     "val/move_action_fraction": .2, "val/greedy_move_actions": 5,
+                     "val/greedy_move_penalty": -.0025, "val/greedy_move_action_fraction": .5}, 0)
+    finally:
+        tracker.finish()
+    rows = [json.loads(line) for line in (tmp_path / "wandb-metrics.jsonl").read_text().splitlines()]
+    assert rows == logs
+    assert rows[0] == {"train/move_actions": 3, "train/move_penalty": -.0015,
+                       "train/move_action_fraction": .25, "optimizer_step": 0}
+    assert rows[1]["val/greedy_move_penalty"] == -.0025
+    assert rows[1]["val/move_actions"] == 4
+
+
 def test_weave_connection_failure_preserves_wandb_metrics(tmp_path, monkeypatch):
     from types import SimpleNamespace
     from taverngym.learning.tracking import WandbTracker
@@ -130,13 +156,17 @@ def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_pa
             row["val/placement_reward"] + row["val/operation_penalty"] + row["val/cycle_penalty"])
         assert row["val/actions_per_game"] > 0
         assert "val/cycle_returns" in row
+        assert "val/cycle_return_fraction" in row
+        assert "val/max_consecutive_cycle_returns" in row
+        assert 0 <= row["val/cycle_return_fraction"] <= 1
     assert len([r for r in rows if "train/ppo_loss" in r]) == 2
     assert all(name.count("/") <= 1 for row in rows for name in row)
     assert not list(folder.rglob("events.out.tfevents.*"))
     assert not (folder / "tensorboard").exists()
     resolved = json.loads((folder / "resolved-config.json").read_text())
     assert resolved["reward_shaping"] == {
-        "cycle_detection": "reversible_segment", **config["reward_shaping"]}
+        "cycle_detection": "reversible_segment", "cycle_forfeit_repetitions": None,
+        "turn_action_forfeit_limit": None, **config["reward_shaping"]}
     evaluation = json.loads((folder / "evaluation-0002.json").read_text())
     conditions = evaluation.get("conditions", {"scripted": evaluation})
     assert all(condition["reward_shaping"] == resolved["reward_shaping"]
@@ -152,6 +182,9 @@ def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_pa
         assert resolved["precision_settings"]["opponent_forward"] == "bf16"
         assert all(f"val/{prefix}mean_placement" in row for row in validation
                    for prefix in ("", "greedy_"))
+        assert all(f"val/greedy_{metric}" in row for row in validation
+                   for metric in ("cycle_returns", "cycle_penalty", "cycle_return_fraction",
+                                  "max_consecutive_cycle_returns"))
         assert all(row["system/actor_learner_samples"] == 32 for row in rows if "system/actor_learner_samples" in row)
     best_path = runs / resolved["best_model_filename"]
     assert best_path.is_file() and list(runs.glob("*-best_model.zip")) == [best_path]

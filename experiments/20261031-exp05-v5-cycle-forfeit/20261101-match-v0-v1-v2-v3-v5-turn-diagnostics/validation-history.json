@@ -1,0 +1,24 @@
+{
+  "synthetic_initial_check": "Failed because preflight caller omitted terminal_metrics when invoking Recorder.finish; preflight caller corrected before any native preflight or official match.",
+  "native_preflight_executions": [
+    {
+      "lanes": 2,
+      "global_rounds": 5,
+      "executed_actions": 65,
+      "completed_games": 0,
+      "status": "passed"
+    },
+    {
+      "lanes": 2,
+      "global_rounds": 5,
+      "executed_actions": 65,
+      "completed_games": 0,
+      "status": "passed",
+      "reason": "Revalidate after adding single-End-mask trace field"
+    }
+  ],
+  "official_attempts": 1,
+  "official_completed_games": 320,
+  "verifier_initial_check": "Failed only for statistics.quantiles on late-turn n=1; verifier now handles degenerate singleton quantiles and full independent verification passed.",
+  "official_match_rerun": false
+}

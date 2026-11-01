@@ -1,0 +1,16 @@
+{
+  "checked_at": "2026-10-31T23:36:14.078944+08:00",
+  "model_version": "v5",
+  "training_started": false,
+  "config_sha256": "124486480aa41d38b83bd76bfdf10c9f74e2854aae964b8b305f5a2ac5217999",
+  "learning_rate": 1e-05,
+  "warmup": false,
+  "decay": false,
+  "checked_ppo_points": 101,
+  "min_learning_rate": 1e-05,
+  "max_learning_rate": 1e-05,
+  "other_training_parameters_unchanged": true,
+  "preserve_optimizer_state": true,
+  "previous_preparation": "preparation-history/20261031-before-fixed-lr/config.json",
+  "termination_checks": "V4 termination-preparation-verification.json remains a historical snapshot; no training code changed for fixed LR"
+}

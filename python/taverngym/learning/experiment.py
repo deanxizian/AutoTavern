@@ -19,7 +19,7 @@ from stable_baselines3.common.logger import configure
 from .buffer import CompactPlacementBuffer
 from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO, PlacementBuffer
 from .precision import FORWARD_PRECISIONS, configure_precision
-from .rewards import REWARD_METRICS, RewardShapingConfig
+from .rewards import REWARD_METRICS, RewardShapingConfig, reward_protocols_equal
 from .schedule import learning_rate_schedule
 from .opponents import FrozenOpponentPool, OpponentGroup, opponent_groups
 from .tracking import WandbOutputFormat, WandbTracker, tracking_settings
@@ -71,15 +71,25 @@ def _evaluate(model, games, seed, n_envs, threads, simulator_config, reward_shap
     quotas = np.array([(games + i) // env.num_envs for i in range(env.num_envs)])
     placements = []
     components = []
+    opponent_terminations = []
+    episode_records = []
     try:
         while (counts < quotas).any():
             actions, _ = model.predict(obs, deterministic=deterministic)
+            turns_before_action = np.rint(obs["features"][:, 0] * 20).astype(np.int64)
             obs, _, dones, infos = env.step(actions)
             for i, done in enumerate(dones):
                 if done and counts[i] < quotas[i]:
                     placements.append(infos[i]["placement"])
                     if "reward_components" in infos[i]:
                         components.append(infos[i]["reward_components"])
+                    opponent_terminations.append(infos[i].get("opponent_terminations", []))
+                    episode_records.append({"placement": int(infos[i]["placement"]),
+                        "turn_before_terminal_action": int(turns_before_action[i]),
+                        "episode": {key: infos[i]["episode"][key] for key in ("r", "l")},
+                        "termination_reason": infos[i].get("termination_reason", "native_terminal"),
+                        "reward_components": infos[i].get("reward_components"),
+                        "learner_seat": infos[i].get("learner_seat")})
                     counts[i] += 1
     finally:
         env.close()
@@ -88,10 +98,12 @@ def _evaluate(model, games, seed, n_envs, threads, simulator_config, reward_shap
               "mean_placement": float(values.mean()), "first_rate": float((values == 1).mean()),
               "top4_rate": float((values <= 4).mean()), "placements": placements,
               "opponents": "seven identical scripted bots"}
+    result["episodes"] = episode_records
     if opponent_policy is not None:
         result["opponents"] = f"{frozen_opponents} frozen policies and {7 - frozen_opponents} scripted bots"
         if isinstance(opponent_policy, FrozenOpponentPool):
-            result["opponent_groups"] = [{"name": g.name, "count": g.count, "deterministic": False}
+            result["opponent_groups"] = [{"name": g.name, "count": g.count, "deterministic": False,
+                                          "reward_shaping": g.reward_shaping}
                                          for g in opponent_policy.groups]
             result["opponents"] = " + ".join(
                 [*(f"{g.count} fixed {g.name}" for g in opponent_policy.groups),
@@ -100,13 +112,21 @@ def _evaluate(model, games, seed, n_envs, threads, simulator_config, reward_shap
         result.update({name: float(np.mean([row[name] for row in components]))
                        for name in EVALUATION_METRICS})
         result["reward_shaping"] = asdict(RewardShapingConfig(**reward_shaping))
+    if any(opponent_terminations):
+        result["opponent_terminations"] = opponent_terminations
     return result
 
 
-def load_frozen_policy(path, device, forward_precision=None):
+def load_frozen_policy(path, device, forward_precision=None, *, reward_shaping=None,
+                       model_version=None):
     # A small temporary buffer avoids allocating the old training rollout.
     frozen = EntityPPO.load(path, device=device, n_envs=1, n_steps=2, batch_size=2,
                             rollout_buffer_class=PlacementBuffer, rollout_buffer_kwargs={})
+    if reward_shaping is not None:
+        protocol = getattr(frozen, "experiment_config", {})
+        if (not reward_protocols_equal(protocol.get("reward_shaping"), reward_shaping)
+                or protocol.get("model_version") != model_version):
+            raise ValueError("Frozen opponent termination protocol differs from its checkpoint")
     if forward_precision is not None:
         frozen.set_forward_precision(forward_precision)
     policy = frozen.policy
@@ -125,7 +145,10 @@ def load_frozen_opponents(config, device):
             source_hash = hashlib.sha256(path.read_bytes()).hexdigest()
             if source_hash != spec["sha256"]:
                 raise ValueError(f"Frozen opponent checkpoint hash changed: {spec['name']}")
-            groups.append(OpponentGroup(spec["name"], load_frozen_policy(path, device), spec["count"]))
+            groups.append(OpponentGroup(spec["name"], load_frozen_policy(path, device,
+                                        reward_shaping=spec.get("reward_shaping"),
+                                        model_version=spec.get("model_version")), spec["count"],
+                                        spec.get("reward_shaping")))
         pool = FrozenOpponentPool(tuple(groups))
         opponent_groups(pool, config["frozen_opponents"])
         return pool
@@ -289,12 +312,18 @@ def main():
                        help="Start a new stage keeping trained weights and Adam, with fresh local counters")
     args = parser.parse_args()
     config = json.loads(args.config.read_text())
+    if config.get("source_binding_required") and not (
+        config.get("initial_model") and config.get("initial_model_sha256")
+        and all(spec.get("model") and spec.get("sha256")
+                for spec in config.get("opponent_pool", []))
+    ):
+        raise ValueError("Bind the selected previous-stage best path and SHA-256 before training")
     schedule = learning_rate_schedule(config)
     if config.get("preserve_optimizer_state") and not (args.continue_stage or args.resume):
         raise ValueError("This configuration requires --continue-stage (or --resume within that stage)")
     if not args.resume and config.get("initial_model_sha256"):
         if hashlib.sha256(args.model.read_bytes()).hexdigest() != config["initial_model_sha256"]:
-            raise ValueError("Initial model differs from the configured V2 source")
+            raise ValueError("Initial model differs from the configured stage source")
     if args.forward_precision is not None:
         config["forward_precision"] = args.forward_precision
     config.setdefault("micro_batch_size", DEFAULT_MICRO_BATCH_SIZE)
@@ -428,7 +457,8 @@ def main():
             prior_metrics = [json.loads(line) for line in metrics_path.read_text().splitlines() if line.strip()]
             recorder.iteration_seconds = [row["rollout_seconds"] + row["update_seconds"] for row in prior_metrics
                                           if row["iteration"] <= initial_iteration]
-        for evaluation_path in args.experiment_dir.glob("evaluation-*.json"):
+        # Independent heldout results must never affect validation selection on resume.
+        for evaluation_path in args.experiment_dir.glob("evaluation-[0-9][0-9][0-9][0-9].json"):
             evaluation = json.loads(evaluation_path.read_text())
             recorder.best = min(recorder.best, evaluation.get("mean_placement", float("inf")))
     model._after_update = recorder.after_update

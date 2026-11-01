@@ -1,0 +1,132 @@
+{
+  "status": "passed",
+  "synthetic": [
+    "hero/recruit split",
+    "A-B-A return",
+    "End resets history",
+    "zero-action observed turn retained",
+    "60 prior actions + End under single-End mask counted as forced",
+    "terminal action included, reset observation excluded"
+  ],
+  "native_preflight": {
+    "lanes": 2,
+    "roles": [
+      6,
+      7
+    ],
+    "global_rounds": 5,
+    "completed_matches": 0,
+    "executed_actions": 65,
+    "cross_shard_merged_calls": {
+      "v1": [
+        [
+          0,
+          4,
+          2
+        ],
+        [
+          1,
+          4,
+          2
+        ],
+        [
+          2,
+          4,
+          2
+        ],
+        [
+          3,
+          4,
+          2
+        ],
+        [
+          4,
+          4,
+          2
+        ]
+      ],
+      "v2": [
+        [
+          0,
+          4,
+          2
+        ],
+        [
+          1,
+          4,
+          2
+        ],
+        [
+          2,
+          4,
+          2
+        ],
+        [
+          3,
+          4,
+          2
+        ],
+        [
+          4,
+          4,
+          2
+        ]
+      ],
+      "v3": [
+        [
+          0,
+          3,
+          2
+        ],
+        [
+          1,
+          3,
+          2
+        ],
+        [
+          2,
+          3,
+          2
+        ],
+        [
+          3,
+          3,
+          2
+        ],
+        [
+          4,
+          3,
+          2
+        ]
+      ],
+      "v5": [
+        [
+          0,
+          2,
+          2
+        ],
+        [
+          1,
+          2,
+          2
+        ],
+        [
+          2,
+          2,
+          2
+        ],
+        [
+          3,
+          2,
+          2
+        ],
+        [
+          4,
+          2,
+          2
+        ]
+      ]
+    }
+  },
+  "training_started": false
+}

@@ -1,0 +1,30 @@
+{
+  "status": "passed",
+  "parent_independently_recounted": [
+    {
+      "model": "v1",
+      "player_games": 512,
+      "mean_of_player_means": 50.80111022277328,
+      "pooled_player_turn_mean": 50.992311104539404
+    },
+    {
+      "model": "v2",
+      "player_games": 512,
+      "mean_of_player_means": 52.53100165885693,
+      "pooled_player_turn_mean": 52.72750352609309
+    },
+    {
+      "model": "v3",
+      "player_games": 512,
+      "mean_of_player_means": 53.15555893661002,
+      "pooled_player_turn_mean": 53.3111489584698
+    },
+    {
+      "model": "v5",
+      "player_games": 512,
+      "mean_of_player_means": 35.51724150975555,
+      "pooled_player_turn_mean": 36.53508537886873
+    }
+  ],
+  "historical_games_unchanged": true
+}

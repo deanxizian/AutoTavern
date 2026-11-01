@@ -173,3 +173,50 @@ def test_cuda_bf16_rollout_rescoring_and_optimizer_are_consistent(tmp_path):
                                       restored.predict(model.env._obs, deterministic=True)[0])
     finally:
         model.env.close()
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="CUDA is optional")
+@pytest.mark.parametrize("soft_forced_end", [False, True])
+def test_cuda_bf16_role_aware_opponents_stay_frozen_during_real_ppo_update(
+        tmp_path, soft_forced_end):
+    from taverngym.learning.actor_sampling import ActorOpponentVectorEnv
+    from taverngym.learning.buffer import CompactPlacementBuffer
+    from taverngym.learning.opponents import FrozenOpponentPool, OpponentGroup
+
+    if not torch.cuda.is_bf16_supported():
+        pytest.skip("CUDA device has no BF16 support")
+    model = model_for("bf16", device="cuda")
+    original_env = model.env
+    costs = {"operation_cost": 0, "cycle_cost": .0002, "cycle_detection": "all_actions",
+             "cycle_forfeit_repetitions": 3, "turn_action_forfeit_limit": 60}
+    if soft_forced_end:
+        costs.update(cycle_cost=.01, cycle_forfeit_repetitions=None,
+                     turn_action_forfeit_limit=None)
+    model.experiment_config = {"model_version": "v4", "reward_shaping": costs}
+    path = tmp_path / "v4-frozen.zip"
+    model.save(path)
+    frozen = load_frozen_policy(path, "cuda", reward_shaping=costs, model_version="v4")
+    with pytest.raises(ValueError, match="termination protocol"):
+        load_frozen_policy(path, "cuda", reward_shaping=costs, model_version="v3")
+    before = {name: value.clone() for name, value in frozen.state_dict().items()}
+    pool = FrozenOpponentPool((OpponentGroup("bot_v4", frozen, 2, costs),))
+    env = ActorOpponentVectorEnv(2, opponent_policy=pool, frozen_opponents=2,
+        config={"turn_action_caps": [60]}, reward_shaping=costs, threads=1, seed=4)
+    raw_dtypes = []
+    hook = frozen.network.pointer[-1].register_forward_hook(
+        lambda module, args, output: raw_dtypes.append(output.dtype))
+    try:
+        model = EntityPPO.load(path, env=env, device="cuda", n_steps=8, batch_size=8,
+            micro_batch_size=4, n_epochs=1, rollout_buffer_class=CompactPlacementBuffer,
+            rollout_buffer_kwargs={})
+        model.learn(16, log_interval=None)
+        assert model.num_timesteps == 16 and model.optimizer_step_count() == 2
+        assert len(env.sampler.opponent_shapers) == 4
+        assert raw_dtypes and set(raw_dtypes) == {torch.bfloat16}
+        assert all(torch.equal(before[name], value) for name, value in frozen.state_dict().items())
+        assert not frozen.optimizer.state and not any(p.requires_grad for p in frozen.parameters())
+        assert all(torch.isfinite(parameter).all() for parameter in model.policy.parameters())
+    finally:
+        hook.remove()
+        env.close()
+        original_env.close()

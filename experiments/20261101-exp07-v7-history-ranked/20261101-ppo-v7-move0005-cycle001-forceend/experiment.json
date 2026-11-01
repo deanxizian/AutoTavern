@@ -1,0 +1,29 @@
+{
+  "status": "prepared_not_started",
+  "created_at": "2026-11-01T10:49:24.449942+08:00",
+  "model_version": "v7",
+  "training_started": false,
+  "training_start_authorized": false,
+  "optimizer_updates": 0,
+  "config": "config.json",
+  "planned_source": "planned-source.json",
+  "predecessor": "v5",
+  "original_preparation": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-history-ranked-cycle001-forceend",
+  "scope": "V7 first adopts independent Move penalty; V1-V6 and stopped controller untouched.",
+  "pending": [
+    "Explicit new training startup authorization",
+    "Complete new-instance active-only top3 development ranking and bind source/pool before training"
+  ],
+  "notes": [
+    "100 PPO is the inherited preparation budget, not renewed authorization.",
+    "No 25-PPO A/B arms or additional versions are authorized or started."
+  ],
+  "retired_versions": [
+    "v4",
+    "v6"
+  ],
+  "model_version_registry": "configs/model-versions.json",
+  "source_selection": "user_explicit_v5",
+  "implementation_verified": true,
+  "verification": "preparation-verification.json"
+}

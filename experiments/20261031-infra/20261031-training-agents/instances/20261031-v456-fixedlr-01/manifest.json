@@ -1,0 +1,67 @@
+{
+  "instance_id": "20261031-v456-fixedlr-01",
+  "root": "/home/eric/projects/AutoTavern",
+  "created_at": "2026-10-31T23:42:07.946012+08:00",
+  "authorization": "User explicitly approved start in the parent chat; wait for monitor-ready coordination before V4 launch",
+  "stages": [
+    {
+      "version": "v4",
+      "experiment_dir": "experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only",
+      "prepared_config_sha256": "d511bc65264cf3d271a835e5d484cc376d9a25d9758470c06303ca05b3a596a7"
+    },
+    {
+      "version": "v5",
+      "experiment_dir": "experiments/20261031-exp05-v5-cycle-forfeit/20261031-ppo-v5-cycle-forfeit",
+      "prepared_config_sha256": "124486480aa41d38b83bd76bfdf10c9f74e2854aae964b8b305f5a2ac5217999"
+    },
+    {
+      "version": "v6",
+      "experiment_dir": "experiments/20261031-exp06-v6-cycle-forfeit/20261031-ppo-v6-cycle-forfeit",
+      "prepared_config_sha256": "35bb6629d999094e17bd144e468eef5a09657ff9621b430633996f1a98f1d882"
+    }
+  ],
+  "budget": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "max_recoveries_per_stage": 1,
+  "learning_rate": 1e-05,
+  "stop_after": "v6 independent evaluation and retention; no deployment or added stages",
+  "initial_source": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "bytes": 51596105,
+    "ppo_iteration": 150,
+    "sampled_decisions": 19660800,
+    "stage_optimizer_steps": 2400,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      6.315789473684211e-06
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83"
+  },
+  "opponents": [
+    {
+      "name": "bot_v1",
+      "count": 2,
+      "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+      "bytes": 53921685
+    },
+    {
+      "name": "bot_v2",
+      "count": 3,
+      "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+      "bytes": 53924286
+    }
+  ],
+  "code_sha256": {
+    "python/taverngym/learning/stage_chain.py": "325150137690f7243bd6dbb39bf3129e43b3e4762ca739ea35282bd4aa6602c0",
+    "python/taverngym/learning/experiment.py": "41497de82c5be466ec881a80dc44fc00b790c1670c79fe3ce0676ac885a063a8"
+  },
+  "git_head": "e9e572dd8e5e237b859dd5379488d6804ffcaae8"
+}

@@ -1,0 +1,33 @@
+{
+  "status": "passed",
+  "scope": "Preparation and non-optimizing regression only",
+  "target_version": "v7",
+  "planned_source_version": "v5",
+  "planned_source_adam_steps": 7200,
+  "move_cost": 0.0005,
+  "cycle_cost": 0.01,
+  "retired_aliases": {
+    "v4": "v3",
+    "v6": "v5"
+  },
+  "active_learned_candidates": [
+    "v1",
+    "v2",
+    "v3",
+    "v5"
+  ],
+  "tests": {
+    "targeted_six_files_passed": 172,
+    "actual_adam_wandb_cases_deselected": 2,
+    "parent_lifecycle_checks_passed": 5,
+    "optimizer_updates": 0,
+    "cuda_tests_executed": false,
+    "rust_changes": false,
+    "ruff": "not installed; not run"
+  },
+  "historical_config_and_instance_hashes_unchanged": 48,
+  "new_training_run_directory_exists": false,
+  "training_started": false,
+  "development_ranking_executed": false,
+  "registry_filter_dry_construction_passed": true
+}

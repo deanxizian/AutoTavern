@@ -203,6 +203,10 @@ impl PySoloEnv {
         let r = py.detach(|| self.env.step(action));
         (r.reward, r.done, r.illegal)
     }
+    fn forfeit(&mut self, py: Python<'_>) -> PyResult<f32> {
+        py.detach(|| self.env.forfeit())
+            .map_err(PyValueError::new_err)
+    }
     fn observe<'py>(&self, py: Python<'py>) -> ObsBytes<'py> {
         obs_bytes(py, &self.env.observe())
     }
@@ -308,12 +312,13 @@ impl PyBatchEnv {
     /// One action per slot as little-endian int64 bytes; returns (rewards f32, dones u8,
     /// placements u8, action status u8) as bytes, one entry per slot.
     /// Status bit 0 = rejected, bit 1 = deferred after another seat changed legality.
-    #[pyo3(signature = (actions, active=None))]
+    #[pyo3(signature = (actions, active=None, skipped=None))]
     fn step<'py>(
         &mut self,
         py: Python<'py>,
         actions: &[u8],
         active: Option<&[u8]>,
+        skipped: Option<&[u8]>,
     ) -> PyResult<BatchObs<'py>> {
         let n = self.env.n_slots();
         if actions.len() != n * 8 {
@@ -327,10 +332,15 @@ impl PyBatchEnv {
         let acts: Vec<i64> = chunks.iter().map(|b| i64::from_le_bytes(*b)).collect();
         let mut out = vec![SlotResult::default(); n];
         let flags: Option<Vec<bool>> = active.map(|a| a.iter().map(|&x| x != 0).collect());
+        let held: Option<Vec<bool>> = skipped.map(|a| a.iter().map(|&x| x != 0).collect());
         let env = &mut self.env;
-        py.detach(|| match flags {
-            Some(ref flags) => env.step_active(&acts, flags, &mut out),
-            None => env.step(&acts, &mut out),
+        py.detach(|| match (flags, held) {
+            (flags, Some(held)) => {
+                let flags = flags.unwrap_or_else(|| vec![true; env.n_games()]);
+                env.step_active_skipping(&acts, &flags, &held, &mut out)
+            }
+            (Some(flags), None) => env.step_active(&acts, &flags, &mut out),
+            (None, None) => env.step(&acts, &mut out),
         })
         .map_err(PyValueError::new_err)?;
         let rewards: Vec<f32> = out.iter().map(|r| r.reward).collect();
@@ -347,6 +357,24 @@ impl PyBatchEnv {
             PyBytes::new(py, &status),
         ))
     }
+    /// Explicit surrender flags (one byte per controlled slot), with normal
+    /// terminal rewards and placements. No policy action is substituted.
+    fn forfeit<'py>(&mut self, py: Python<'py>, selected: &[u8]) -> PyResult<BatchObs<'py>> {
+        let flags: Vec<bool> = selected.iter().map(|&flag| flag != 0).collect();
+        let mut out = vec![SlotResult::default(); self.env.n_slots()];
+        py.detach(|| self.env.forfeit(&flags, &mut out))
+            .map_err(PyValueError::new_err)?;
+        let rewards: Vec<f32> = out.iter().map(|r| r.reward).collect();
+        let dones: Vec<u8> = out.iter().map(|r| r.done as u8).collect();
+        let places: Vec<u8> = out.iter().map(|r| r.placement).collect();
+        Ok((
+            f32_bytes(py, &rewards),
+            PyBytes::new(py, &dones),
+            PyBytes::new(py, &places),
+            PyBytes::new(py, &vec![0u8; out.len()]),
+        ))
+    }
+
     /// Game `i` and its episode state as JSON (`load` restores it exactly).
     fn save(&self, py: Python<'_>, i: usize) -> PyResult<String> {
         py.detach(|| self.env.save(i))

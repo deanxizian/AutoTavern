@@ -34,6 +34,16 @@ class TavernGymEnv(gym.Env):
 
     def step(self, action):
         before = self._obs
+        if self.reward_shaper is not None and self.reward_shaper.action_limit_exceeded(before):
+            self._obs, reward, done, truncated, info = self.simulator.forfeit()
+            info["termination_reason"] = "action_limit_forfeit"
+            reward, components = self.reward_shaper.step(
+                action, before, self._obs, reward, done=True,
+                terminal_reason="action_limit_forfeit")
+            components["action_limit_forfeit_placement"] = info["placement"]
+            info["reward_components"] = components
+            self._done = True
+            return self._obs, reward, done, truncated, info
         self._obs, reward, done, truncated, info = self.simulator.step(int(action))
         self._done = done or truncated
         if self.reward_shaper is not None:
@@ -42,6 +52,12 @@ class TavernGymEnv(gym.Env):
             reward, components = self.reward_shaper.step(
                 action, before, self._obs, reward, done=self._done,
             )
+            if self.reward_shaper.forfeit_requested:
+                self._obs, terminal_reward, done, truncated, info = self.simulator.forfeit()
+                info["termination_reason"] = "cycle_forfeit"
+                components = self.reward_shaper.finish_forfeit(terminal_reward, info["placement"])
+                reward += terminal_reward
+                self._done = True
             if components is not None:
                 info["reward_components"] = components
         return self._obs, reward, done, truncated, info

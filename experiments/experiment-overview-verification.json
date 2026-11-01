@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "source_file_hashes_checked": 29,
+  "document_local_links_checked": 28,
+  "all_formal_stage_progress_and_selected_checkpoints_recounted": true,
+  "initial_best_final_heldout_summaries_match_sources": true,
+  "latest_match": {
+    "lobbies": 320,
+    "player_games_per_version": 512,
+    "source_verification": "passed"
+  },
+  "roles_synced_and_toml_valid": true,
+  "training_started": false,
+  "new_evaluations_run": false
+}

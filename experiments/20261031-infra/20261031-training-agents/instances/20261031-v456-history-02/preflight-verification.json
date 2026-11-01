@@ -1,0 +1,100 @@
+{
+  "verified_at": "2026-11-01T00:06:33.708139+08:00",
+  "instance_id": "20261031-v456-history-02",
+  "training_started": false,
+  "python": {
+    "command": ".venv/bin/python -m pytest -q",
+    "host_execution": true,
+    "passed": 226,
+    "failed": 0,
+    "cuda_test_executed": true,
+    "role_aware_cuda_bf16_ppo_and_frozen_weights_test": "passed"
+  },
+  "rust": {
+    "command": "cargo test --release",
+    "passed": 862,
+    "failed": 0,
+    "clippy_all_targets_deny_warnings": "passed",
+    "fmt_check": "passed",
+    "native_binding_rebuilt": true,
+    "source_hash_matches": true,
+    "build_info": {
+      "source_hash": "cc7c215c040a574c",
+      "profile": "release",
+      "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+    }
+  },
+  "specialist_review": "one read-only review completed; natural-terminal attribution, deferred accounting, and terminal-action counters addressed; suggested Bigglesworth/deferred tests implemented and passed",
+  "role_tests": {
+    "passed": 11,
+    "coverage": [
+      "same-tick physical-seat cycle ties",
+      "same-tick request61 budget ties",
+      "per-slot shared-policy counters",
+      "old generations exempt",
+      "opponent-only elimination does not reset learner",
+      "last opponents yield normal learner first exactly once",
+      "restore of identical observation clears counters",
+      "cross-rollout retention",
+      "actor and synchronous evaluator identity",
+      "same-mask Bigglesworth fresh Discover",
+      "deferred action does not advance shaping"
+    ]
+  },
+  "controller_extension_checks": [
+    "V6 gate rejects missing/nonfinite/invalid or 100% self-forfeit rates",
+    "gate never uses heldout or alters best",
+    "conditional budget unavailable until gate",
+    "resume with primary results still enters conditional stages",
+    "ranking uses own candidate protocol and fixed reference",
+    "sealed ranking cache validates input/checkpoint/protocol/seed/games before reuse",
+    "ranking partial completion resumes only missing sealed candidates",
+    "old instance explicit-stop guard",
+    "complete PPO/Adam/weight fingerprints",
+    "source and retention atomic recovery"
+  ],
+  "manifest": "experiments/20261031-infra/20261031-training-agents/instances/20261031-v456-history-02/manifest.json",
+  "code_files_locked": 27,
+  "config_sha256": {
+    "v4": "d8a855afdec60b8f0f5a932c6091eddeee5bb10e140d40fc863f4ead67d47c89",
+    "v5": "67eb2e818e34b9546dcd89fd227d81c8ce5068e55d0ca2ec085b357f71579152",
+    "v6": "8567e97315dba69ba548c54a08621c7786275e41b1818f77b4ea2c5f3cfb8a76",
+    "v7": "fdf8fa910a877aa42f16091f4180cc4f2aae01e00595da5150c0779fb8298c27",
+    "v8": "4160cf4cf084270ce61cc244f72bbf39a69361321e1e73a49c1585c34ba66249",
+    "v9": "d8c195872d23aa1ac97807b00e8cf06b79bbf012e1548f7004540434941ee99f"
+  },
+  "source": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "bytes": 51596105,
+    "ppo_iteration": 150,
+    "sampled_decisions": 19660800,
+    "stage_optimizer_steps": 2400,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      6.315789473684211e-06
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+    "model_version": null,
+    "reward_shaping": {
+      "operation_cost": 0.0001,
+      "cycle_cost": 0.0002
+    }
+  },
+  "old_instance01_kept_stopped": true,
+  "ready_to_start": true,
+  "awaiting": "parent verifies code lock and confirms monitor-ready startup release",
+  "final_controller_boundary_fix": {
+    "verified_at": "2026-11-01T00:07:39.122467+08:00",
+    "change": "source binding intent preserves previous intermediate pool config hash; recovery permits that exact hash",
+    "targeted_tests_passed": 33,
+    "files": [
+      "python/taverngym/learning/stage_chain.py",
+      "tests/test_stage_chain.py"
+    ],
+    "runtime_sha256": "c7802d63b1fd3ef5984d3b31a4de4c99eaf156ad608ecf6553876347a11899cf",
+    "all_27_code_and_6_config_locks_reverified": true
+  }
+}

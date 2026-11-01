@@ -1,0 +1,233 @@
+{
+  "verified_at": "2026-11-01T03:15:30.734098+08:00",
+  "stage": "v5",
+  "ranking_protocol": {
+    "games": 64,
+    "seed": 60000007,
+    "learner_mode": "stochastic",
+    "precision": "bf16",
+    "reference_pool": [
+      {
+        "name": "bot_v1",
+        "count": 2,
+        "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+        "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+        "model_version": "v1",
+        "reward_shaping": null
+      },
+      {
+        "name": "bot_v2",
+        "count": 2,
+        "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+        "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+        "model_version": "v2",
+        "reward_shaping": null
+      },
+      {
+        "name": "bot_v3",
+        "count": 2,
+        "model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+        "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+        "model_version": "v3",
+        "reward_shaping": null
+      }
+    ],
+    "version_order": [
+      "v1",
+      "v2",
+      "v3",
+      "v4",
+      "v5",
+      "v6",
+      "v7",
+      "v8",
+      "v9"
+    ],
+    "candidate_protocol": "own actual checkpoint protocol: V1-V3 legacy; this chain V4+ constant .01 with native forced End and no early forfeits",
+    "selection": "lowest mean placement top three; newer on ties",
+    "max_candidates_per_stage": 8,
+    "seats_per_selected_version": 2,
+    "scripted_seats": 1,
+    "latest_version_protected": false,
+    "allow_reentry": true,
+    "stages": [
+      "v5",
+      "v6",
+      "v7",
+      "v8",
+      "v9"
+    ],
+    "candidate_counts": {
+      "v5": 4,
+      "v6": 5,
+      "v7": 6,
+      "v8": 7,
+      "v9": 8
+    },
+    "maximum_stage_rankings": 5,
+    "maximum_scored_games": 1920,
+    "primary_scored_games_max": 576,
+    "conditional_scored_games_max": 1344
+  },
+  "ranking_rows": [
+    {
+      "version": "v1",
+      "games": 64,
+      "mean_placement": 4.609375,
+      "first_rate": 0.0625,
+      "top4_rate": 0.5,
+      "protocol": null
+    },
+    {
+      "version": "v2",
+      "games": 64,
+      "mean_placement": 4.21875,
+      "first_rate": 0.109375,
+      "top4_rate": 0.59375,
+      "protocol": {
+        "operation_cost": 0.0001,
+        "cycle_cost": 0.0002
+      }
+    },
+    {
+      "version": "v3",
+      "games": 64,
+      "mean_placement": 3.671875,
+      "first_rate": 0.1875,
+      "top4_rate": 0.65625,
+      "protocol": {
+        "operation_cost": 0.0001,
+        "cycle_cost": 0.0002
+      }
+    },
+    {
+      "version": "v4",
+      "games": 64,
+      "mean_placement": 3.671875,
+      "first_rate": 0.1875,
+      "top4_rate": 0.65625,
+      "protocol": {
+        "operation_cost": 0,
+        "cycle_cost": 0.01,
+        "cycle_detection": "all_actions",
+        "cycle_forfeit_repetitions": null,
+        "turn_action_forfeit_limit": null
+      }
+    }
+  ],
+  "selected_versions": [
+    "v4",
+    "v3",
+    "v2"
+  ],
+  "actual_opponent_pool": [
+    {
+      "name": "bot_v4",
+      "count": 2,
+      "model": "runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/20261101-003912-best_model.zip",
+      "sha256": "2dc3c78ec0370e9dbc597736a2c4fcdfd4c17919d81a438bde278a82973a80c6",
+      "model_version": "v4",
+      "source_stage": "v4",
+      "reward_shaping": {
+        "operation_cost": 0,
+        "cycle_cost": 0.01,
+        "cycle_detection": "all_actions",
+        "cycle_forfeit_repetitions": null,
+        "turn_action_forfeit_limit": null
+      },
+      "protocol_source": "/home/eric/projects/AutoTavern/experiments/20261031-exp04-v4-cycle-only/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/config.json"
+    },
+    {
+      "name": "bot_v3",
+      "count": 2,
+      "model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+      "model_version": "v3",
+      "reward_shaping": null
+    },
+    {
+      "name": "bot_v2",
+      "count": 2,
+      "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+      "model_version": "v2",
+      "reward_shaping": null
+    }
+  ],
+  "learner_source": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/20261101-003912-best_model.zip",
+    "sha256": "2dc3c78ec0370e9dbc597736a2c4fcdfd4c17919d81a438bde278a82973a80c6",
+    "bytes": 49260732,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+    "model_version": "v4",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "learning_source_independent_of_opponent_rank": true,
+  "frozen_pool_config_sha256": "96972dcdb4d97979d6c3baeeefad96425d9d9802ad37ce112249fa8ddaf64a98",
+  "heldout_used_for_pool": false,
+  "wandb": {
+    "backend": "wandb",
+    "kind": "native",
+    "mode": "online",
+    "entity": "eric_eric_",
+    "project": "AutoTavern",
+    "run_id": "6znla4oh",
+    "url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/6znla4oh",
+    "x_axis": "optimizer_step",
+    "weave_project": "eric_eric_/AutoTavern",
+    "weave_initialized": true
+  },
+  "progress": {
+    "status": "running",
+    "phase": "initial_evaluation",
+    "updated_at": "2026-11-01T03:15:19.860984+08:00",
+    "pid": 3602884,
+    "completed_iterations": 0,
+    "target_iterations": 100,
+    "sampled_decisions": 0,
+    "optimizer_steps": 0,
+    "target_decisions": 13107200,
+    "elapsed_seconds": 0.09115288700559177,
+    "estimated_remaining_seconds": null,
+    "latest_model": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/latest_model.zip",
+    "best_model": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip"
+  },
+  "starting_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/starting_model.zip",
+    "sha256": "272c51a31f9e35de5fa105056c0f2f0e52637bcb63688dae7550e9b14316b907",
+    "bytes": 49261382,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+    "model_version": "v5",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  }
+}

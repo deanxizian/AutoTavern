@@ -1,0 +1,76 @@
+{
+  "id": "20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend",
+  "model_version": "v6",
+  "instance_id": "20261101-v456-history-03",
+  "created_at": "2026-11-01T00:26:48.009432+08:00",
+  "status": "completed",
+  "training_started": true,
+  "weights_created": false,
+  "config_sha256": "0754ed67fca379a34632df0c5f15a6ae82d977bf4a350db6086ce666297bebb3",
+  "source_binding_required": true,
+  "conditional": false,
+  "superseded_instances_untouched": true,
+  "reward_protocol": {
+    "operation_cost": 0,
+    "cycle_cost": 0.01,
+    "cycle_detection": "all_actions",
+    "cycle_forfeit_repetitions": null,
+    "turn_action_forfeit_limit": null
+  },
+  "turn_cap_behavior": "native forced End at 60, pending choices resolved normally; game continues",
+  "pool_selection": "top3",
+  "ranking_required": true,
+  "ranking_candidate_count": 5,
+  "previous_table_superseded_before_training": true,
+  "source_model": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+    "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+    "bytes": 51597964,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v5",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "source_binding": "source-binding.json",
+  "started_at": "2026-11-01T06:32:31.009186+08:00",
+  "supervisor_pid": 4009418,
+  "completed_at": "2026-11-01T10:05:49.860644+08:00",
+  "retained_model": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/20261101-063233-best_model.zip",
+    "sha256": "3bde7248ab9a69a277813bfbdf57f17a7ae9eb664be54979749c3da76540a2ed",
+    "bytes": 49261905,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v6",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "results": "results.json"
+}

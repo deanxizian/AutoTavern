@@ -1,0 +1,138 @@
+{
+  "verified_at": "2026-11-01T10:06:33.086107+08:00",
+  "actual_pool": "2V5+2V4+2V3+1script",
+  "selection": {
+    "ppo_iteration": 0,
+    "mean_placement": 3.53125,
+    "criterion": "mixed sampled strict decrease; earliest tie",
+    "validation_iterations": [
+      0,
+      50,
+      100
+    ]
+  },
+  "retained_model": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/20261101-063233-best_model.zip",
+    "sha256": "3bde7248ab9a69a277813bfbdf57f17a7ae9eb664be54979749c3da76540a2ed",
+    "bytes": 49261905,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v6",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "heldout_summary_reporting_only": {
+    "final": {
+      "mixed_sampled": {
+        "games": 128,
+        "mean_placement": 4.109375,
+        "first_rate": 0.1640625,
+        "top4_rate": 0.5625,
+        "cycle_returns": 19.3671875,
+        "cycle_return_fraction": 0.03961618843343198,
+        "cycle_penalty": -0.19367187500000005
+      },
+      "mixed_greedy": {
+        "games": 128,
+        "mean_placement": 3.8984375,
+        "first_rate": 0.15625,
+        "top4_rate": 0.625,
+        "cycle_returns": 405.7421875,
+        "cycle_return_fraction": 0.5923957415775589,
+        "cycle_penalty": -4.057421874999957
+      }
+    },
+    "initial": {
+      "mixed_sampled": {
+        "games": 128,
+        "mean_placement": 4.0078125,
+        "first_rate": 0.15625,
+        "top4_rate": 0.5546875,
+        "cycle_returns": 22.5,
+        "cycle_return_fraction": 0.0483187071916219,
+        "cycle_penalty": -0.2250000000000001
+      },
+      "mixed_greedy": {
+        "games": 128,
+        "mean_placement": 3.953125,
+        "first_rate": 0.140625,
+        "top4_rate": 0.6015625,
+        "cycle_returns": 448.0234375,
+        "cycle_return_fraction": 0.6159494986831756,
+        "cycle_penalty": -4.480234374999949
+      }
+    },
+    "best": {
+      "mixed_sampled": {
+        "games": 128,
+        "mean_placement": 4.0078125,
+        "first_rate": 0.15625,
+        "top4_rate": 0.5546875,
+        "cycle_returns": 22.5,
+        "cycle_return_fraction": 0.0483187071916219,
+        "cycle_penalty": -0.2250000000000001
+      },
+      "mixed_greedy": {
+        "games": 128,
+        "mean_placement": 3.953125,
+        "first_rate": 0.140625,
+        "top4_rate": 0.6015625,
+        "cycle_returns": 448.0234375,
+        "cycle_return_fraction": 0.6159494986831756,
+        "cycle_penalty": -4.480234374999949
+      }
+    }
+  },
+  "all_heldout_natural_and_penalty_verified": true,
+  "verification": {
+    "finite_and_protocol_consistent": true,
+    "full_checkpoints_and_adam_verified": true
+  },
+  "retention_status": "completed",
+  "extension_gate": {
+    "checked_at": "2026-11-01T10:05:58.064632+08:00",
+    "eligible": true,
+    "checks": {
+      "v4_complete": true,
+      "v4_finite_and_consistent": true,
+      "v4_no_unresolved_native_failure": true,
+      "v5_complete": true,
+      "v5_finite_and_consistent": true,
+      "v5_no_unresolved_native_failure": true,
+      "v6_complete": true,
+      "v6_finite_and_consistent": true,
+      "v6_no_unresolved_native_failure": true,
+      "v6_self_forfeit_metrics_valid": true,
+      "v6_disabled_early_termination_rates_are_zero": true,
+      "not_three_consecutive_stage_best_step0": true
+    },
+    "v6_selected_validation_self_forfeit_rate": 0.0,
+    "used_for_model_selection": false,
+    "heldout_used_for_gate": false,
+    "reason": "all primary checks passed"
+  },
+  "primary_budget_used": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "conditional_budget_enabled": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "next": "V7 development top3 ranking from all V1-V6, then train source V6 selected best"
+}

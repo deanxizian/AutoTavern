@@ -1,0 +1,25 @@
+{
+  "id": "20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend",
+  "model_version": "v5",
+  "instance_id": "20261101-v456-history-03",
+  "created_at": "2026-11-01T00:26:48.008695+08:00",
+  "status": "awaiting_top3_development_ranking",
+  "training_started": false,
+  "weights_created": false,
+  "config_sha256": "3bddcd21a1b63c52f8193b4ceaeed67dfa547474fec9224412c889991bc801c4",
+  "source_binding_required": true,
+  "conditional": false,
+  "superseded_instances_untouched": true,
+  "reward_protocol": {
+    "operation_cost": 0,
+    "cycle_cost": 0.01,
+    "cycle_detection": "all_actions",
+    "cycle_forfeit_repetitions": null,
+    "turn_action_forfeit_limit": null
+  },
+  "turn_cap_behavior": "native forced End at 60, pending choices resolved normally; game continues",
+  "pool_selection": "top3",
+  "ranking_required": true,
+  "ranking_candidate_count": 4,
+  "previous_table_superseded_before_training": true
+}

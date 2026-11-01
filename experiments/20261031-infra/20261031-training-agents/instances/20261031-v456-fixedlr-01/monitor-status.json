@@ -1,0 +1,40 @@
+{
+  "instance_id": "20261031-v456-fixedlr-01",
+  "checked_at": "2026-10-31T23:47:36.107699+08:00",
+  "check_count": 3,
+  "next_check_at": null,
+  "phase": "stopped",
+  "stage": "v4",
+  "evidence": [
+    "controller-status.json",
+    "controller-console.log",
+    "V4 progress.json"
+  ],
+  "progress": {
+    "status": "interrupted",
+    "phase": "sampling",
+    "updated_at": "2026-10-31T23:47:16.803184+08:00",
+    "pid": 2959494,
+    "completed_iterations": 3,
+    "target_iterations": 100,
+    "sampled_decisions": 435339,
+    "optimizer_steps": 48,
+    "target_decisions": 13107200,
+    "elapsed_seconds": 179.99363470500975,
+    "estimated_remaining_seconds": 5215.073965610703,
+    "latest_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/latest_model.zip",
+    "peak_gpu_allocated_bytes": 4048965120,
+    "best_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/20261031-234404-best_model.zip"
+  },
+  "budget_used": {
+    "ppo_iterations": 3,
+    "samples": 435339,
+    "adam_updates": 48
+  },
+  "processes": "Host ps confirms controller 2959482 and training 2959494 absent",
+  "child_exit_code": 0,
+  "checkpoint": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/latest_model.zip",
+  "anomalies": [],
+  "stop_reason": "User requested stop; explicit SIGTERM; no automatic restart",
+  "notes": "Sampling interrupted after 3 complete PPO; 435339 sampled decisions include incomplete fourth rollout. Controller logged explicit stop as ValueError, not spontaneous failure. Final evaluation not executed."
+}

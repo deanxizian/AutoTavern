@@ -1,0 +1,71 @@
+{
+  "status": "stopped_by_user",
+  "stopped_at": "2026-10-31T23:47:38.745855+08:00",
+  "controller_pid": 2959482,
+  "training_pid": 2959494,
+  "both_processes_absent": true,
+  "final_progress": {
+    "status": "interrupted",
+    "phase": "sampling",
+    "updated_at": "2026-10-31T23:47:16.803184+08:00",
+    "pid": 2959494,
+    "completed_iterations": 3,
+    "target_iterations": 100,
+    "sampled_decisions": 435339,
+    "optimizer_steps": 48,
+    "target_decisions": 13107200,
+    "elapsed_seconds": 179.99363470500975,
+    "estimated_remaining_seconds": 5215.073965610703,
+    "latest_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/latest_model.zip",
+    "peak_gpu_allocated_bytes": 4048965120,
+    "best_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/20261031-234404-best_model.zip"
+  },
+  "latest_complete_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/latest_model.zip",
+    "sha256": "3b3b63d8bc0e3b4cde1401fb20e33ae06a400ce552e1ee9afafbf348e3f7aabc",
+    "bytes": 51596187,
+    "ppo_iteration": 3,
+    "sampled_decisions": 393216,
+    "stage_optimizer_steps": 48,
+    "adam_total_steps": 5648,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "600997ca9b340108e0b31462a4b5a3c44e21fa42d1fc4349aaba38256a8bd416",
+    "adam_moments_sha256": "b41d6103d5fe45fba6e025c7b50a4c4e4ec3c14a96494d1c391243de59d584b9"
+  },
+  "retained_checkpoints": [
+    {
+      "path": "runs/20261031-ppo-v4-cycle-only/20261031-234404-best_model.zip",
+      "sha256": "ebc153eabb784351ef6f57a8548c31c652d6c5a49ebf08118ddd447ebaf8a258",
+      "bytes": 49259723,
+      "complete_for_resume": true
+    },
+    {
+      "path": "runs/20261031-ppo-v4-cycle-only/interrupted_model.zip",
+      "sha256": "00d4ebc389482e127561a715eb1fdaaa78d417c5c5b38bb33698f86916aa9b1b",
+      "bytes": 51596187,
+      "complete_for_resume": false
+    },
+    {
+      "path": "runs/20261031-ppo-v4-cycle-only/latest_model.zip",
+      "sha256": "3b3b63d8bc0e3b4cde1401fb20e33ae06a400ce552e1ee9afafbf348e3f7aabc",
+      "bytes": 51596187,
+      "complete_for_resume": true
+    },
+    {
+      "path": "runs/20261031-ppo-v4-cycle-only/starting_model.zip",
+      "sha256": "8a36bfb202ac04f3ba46c2750a8845c242a6d3836aa124e3b834f3f8b7a3d66a",
+      "bytes": 49259723,
+      "complete_for_resume": true
+    }
+  ],
+  "next_source_must_be_original_v3": true,
+  "new_roster_awaiting_user": true,
+  "no_training_restart_authorized_until_roster_confirmed": true,
+  "v5_started": false,
+  "v6_started": false,
+  "artifacts_deleted": false,
+  "config_unchanged": true
+}

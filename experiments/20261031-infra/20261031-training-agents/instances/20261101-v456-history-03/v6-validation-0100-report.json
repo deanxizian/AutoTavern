@@ -1,0 +1,167 @@
+{
+  "created_at": "2026-11-01T09:34:53.011196+08:00",
+  "pool": "2V5+2V4+2V3+1script",
+  "modes": {
+    "mixed_sampled": {
+      "games": 64,
+      "seed": 40000003,
+      "deterministic": false,
+      "mean_placement": 3.921875,
+      "first_rate": 0.140625,
+      "top4_rate": 0.640625,
+      "opponents": "2 fixed bot_v5 + 2 fixed bot_v4 + 2 fixed bot_v3 + 1 scripted bots",
+      "opponent_groups": [
+        {
+          "name": "bot_v5",
+          "count": 2,
+          "deterministic": false,
+          "reward_shaping": {
+            "operation_cost": 0,
+            "cycle_cost": 0.01,
+            "cycle_detection": "all_actions",
+            "cycle_forfeit_repetitions": null,
+            "turn_action_forfeit_limit": null
+          }
+        },
+        {
+          "name": "bot_v4",
+          "count": 2,
+          "deterministic": false,
+          "reward_shaping": {
+            "operation_cost": 0,
+            "cycle_cost": 0.01,
+            "cycle_detection": "all_actions",
+            "cycle_forfeit_repetitions": null,
+            "turn_action_forfeit_limit": null
+          }
+        },
+        {
+          "name": "bot_v3",
+          "count": 2,
+          "deterministic": false,
+          "reward_shaping": null
+        }
+      ],
+      "placement_reward": 0.16517855692654848,
+      "operation_penalty": 0.0,
+      "cycle_penalty": -0.19250000000000003,
+      "total_reward": -0.027321443073451544,
+      "reversible_actions": 319.28125,
+      "cycle_returns": 19.25,
+      "actions_per_game": 504.3125,
+      "cycle_forfeit_rate": 0.0,
+      "cycle_forfeit_turn": 0.0,
+      "cycle_forfeit_placement": 0.0,
+      "max_consecutive_cycles": 0.0,
+      "action_limit_forfeit_rate": 0.0,
+      "action_limit_forfeit_turn": 0.0,
+      "action_limit_forfeit_placement": 0.0,
+      "opponent_cycle_forfeits": 0.0,
+      "opponent_action_limit_forfeits": 0.0,
+      "cycle_return_fraction": 0.04079440253420265,
+      "max_consecutive_cycle_returns": 3.890625,
+      "cap_end_rate": 0.31779657881087353,
+      "reward_shaping": {
+        "operation_cost": 0,
+        "cycle_cost": 0.01,
+        "cycle_detection": "all_actions",
+        "cycle_forfeit_repetitions": null,
+        "turn_action_forfeit_limit": null
+      }
+    },
+    "mixed_greedy": {
+      "games": 64,
+      "seed": 40000003,
+      "deterministic": true,
+      "mean_placement": 3.4375,
+      "first_rate": 0.21875,
+      "top4_rate": 0.6875,
+      "opponents": "2 fixed bot_v5 + 2 fixed bot_v4 + 2 fixed bot_v3 + 1 scripted bots",
+      "opponent_groups": [
+        {
+          "name": "bot_v5",
+          "count": 2,
+          "deterministic": false,
+          "reward_shaping": {
+            "operation_cost": 0,
+            "cycle_cost": 0.01,
+            "cycle_detection": "all_actions",
+            "cycle_forfeit_repetitions": null,
+            "turn_action_forfeit_limit": null
+          }
+        },
+        {
+          "name": "bot_v4",
+          "count": 2,
+          "deterministic": false,
+          "reward_shaping": {
+            "operation_cost": 0,
+            "cycle_cost": 0.01,
+            "cycle_detection": "all_actions",
+            "cycle_forfeit_repetitions": null,
+            "turn_action_forfeit_limit": null
+          }
+        },
+        {
+          "name": "bot_v3",
+          "count": 2,
+          "deterministic": false,
+          "reward_shaping": null
+        }
+      ],
+      "placement_reward": 0.3035714142024517,
+      "operation_penalty": 0.0,
+      "cycle_penalty": -4.3081249999999525,
+      "total_reward": -4.004553585797501,
+      "reversible_actions": 446.875,
+      "cycle_returns": 430.8125,
+      "actions_per_game": 694.578125,
+      "cycle_forfeit_rate": 0.0,
+      "cycle_forfeit_turn": 0.0,
+      "cycle_forfeit_placement": 0.0,
+      "max_consecutive_cycles": 0.0,
+      "action_limit_forfeit_rate": 0.0,
+      "action_limit_forfeit_turn": 0.0,
+      "action_limit_forfeit_placement": 0.0,
+      "opponent_cycle_forfeits": 0.0,
+      "opponent_action_limit_forfeits": 0.0,
+      "cycle_return_fraction": 0.6106518064399324,
+      "max_consecutive_cycle_returns": 41.40625,
+      "cap_end_rate": 0.6327038023009628,
+      "reward_shaping": {
+        "operation_cost": 0,
+        "cycle_cost": 0.01,
+        "cycle_detection": "all_actions",
+        "cycle_forfeit_repetitions": null,
+        "turn_action_forfeit_limit": null
+      }
+    }
+  },
+  "selected_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/20261101-063233-best_model.zip",
+    "sha256": "3bde7248ab9a69a277813bfbdf57f17a7ae9eb664be54979749c3da76540a2ed",
+    "bytes": 49261905,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v6",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "decision": "retained PPO0: stochastic val means 3.53125 / 4.078125 / 3.921875 at PPO0/50/100; strict earliest minimum",
+  "all_128_natural_terminal": true,
+  "per_game_penalty_verified": true,
+  "heldout_used_for_selection": false
+}

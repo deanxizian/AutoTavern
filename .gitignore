@@ -19,6 +19,8 @@ venv/
 .pytest_cache/
 .ruff_cache/
 .uv-cache/
+.cache/
+.huggingface/
 wandb/
 .weave/
 
@@ -30,6 +32,7 @@ wandb/
 *.key
 *.p12
 .ssh/
+.aws/
 id_rsa*
 id_ed25519*
 .netrc
@@ -51,6 +54,7 @@ guard-*.json
 *.npz
 *.npy
 *.pkl
+*_model.zip
 
 # Local paper downloads, translations and rendered previews; keep the source index.
 /docs/papers/*
@@ -64,6 +68,7 @@ guard-*.json
 /experiments/**/process.json
 /experiments/**/launcher.json
 /experiments/**/resume-launch.json
+/experiments/**/controller.lock
 /experiments/**/progress.json
 /experiments/**/progress.csv
 /experiments/**/training.json
@@ -78,3 +83,4 @@ guard-*.json
 /experiments/**/*.tmp
 /experiments/**/partial-results.json
 /experiments/**/*-actions.jsonl.gz
+/experiments/**/turns.jsonl.gz

@@ -1,0 +1,77 @@
+{
+  "verified_at": "2026-10-31T23:43:15.420369+08:00",
+  "instance_id": "20261031-v456-fixedlr-01",
+  "training_started": false,
+  "full_python_tests": {
+    "passed": 204,
+    "failed": 0,
+    "command": ".venv/bin/python -m pytest -q",
+    "host_execution": true
+  },
+  "targeted_controller_tests": {
+    "passed": 22,
+    "scope": "strict best selection; step0 Adam; finite full checkpoints; locks; orphan detection; budget; recovery cap; exact PPO100 repair; complete V4-V5-V6 handoff; source-binding crash; retention crash"
+  },
+  "cuda_test": {
+    "executed": true,
+    "name": "test_cuda_bf16_rollout_rescoring_and_optimizer_are_consistent",
+    "passed": true
+  },
+  "host_preflight": {
+    "gpu": "NVIDIA GeForce RTX 5080",
+    "cuda_available": true,
+    "bf16_supported": true,
+    "gpu_utilization_percent": 0,
+    "memory_used_mib": 2369,
+    "memory_total_mib": 16303,
+    "matching_stage_processes": 0
+  },
+  "source": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "bytes": 51596105,
+    "ppo_iteration": 150,
+    "sampled_decisions": 19660800,
+    "stage_optimizer_steps": 2400,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      6.315789473684211e-06
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83"
+  },
+  "opponents": [
+    {
+      "name": "bot_v1",
+      "count": 2,
+      "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+      "bytes": 53921685
+    },
+    {
+      "name": "bot_v2",
+      "count": 3,
+      "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+      "bytes": 53924286
+    }
+  ],
+  "config_hashes": {
+    "v4": "d511bc65264cf3d271a835e5d484cc376d9a25d9758470c06303ca05b3a596a7",
+    "v5": "124486480aa41d38b83bd76bfdf10c9f74e2854aae964b8b305f5a2ac5217999",
+    "v6": "35bb6629d999094e17bd144e468eef5a09657ff9621b430633996f1a98f1d882"
+  },
+  "new_code_sha256": {
+    "python/taverngym/learning/stage_chain.py": "325150137690f7243bd6dbb39bf3129e43b3e4762ca739ea35282bd4aa6602c0",
+    "python/taverngym/learning/experiment.py": "41497de82c5be466ec881a80dc44fc00b790c1670c79fe3ce0676ac885a063a8"
+  },
+  "prior_rule_verification": "V4 termination-preparation-verification.json and fixed-learning-rate-verification.json",
+  "specialist_review": "completed read-only; identified recovery/heldout/cleanup/orphan/binding windows were addressed and regression-tested",
+  "limitations": [
+    "No extra training budget for discarded partial work; uncertain partial-work recovery stops for diagnosis",
+    "Full Python tests executed on host; sandbox-only W&B tests fail because local sockets are restricted"
+  ],
+  "ready_to_start": true,
+  "awaiting": "parent confirms training_monitor ready"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "20261031-ppo-v6-cycle-forfeit",
+  "model_version": "v6",
+  "status": "awaiting_previous_stage_best",
+  "training_started": false,
+  "weights_created": false,
+  "wandb_run_created": false,
+  "source_stage": "v5",
+  "source_binding_required": true,
+  "source_binding_note": "Resolve the actual selected best path/hash/PPO/Adam metadata after the preceding stage; best may be its inherited step-0 weights.",
+  "config": "config.json",
+  "model_directory": "runs/20261031-ppo-v6-cycle-forfeit"
+}

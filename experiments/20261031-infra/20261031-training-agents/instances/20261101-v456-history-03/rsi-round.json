@@ -1,0 +1,166 @@
+{
+  "created_at": "2026-11-01T00:26:48.162020+08:00",
+  "instance_id": "20261101-v456-history-03",
+  "goal": "Train fixed .01 cycle-return penalties with normal forced-End play on corrected historical pools",
+  "hypothesis": "Dense per-return penalties can discourage old loops while preserving natural match outcomes and inherited Adam",
+  "baseline": "original V3 PPO150 best Adam5600; development start evaluation required before official launch",
+  "changes": [
+    "fixed cycle_cost .01; no early forfeits",
+    "per-game repeat fraction and longest consecutive visible return metrics",
+    "native turn_action_caps60 forced End retained",
+    "future frozen V4+ follow actual new source protocol",
+    "conditional health gate uses no unrequested repeat/greedy threshold"
+  ],
+  "training_started": true,
+  "validation_status": "previous full host Python240 preserved; top3 controller/ranking44 and combined reward/role/controller121 passed; V4 baseline unchanged",
+  "adoption_decision": "final top3 protocol validated, monitor ready, authorized chain running",
+  "remaining_primary_budget": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "reserved_conditional_budget": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "superseded_resources": {
+    "instance01": {
+      "status": "stopped_by_user",
+      "committed_ppo": 3,
+      "committed_samples": 393216,
+      "actual_samples_including_partial": 435339,
+      "new_adam": 48,
+      "charged_to_new_chain": false
+    },
+    "instance02": {
+      "status": "stopped_by_user",
+      "committed_ppo": 12,
+      "committed_samples": 1572864,
+      "actual_samples_including_partial": 1618196,
+      "new_adam": 192,
+      "charged_to_new_chain": false
+    }
+  },
+  "development_baseline": "development-initial-validation.json",
+  "pool_selection": "top3 all available history, each2+1script",
+  "ranking_budget": {
+    "games": 64,
+    "seed": 60000007,
+    "learner_mode": "stochastic",
+    "precision": "bf16",
+    "reference_pool": [
+      {
+        "name": "bot_v1",
+        "count": 2,
+        "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+        "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+        "model_version": "v1",
+        "reward_shaping": null
+      },
+      {
+        "name": "bot_v2",
+        "count": 2,
+        "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+        "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+        "model_version": "v2",
+        "reward_shaping": null
+      },
+      {
+        "name": "bot_v3",
+        "count": 2,
+        "model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+        "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+        "model_version": "v3",
+        "reward_shaping": null
+      }
+    ],
+    "version_order": [
+      "v1",
+      "v2",
+      "v3",
+      "v4",
+      "v5",
+      "v6",
+      "v7",
+      "v8",
+      "v9"
+    ],
+    "candidate_protocol": "own actual checkpoint protocol: V1-V3 legacy; this chain V4+ constant .01 with native forced End and no early forfeits",
+    "selection": "lowest mean placement top three; newer on ties",
+    "max_candidates_per_stage": 8,
+    "seats_per_selected_version": 2,
+    "scripted_seats": 1,
+    "latest_version_protected": false,
+    "allow_reentry": true,
+    "stages": [
+      "v5",
+      "v6",
+      "v7",
+      "v8",
+      "v9"
+    ],
+    "candidate_counts": {
+      "v5": 4,
+      "v6": 5,
+      "v7": 6,
+      "v8": 7,
+      "v9": 8
+    },
+    "maximum_stage_rankings": 5,
+    "maximum_scored_games": 1920,
+    "primary_scored_games_max": 576,
+    "conditional_scored_games_max": 1344
+  },
+  "started_at": "2026-11-01T00:39:08.530591+08:00",
+  "active_stage": "v7",
+  "implementation_locked": true,
+  "completed_stages": [
+    "v4",
+    "v5",
+    "v6"
+  ],
+  "v4_adoption": "retained PPO0 by stochastic validation; actual selected Adam5600",
+  "v5_pool": [
+    "v4",
+    "v3",
+    "v2"
+  ],
+  "v5_adoption": "selected PPO100 by own-pool stochastic validation; source Adam7200",
+  "v6_pool": [
+    "v5",
+    "v4",
+    "v3"
+  ],
+  "v6_adoption": "retained PPO0 by own-pool stochastic validation; source Adam7200",
+  "extension_gate": {
+    "checked_at": "2026-11-01T10:05:58.064632+08:00",
+    "eligible": true,
+    "checks": {
+      "v4_complete": true,
+      "v4_finite_and_consistent": true,
+      "v4_no_unresolved_native_failure": true,
+      "v5_complete": true,
+      "v5_finite_and_consistent": true,
+      "v5_no_unresolved_native_failure": true,
+      "v6_complete": true,
+      "v6_finite_and_consistent": true,
+      "v6_no_unresolved_native_failure": true,
+      "v6_self_forfeit_metrics_valid": true,
+      "v6_disabled_early_termination_rates_are_zero": true,
+      "not_three_consecutive_stage_best_step0": true
+    },
+    "v6_selected_validation_self_forfeit_rate": 0.0,
+    "used_for_model_selection": false,
+    "heldout_used_for_gate": false,
+    "reason": "all primary checks passed"
+  },
+  "conditional_extension_enabled": true,
+  "status": "stopped",
+  "stop_reason": "user_requested_stop",
+  "phase_at_stop": "ranking",
+  "automatic_resume_allowed": false,
+  "stopped_at": "2026-11-01T10:13:06.901356+08:00",
+  "stop_evidence": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v456-history-03/user-stop-final.json",
+  "conditional_execution_authorization_revoked": true
+}

@@ -97,6 +97,13 @@ class UnifiedActorSampler:
         self.episode_steps = np.zeros(n_games, dtype=np.int64)
         self.shapers = ([ActionRewardShaper(RewardShapingConfig(**reward_shaping)) for _ in range(n_games)]
                         if reward_shaping is not None else [])
+        protocols = [None, *(group.reward_shaping for group in groups for _ in range(group.count))]
+        self.opponent_shapers = {
+            game * self.roles + role: ActionRewardShaper(RewardShapingConfig(**protocol))
+            for game in range(n_games) for role, protocol in enumerate(protocols)
+            if role and protocol is not None}
+        self.opponent_events = [[] for _ in range(n_games)]
+        self._restore_versions = self.batch._restore_versions.copy()
         self.last_failure = None
         self.config = config or {}
         self.returns = np.zeros(n_games, np.float64)
@@ -107,7 +114,7 @@ class UnifiedActorSampler:
         self.cap_ends = np.zeros(n_games, np.int64)
         self.started = np.full(n_games, time.monotonic())
 
-    def _episode_info(self, game, current, next_obs, reward, done, placement):
+    def _episode_info(self, game, current, reward, done, placement, components, terminal_reason=None):
         turn = int(round(float(current.observation["features"][0]) * 20))
         if turn != self.last_turn[game]:
             self.turn_actions[game] = 0
@@ -117,15 +124,15 @@ class UnifiedActorSampler:
         if caps:
             cap = min(caps[min(max(turn - 1, 0), len(caps) - 1)], self.config.get("max_actions_per_turn", 200))
             self.cap_ends[game] += int(current.action == 0 and turn > 0 and self.turn_actions[game] >= cap
+                                       and terminal_reason != "action_limit_forfeit"
                                        and current.observation["action_mask"].sum() == 1)
         self.turn_actions[game] += 1
-        info = {}
-        if self.shapers:
-            reward, components = self.shapers[game].step(
-                current.action, current.observation, next_obs, reward, done=done)
-            if components is not None:
-                components["cap_end_rate"] = float(self.cap_ends[game] / max(self.turn_count[game], 1))
-                info["reward_components"] = components
+        info = {"termination_reason": terminal_reason} if terminal_reason else {}
+        if components is not None:
+            if terminal_reason == "action_limit_forfeit":
+                components["action_limit_forfeit_placement"] = placement
+            components["cap_end_rate"] = float(self.cap_ends[game] / max(self.turn_count[game], 1))
+            info["reward_components"] = components
         self.returns[game] += reward
         self.lengths[game] += 1
         if done:
@@ -136,12 +143,30 @@ class UnifiedActorSampler:
             self.last_turn[game] = -1
             self.turn_actions[game] = self.turn_count[game] = self.cap_ends[game] = 0
             self.started[game] = time.monotonic()
-        return reward, info
+        return reward, info, done, placement
 
     def learner_observation(self):
         return {key: value[::self.roles].copy() for key, value in self.observations.items() if key != "ready"}
 
+    def sync_restored_history(self):
+        changed = self._restore_versions != self.batch._restore_versions
+        if changed.any():
+            for game in np.flatnonzero(changed):
+                if self.shapers:
+                    self.shapers[game].reset()
+                for slot, shaper in self.opponent_shapers.items():
+                    if slot // self.roles == game:
+                        shaper.reset()
+                self.opponent_events[game] = []
+            self._restore_versions = self.batch._restore_versions.copy()
+            self.observations = self.batch.observe()
+
     def collect(self, steps_per_game, on_transition=None, on_batch=None):
+        self.sync_restored_history()
+        if self.opponent_shapers:
+            from .role_sampling import collect_role_aware
+
+            return collect_role_aware(self, steps_per_game, on_transition, on_batch)
         if steps_per_game < 1:
             raise ValueError("steps_per_game must be positive")
         counts = np.zeros(self.n_games, dtype=np.int64)
@@ -155,6 +180,14 @@ class UnifiedActorSampler:
             active = counts < steps_per_game
             slots = np.arange(self.batch.n_slots)
             ready = full["ready"] & active[slots // self.roles]
+            forfeits = np.zeros(self.batch.n_slots, dtype=bool)
+            for game, shaper in enumerate(self.shapers):
+                slot = game * self.roles
+                if ready[slot]:
+                    forfeits[slot] = shaper.action_limit_exceeded(
+                        {key: value[slot] for key, value in full.items() if key != "ready"})
+            forfeiting_games = forfeits[::self.roles]
+            ready &= (slots % self.roles == 0) | ~forfeiting_games[slots // self.roles]
             if not ready.any():
                 raise RuntimeError("Active rollout has no ready actor")
             actions = np.zeros(self.batch.n_slots, dtype=np.int64)
@@ -175,7 +208,7 @@ class UnifiedActorSampler:
                             np.float32(output.values[row]), np.float32(output.log_probs[row]))
                         submitted += 1
             tick = time.monotonic()
-            rewards, dones, metadata = self.batch.step(actions, active=active)
+            rewards, dones, metadata = self.batch.step(actions, active=active, forfeit=forfeits)
             try:
                 NativeVectorEnv._validate_result(dones, metadata)
             except RuntimeError:
@@ -195,6 +228,8 @@ class UnifiedActorSampler:
             observation_seconds += time.monotonic() - tick
             tick = time.monotonic()
             completed = []
+            ending = []
+            cycle_forfeits = np.zeros(self.batch.n_slots, dtype=bool)
             for game in np.flatnonzero(active):
                 slot = int(game * self.roles)
                 current = pending[game]
@@ -206,7 +241,30 @@ class UnifiedActorSampler:
                     continue
                 next_obs = {key: value[slot] for key, value in after.items() if key != "ready"}
                 placement = int(metadata["placement"][slot]) if done else 0
-                reward, info = self._episode_info(game, current, next_obs, current.reward, done, placement)
+                reason = "action_limit_forfeit" if forfeits[slot] else None
+                reward, components = current.reward, None
+                if self.shapers:
+                    reward, components = self.shapers[game].step(
+                        current.action, current.observation, next_obs, reward, done=done,
+                        terminal_reason=reason)
+                    cycle_forfeits[slot] = self.shapers[game].forfeit_requested
+                ending.append((game, slot, current, reward, done, placement, components, reason))
+            if cycle_forfeits.any():
+                terminal_rewards, terminal_dones, terminal_info = self.batch.forfeit(cycle_forfeits)
+                NativeVectorEnv._validate_result(terminal_dones, terminal_info)
+                if not terminal_dones[cycle_forfeits].all():
+                    raise RuntimeError("Native cycle surrender failed to end the learner episode")
+                self.batch.reset_finished_first()
+                after = self.batch.observe()
+            for game, slot, current, reward, done, placement, components, reason in ending:
+                if cycle_forfeits[slot]:
+                    placement = int(terminal_info["placement"][slot])
+                    components = self.shapers[game].finish_forfeit(terminal_rewards[slot], placement)
+                    reward += float(terminal_rewards[slot])
+                    done, reason = True, "cycle_forfeit"
+                reward, info, done, placement = self._episode_info(
+                    game, current, reward, done, placement, components, reason)
+                next_obs = {key: value[slot] for key, value in after.items() if key != "ready"}
                 transition = ActorTransition(
                     int(game), int(self.episodes[game]), int(self.episode_steps[game]), int(counts[game]),
                     current.observation, current.action, current.value, current.log_prob,
@@ -258,7 +316,7 @@ class ActorOpponentVectorEnv(NativeVectorEnv):
 
     def _fixed_actors(self):
         return FrozenOpponentPool(tuple(
-            OpponentGroup(group.name, PolicyActor(group.policy), group.count)
+            OpponentGroup(group.name, PolicyActor(group.policy), group.count, group.reward_shaping)
             for group in opponent_groups(self.opponent_policy, self.frozen_opponents)
         ))
 

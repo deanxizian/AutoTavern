@@ -1,0 +1,55 @@
+{
+  "status": "completed",
+  "kept_model": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+    "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+    "bytes": 51597964,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v5",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "removed_models": [
+    {
+      "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/final_model.zip",
+      "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+      "bytes": 51597964
+    },
+    {
+      "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/latest_model.zip",
+      "sha256": "dcee01a9605bca20e427ae95df2645d2b25d4875e79461fc74f0ea496240ebc4",
+      "bytes": 51597964
+    },
+    {
+      "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/starting_model.zip",
+      "sha256": "272c51a31f9e35de5fa105056c0f2f0e52637bcb63688dae7550e9b14316b907",
+      "bytes": 49261382
+    },
+    {
+      "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/checkpoints/iteration-0050.zip",
+      "sha256": "236de4ce06c4bcc7360060dd2bee99c60226034be5d7caa653061b2cf24f6cc5",
+      "bytes": 51597974
+    },
+    {
+      "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/checkpoints/iteration-0100.zip",
+      "sha256": "dcee01a9605bca20e427ae95df2645d2b25d4875e79461fc74f0ea496240ebc4",
+      "bytes": 51597964
+    }
+  ],
+  "heldout_used_for_selection": false,
+  "completed_at": "2026-11-01T06:17:00.017277+08:00"
+}

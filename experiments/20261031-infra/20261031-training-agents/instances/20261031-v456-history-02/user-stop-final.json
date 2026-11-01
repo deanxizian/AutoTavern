@@ -1,0 +1,77 @@
+{
+  "status": "stopped_by_user",
+  "stopped_at": "2026-11-01T00:22:35.290376+08:00",
+  "controller_pid": 3386157,
+  "training_pid": 3386169,
+  "both_processes_absent": true,
+  "final_progress": {
+    "status": "interrupted",
+    "phase": "sampling",
+    "updated_at": "2026-11-01T00:21:55.388686+08:00",
+    "pid": 3386169,
+    "completed_iterations": 12,
+    "target_iterations": 100,
+    "sampled_decisions": 1618196,
+    "optimizer_steps": 192,
+    "target_decisions": 13107200,
+    "elapsed_seconds": 836.2401345459948,
+    "estimated_remaining_seconds": 5978.217040928197,
+    "latest_model": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/latest_model.zip",
+    "peak_gpu_allocated_bytes": 4071166464,
+    "best_model": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/20261101-000750-best_model.zip"
+  },
+  "latest_complete_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/latest_model.zip",
+    "sha256": "5e51fec613e7d1f45a4f69ee598db808a72e2188548fa25c5a71f5e3bc09c9a6",
+    "bytes": 51596932,
+    "ppo_iteration": 12,
+    "sampled_decisions": 1572864,
+    "stage_optimizer_steps": 192,
+    "adam_total_steps": 5792,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "9b8a9b176424625c8884fedca1795ff519c9c9eeb17efbe94356666f887bb7c4",
+    "adam_moments_sha256": "c95c388aefa82a2d2a6e53ff328be64f1950e8926593166e9e8978cfb0f0aa53",
+    "model_version": "v4",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.0002,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": 3,
+      "turn_action_forfeit_limit": 60
+    }
+  },
+  "artifacts_deleted": false,
+  "config_unchanged": true,
+  "checkpoints": [
+    {
+      "path": "runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/20261101-000750-best_model.zip",
+      "sha256": "7b449fc5fb9e806aac92725b16261f795648ef74f4c763010bded15935057184",
+      "bytes": 49260467,
+      "complete_for_resume": true
+    },
+    {
+      "path": "runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/interrupted_model.zip",
+      "sha256": "e67f3d37a2d10526eeb125e4d5e027216247fdca38c0ea5940eb98f05c5a42f2",
+      "bytes": 51596932,
+      "complete_for_resume": false
+    },
+    {
+      "path": "runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/latest_model.zip",
+      "sha256": "5e51fec613e7d1f45a4f69ee598db808a72e2188548fa25c5a71f5e3bc09c9a6",
+      "bytes": 51596932,
+      "complete_for_resume": true
+    },
+    {
+      "path": "runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/starting_model.zip",
+      "sha256": "6cc9d94f476a6786e523de24b939d879dcef68e0207bbc4d976baff9bf1fce00",
+      "bytes": 49260467,
+      "complete_for_resume": true
+    }
+  ],
+  "next_source_must_be_original_v3": true,
+  "v5_started": false,
+  "conditional_extension_enabled": false
+}

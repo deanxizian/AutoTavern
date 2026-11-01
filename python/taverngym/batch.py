@@ -30,6 +30,7 @@ from taverngym._core import Game
 
 class BatchEnv:
     def __init__(self, n_games, seed=0, controlled=(0,), config=None, threads=1, rotate_seats=False):
+        self._restore_versions = np.zeros(int(n_games), dtype=np.int64)
         config_json = json.dumps(config) if config is not None else None
         self._env = _BatchEnv(int(n_games), int(seed), [int(p) for p in controlled],
                               config_json, int(threads), bool(rotate_seats))
@@ -81,7 +82,7 @@ class BatchEnv:
             "ready": np.frombuffer(r, dtype=np.uint8).astype(bool),
         }
 
-    def step(self, actions, active=None):
+    def step(self, actions, active=None, forfeit=None, skipped=None):
         """Apply one action per slot. Returns (rewards float32 [n_slots], dones bool
         [n_slots], info) with `info["placement"]` (uint8, the final placement where done;
         0 if a simulator guard stopped the game), `info["rejected"]` (bool), and
@@ -90,13 +91,55 @@ class BatchEnv:
         a = np.ascontiguousarray(np.asarray(actions).reshape(-1), dtype="<i8")
         if a.shape[0] != self.n_slots:
             raise ValueError(f"{a.shape[0]} actions for {self.n_slots} slots")
+        selected = None if forfeit is None else np.asarray(forfeit, dtype=bool)
+        if selected is not None and selected.shape != (self.n_slots,):
+            raise ValueError("forfeit requires one flag per slot")
+        if selected is not None and selected.any():
+            active_games = (np.ones(self.n_games, dtype=bool) if active is None
+                            else np.asarray(active, dtype=bool).copy())
+            if active_games.shape != (self.n_games,):
+                raise ValueError("active must contain one flag per game")
+            forfeiting_games = selected.reshape(self.n_games, -1).any(axis=1)
+            if (forfeiting_games & ~active_games).any():
+                raise ValueError("Cannot forfeit an inactive game")
+            terminal_rw, terminal_dn, terminal_info = self.forfeit(selected)
+            active_games &= ~forfeiting_games
+            rw, dn, info = self.step(actions, active=active_games)
+            rw += terminal_rw
+            dn |= terminal_dn
+            info["placement"][terminal_dn] = terminal_info["placement"][terminal_dn]
+            info["forfeited"] = selected.copy()
+            return rw, dn, info
         flags = None
         if active is not None:
             flags = np.asarray(active, dtype=np.uint8)
             if flags.shape != (self.n_games,):
                 raise ValueError("active must contain one flag per game")
             flags = flags.tobytes()
-        rw, dn, pl, status = self._env.step(a.tobytes(), flags)
+        held = None
+        if skipped is not None:
+            if forfeit is not None:
+                raise ValueError("Use either role skipping or direct forfeits")
+            held_array = np.asarray(skipped, dtype=np.uint8)
+            if held_array.shape != (self.n_slots,):
+                raise ValueError("skipped requires one flag per slot")
+            held = held_array.tobytes()
+        rw, dn, pl, status = self._env.step(a.tobytes(), flags, held)
+        return self._decode_result(rw, dn, pl, status)
+
+    def forfeit(self, selected):
+        """Surrender selected ready roles simultaneously, with native placement ties.
+
+        Returns the same reward/done/placement structure as step. No action is
+        taken in other games. Historical callers never invoke this opt-in API.
+        """
+        flags = np.asarray(selected, dtype=np.uint8)
+        if flags.shape != (self.n_slots,):
+            raise ValueError("forfeit requires one flag per slot")
+        return self._decode_result(*self._env.forfeit(flags.tobytes()))
+
+    @staticmethod
+    def _decode_result(rw, dn, pl, status):
         status = np.frombuffer(status, dtype=np.uint8)
         return (
             np.frombuffer(rw, dtype="<f4").copy(),
@@ -114,6 +157,7 @@ class BatchEnv:
 
     def load(self, i, state):
         self._env.load(int(i), state)
+        self._restore_versions[int(i)] += 1
 
     def episode_index(self, i):
         return self._env.episode_index(int(i))

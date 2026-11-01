@@ -1,0 +1,22 @@
+{
+  "checked_at": "2026-11-01T10:05:58.064632+08:00",
+  "eligible": true,
+  "checks": {
+    "v4_complete": true,
+    "v4_finite_and_consistent": true,
+    "v4_no_unresolved_native_failure": true,
+    "v5_complete": true,
+    "v5_finite_and_consistent": true,
+    "v5_no_unresolved_native_failure": true,
+    "v6_complete": true,
+    "v6_finite_and_consistent": true,
+    "v6_no_unresolved_native_failure": true,
+    "v6_self_forfeit_metrics_valid": true,
+    "v6_disabled_early_termination_rates_are_zero": true,
+    "not_three_consecutive_stage_best_step0": true
+  },
+  "v6_selected_validation_self_forfeit_rate": 0.0,
+  "used_for_model_selection": false,
+  "heldout_used_for_gate": false,
+  "reason": "all primary checks passed"
+}

@@ -1,0 +1,344 @@
+{
+  "source": "turns.jsonl.gz",
+  "source_sha256": "094a452ad675b07e538e7f2a7b4105c37ae1a46a005350e972d72f7e530b3e61",
+  "model": "v5",
+  "protocol": "320 eight-player games; ten balanced V0/V1/V2/V3/V5 1-2-seat lineups,32 games each;512 V5 entries;stochastic BF16 frozen models",
+  "player_turns": 7496,
+  "capped_turns": 2829,
+  "cap_fraction": 0.37740128068303097,
+  "zero_return_cap_turns": 623,
+  "all_action_categories": {
+    "Buy": 15048,
+    "Play": 25613,
+    "Refresh": 14338,
+    "Freeze": 18874,
+    "End": 7494,
+    "Choose": 17104,
+    "HeroPower": 2320,
+    "Magnetize": 4331,
+    "Cancel": 470,
+    "Move": 161180,
+    "Upgrade": 1992,
+    "Sell": 3474,
+    "DarkGift": 1528,
+    "Activate": 101
+  },
+  "cap_first60_action_categories": {
+    "Choose": 8162,
+    "Play": 13278,
+    "Buy": 7251,
+    "DarkGift": 227,
+    "Move": 117837,
+    "Refresh": 8512,
+    "Freeze": 7501,
+    "Sell": 2210,
+    "HeroPower": 1108,
+    "Upgrade": 942,
+    "Magnetize": 2467,
+    "Cancel": 185,
+    "Activate": 60
+  },
+  "cap_first60_mean_categories": {
+    "Choose": 2.8851184164015553,
+    "Play": 4.693531283138919,
+    "Buy": 2.563096500530223,
+    "DarkGift": 0.08024036762106751,
+    "Move": 41.65323435843054,
+    "Refresh": 3.008837044892188,
+    "Freeze": 2.6514669494521033,
+    "Sell": 0.7811947684694238,
+    "HeroPower": 0.3916578296217745,
+    "Upgrade": 0.3329798515376458,
+    "Magnetize": 0.872039589961117,
+    "Cancel": 0.06539413220219159,
+    "Activate": 0.021208907741251327
+  },
+  "cap_last10_action_categories": {
+    "Move": 23701,
+    "Freeze": 1592,
+    "Sell": 323,
+    "Buy": 291,
+    "Play": 971,
+    "Refresh": 837,
+    "Choose": 490,
+    "HeroPower": 23,
+    "Cancel": 15,
+    "Upgrade": 13,
+    "Magnetize": 32,
+    "Activate": 2
+  },
+  "cap_last10_return_fraction": 0.048815835984446804,
+  "cap_move_freeze_cancel_suffix_after_last_other": {
+    "mean": 15.305761753269707,
+    "at_least_10": 1549,
+    "at_least_20": 938,
+    "at_least_30": 506
+  },
+  "by_turn": {
+    "1": {
+      "n": 512,
+      "mean_actions": 7.765625,
+      "capped": 0,
+      "cap_fraction": 0.0,
+      "mean_moves": 0.01171875,
+      "mean_returns": 2.2265625
+    },
+    "2": {
+      "n": 512,
+      "mean_actions": 9.716796875,
+      "capped": 0,
+      "cap_fraction": 0.0,
+      "mean_moves": 0.443359375,
+      "mean_returns": 2.142578125
+    },
+    "3": {
+      "n": 512,
+      "mean_actions": 12.671875,
+      "capped": 0,
+      "cap_fraction": 0.0,
+      "mean_moves": 1.845703125,
+      "mean_returns": 2.18359375
+    },
+    "4": {
+      "n": 512,
+      "mean_actions": 17.318359375,
+      "capped": 8,
+      "cap_fraction": 0.015625,
+      "mean_moves": 5.126953125,
+      "mean_returns": 1.888671875
+    },
+    "5": {
+      "n": 512,
+      "mean_actions": 25.73046875,
+      "capped": 30,
+      "cap_fraction": 0.05859375,
+      "mean_moves": 11.45703125,
+      "mean_returns": 1.71875
+    },
+    "6": {
+      "n": 512,
+      "mean_actions": 35.826171875,
+      "capped": 113,
+      "cap_fraction": 0.220703125,
+      "mean_moves": 19.037109375,
+      "mean_returns": 1.72265625
+    },
+    "7": {
+      "n": 512,
+      "mean_actions": 38.939453125,
+      "capped": 161,
+      "cap_fraction": 0.314453125,
+      "mean_moves": 22.2265625,
+      "mean_returns": 1.494140625
+    },
+    "8": {
+      "n": 511,
+      "mean_actions": 43.099804305283755,
+      "capped": 215,
+      "cap_fraction": 0.4207436399217221,
+      "mean_moves": 24.772994129158512,
+      "mean_returns": 1.2465753424657535
+    },
+    "9": {
+      "n": 503,
+      "mean_actions": 46.866799204771375,
+      "capped": 254,
+      "cap_fraction": 0.5049701789264414,
+      "mean_moves": 27.214711729622266,
+      "mean_returns": 1.345924453280318
+    },
+    "10": {
+      "n": 485,
+      "mean_actions": 49.5340206185567,
+      "capped": 291,
+      "cap_fraction": 0.6,
+      "mean_moves": 30.65979381443299,
+      "mean_returns": 1.3649484536082475
+    },
+    "11": {
+      "n": 460,
+      "mean_actions": 51.29347826086956,
+      "capped": 303,
+      "cap_fraction": 0.658695652173913,
+      "mean_moves": 32.84130434782609,
+      "mean_returns": 1.3065217391304347
+    },
+    "12": {
+      "n": 423,
+      "mean_actions": 51.59810874704492,
+      "capped": 284,
+      "cap_fraction": 0.6713947990543735,
+      "mean_moves": 33.9338061465721,
+      "mean_returns": 1.4326241134751774
+    },
+    "13": {
+      "n": 371,
+      "mean_actions": 53.495956873315365,
+      "capped": 265,
+      "cap_fraction": 0.7142857142857143,
+      "mean_moves": 36.34770889487871,
+      "mean_returns": 1.5902964959568733
+    },
+    "14": {
+      "n": 321,
+      "mean_actions": 54.69781931464174,
+      "capped": 254,
+      "cap_fraction": 0.7912772585669782,
+      "mean_moves": 38.283489096573206,
+      "mean_returns": 1.5264797507788161
+    },
+    "15": {
+      "n": 275,
+      "mean_actions": 53.81090909090909,
+      "capped": 201,
+      "cap_fraction": 0.730909090909091,
+      "mean_moves": 38.92727272727273,
+      "mean_returns": 1.52
+    },
+    "16": {
+      "n": 193,
+      "mean_actions": 54.61139896373057,
+      "capped": 148,
+      "cap_fraction": 0.7668393782383419,
+      "mean_moves": 40.35233160621762,
+      "mean_returns": 1.6476683937823835
+    },
+    "17": {
+      "n": 141,
+      "mean_actions": 55.00709219858156,
+      "capped": 114,
+      "cap_fraction": 0.8085106382978723,
+      "mean_moves": 41.0354609929078,
+      "mean_returns": 1.6879432624113475
+    },
+    "18": {
+      "n": 96,
+      "mean_actions": 55.166666666666664,
+      "capped": 80,
+      "cap_fraction": 0.8333333333333334,
+      "mean_moves": 41.770833333333336,
+      "mean_returns": 1.5833333333333333
+    },
+    "19": {
+      "n": 62,
+      "mean_actions": 53.08064516129032,
+      "capped": 48,
+      "cap_fraction": 0.7741935483870968,
+      "mean_moves": 40.66129032258065,
+      "mean_returns": 1.3709677419354838
+    },
+    "20": {
+      "n": 37,
+      "mean_actions": 56.86486486486486,
+      "capped": 31,
+      "cap_fraction": 0.8378378378378378,
+      "mean_moves": 44.62162162162162,
+      "mean_returns": 1.162162162162162
+    },
+    "21": {
+      "n": 16,
+      "mean_actions": 53.8125,
+      "capped": 13,
+      "cap_fraction": 0.8125,
+      "mean_moves": 41.75,
+      "mean_returns": 1.1875
+    },
+    "22": {
+      "n": 8,
+      "mean_actions": 54.625,
+      "capped": 7,
+      "cap_fraction": 0.875,
+      "mean_moves": 42.25,
+      "mean_returns": 2.125
+    },
+    "23": {
+      "n": 5,
+      "mean_actions": 54.2,
+      "capped": 4,
+      "cap_fraction": 0.8,
+      "mean_moves": 43.8,
+      "mean_returns": 1
+    },
+    "24": {
+      "n": 3,
+      "mean_actions": 61,
+      "capped": 3,
+      "cap_fraction": 1.0,
+      "mean_moves": 49.666666666666664,
+      "mean_returns": 1.6666666666666667
+    },
+    "25": {
+      "n": 2,
+      "mean_actions": 61,
+      "capped": 2,
+      "cap_fraction": 1.0,
+      "mean_moves": 48,
+      "mean_returns": 1
+    }
+  },
+  "cautions": [
+    "Move/Freeze/Cancel category does not prove an action lacks tactical value.",
+    "No raw state or uncapped legal mask; cannot estimate the count/value of useful blocked operations.",
+    "Zero whole-observation return does not prove meaningful progress; observation changes from others may break continuity."
+  ],
+  "examples": [
+    {
+      "lineup_id": 7,
+      "lane": 17,
+      "seat": 2,
+      "turn": 14,
+      "actions": 61,
+      "cycle_returns": 2,
+      "forced_ends": 1,
+      "action_categories": {
+        "Move": 60,
+        "End": 1
+      },
+      "move_freeze_cancel_tail_after_last_other": 60,
+      "tail10_categories": {
+        "Move": 10
+      },
+      "tail10_cycle_returns": 0
+    },
+    {
+      "lineup_id": 4,
+      "lane": 26,
+      "seat": 1,
+      "turn": 14,
+      "actions": 61,
+      "cycle_returns": 0,
+      "forced_ends": 1,
+      "action_categories": {
+        "Upgrade": 1,
+        "Freeze": 1,
+        "Move": 58,
+        "End": 1
+      },
+      "move_freeze_cancel_tail_after_last_other": 59,
+      "tail10_categories": {
+        "Move": 10
+      },
+      "tail10_cycle_returns": 0
+    },
+    {
+      "lineup_id": 5,
+      "lane": 21,
+      "seat": 6,
+      "turn": 16,
+      "actions": 61,
+      "cycle_returns": 4,
+      "forced_ends": 1,
+      "action_categories": {
+        "Upgrade": 1,
+        "Move": 56,
+        "Freeze": 3,
+        "End": 1
+      },
+      "move_freeze_cancel_tail_after_last_other": 59,
+      "tail10_categories": {
+        "Move": 10
+      },
+      "tail10_cycle_returns": 1
+    }
+  ]
+}

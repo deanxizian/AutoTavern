@@ -3,7 +3,7 @@
   "status": "draft",
   "enabled": false,
   "methodology": "docs/TRAINING_METHODOLOGY.md",
-  "coordinator_agent_template": "configs/agents/training-coordinator.toml",
+  "orchestrator_agent_template": "configs/agents/orchestrator.toml",
   "initial_experiment": "experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/config.json",
   "initial_champion": {
     "version": "v3",

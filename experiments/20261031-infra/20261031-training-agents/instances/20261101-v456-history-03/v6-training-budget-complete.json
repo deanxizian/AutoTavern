@@ -1,0 +1,34 @@
+{
+  "verified_at": "2026-11-01T09:25:22.935790+08:00",
+  "actual_pool": "2V5+2V4+2V3+1script",
+  "complete_ppo100_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/latest_model.zip",
+    "sha256": "ad7b8fefdde756e4da0214706abfc5cf03607b5babdacc638516cd0b4de1dfb1",
+    "bytes": 51598492,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 8800,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "4b8f4c2d4d5de1624fdc9bd5c0cc0bce24fa1e6efc61e756858931b159323ff9",
+    "adam_moments_sha256": "55ad12a5904a09551e2798b95d5bf4190674c0c0dcd5c87465980b9fc5d24920",
+    "model_version": "v6",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "primary_committed_budget_total": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "conditional_extension_enabled": false,
+  "next": "PPO100 val and heldout, finalization and retention, then conditional health gate; no extra training before gate"
+}

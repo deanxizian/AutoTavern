@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-11-01T10:51:49.798249+08:00",
+  "policy": {
+    "retire_when": "Final selected best policy fingerprint equals inherited source policy fingerprint; compare actual policy tensors, not ZIP bytes.",
+    "training_not_skipped": "Retired may have trained its full budget; retirement describes the selected retained policy.",
+    "new_pool_eligibility": "Exclude retired versions from future development-reference and training pools; no extra seats under aliases.",
+    "future_source": "Use the explicitly selected active canonical version and verify complete PPO/Adam.",
+    "preservation": "Keep historical weights, configurations, logs and citations; no retroactive rename or deletion."
+  },
+  "versions": {
+    "v0": {
+      "status": "active",
+      "canonical_version": "v0",
+      "kind": "native_scripted",
+      "source": "crates/taverngym/src/bot.rs"
+    },
+    "v1": {
+      "status": "active",
+      "canonical_version": "v1",
+      "kind": "trained_policy",
+      "retained_model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "retained_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+    },
+    "v2": {
+      "status": "active",
+      "canonical_version": "v2",
+      "kind": "trained_policy",
+      "retained_model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "retained_sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+    },
+    "v3": {
+      "status": "active",
+      "canonical_version": "v3",
+      "kind": "trained_policy",
+      "retained_model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "retained_sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1"
+    },
+    "v4": {
+      "status": "retired",
+      "canonical_version": "v3",
+      "kind": "trained_policy",
+      "reason": "selected_best_is_unchanged_inherited_policy",
+      "fresh_samples": 13107200,
+      "trained_ppo_iterations": 100,
+      "selected_ppo_iteration": 0,
+      "retained_model": "runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/20261101-003912-best_model.zip",
+      "retained_sha256": "2dc3c78ec0370e9dbc597736a2c4fcdfd4c17919d81a438bde278a82973a80c6",
+      "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+      "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+      "source_model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "source_sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+      "policy_and_adam_unchanged": true,
+      "evidence": "experiments/20261031-exp04-v4-cycle-only/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/results.json",
+      "history_and_weights_preserved": true
+    },
+    "v5": {
+      "status": "active",
+      "canonical_version": "v5",
+      "kind": "trained_policy",
+      "retained_model": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+      "retained_sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6"
+    },
+    "v6": {
+      "status": "retired",
+      "canonical_version": "v5",
+      "kind": "trained_policy",
+      "reason": "selected_best_is_unchanged_inherited_policy",
+      "fresh_samples": 13107200,
+      "trained_ppo_iterations": 100,
+      "selected_ppo_iteration": 0,
+      "retained_model": "runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/20261101-063233-best_model.zip",
+      "retained_sha256": "3bde7248ab9a69a277813bfbdf57f17a7ae9eb664be54979749c3da76540a2ed",
+      "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+      "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+      "source_model": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+      "source_sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+      "policy_and_adam_unchanged": true,
+      "evidence": "experiments/20261031-exp06-v6-cycle-forfeit/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/results.json",
+      "history_and_weights_preserved": true
+    }
+  }
+}

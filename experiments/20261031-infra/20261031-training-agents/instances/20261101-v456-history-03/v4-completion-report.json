@@ -1,0 +1,132 @@
+{
+  "verified_at": "2026-11-01T03:08:08.637498+08:00",
+  "stage": "v4",
+  "status": "completed",
+  "training_budget": {
+    "ppo": 100,
+    "samples": 13107200,
+    "adam": 1600
+  },
+  "selected_complete_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/20261101-003912-best_model.zip",
+    "sha256": "2dc3c78ec0370e9dbc597736a2c4fcdfd4c17919d81a438bde278a82973a80c6",
+    "bytes": 49260732,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+    "model_version": "v4",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "heldout": {
+    "final": {
+      "mixed_sampled": {
+        "games": 128,
+        "mean_placement": 3.859375,
+        "first_rate": 0.2265625,
+        "top4_rate": 0.59375,
+        "cycle_returns": 22.5859375,
+        "cycle_return_fraction": 0.046969163891267346,
+        "cycle_penalty": -0.22585937500000006
+      },
+      "mixed_greedy": {
+        "games": 128,
+        "mean_placement": 3.3359375,
+        "first_rate": 0.234375,
+        "top4_rate": 0.7109375,
+        "cycle_returns": 474.2109375,
+        "cycle_return_fraction": 0.628704702230482,
+        "cycle_penalty": -4.742109374999943
+      }
+    },
+    "initial": {
+      "mixed_sampled": {
+        "games": 128,
+        "mean_placement": 3.515625,
+        "first_rate": 0.1875,
+        "top4_rate": 0.6796875,
+        "cycle_returns": 142.0703125,
+        "cycle_return_fraction": 0.18880541626801,
+        "cycle_penalty": -1.420703125
+      },
+      "mixed_greedy": {
+        "games": 128,
+        "mean_placement": 4.171875,
+        "first_rate": 0.15625,
+        "top4_rate": 0.578125,
+        "cycle_returns": 571.75,
+        "cycle_return_fraction": 0.7197700246082142,
+        "cycle_penalty": -5.717499999999923
+      }
+    },
+    "best": {
+      "mixed_sampled": {
+        "games": 128,
+        "mean_placement": 3.515625,
+        "first_rate": 0.1875,
+        "top4_rate": 0.6796875,
+        "cycle_returns": 142.0703125,
+        "cycle_return_fraction": 0.18880541626801,
+        "cycle_penalty": -1.420703125
+      },
+      "mixed_greedy": {
+        "games": 128,
+        "mean_placement": 4.171875,
+        "first_rate": 0.15625,
+        "top4_rate": 0.578125,
+        "cycle_returns": 571.75,
+        "cycle_return_fraction": 0.7197700246082142,
+        "cycle_penalty": -5.717499999999923
+      }
+    }
+  },
+  "heldout_used_for_selection": false,
+  "retention_status": "completed",
+  "current_controller_stage": "v5",
+  "next_ranking_candidates": [
+    {
+      "version": "v1",
+      "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+    },
+    {
+      "version": "v2",
+      "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+    },
+    {
+      "version": "v3",
+      "model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1"
+    },
+    {
+      "version": "v4",
+      "model": "runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/20261101-003912-best_model.zip",
+      "sha256": "2dc3c78ec0370e9dbc597736a2c4fcdfd4c17919d81a438bde278a82973a80c6"
+    }
+  ],
+  "budget": {
+    "used": {
+      "ppo_iterations": 100,
+      "samples": 13107200,
+      "adam_updates": 1600
+    },
+    "remaining": {
+      "ppo_iterations": 200,
+      "samples": 26214400,
+      "adam_updates": 3200
+    }
+  }
+}

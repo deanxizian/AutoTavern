@@ -1,0 +1,66 @@
+{
+  "instance_id": "20261031-v456-fixedlr-01",
+  "status": "stopped",
+  "phase": "training",
+  "controller_pid": 2959482,
+  "training_pid": null,
+  "stage": "v4",
+  "stage_index": 0,
+  "config_path": "/home/eric/projects/AutoTavern/experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/config.json",
+  "manifest": "/home/eric/projects/AutoTavern/experiments/20261031-infra/20261031-training-agents/instances/20261031-v456-fixedlr-01/manifest.json",
+  "complete_checkpoint": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/latest_model.zip",
+  "completed_stages": [],
+  "recoveries": {},
+  "updated_at": "2026-10-31T23:47:27.473936+08:00",
+  "budget": {
+    "used": {
+      "ppo_iterations": 3,
+      "samples": 435339,
+      "adam_updates": 48
+    },
+    "remaining": {
+      "ppo_iterations": 297,
+      "samples": 38886261,
+      "adam_updates": 4752
+    }
+  },
+  "stop_reason": "explicit SIGTERM; no automatic restart",
+  "last_progress_at": "2026-10-31T23:47:16.803184+08:00",
+  "log_path": "/home/eric/projects/AutoTavern/experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/training-1793461442448353239.log",
+  "command": [
+    "/home/eric/projects/AutoTavern/.venv/bin/python",
+    "-u",
+    "-m",
+    "taverngym.learning.experiment",
+    "--config",
+    "/home/eric/projects/AutoTavern/experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/config.json",
+    "--model",
+    "/home/eric/projects/AutoTavern/runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "--experiment-dir",
+    "/home/eric/projects/AutoTavern/experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only",
+    "--run-dir",
+    "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only",
+    "--device",
+    "cuda",
+    "--continue-stage"
+  ],
+  "checkpoint_directory": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only",
+  "progress": {
+    "status": "interrupted",
+    "phase": "sampling",
+    "updated_at": "2026-10-31T23:47:16.803184+08:00",
+    "pid": 2959494,
+    "completed_iterations": 3,
+    "target_iterations": 100,
+    "sampled_decisions": 435339,
+    "optimizer_steps": 48,
+    "target_decisions": 13107200,
+    "elapsed_seconds": 179.99363470500975,
+    "estimated_remaining_seconds": 5215.073965610703,
+    "latest_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/latest_model.zip",
+    "peak_gpu_allocated_bytes": 4048965120,
+    "best_model": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/20261031-234404-best_model.zip"
+  },
+  "last_child_exit_code": 0,
+  "error": "ValueError: Controller stopped by explicit signal; no automatic restart"
+}

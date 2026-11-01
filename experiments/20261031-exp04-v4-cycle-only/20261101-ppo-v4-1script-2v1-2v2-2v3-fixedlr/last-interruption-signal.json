@@ -1,0 +1,7 @@
+{
+  "received_at": "2026-11-01T00:21:55.301436+08:00",
+  "pid": 3386169,
+  "signal": "SIGTERM",
+  "signal_number": 15,
+  "sender": "not available from Python signal handler"
+}

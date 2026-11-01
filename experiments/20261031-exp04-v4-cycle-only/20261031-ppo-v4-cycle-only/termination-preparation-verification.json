@@ -1,0 +1,131 @@
+{
+  "checked_at": "2026-10-31T23:24:21.461079+08:00",
+  "training_started": false,
+  "native_build": {
+    "source_hash": "c62b73d6971ca922",
+    "profile": "release",
+    "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+  },
+  "configs": [
+    {
+      "version": "v4",
+      "path": "experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/config.json",
+      "sha256": "75593ec8fe829ef1d1e26aa328073da4d82cba9a915fb0fe1a12ceb4528a102c",
+      "initial_model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "initial_model_sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1"
+    },
+    {
+      "version": "v5",
+      "path": "experiments/20261031-exp05-v5-cycle-forfeit/20261031-ppo-v5-cycle-forfeit/config.json",
+      "sha256": "0b013a2f71735ed1588a690fa658a93c92edaa008f2f002b11b849e052f205d8",
+      "initial_model": null,
+      "initial_model_sha256": null
+    },
+    {
+      "version": "v6",
+      "path": "experiments/20261031-exp06-v6-cycle-forfeit/20261031-ppo-v6-cycle-forfeit/config.json",
+      "sha256": "58511a6926e1307c81eab5fba08bebcf56bfe318f29ee2301467e5d1fcb32adf",
+      "initial_model": null,
+      "initial_model_sha256": null
+    }
+  ],
+  "models": [
+    {
+      "name": "v3_source",
+      "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1"
+    },
+    {
+      "name": "bot_v1",
+      "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+    },
+    {
+      "name": "bot_v2",
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+    }
+  ],
+  "historical_configs_unchanged": true,
+  "source_ppo_iteration": 150,
+  "source_adam_steps": [
+    5600
+  ],
+  "source_optimizer_states": 91,
+  "source_guard": "V5 launch rejected before model load / environment / W&B creation when source unbound",
+  "total_ppo_budget": 300,
+  "total_fresh_sample_budget": 39321600,
+  "total_adam_budget_max": 4800,
+  "verified_at": "2026-10-31T23:27:01.059916+08:00",
+  "checks": {
+    "python_full": {
+      "command": "uv run --locked --group train --extra test python -m pytest -q --tb=short",
+      "passed": 182,
+      "failed": 0,
+      "seconds": 46.22,
+      "cuda_executed": true,
+      "wandb_offline_integration_executed": true,
+      "execution": "host access required for CUDA and local sockets; sandbox run could not access them"
+    },
+    "targeted_final": {
+      "command": "python -m pytest -q tests/test_actor_sampling.py tests/test_actor_ppo.py tests/test_reward_shaping.py --tb=short",
+      "passed": 87,
+      "seconds": 14.5
+    },
+    "rust_full": {
+      "command": "cargo test --release",
+      "passed": 860,
+      "failed": 0,
+      "toolchain": "1.98.1"
+    },
+    "rust_format": {
+      "command": "cargo fmt --all -- --check",
+      "passed": true
+    },
+    "rust_clippy": {
+      "command": "cargo clippy --release --all-targets -- -D warnings",
+      "passed": true
+    },
+    "diff_whitespace": {
+      "command": "git diff --check",
+      "passed": true
+    },
+    "entry_help": {
+      "command": "python -m taverngym.learning.experiment --help",
+      "passed": true
+    }
+  },
+  "rule_checks": [
+    "Three complete two-action trips ABABAB forfeit after action six; three-action menu cycles after action nine",
+    "Both termination reasons use native elimination rank, reward and non-truncated episode endings",
+    "PPO GAE stops at either forfeit, with correct placement targets and no reset-game bootstrap",
+    "First 60 actions allowed; attempted action 61 intercepted before forced End or combat",
+    "Rotated learner roles, multiple frozen policy groups, inactive games and multi-threaded trajectories remain consistent",
+    "Same-turn histories span rollout boundaries; genuine progress and turn/episode/reset boundaries handled",
+    "Legacy configs keep both forfeit options disabled; V1/V2/V3 config bytes equal git HEAD",
+    "Cycle forfeits batch terminal settlement and refresh observations once per native tick",
+    "Unbound next-stage source blocks launch before model/environment/tracking initialization"
+  ],
+  "implementation_git_base": "e9e572dd8e5e237b859dd5379488d6804ffcaae8",
+  "verified_file_sha256": {
+    "crates/taverngym/src/flow.rs": "c9729d47326172645c5fa972b828825dab314725a0d11f59a3659a609f620148",
+    "crates/taverngym/src/env.rs": "c33485cc2981bf6b25bce413fbf4b00ce57d8664b6c77eb0a099843f57f11775",
+    "crates/taverngym/src/batch.rs": "5db6f741360ebdfd3ca7b93b7c73e69376dded42a61b9c1656101b50d4a83910",
+    "crates/taverngym-py/src/lib.rs": "c795aa25c282d7d8b40c192a45e646bb6649dbf7f993b0505a86ade171de7fdb",
+    "python/taverngym/batch.py": "e371d5e22bcc0b1d0cc477ce8432f425728d17d2152f6c29e2495b5418a766d2",
+    "python/taverngym/env.py": "783d565b4d97a629ddf160c01eaa7a84c83c2408858d84a3796ed1d570b51e92",
+    "python/taverngym/learning/rewards.py": "4d8c45388bdfa7b60fee0f6d198fc9a1a708cd3845e63353b2e43efd4e85511d",
+    "python/taverngym/learning/env.py": "c625a1b3c8b07d194c04e3c252c0753b56c37fa980cc16c907e4a8d307b9d555",
+    "python/taverngym/learning/vector_env.py": "9e577278c2b13948c68c8c6182b1b8453e6bd013abab885f137413bd56387f23",
+    "python/taverngym/learning/actor_sampling.py": "dd117e688248ec4bf7c2bea8e943b70d80040a73c2cd8be50217ad29f24f6228",
+    "python/taverngym/learning/experiment.py": "d251a1f1a79ae948b662afe2d03ebcb238c978d9bb398efbd4c7a3e5ba3a8928",
+    "tests/test_reward_shaping.py": "4336801d258eaf3de1f0f3228bcf5e44fa57aff608bf9de4b505c4c26a98864b",
+    "tests/test_actor_sampling.py": "418d0fd3869a2954de01944a6dece4f0922b2a9e4de255e29d9542a0640fd131",
+    "tests/test_tracking.py": "df2b0367db8c2e2290adea5833ccb8b56c66c9e775f38fbafba749ee9326dd11"
+  },
+  "remaining_observation_risks": [
+    "Current elimination rank can yield positive placement utility late in the game; do not reinterpret it as fixed -1",
+    "Visible-state cycles are not full simulator-state equivalence; novel visible states reset cycle streak but never turn action budget",
+    "Old V3 historical measurements use a different termination protocol; re-evaluate source weights as the V4 learner"
+  ]
+}

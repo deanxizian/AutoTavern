@@ -1,0 +1,14 @@
+{
+  "id": "20261101-ppo-v8-history-ranked-fixedlr",
+  "model_version": "v8",
+  "instance_id": "20261031-v456-history-02",
+  "created_at": "2026-11-01T00:02:31.100509+08:00",
+  "status": "conditional_pending_gate_and_ranking",
+  "training_started": false,
+  "weights_created": false,
+  "config_sha256": "4160cf4cf084270ce61cc244f72bbf39a69361321e1e73a49c1585c34ba66249",
+  "source_binding_required": true,
+  "initial_source": null,
+  "conditional": true,
+  "old_instance01_untouched": true
+}

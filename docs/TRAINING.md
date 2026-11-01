@@ -61,6 +61,29 @@ End 本身不收循环成本，没有增加 60 步触顶惩罚。
 各版本以各自实验 `config.json` 为准；通用初始化模板不回写 V1／V2／V3。
 V4 尚未启动，初始权重已锁定为 V3 最终保留的 PPO150 best。
 
+### V4–V6：重复或动作超限判负
+
+V4–V6 独立配置进一步显式设置：
+
+```json
+"cycle_forfeit_repetitions": 3,
+"turn_action_forfeit_limit": 60
+```
+
+两个字段放在 `reward_shaping` 内；缺省均为 `null`，旧实验不启用。
+reward 模块判断条件，训练包装层请求原生淘汰。连续三次完整闭环判负：
+两动作往返 `ABABAB` 在第六个动作后触发，不能用返回已见状态次数代替完整闭环数。
+新可见状态清零连续闭环数；End、跨回合、reset、观测断续清空循环历史，同回合跨 rollout 保留。
+
+动作预算单独累计，不能靠新状态重置。前 60 个招募回合动作允许执行，
+仍未结束时第 61 次动作请求在执行前判负，包含旧规则下被迫选出的 End。
+60 步以内主动 End 正常结束回合；英雄选择不计，回合内出牌／选择／取消／技能都计。
+预算判负先于执行动作，循环判负在动作执行后检测，避免跨战斗结算或双发奖励。
+
+判负复用真实淘汰名次与原名次奖励：含自身还剩 N 人则第 N；`done=True`，非时间截断，
+PPO 不向重置后的下一局 bootstrap。两种判负原因单独记录，冻结 V1／V2 对手保持旧规则。
+独立配置和风险检查见 [V4–V6 计划](../experiments/20261031-exp04-v4-cycle-only/V4-V6-PLAN.md)。
+
 ## 保留 Adam 的新阶段与通用对手池
 
 后续混合对手验证只保留随机与贪心两组，不额外运行七脚本对照：
@@ -89,6 +112,10 @@ Adam step；阶段样本、PPO 与优化器更新日志从零计数。`--resume`
 所有 minibatch 共用当次 LR；每个真实 Adam 点继续记录 `train/learning_rate`。
 `train/adam_total_steps` 显示包含继承历史的 Adam 计数，图表横轴仍是阶段内实际 Adam 次数。
 完整参数与预期 LR 见 [实验 03](../experiments/20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/README.md)。
+
+V4–V6 准备配置改为固定 LR `1e-5`，不做 warmup 或衰减；复用 `linear` 调度，
+将 `learning_rate_start`、`learning_rate_end` 都设为 `1e-5`，仍继承来源 Adam 状态。
+各阶段独立配置为准，不修改 V3 的历史 warmup 协议。
 
 ## 前向精度
 

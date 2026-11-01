@@ -1048,6 +1048,32 @@ impl Game {
         unreachable!("an unconstrained pairing always exists")
     }
 
+    /// Explicit surrender during recruitment; use the normal elimination path so
+    /// placement, pool returns and death-triggered offers remain consistent.
+    pub fn concede(&mut self, p: PlayerId) -> Result<(), String> {
+        self.concede_many(&[p])
+    }
+
+    /// Settle simultaneous explicit surrenders with the normal physical-seat
+    /// tie break, independent of the caller's logical role order.
+    pub fn concede_many(&mut self, players: &[PlayerId]) -> Result<(), String> {
+        if self.phase != Phase::Recruit
+            || self.stopped_reason.is_some()
+            || players.is_empty()
+            || players
+                .iter()
+                .any(|&p| !self.players.get(p).is_some_and(|player| player.alive))
+        {
+            return Err("concede requires a living recruit-phase player".into());
+        }
+        for &p in players {
+            self.players[p].health = 0;
+            self.players[p].armor = 0;
+        }
+        self.recruit_deaths();
+        Ok(())
+    }
+
     /// Eliminate players at 0 health. Several deaths in one round are ranked by remaining health
     /// (lower = worse); exact server tie-break is unpublished. A hero reduced to 0 Health during
     /// the recruit phase (Lich Baz'hial's own power...) is eliminated at once, not after the next

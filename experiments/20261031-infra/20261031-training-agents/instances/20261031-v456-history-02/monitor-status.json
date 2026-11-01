@@ -1,0 +1,42 @@
+{
+  "instance_id": "20261031-v456-history-02",
+  "checked_at": "2026-11-01T00:22:19.830392+08:00",
+  "check_count": 7,
+  "next_check_at": null,
+  "phase": "stopped",
+  "stage": "v4",
+  "evidence": [
+    "controller-status.json",
+    "controller-console.log",
+    "/home/eric/projects/AutoTavern/experiments/20261031-exp04-v4-cycle-only/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/training-1793462868079203188.log"
+  ],
+  "progress": {
+    "status": "interrupted",
+    "phase": "sampling",
+    "updated_at": "2026-11-01T00:21:55.388686+08:00",
+    "pid": 3386169,
+    "completed_iterations": 12,
+    "target_iterations": 100,
+    "sampled_decisions": 1618196,
+    "optimizer_steps": 192,
+    "target_decisions": 13107200,
+    "elapsed_seconds": 836.2401345459948,
+    "estimated_remaining_seconds": 5978.217040928197,
+    "latest_model": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/latest_model.zip",
+    "peak_gpu_allocated_bytes": 4071166464,
+    "best_model": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/20261101-000750-best_model.zip"
+  },
+  "budget_used": {
+    "ppo_iterations": 12,
+    "samples": 1618196,
+    "adam_updates": 192
+  },
+  "committed_samples": 1572864,
+  "partial_samples": 45332,
+  "processes": "host ps shows controller 3386157, training 3386169 and wandb-core 3386188 absent; no listed child processes",
+  "child_exit_code": 0,
+  "complete_checkpoint": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr/latest_model.zip",
+  "anomalies": [],
+  "stop_reason": "user_requested_stop; explicit SIGTERM; no automatic restart",
+  "notes": "Controller logged explicit stop as ValueError; not a spontaneous failure. Final evaluation not executed."
+}

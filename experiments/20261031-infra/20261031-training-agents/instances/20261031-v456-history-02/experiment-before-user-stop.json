@@ -1,0 +1,48 @@
+{
+  "id": "20261101-ppo-v4-1script-2v1-2v2-2v3-fixedlr",
+  "model_version": "v4",
+  "instance_id": "20261031-v456-history-02",
+  "created_at": "2026-11-01T00:02:31.097754+08:00",
+  "status": "running",
+  "training_started": true,
+  "weights_created": true,
+  "config_sha256": "d8a855afdec60b8f0f5a932c6091eddeee5bb10e140d40fc863f4ead67d47c89",
+  "source_binding_required": true,
+  "initial_source": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "bytes": 51596105,
+    "ppo_iteration": 150,
+    "sampled_decisions": 19660800,
+    "stage_optimizer_steps": 2400,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      6.315789473684211e-06
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+    "model_version": null,
+    "reward_shaping": {
+      "operation_cost": 0.0001,
+      "cycle_cost": 0.0002
+    }
+  },
+  "conditional": false,
+  "old_instance01_untouched": true,
+  "started_at": "2026-11-01T00:07:48.078988+08:00",
+  "supervisor_pid": 3386157,
+  "wandb_run_created": true,
+  "wandb": {
+    "backend": "wandb",
+    "kind": "native",
+    "mode": "online",
+    "entity": "eric_eric_",
+    "project": "AutoTavern",
+    "run_id": "hcdb3bxv",
+    "url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/hcdb3bxv",
+    "x_axis": "optimizer_step",
+    "weave_project": "eric_eric_/AutoTavern",
+    "weave_initialized": true
+  }
+}

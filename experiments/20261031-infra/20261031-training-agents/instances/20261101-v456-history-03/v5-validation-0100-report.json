@@ -1,0 +1,93 @@
+{
+  "reported_at": "2026-11-01T05:48:04.912466+08:00",
+  "stage": "v5",
+  "ppo_iteration": 100,
+  "stage_adam": 1600,
+  "opponent_pool": [
+    {
+      "name": "bot_v4",
+      "count": 2,
+      "model": "runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/20261101-003912-best_model.zip",
+      "sha256": "2dc3c78ec0370e9dbc597736a2c4fcdfd4c17919d81a438bde278a82973a80c6",
+      "model_version": "v4",
+      "source_stage": "v4",
+      "reward_shaping": {
+        "operation_cost": 0,
+        "cycle_cost": 0.01,
+        "cycle_detection": "all_actions",
+        "cycle_forfeit_repetitions": null,
+        "turn_action_forfeit_limit": null
+      },
+      "protocol_source": "/home/eric/projects/AutoTavern/experiments/20261031-exp04-v4-cycle-only/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/config.json"
+    },
+    {
+      "name": "bot_v3",
+      "count": 2,
+      "model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+      "model_version": "v3",
+      "reward_shaping": null
+    },
+    {
+      "name": "bot_v2",
+      "count": 2,
+      "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+      "model_version": "v2",
+      "reward_shaping": null
+    }
+  ],
+  "validation": {
+    "mixed_sampled": {
+      "games": 64,
+      "mean_placement": 3.28125,
+      "first_rate": 0.265625,
+      "top4_rate": 0.71875,
+      "cycle_returns": 25.25,
+      "cycle_return_fraction": 0.04896834642755525,
+      "max_consecutive_cycle_returns": 4.828125,
+      "cycle_penalty": -0.25250000000000006,
+      "cap_end_rate": 0.3651207756730928,
+      "cycle_forfeit_rate": 0.0,
+      "action_limit_forfeit_rate": 0.0
+    },
+    "mixed_greedy": {
+      "games": 64,
+      "mean_placement": 3.78125,
+      "first_rate": 0.171875,
+      "top4_rate": 0.59375,
+      "cycle_returns": 457.796875,
+      "cycle_return_fraction": 0.6151859508368256,
+      "max_consecutive_cycle_returns": 41.21875,
+      "cycle_penalty": -4.577968749999946,
+      "cap_end_rate": 0.7039981522803802,
+      "cycle_forfeit_rate": 0.0,
+      "action_limit_forfeit_rate": 0.0
+    }
+  },
+  "selected_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+    "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+    "bytes": 51597964,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v5",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "stochastic_baseline": 3.921875,
+  "heldout_used_for_selection": false
+}

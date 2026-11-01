@@ -1,0 +1,31 @@
+{
+  "verified_at": "2026-11-01T02:35:26.359338+08:00",
+  "full_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/latest_model.zip",
+    "sha256": "f02cbeef99e295f0149b883de826ff632299e223fe1c01ad3a7b24c0b4941360",
+    "bytes": 51597318,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "9f41caba6c570bd0cf6a35bf17dedbef42c966e30f6508805cf7cc4f4b807c00",
+    "adam_moments_sha256": "8fac1c7ef0862b6892b61233d62090bf9566c006d706f444f8516c155dc3d934",
+    "model_version": "v4",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "online_journal_adam_points": 1600,
+  "finite_metrics": true,
+  "stage_not_finalized_yet": true,
+  "source": "original V3 PPO150 Adam5600",
+  "awaiting": "PPO100 validation, independent evaluation, retention"
+}

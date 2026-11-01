@@ -1,0 +1,61 @@
+{
+  "id": "20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend",
+  "model_version": "v4",
+  "instance_id": "20261101-v456-history-03",
+  "created_at": "2026-11-01T00:26:48.007915+08:00",
+  "status": "completed",
+  "training_started": true,
+  "weights_created": true,
+  "config_sha256": "6e6419e37a55c45d67cf0d09fcd2cfa27a023ab88d62d085aded99a8ccd53fef",
+  "source_binding_required": true,
+  "conditional": false,
+  "superseded_instances_untouched": true,
+  "reward_protocol": {
+    "operation_cost": 0,
+    "cycle_cost": 0.01,
+    "cycle_detection": "all_actions",
+    "cycle_forfeit_repetitions": null,
+    "turn_action_forfeit_limit": null
+  },
+  "turn_cap_behavior": "native forced End at 60, pending choices resolved normally; game continues",
+  "started_at": "2026-11-01T00:39:09.593985+08:00",
+  "supervisor_pid": 4009418,
+  "wandb_run_created": true,
+  "wandb": {
+    "backend": "wandb",
+    "kind": "native",
+    "mode": "online",
+    "entity": "eric_eric_",
+    "project": "AutoTavern",
+    "run_id": "szx078op",
+    "url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/szx078op",
+    "x_axis": "optimizer_step",
+    "weave_project": "eric_eric_/AutoTavern",
+    "weave_initialized": true
+  },
+  "completed_at": "2026-11-01T03:06:18.685314+08:00",
+  "retained_model": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/20261101-003912-best_model.zip",
+    "sha256": "2dc3c78ec0370e9dbc597736a2c4fcdfd4c17919d81a438bde278a82973a80c6",
+    "bytes": 49260732,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+    "model_version": "v4",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "results": "results.json"
+}

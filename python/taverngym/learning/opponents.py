@@ -8,6 +8,9 @@ class OpponentGroup:
     name: str
     policy: object
     count: int
+    # Protocol follows the checkpoint's experiment, even when its weights equal
+    # an older generation. Each actual slot gets independent runtime history.
+    reward_shaping: dict | None = None
 
 
 @dataclass(frozen=True)

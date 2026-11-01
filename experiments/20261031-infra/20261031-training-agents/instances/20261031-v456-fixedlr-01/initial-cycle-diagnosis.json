@@ -1,0 +1,227 @@
+{
+  "diagnosed_at": "2026-10-31T23:48:33.815771+08:00",
+  "source": "original V3 PPO150 best; Adam5600; inference only",
+  "opponents": "2 fixed V1 + 3 fixed V2 + 2 scripted; frozen models stochastic",
+  "learner_modes": {
+    "sampled_games": 3,
+    "greedy_games": 3
+  },
+  "seeds": [
+    44,
+    45,
+    46
+  ],
+  "games": [
+    {
+      "seed": 44,
+      "learner_mode": "sampled",
+      "placement": 8,
+      "termination_reason": "cycle_forfeit",
+      "actions": [
+        "Choose(1)",
+        "Buy(0)",
+        "Play { hand: 0, pos: 0 }",
+        "Freeze",
+        "Freeze",
+        "Freeze",
+        "Freeze",
+        "Freeze",
+        "Freeze"
+      ],
+      "cycle_counts": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3
+      ],
+      "all_actions_legal": true,
+      "zero_change_self_loops": 0
+    },
+    {
+      "seed": 45,
+      "learner_mode": "sampled",
+      "placement": 8,
+      "termination_reason": "cycle_forfeit",
+      "actions": [
+        "Choose(1)",
+        "Buy(3)",
+        "Refresh",
+        "Refresh",
+        "Play { hand: 0, pos: 0 }",
+        "Choose(1)",
+        "Cancel",
+        "Play { hand: 0, pos: 0 }",
+        "Choose(1)",
+        "Cancel",
+        "Play { hand: 0, pos: 0 }",
+        "Choose(1)",
+        "Cancel"
+      ],
+      "cycle_counts": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3
+      ],
+      "all_actions_legal": true,
+      "zero_change_self_loops": 0
+    },
+    {
+      "seed": 46,
+      "learner_mode": "sampled",
+      "placement": 8,
+      "termination_reason": "cycle_forfeit",
+      "actions": [
+        "Choose(1)",
+        "Buy(3)",
+        "HeroPower(0)",
+        "Cancel",
+        "Play { hand: 0, pos: 0 }",
+        "HeroPower(0)",
+        "Cancel",
+        "HeroPower(0)",
+        "Cancel",
+        "Refresh",
+        "Buy(3)",
+        "Play { hand: 0, pos: 0 }",
+        "HeroPower(0)",
+        "Cancel",
+        "HeroPower(0)",
+        "Cancel",
+        "HeroPower(0)",
+        "Cancel"
+      ],
+      "cycle_counts": [
+        0,
+        0,
+        0,
+        1,
+        0,
+        0,
+        1,
+        1,
+        2,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3
+      ],
+      "all_actions_legal": true,
+      "zero_change_self_loops": 0
+    },
+    {
+      "seed": 44,
+      "learner_mode": "greedy",
+      "placement": 8,
+      "termination_reason": "cycle_forfeit",
+      "actions": [
+        "Choose(1)",
+        "Buy(0)",
+        "Play { hand: 0, pos: 0 }",
+        "Freeze",
+        "Freeze",
+        "Freeze",
+        "Freeze",
+        "Freeze",
+        "Freeze"
+      ],
+      "cycle_counts": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3
+      ],
+      "all_actions_legal": true,
+      "zero_change_self_loops": 0
+    },
+    {
+      "seed": 45,
+      "learner_mode": "greedy",
+      "placement": 8,
+      "termination_reason": "cycle_forfeit",
+      "actions": [
+        "Choose(0)",
+        "Buy(3)",
+        "Play { hand: 0, pos: 0 }",
+        "Choose(1)",
+        "Cancel",
+        "Play { hand: 0, pos: 0 }",
+        "Choose(1)",
+        "Cancel",
+        "Play { hand: 0, pos: 0 }",
+        "Choose(1)",
+        "Cancel"
+      ],
+      "cycle_counts": [
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        2,
+        2,
+        2,
+        3
+      ],
+      "all_actions_legal": true,
+      "zero_change_self_loops": 0
+    },
+    {
+      "seed": 46,
+      "learner_mode": "greedy",
+      "placement": 8,
+      "termination_reason": "cycle_forfeit",
+      "actions": [
+        "Choose(1)",
+        "HeroPower(0)",
+        "Cancel",
+        "HeroPower(0)",
+        "Cancel",
+        "HeroPower(0)",
+        "Cancel"
+      ],
+      "cycle_counts": [
+        0,
+        0,
+        1,
+        1,
+        2,
+        2,
+        3
+      ],
+      "all_actions_legal": true,
+      "zero_change_self_loops": 0
+    }
+  ],
+  "finding": "All six replayed games contain actual repeated full visible states: Freeze toggles, play/choose/cancel loops, or hero-power/cancel loops. No evidence of a detector/settlement defect in these traces.",
+  "limits": "Six development-seed games do not prove absence of every simulator bug; adding botV3 opponents does not itself remove the pre-existing learner cycles.",
+  "independent_heldout_read": false,
+  "optimizer_updates": 0,
+  "configuration_changed": false
+}

@@ -1,0 +1,218 @@
+{
+  "instance_id": "20261101-v456-history-03",
+  "status": "stopped",
+  "stop_reason": "user_requested_stop",
+  "user_stop_is_permanent_for_this_instance": true,
+  "automatic_resume_allowed": false,
+  "stopped_at": "2026-11-01T10:13:06.901356+08:00",
+  "verified_at": "2026-11-01T10:13:42.103064+08:00",
+  "stage_at_stop": "v7",
+  "phase_at_stop": "ranking",
+  "controller_pid": 4009418,
+  "current_child_pid_at_stop": 3667633,
+  "controller_proc_absent": true,
+  "child_proc_absent": true,
+  "instance_related_training_ranking_postprocessing_processes": [],
+  "host_wandb_or_taverngym_learning_processes": [],
+  "child_exit_code": -15,
+  "signal": "SIGTERM",
+  "primary_training_completed": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "conditional_training_used": {
+    "ppo_iterations": 0,
+    "samples": 0,
+    "adam_updates": 0
+  },
+  "cancelled_unspent_conditional_training_budget": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "completed_stage_models": [
+    {
+      "version": "v4",
+      "experiment_dir": "experiments/20261031-exp04-v4-cycle-only/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend",
+      "selection": {
+        "ppo_iteration": 0,
+        "mean_placement": 3.203125,
+        "criterion": "mixed sampled strict decrease; earliest tie",
+        "validation_iterations": [
+          0,
+          50,
+          100
+        ]
+      },
+      "complete_retained_checkpoint": {
+        "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/20261101-003912-best_model.zip",
+        "sha256": "2dc3c78ec0370e9dbc597736a2c4fcdfd4c17919d81a438bde278a82973a80c6",
+        "bytes": 49260732,
+        "ppo_iteration": 0,
+        "sampled_decisions": 0,
+        "stage_optimizer_steps": 0,
+        "adam_total_steps": 5600,
+        "adam_states": 91,
+        "learning_rates": [
+          1e-05
+        ],
+        "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+        "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+        "model_version": "v4",
+        "reward_shaping": {
+          "operation_cost": 0,
+          "cycle_cost": 0.01,
+          "cycle_detection": "all_actions",
+          "cycle_forfeit_repetitions": null,
+          "turn_action_forfeit_limit": null
+        }
+      },
+      "results_sha256": "c8e33d98413d3889e77f842f37f00b57b3f35893f1aedf3b12de856aac242bfa",
+      "retention_status": "completed"
+    },
+    {
+      "version": "v5",
+      "experiment_dir": "experiments/20261031-exp05-v5-cycle-forfeit/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend",
+      "selection": {
+        "ppo_iteration": 100,
+        "mean_placement": 3.28125,
+        "criterion": "mixed sampled strict decrease; earliest tie",
+        "validation_iterations": [
+          0,
+          50,
+          100
+        ]
+      },
+      "complete_retained_checkpoint": {
+        "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+        "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+        "bytes": 51597964,
+        "ppo_iteration": 100,
+        "sampled_decisions": 13107200,
+        "stage_optimizer_steps": 1600,
+        "adam_total_steps": 7200,
+        "adam_states": 91,
+        "learning_rates": [
+          1e-05
+        ],
+        "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+        "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+        "model_version": "v5",
+        "reward_shaping": {
+          "operation_cost": 0,
+          "cycle_cost": 0.01,
+          "cycle_detection": "all_actions",
+          "cycle_forfeit_repetitions": null,
+          "turn_action_forfeit_limit": null
+        }
+      },
+      "results_sha256": "9f7ab2e22e42906a51e42bbeb85d0677c9715ad31f6f538a769c550494085b58",
+      "retention_status": "completed"
+    },
+    {
+      "version": "v6",
+      "experiment_dir": "experiments/20261031-exp06-v6-cycle-forfeit/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend",
+      "selection": {
+        "ppo_iteration": 0,
+        "mean_placement": 3.53125,
+        "criterion": "mixed sampled strict decrease; earliest tie",
+        "validation_iterations": [
+          0,
+          50,
+          100
+        ]
+      },
+      "complete_retained_checkpoint": {
+        "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/20261101-063233-best_model.zip",
+        "sha256": "3bde7248ab9a69a277813bfbdf57f17a7ae9eb664be54979749c3da76540a2ed",
+        "bytes": 49261905,
+        "ppo_iteration": 0,
+        "sampled_decisions": 0,
+        "stage_optimizer_steps": 0,
+        "adam_total_steps": 7200,
+        "adam_states": 91,
+        "learning_rates": [
+          1e-05
+        ],
+        "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+        "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+        "model_version": "v6",
+        "reward_shaping": {
+          "operation_cost": 0,
+          "cycle_cost": 0.01,
+          "cycle_detection": "all_actions",
+          "cycle_forfeit_repetitions": null,
+          "turn_action_forfeit_limit": null
+        }
+      },
+      "results_sha256": "4e3c69ab6b89bff4ba4c88eee59358d541150f6897c0290b13da346ede0e971c",
+      "retention_status": "completed"
+    }
+  ],
+  "last_complete_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/20261101-063233-best_model.zip",
+    "sha256": "3bde7248ab9a69a277813bfbdf57f17a7ae9eb664be54979749c3da76540a2ed",
+    "bytes": 49261905,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v6",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "v7_preserved_sealed_ranking_candidates": [
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-history-ranked-cycle001-forceend/ranking-v1.json",
+      "sha256": "da57a03a7be779defe9420849fe6fb22def808e6b4700e421317c291686757f1",
+      "model_version": "v1",
+      "games": 64,
+      "mean_placement": 4.609375
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-history-ranked-cycle001-forceend/ranking-v2.json",
+      "sha256": "67910c205ba570cc500b201d70f0701e653abf66adb7664435c2d7b972904e9e",
+      "model_version": "v2",
+      "games": 64,
+      "mean_placement": 4.21875
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-history-ranked-cycle001-forceend/ranking-v3.json",
+      "sha256": "e02d9d4d5e4b9bdf38de204b616d762130c6af75cbd2c9e01fa74302db180afd",
+      "model_version": "v3",
+      "games": 64,
+      "mean_placement": 3.671875
+    }
+  ],
+  "v7_preserved_scored_games": 192,
+  "v7_unsealed_inflight_candidate_games": "not committed; no exact completed count reported",
+  "v7_pool_binding_exists": false,
+  "v7_training_started": false,
+  "old_instance_resource_losses_excluded": {
+    "instance01": {
+      "complete_ppo": 3,
+      "committed_samples": 393216,
+      "actual_samples_including_partial": 435339,
+      "new_adam_updates": 48
+    },
+    "instance02": {
+      "complete_ppo": 12,
+      "committed_samples": 1572864,
+      "actual_samples_including_partial": 1618196,
+      "new_adam_updates": 192
+    }
+  },
+  "artifact_policy": "preserve completed best/config/log/W&B/evaluations and all ranking partial/sealed files; no cleanup at stop"
+}

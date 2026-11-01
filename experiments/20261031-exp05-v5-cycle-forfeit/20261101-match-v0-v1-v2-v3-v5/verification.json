@@ -1,0 +1,15 @@
+{
+  "status": "passed",
+  "completed_lobbies": 320,
+  "player_games_per_group": 512,
+  "lineup_quotas_and_exact_ranks": true,
+  "all_metrics_independently_recounted": true,
+  "source_weights_unchanged": true,
+  "no_training_or_rejected_actions": true,
+  "first_role_counts": {
+    "v2": 83,
+    "v1": 83,
+    "v3": 77,
+    "v5": 77
+  }
+}

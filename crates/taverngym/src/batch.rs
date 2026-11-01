@@ -371,11 +371,24 @@ impl BatchEnv {
         active: &[bool],
         out: &mut [SlotResult],
     ) -> Result<(), String> {
+        self.step_active_skipping(actions, active, &vec![false; self.n_slots()], out)
+    }
+
+    /// Hold selected roles at their current request while other ready roles act.
+    /// This supports pre-action budget termination without inventing another
+    /// role's action or executing stale actions after elimination effects.
+    pub fn step_active_skipping(
+        &mut self,
+        actions: &[i64],
+        active: &[bool],
+        skipped: &[bool],
+        out: &mut [SlotResult],
+    ) -> Result<(), String> {
         let n = self.n_slots();
         if active.len() != self.n_games() {
             return Err("active must contain one flag per game".into());
         }
-        if actions.len() != n || out.len() != n {
+        if actions.len() != n || out.len() != n || skipped.len() != n {
             return Err(format!(
                 "{} actions and {} results for {n} slots",
                 actions.len(),
@@ -390,7 +403,12 @@ impl BatchEnv {
             par_chunks(self.threads, &mut eps, &mut work, k, |first, eps, work| {
                 for (gi, (e, slots)) in eps.iter_mut().zip(work.chunks_mut(k)).enumerate() {
                     if active[first + gi] {
-                        this.step_game(first + gi, e, slots);
+                        this.step_game(
+                            first + gi,
+                            e,
+                            slots,
+                            &skipped[(first + gi) * k..(first + gi + 1) * k],
+                        );
                     } else {
                         for (_, result) in slots {
                             **result = SlotResult::default();
@@ -403,7 +421,13 @@ impl BatchEnv {
         Ok(())
     }
 
-    fn step_game(&self, gi: usize, e: &mut Episode, slots: &mut [(&i64, &mut SlotResult)]) {
+    fn step_game(
+        &self,
+        gi: usize,
+        e: &mut Episode,
+        slots: &mut [(&i64, &mut SlotResult)],
+        skipped: &[bool],
+    ) {
         let n = e.game.players.len();
         let controlled = self.seats(e).to_vec();
         // The seats that must act now, as the caller observed them. A seat that comes to
@@ -430,7 +454,7 @@ impl BatchEnv {
         for (j, (a, r)) in slots.iter_mut().enumerate() {
             **r = SlotResult::default();
             let p = controlled[j];
-            if !ready[j] {
+            if !ready[j] || skipped[j] {
                 continue;
             }
             if !legal_at_start[j] {
@@ -471,6 +495,59 @@ impl BatchEnv {
         if e.finished.iter().all(|x| *x) {
             *e = self.fresh(gi, e.index + 1);
         }
+    }
+
+    /// Explicitly forfeit selected controlled roles simultaneously within each
+    /// game; validate the entire request before mutating any game.
+    /// Unselected games stay unchanged. Terminal rewards are reported once.
+    pub fn forfeit(&mut self, selected: &[bool], out: &mut [SlotResult]) -> Result<(), String> {
+        let k = self.controlled.len();
+        if selected.len() != self.n_slots() || out.len() != self.n_slots() {
+            return Err("forfeit requires one flag and result per slot".into());
+        }
+        for (gi, flags) in selected.chunks(k).enumerate() {
+            for j in flags
+                .iter()
+                .enumerate()
+                .filter_map(|(j, &flag)| flag.then_some(j))
+            {
+                let e = &self.episodes[gi];
+                let p = self.seats(e)[j];
+                if e.finished[j] || over(&e.game) || !e.game.needs_action(p) || e.game.turn == 0 {
+                    return Err("forfeit requires a ready living recruit-phase role".into());
+                }
+            }
+        }
+        out.fill(SlotResult::default());
+        for (gi, flags) in selected.chunks(k).enumerate() {
+            if !flags.iter().any(|&flag| flag) {
+                continue;
+            }
+            let controlled = self.seats(&self.episodes[gi]).to_vec();
+            let e = &mut self.episodes[gi];
+            let selected: Vec<_> = flags
+                .iter()
+                .enumerate()
+                .filter_map(|(j, &flag)| flag.then_some(controlled[j]))
+                .collect();
+            e.game.concede_many(&selected)?;
+            for (role, &p) in controlled.iter().enumerate() {
+                if !e.finished[role] && (over(&e.game) || !e.game.players[p].alive) {
+                    e.finished[role] = true;
+                    out[gi * k + role] = SlotResult {
+                        done: true,
+                        placement: e.game.players[p].placement,
+                        reward: placement_reward(e.game.players[p].placement, e.game.players.len()),
+                        ..SlotResult::default()
+                    };
+                }
+            }
+            if e.finished.iter().all(|&finished| finished) {
+                let index = e.index + 1;
+                self.episodes[gi] = self.fresh(gi, index);
+            }
+        }
+        Ok(())
     }
 
     /// Game `i` and its episode state as JSON.
@@ -596,6 +673,120 @@ mod tests {
             assert_eq!(oa, ob);
         }
         assert_eq!(a.save(1).unwrap(), b.save(1).unwrap());
+    }
+
+    #[test]
+    fn forfeit_reports_current_rank_once_and_keeps_other_games_unchanged() {
+        let mut env =
+            BatchEnv::new_rotating(2, 17, RulesConfig::default(), (0..8).collect(), 2).unwrap();
+        let mut out = vec![SlotResult::default(); 16];
+        // Finish hero selection; every living role is now ready in recruit.
+        while env.game(0).turn == 0 {
+            let actions: Vec<i64> = (0..16)
+                .map(|slot| {
+                    let e = env.episode(slot / 8);
+                    let p = env.seats(e)[slot % 8];
+                    e.game
+                        .legal_mask(p)
+                        .iter()
+                        .position(|&legal| legal)
+                        .unwrap_or(0) as i64
+                })
+                .collect();
+            env.step(&actions, &mut out).unwrap();
+        }
+        let other = env.save(1).unwrap();
+        let seats = env.seats(env.episode(0)).to_vec();
+        for role in 0..7 {
+            let mut flags = vec![false; 16];
+            flags[role] = true;
+            env.forfeit(&flags, &mut out).unwrap();
+            let placement = 8 - role as u8;
+            assert!(out[role].done);
+            assert_eq!(out[role].placement, placement);
+            assert_eq!(out[role].reward, placement_reward(placement, 8));
+            assert!(out[8..].iter().all(|r| *r == SlotResult::default()));
+            assert_eq!(env.save(1).unwrap(), other);
+            if role < 6 {
+                assert!(!env.game(0).players[seats[role]].alive);
+                assert_eq!(env.game(0).players[seats[role]].placement, placement);
+                assert!(env.forfeit(&flags, &mut out).is_err());
+            } else {
+                assert!(out[7].done);
+                assert_eq!(out[7].placement, 1);
+                assert_eq!(out[7].reward, 1.0);
+                assert_eq!(env.episode(0).index, 1);
+            }
+        }
+    }
+
+    #[test]
+    fn invalid_forfeit_request_is_atomic() {
+        let mut env = BatchEnv::new(2, 3, RulesConfig::default(), vec![0, 1], 1).unwrap();
+        let before: Vec<_> = (0..2).map(|i| env.save(i).unwrap()).collect();
+        let mut out = vec![SlotResult::default(); 4];
+        // Hero selection has not finished: even simultaneous forfeits are invalid.
+        assert!(env.forfeit(&[true, true, false, false], &mut out).is_err());
+        assert!(env.forfeit(&[true, false, true, false], &mut out).is_err());
+        assert!(env.forfeit(&[true], &mut out).is_err());
+        for (i, saved) in before.iter().enumerate() {
+            assert_eq!(env.save(i).unwrap(), *saved);
+        }
+    }
+
+    #[test]
+    fn simultaneous_forfeits_follow_physical_seat_ties_not_logical_role_order() {
+        for controlled in [vec![0, 1, 2], vec![2, 0, 1], vec![1, 2, 0]] {
+            let mut env =
+                BatchEnv::new(1, 17, RulesConfig::default(), controlled.clone(), 1).unwrap();
+            let mut out = vec![SlotResult::default(); 3];
+            while env.game(0).turn == 0 {
+                let actions: Vec<i64> = controlled
+                    .iter()
+                    .map(|&p| {
+                        env.game(0)
+                            .legal_mask(p)
+                            .iter()
+                            .position(|&legal| legal)
+                            .unwrap_or(0) as i64
+                    })
+                    .collect();
+                env.step(&actions, &mut out).unwrap();
+            }
+            env.forfeit(&[true, true, true], &mut out).unwrap();
+            for (role, &seat) in controlled.iter().enumerate() {
+                assert!(out[role].done);
+                assert_eq!(out[role].placement, 6 + seat as u8);
+                assert_eq!(out[role].reward, placement_reward(6 + seat as u8, 8));
+            }
+        }
+    }
+
+    #[test]
+    fn skipping_one_ready_role_keeps_other_actual_actions() {
+        let mut env = BatchEnv::new(1, 17, RulesConfig::default(), vec![0, 1], 1).unwrap();
+        let mut out = vec![SlotResult::default(); 2];
+        while env.game(0).turn == 0 {
+            let actions: Vec<i64> = (0..2)
+                .map(|p| {
+                    env.game(0)
+                        .legal_mask(p)
+                        .iter()
+                        .position(|&legal| legal)
+                        .unwrap_or(0) as i64
+                })
+                .collect();
+            env.step(&actions, &mut out).unwrap();
+        }
+        let frozen = env.game(0).players[0].shop.iter().any(|item| item.frozen);
+        env.step_active_skipping(&[2, 2], &[true], &[false, true], &mut out)
+            .unwrap();
+        assert_eq!(
+            env.game(0).players[0].shop.iter().any(|item| item.frozen),
+            !frozen
+        );
+        assert!(!env.game(0).players[1].shop.iter().any(|item| item.frozen));
+        assert!(out.iter().all(|result| !result.rejected && !result.done));
     }
 
     #[test]

@@ -1,10 +1,10 @@
 {
   "id": "20261031-ppo-v4-cycle-only",
   "model_version": "v4",
-  "status": "prepared",
+  "status": "stopped_by_user",
   "prepared_at": "2026-10-31T22:45:03.865357+08:00",
-  "training_started": false,
-  "parameters_status": "draft; V3 training budget, LR and opponents provisionally inherited",
+  "training_started": true,
+  "parameters_status": "prepared: 100 PPO; three complete consecutive loops or action attempt 61 trigger native surrender; not started",
   "config": "config.json",
   "model_directory": "runs/20261031-ppo-v4-cycle-only",
   "weights_created": false,
@@ -27,13 +27,41 @@
     "reward_shaping": {
       "operation_cost": 0,
       "cycle_cost": 0.0002,
-      "cycle_detection": "all_actions"
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": 3,
+      "turn_action_forfeit_limit": 60
     },
-    "evaluation_include_scripted": false
+    "evaluation_include_scripted": false,
+    "iterations": 100,
+    "learning_rate_policy": {
+      "value": 1e-05,
+      "warmup": false,
+      "decay": false,
+      "preserve_optimizer_state": true
+    }
   },
   "not_enabled": [
-    "early termination on repeated loops",
-    "new operation count penalty"
+    "new flat operation cost",
+    "automatic training launch",
+    "deployment"
   ],
-  "historical_experiments_modified": false
+  "historical_experiments_modified": false,
+  "preparation_history": "experiments/20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/preparation-history/20261031-before-100ppo-cycle-forfeit",
+  "config_sha256": "d511bc65264cf3d271a835e5d484cc376d9a25d9758470c06303ca05b3a596a7",
+  "termination_verification": "termination-preparation-verification.json",
+  "plan": "../V4-V6-PLAN.md",
+  "implementation_status": "termination logic verified; fixed LR configuration checked separately; training not started",
+  "learning_rate_policy": {
+    "value": 1e-05,
+    "warmup": false,
+    "decay": false,
+    "preserve_optimizer_state": true
+  },
+  "fixed_learning_rate_verification": "fixed-learning-rate-verification.json",
+  "started_at": "2026-10-31T23:44:02.448115+08:00",
+  "instance_id": "20261031-v456-fixedlr-01",
+  "supervisor_pid": 2959482,
+  "stopped_at": "2026-10-31T23:47:38.745623+08:00",
+  "stop_reason": "User explicitly stopped old fixed-opponent instance and requested a fresh V4 with revised roster; do not resume",
+  "stopped_instance_id": "20261031-v456-fixedlr-01"
 }

@@ -1,5 +1,8 @@
 # 实验记录
 
+**查看当前效果、进度、最佳 checkpoint 和最终对战表：[实验总览](EXPERIMENT_OVERVIEW.md)。**
+这里是目录导航；每次实验完成或停止时同步更新总览，原始配置与结果保持封存。
+
 一级目录统一使用 `yyyymmdd-{实验名称}`，日期按北京时间计算；内部保留原记录日期和名称。
 
 | 目录 | 放什么 | 当前内容 |
@@ -9,7 +12,11 @@
 | [20261031-exp01-ppo-scripted/](20261031-exp01-ppo-scripted/README.md) | **第一次正式模型实验**的训练与评测 | 100 PPO × 32 minibatch；整局测试和 TavernBench |
 | [20261031-exp02-mixed-opponents/](20261031-exp02-mixed-opponents/README.md) | **第二次正式模型实验** | 2 V1 + BF16 + 独立 Actor 已完成；含 TavernBench 与 2 脚本 + 3 V1 + 3 V2 对战 |
 | [20261031-exp03-v2-continuation/](20261031-exp03-v2-continuation/README.md) | **第三次正式模型实验** | 从 V2 保留 Adam；128 环境，2 脚本 + 2 V1 + 3 V2；warmup 峰值 1e-5 |
-| [20261031-exp04-v4-cycle-only/](20261031-exp04-v4-cycle-only/README.md) | **第四次实验准备版，尚未训练** | V4 只罚全动作循环，操作成本 0；混合随机／贪心两组验证 |
+| [20261031-exp04-v4-cycle-only/](20261031-exp04-v4-cycle-only/README.md) | 第四次正式实验及中断尝试 | 正式100 PPO完成；best为PPO0，废弃→V3；软循环扣分、60步只End |
+| [20261031-exp05-v5-cycle-forfeit/](20261031-exp05-v5-cycle-forfeit/README.md) | 第五次正式实验及独立对战 | 100 PPO完成，保留PPO100；含两轮320局对战与逐回合诊断 |
+| [20261031-exp06-v6-cycle-forfeit/](20261031-exp06-v6-cycle-forfeit/README.md) | 第六次正式实验 | 100 PPO完成；best为PPO0，废弃→V5 |
+| [20261101-exp07-v7-history-ranked/](20261101-exp07-v7-history-ranked/README.md) | V7旧排名现场与新移动成本准备 | 旧排名中止、训练0；新稿直接继承V5，move_cost=0.0005，未启动 |
+| [20261101-exp08-v8-history-ranked/](20261101-exp08-v8-history-ranked/README.md)／[exp09](20261101-exp09-v9-history-ranked/README.md) | 未启用的旧条件草案 | V8/V9均未训练，不自动推进 |
 
 查第一次正式实验，直接进入 **[20261031-exp01-ppo-scripted](20261031-exp01-ppo-scripted/README.md)**。
 安装验证、旧 300 轮预演和 100 次 Adam 小试跑都归入 infra，不占正式实验编号。
@@ -19,6 +26,12 @@
 
 ## 实验版本与配置
 
+有效训练版本清单见 [model-versions.json](../configs/model-versions.json)：V4→V3、V6→V5为废弃别名，
+后续新对手池排除，旧权重与历史记录保留；V7新准备直接继承V5。
+
+2026-11-01 新准备：[V7 独立移动成本 0.0005](20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend/README.md)。
+循环费用仍0.01、60步只强制End；尚未启动训练。此前中断的V7及V1–V6记录保持原样。
+
 各版本使用自己的完整配置；通用初始化模板不是旧实验的配置来源。
 新方案准备在新目录，已有实验的配置和 provenance 不随新版本改写。
 
@@ -27,7 +40,10 @@
 | V1 | [exp01 配置](20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches/config.json) | 原始名次奖励 | 已训练版本 |
 | V2 | [exp02 配置](20261031-exp02-mixed-opponents/20261031-ppo-mixed-2v1-bf16-actor/config.json) | 名次 + Move／Freeze 成本 + 连续片段循环成本 | 已训练版本 |
 | V3 | [exp03 配置](20261031-exp03-v2-continuation/20261031-ppo-v3-2v1-3v2-warmup/config.json) | 保留 V2 奖励；继承 Adam 并 warmup | 已完成 200 PPO；保留 PPO150 best |
-| V4 | [exp04 配置草案](20261031-exp04-v4-cycle-only/20261031-ppo-v4-cycle-only/config.json) | 名次 + 全动作循环成本；无操作成本 | prepared，已绑定 V3 best，未启动 |
+| V4 | [正式exp04配置](20261031-exp04-v4-cycle-only/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend/config.json) | 名次 + 全动作返回每次扣0.01；60步只End | 完成100 PPO，保留PPO0，废弃→V3 |
+| V5 | [正式exp05配置](20261031-exp05-v5-cycle-forfeit/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/config.json) | 沿用V4软扣分 | 完成100 PPO，保留PPO100，当前V7来源 |
+| V6 | [正式exp06配置](20261031-exp06-v6-cycle-forfeit/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/config.json) | 沿用V4软扣分 | 完成100 PPO，保留PPO0，废弃→V5 |
+| V7 | [新准备配置](20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend/config.json) | 循环0.01 + 每次Move 0.0005 | 仅准备0 PPO，未启动，尚无自己的best |
 
 每次正式启动使用本实验的 `--config`，记录源码 commit／脏工作区摘要、模型路径和 SHA-256。
 通用代码保留旧模式兼容；不同配置对应不同训练规则，不需要为每个实验复制整套训练代码。
@@ -46,6 +62,13 @@
 旧路径可查迁移对照。当前 README 链接和复现脚本使用新路径。
 
 ## 默认脚本机器人说明
+
+2026-11-01 起，用户将原生脚本机器人统一命名为 **V0**；V1 起为训练模型。
+历史配置与接口中的 `scripted` 标识保留，新报告使用 V0。
+
+本次独立对战：[V0／V1／V2／V3／V5 平衡八人局](20261031-exp05-v5-cycle-forfeit/20261101-match-v0-v1-v2-v3-v5/README.md)。
+后续逐回合诊断：[同五版 320 局全量并行补测](20261031-exp05-v5-cycle-forfeit/20261101-match-v0-v1-v2-v3-v5-turn-diagnostics/README.md)，
+保存存活招募回合、逐回合动作分布与可见状态返回统计，独立核验通过；旧比赛保持封存。
 
 默认单智能体环境中的七个机器人对手，共用同一套 `crates/taverngym/src/bot.rs` 决策代码和启发式参数。八机器人演示与吞吐量测试则由这同一套策略控制全部八个席位；没有为各席位配置不同风格、不同模型或独立学习过程。
 

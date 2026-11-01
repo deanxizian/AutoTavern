@@ -1,0 +1,55 @@
+{
+  "status": "completed",
+  "kept_model": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/20261101-063233-best_model.zip",
+    "sha256": "3bde7248ab9a69a277813bfbdf57f17a7ae9eb664be54979749c3da76540a2ed",
+    "bytes": 49261905,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v6",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "removed_models": [
+    {
+      "path": "runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/final_model.zip",
+      "sha256": "9606dcb765b95d54902c35faf834a82af6cbc2c0e2287bebc4391f0434ca22f8",
+      "bytes": 51598492
+    },
+    {
+      "path": "runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/latest_model.zip",
+      "sha256": "ad7b8fefdde756e4da0214706abfc5cf03607b5babdacc638516cd0b4de1dfb1",
+      "bytes": 51598492
+    },
+    {
+      "path": "runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/starting_model.zip",
+      "sha256": "24a228e0c372be0d8772b0badede159284b54be5253b90a592b8a1083ebd550e",
+      "bytes": 49261905
+    },
+    {
+      "path": "runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/checkpoints/iteration-0050.zip",
+      "sha256": "c1d51a824bef68518c080cd3cab3ba5bd3e7cdabe6511230a6340bca9ca3178d",
+      "bytes": 51598490
+    },
+    {
+      "path": "runs/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/checkpoints/iteration-0100.zip",
+      "sha256": "ad7b8fefdde756e4da0214706abfc5cf03607b5babdacc638516cd0b4de1dfb1",
+      "bytes": 51598492
+    }
+  ],
+  "heldout_used_for_selection": false,
+  "completed_at": "2026-11-01T10:05:49.860279+08:00"
+}

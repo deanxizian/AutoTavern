@@ -1,0 +1,69 @@
+{
+  "source": "games.jsonl",
+  "source_sha256": "dfc71f3886dd58102e60c4fd081da17d71697d338b7eebd5a89e741d4d0daf7c",
+  "lobbies": 320,
+  "protocol": "Eight-player lobbies; V0/V1/V2/V3/V5 each 1-2 seats in ten balanced lineups; 32 lobbies per lineup; stochastic BF16 neural inference; frozen weights.",
+  "unit": "One model seat from episode start to its terminal placement (player-game).",
+  "definition": "model_actions counts ready actions excluding native deferred actions; native rejected actions were zero. Includes hero/menu/End decisions; excludes automatic combat and native V0 actions.",
+  "quantile_method": "numpy.percentile(method='linear'); sorted index (n-1)*p; fractional percentiles are interpolated action counts.",
+  "groups": {
+    "v1": {
+      "player_games": 512,
+      "total_actions": 348752,
+      "mean": 681.15625,
+      "min": 379,
+      "max": 1197,
+      "p50": 670.0,
+      "p90": 875.5000000000002,
+      "p95": 964.9499999999998,
+      "p99": 1118.2499999999995
+    },
+    "v2": {
+      "player_games": 512,
+      "total_actions": 386729,
+      "mean": 755.330078125,
+      "min": 338,
+      "max": 1460,
+      "p50": 738.5,
+      "p90": 994.6000000000001,
+      "p95": 1104.0,
+      "p99": 1255.0399999999995
+    },
+    "v3": {
+      "player_games": 512,
+      "total_actions": 401361,
+      "mean": 783.908203125,
+      "min": 298,
+      "max": 1602,
+      "p50": 773.0,
+      "p90": 1042.9,
+      "p95": 1131.0,
+      "p99": 1262.79
+    },
+    "v5": {
+      "player_games": 512,
+      "total_actions": 275308,
+      "mean": 537.7109375,
+      "min": 136,
+      "max": 1261,
+      "p50": 528.0,
+      "p90": 778.6000000000001,
+      "p95": 869.5999999999999,
+      "p99": 1051.9099999999999
+    }
+  },
+  "unavailable": {
+    "v0_action_counts": "V0 is advanced internally by native code; no V0 action counters saved.",
+    "cycle_returns": "No per-transition observations, visible-state hashes or cycle counters saved.",
+    "zero_cycle_player_games": "Cannot identify player-games without repeated visible states.",
+    "actions_per_turn": "No per-turn action counts or turn boundaries saved.",
+    "cap_end_rate": "No per-turn action masks or forced-End events saved.",
+    "action_id_repetition": "No ordered action IDs saved; distinct from visible-state cycles."
+  },
+  "limitations": [
+    "Shorter total action counts do not establish fewer cycles or zero repetition.",
+    "Total actions also depend on survival duration; no per-turn normalization is possible here.",
+    "This is post-hoc analysis of existing records, not a new match or training run."
+  ],
+  "v5_mean_action_reduction_vs_v3": 0.3140638975884553
+}

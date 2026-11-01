@@ -1,0 +1,38 @@
+{
+  "created_at": "2026-11-01T00:04:57.081268+08:00",
+  "instance_id": "20261031-v456-history-02",
+  "goal": "Train corrected V4-V6 historical pools; extend to V7-V9 only under pre-authorized problem-free gate",
+  "hypothesis": "Retaining older frozen generations plus the latest selected policy, with inherited Adam and fixed LR, can reduce own-pool stochastic mean placement under the learner termination protocol",
+  "baseline": "Original V3 PPO150 best, Adam5600; independent source policy also freezes as the V3 opponent; old instance01 is stopped and excluded",
+  "changes": [
+    "Per-slot generation-specific termination protocols",
+    "Simultaneous native surrender using existing physical-seat ties",
+    "Role skipping for pre-action budgets, no fabricated learner transitions",
+    "Shared role-aware actor/evaluation collector with opponent-only elimination",
+    "Manifest-specific stage pools and complete PPO/Adam/weight binding",
+    "Conditional V6 gate and fixed-reference own-protocol historical ranking",
+    "Sealed ranking-result recovery; all previous lock/resume/retention protections retained"
+  ],
+  "selection": "Only strict decrease in own-pool stochastic 64-game val mean placement at PPO0/50/100; earliest ties; no heldout selection",
+  "validation_status": "Python226 passed including real CUDA; Rust862 passed; fmt/clippy/diff-check passed",
+  "training_started": true,
+  "adoption_decision": "old protocol superseded by user; do not resume; all artifacts retained",
+  "remaining_primary_budget": {
+    "ppo": 300,
+    "samples": 39321600,
+    "adam_max": 4800
+  },
+  "reserved_conditional_budget": {
+    "ppo": 300,
+    "samples": 39321600,
+    "adam_max": 4800
+  },
+  "stopping": "V6 if gate fails, otherwise V9 complete; explicit user stop or unresolved severe failure earlier",
+  "started_at": "2026-11-01T00:07:46.996956+08:00",
+  "active_stage": "v4",
+  "implementation_locked": true,
+  "startup_evidence": "startup-verification.json",
+  "status": "stopped_by_user",
+  "stopped_at": "2026-11-01T00:22:35.290376+08:00",
+  "stop_evidence": "user-stop-final.json"
+}

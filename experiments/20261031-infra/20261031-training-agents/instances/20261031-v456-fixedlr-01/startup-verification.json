@@ -1,0 +1,80 @@
+{
+  "verified_at": "2026-10-31T23:44:29.537898+08:00",
+  "starting_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/starting_model.zip",
+    "sha256": "8a36bfb202ac04f3ba46c2750a8845c242a6d3836aa124e3b834f3f8b7a3d66a",
+    "bytes": 49259723,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83"
+  },
+  "step0_best": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v4-cycle-only/20261031-234404-best_model.zip",
+    "sha256": "ebc153eabb784351ef6f57a8548c31c652d6c5a49ebf08118ddd447ebaf8a258",
+    "bytes": 49259723,
+    "ppo_iteration": 0,
+    "sampled_decisions": 0,
+    "stage_optimizer_steps": 0,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83"
+  },
+  "source_weights_and_moments_preserved": true,
+  "stage_counters_reset": true,
+  "fixed_lr_from_start": true,
+  "initial_validation": {
+    "mixed_sampled": {
+      "games": 64,
+      "mean_placement": 8.0,
+      "first_rate": 0.0,
+      "top4_rate": 0.0,
+      "cycle_forfeit_rate": 1.0,
+      "action_limit_forfeit_rate": 0.0
+    },
+    "mixed_greedy": {
+      "games": 64,
+      "mean_placement": 8.0,
+      "first_rate": 0.0,
+      "top4_rate": 0.0,
+      "cycle_forfeit_rate": 1.0,
+      "action_limit_forfeit_rate": 0.0
+    }
+  },
+  "wandb": {
+    "backend": "wandb",
+    "kind": "native",
+    "mode": "online",
+    "entity": "eric_eric_",
+    "project": "AutoTavern",
+    "run_id": "i54jv8b1",
+    "url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/i54jv8b1",
+    "x_axis": "optimizer_step",
+    "weave_project": "eric_eric_/AutoTavern",
+    "weave_initialized": true
+  },
+  "first_completed_ppo": {
+    "iteration": 1,
+    "decisions": 131072,
+    "train/optimizer_steps": 16.0,
+    "train/optimizer_steps_this_iteration": 16.0,
+    "train/learning_rate": 1e-05,
+    "rollout_seconds": 45.653127549012424,
+    "update_seconds": 8.110521580994828,
+    "games_finished": 10539,
+    "mean_placement": 8.0,
+    "rollout/cycle_forfeit_rate": 0.9995255716861182,
+    "rollout/action_limit_forfeit_rate": 0.00047442831388177245
+  },
+  "first_ppo_verified_at": "2026-10-31T23:45:51.222430+08:00"
+}

@@ -1,0 +1,268 @@
+{
+  "instance_id": "20261101-v456-history-03",
+  "root": "/home/eric/projects/AutoTavern",
+  "created_at": "2026-11-01T00:26:48.011578+08:00",
+  "authorization": "User approved fixed .01 per repeated visible-state return and native forced End; restart original V3 for V4-V6; V7-V9 only after healthy V6 gate; wait parent monitor-ready release",
+  "stages": [
+    {
+      "version": "v4",
+      "experiment_dir": "experiments/20261031-exp04-v4-cycle-only/20261101-ppo-v4-1script-2v1-2v2-2v3-cycle001-forceend",
+      "prepared_config_sha256": "6e6419e37a55c45d67cf0d09fcd2cfa27a023ab88d62d085aded99a8ccd53fef",
+      "conditional": false,
+      "rank_opponents": false
+    },
+    {
+      "version": "v5",
+      "experiment_dir": "experiments/20261031-exp05-v5-cycle-forfeit/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend",
+      "prepared_config_sha256": "3bddcd21a1b63c52f8193b4ceaeed67dfa547474fec9224412c889991bc801c4",
+      "conditional": false,
+      "rank_opponents": true
+    },
+    {
+      "version": "v6",
+      "experiment_dir": "experiments/20261031-exp06-v6-cycle-forfeit/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend",
+      "prepared_config_sha256": "4ac621a6078bdc393f1ff35f0eb45ff1e07334eaaca60ff63ba8548ff6597cd4",
+      "conditional": false,
+      "rank_opponents": true
+    }
+  ],
+  "conditional_stages": [
+    {
+      "version": "v7",
+      "experiment_dir": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-history-ranked-cycle001-forceend",
+      "prepared_config_sha256": "c06eb45f1af4bdb3166cb245f4e6cf854253bb57f78e9288af7bc4c550126a33",
+      "conditional": true,
+      "rank_opponents": true
+    },
+    {
+      "version": "v8",
+      "experiment_dir": "experiments/20261101-exp08-v8-history-ranked/20261101-ppo-v8-history-ranked-cycle001-forceend",
+      "prepared_config_sha256": "9e2066f30d65780bc3ab23d906d9ea8fc7a3ac7c45b914c28dad60b287ab38fc",
+      "conditional": true,
+      "rank_opponents": true
+    },
+    {
+      "version": "v9",
+      "experiment_dir": "experiments/20261101-exp09-v9-history-ranked/20261101-ppo-v9-history-ranked-cycle001-forceend",
+      "prepared_config_sha256": "42fb401534d2a2b1604fbcb327dffd60cdc954cb2b77d96f8a96ce5fa3c531bf",
+      "conditional": true,
+      "rank_opponents": true
+    }
+  ],
+  "primary_budget": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "conditional_budget": {
+    "ppo_iterations": 300,
+    "samples": 39321600,
+    "adam_updates": 4800
+  },
+  "budget": {
+    "ppo_iterations": 600,
+    "samples": 78643200,
+    "adam_updates": 9600
+  },
+  "max_recoveries_per_stage": 1,
+  "initial_source": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+    "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "bytes": 51596105,
+    "ppo_iteration": 150,
+    "sampled_decisions": 19660800,
+    "stage_optimizer_steps": 2400,
+    "adam_total_steps": 5600,
+    "adam_states": 91,
+    "learning_rates": [
+      6.315789473684211e-06
+    ],
+    "policy_sha256": "e704937d1c0c4cd8a19322a764ea97ebb79fd2765542381cdc6b77a577e3ec9d",
+    "adam_moments_sha256": "a4d17c7ff6e54e965744e4126a5ee699a986e5ca18d3a256cc10b5e9a930fc83",
+    "model_version": null,
+    "reward_shaping": {
+      "operation_cost": 0.0001,
+      "cycle_cost": 0.0002
+    }
+  },
+  "historical_models": {
+    "v1": {
+      "name": "bot_v1",
+      "count": 2,
+      "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+      "model_version": "v1",
+      "reward_shaping": null
+    },
+    "v2": {
+      "name": "bot_v2",
+      "count": 2,
+      "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+      "model_version": "v2",
+      "reward_shaping": null
+    },
+    "v3": {
+      "name": "bot_v3",
+      "count": 2,
+      "model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+      "model_version": "v3",
+      "reward_shaping": null
+    }
+  },
+  "ranking_protocol": {
+    "games": 64,
+    "seed": 60000007,
+    "learner_mode": "stochastic",
+    "precision": "bf16",
+    "reference_pool": [
+      {
+        "name": "bot_v1",
+        "count": 2,
+        "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+        "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+        "model_version": "v1",
+        "reward_shaping": null
+      },
+      {
+        "name": "bot_v2",
+        "count": 2,
+        "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+        "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+        "model_version": "v2",
+        "reward_shaping": null
+      },
+      {
+        "name": "bot_v3",
+        "count": 2,
+        "model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+        "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+        "model_version": "v3",
+        "reward_shaping": null
+      }
+    ],
+    "version_order": [
+      "v1",
+      "v2",
+      "v3",
+      "v4",
+      "v5",
+      "v6",
+      "v7",
+      "v8",
+      "v9"
+    ],
+    "candidate_protocol": "own actual checkpoint protocol: V1-V3 legacy; this chain V4+ constant .01 with native forced End and no early forfeits",
+    "selection": "lowest mean placement top three; newer on ties",
+    "max_candidates_per_stage": 8,
+    "seats_per_selected_version": 2,
+    "scripted_seats": 1,
+    "latest_version_protected": false,
+    "allow_reentry": true,
+    "stages": [
+      "v5",
+      "v6",
+      "v7",
+      "v8",
+      "v9"
+    ],
+    "candidate_counts": {
+      "v5": 4,
+      "v6": 5,
+      "v7": 6,
+      "v8": 7,
+      "v9": 8
+    },
+    "maximum_stage_rankings": 5,
+    "maximum_scored_games": 1920,
+    "primary_scored_games_max": 576,
+    "conditional_scored_games_max": 1344
+  },
+  "extension_gate_protocol": {
+    "primary_complete_and_retained": true,
+    "no_unresolved_runtime_numerical_native_terminal_or_evaluation_problem": true,
+    "disabled_early_termination_rates_must_be_zero": "integrity check only; not model improvement",
+    "repeat_metrics_observational_only": true,
+    "repeat_or_greedy_thresholds": null,
+    "heldout_used": false,
+    "changes_stage_best_selection": false,
+    "three_step0_bests_stop_extension": true
+  },
+  "old_instance01": {
+    "status": "stopped_by_user",
+    "committed_ppo": 3,
+    "committed_samples": 393216,
+    "actual_samples_including_partial": 435339,
+    "new_adam": 48,
+    "charged_to_new_chain": false
+  },
+  "hard_stop": "V9 complete, or V6 when gate fails; no V10, no deployment",
+  "code_sha256": {
+    "python/taverngym/learning/policy.py": "8f8040a55b268d88f6738f09adcaafca66c831fafd65a185c02928b7dddff54f",
+    "python/taverngym/learning/actor_sampling.py": "8953527f3e15878034878f9bf6d256b548365c1e3e479eb677ce851778f8f19f",
+    "python/taverngym/learning/role_sampling.py": "f453de7747f740886f00b1e0c89bd414c7b0398163f7df5950c7e607f13726f3",
+    "python/taverngym/learning/precision.py": "a3a69e3cb5ab2ecf674472d948d0655482eee21c8e480dea543c92d5aae04298",
+    "python/taverngym/learning/experiment.py": "e0371c20f0e91fe584ddf452511deb72a26cfa5de26cad35d7847ac8d89ccc25",
+    "python/taverngym/learning/env.py": "c625a1b3c8b07d194c04e3c252c0753b56c37fa980cc16c907e4a8d307b9d555",
+    "python/taverngym/learning/migrate_wandb.py": "747fa613caba56de81df8776b0517eee6c8ec85ec7edc9d5ec87bd81213d02e9",
+    "python/taverngym/learning/stage_chain.py": "3ad03b23cf94d5e50414a25c560de3ffdf8da56079fe1bb4a6046c466bd5d375",
+    "python/taverngym/learning/opponents.py": "3766d296940df5402865417c9fd63f662e7813551681153a1e8c7dfb02d7f979",
+    "python/taverngym/learning/stage_extension.py": "2ffbcda07736646e68691a07ef1ffd8c3a1b0eccbf1d31346375d6d585dae077",
+    "python/taverngym/learning/__init__.py": "c91821de2c1a4efd6ff8a01d2843bee5962db0789a33aaf7fcdba0d6330c7b4e",
+    "python/taverngym/learning/model.py": "d2fa3bbe28731ac9edb0d97f1c3de37a823836819cd830ff0e28977dc9a573b1",
+    "python/taverngym/learning/rewards.py": "83f033af23015e64a8fb7acde24b8a7446ea1a6b20e0f881469726f5e1dfaa77",
+    "python/taverngym/learning/ppo.py": "919d30f5f62a9d5e425dc9aac887f94b2d6dcfd80f38fb27120fbe314e243cdc",
+    "python/taverngym/learning/initialize.py": "9ff2032b391c023155f37d4d952878f0f08a4bf97774207af4e2c1672be91e4c",
+    "python/taverngym/learning/vector_env.py": "7433744df3b1d21029e67b18a6a1996ec796edfdbb8366b164163aee7109016c",
+    "python/taverngym/learning/text.py": "f308861324d67557b363d42e47cf09a929e8bb3676c1988ec768c01fa8cefc76",
+    "python/taverngym/learning/tracking.py": "e3791a1022cf83ca51d817f04623fa1417aabcdf082a2ad2756c9fe0cc96e457",
+    "python/taverngym/learning/train.py": "a3ee541cfaa98f5bef654463a8c7ff1158ac37247a4ba91b8cc9e47bc520007d",
+    "python/taverngym/learning/buffer.py": "d5030d709a0938cf9f66097ca6fc337a5f9a3f3f825ae56f85688bb61a1833a6",
+    "python/taverngym/learning/schedule.py": "4c2abd19164951183a3f8867ba5e10056b1517f63ee555e44d1c7cf5939148aa",
+    "python/taverngym/learning/action_filter.py": "dd9b6ea0a7ad2c8d1ea9da83a2cd7262231e88e1c31ae1248ecb2675b8b87534",
+    "python/taverngym/batch.py": "353357dfdb84d0cbd1763efe714680aa05e4c0a977427fbce6933fc5da55f327",
+    "crates/taverngym/src/batch.rs": "84e0cb134e6e1eee2a1df982c15f8f83b3f0eae605a7a5ae69227622293858d7",
+    "crates/taverngym/src/flow.rs": "88e067b7b79994937ce673445686ac5c31c7786db1a5a8433839b4e51165cec3",
+    "crates/taverngym-py/src/lib.rs": "0443aef8c8a0470f1bad8713c2aa13c52837609f624b3aaa053c349cc5b83ada",
+    "python/taverngym/_core.abi3.so": "0064e8c77742767643e6d485506bca1d49455601745946e5def2c1c5c40f4f4f"
+  },
+  "native_build_info": {
+    "source_hash": "cc7c215c040a574c",
+    "profile": "release",
+    "file": "/home/eric/projects/AutoTavern/python/taverngym/_core.abi3.so"
+  },
+  "git_head": "e9e572dd8e5e237b859dd5379488d6804ffcaae8",
+  "prepared_at": "2026-11-01T00:37:49.287493+08:00",
+  "cycle_rule": "constant_penalty_forced_end_no_forfeits",
+  "reward_shaping": {
+    "operation_cost": 0,
+    "cycle_cost": 0.01,
+    "cycle_detection": "all_actions",
+    "cycle_forfeit_repetitions": null,
+    "turn_action_forfeit_limit": null
+  },
+  "old_instance02": {
+    "status": "stopped_by_user",
+    "committed_ppo": 12,
+    "committed_samples": 1572864,
+    "actual_samples_including_partial": 1618196,
+    "new_adam": 192,
+    "charged_to_new_chain": false
+  },
+  "stop_extension_after_three_step0_bests": true,
+  "pool_selection": "top3",
+  "pool_selection_rule": "All available historical bots, top three by fixed stochastic development mean placement; two seats each and one script; ties favor newer; no latest protection; unselected sources preserved and eligible again",
+  "candidate_registry": {
+    "static_versions": [
+      "v1",
+      "v2",
+      "v3"
+    ],
+    "dynamic_versions": "every completed actual best in this instance; never old instance01/02 weights",
+    "drop_unselected_sources": false,
+    "allow_reentry": true,
+    "learning_source": "previous stage best, independent of pool ranking"
+  },
+  "pool_rule_revised_at": "2026-11-01T00:36:47.067523+08:00"
+}

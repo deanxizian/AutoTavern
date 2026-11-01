@@ -1,0 +1,258 @@
+{
+  "status": "completed",
+  "source": "turns.jsonl.gz",
+  "groups": {
+    "v1": {
+      "turns": 6763,
+      "length_counts": {
+        "60": 18,
+        "61": 4848,
+        "62": 54,
+        "63": 4
+      },
+      "forced": 4906,
+      "forced_without_cycle": 417,
+      "tail_counts": {
+        "Move": 42968,
+        "HeroPower": 61,
+        "Cancel": 59,
+        "Play": 1363,
+        "Freeze": 1826,
+        "Sell": 713,
+        "Refresh": 854,
+        "Buy": 522,
+        "Choose": 598,
+        "Upgrade": 38,
+        "Activate": 19,
+        "Magnetize": 39
+      },
+      "tail_cycles": 10068,
+      "tail_actions": 49060,
+      "excess_categories": {
+        "End": 4906,
+        "Cancel": 2,
+        "Choose": 60
+      },
+      "excess_after_end": 0,
+      "forced_prefix_move_freeze_cancel": 237076,
+      "forced_prefix_actions": 294360,
+      "forced_fraction": 0.7254177140322342,
+      "above60": 4906,
+      "above60_fraction": 0.7254177140322342,
+      "max_actions": 63,
+      "forced_mean_cycle_returns": 8.536689767631472,
+      "forced_prefix_move_freeze_cancel_fraction": 0.805394754722109,
+      "tail_return_fraction": 0.20521810028536486
+    },
+    "v2": {
+      "turns": 7090,
+      "length_counts": {
+        "60": 11,
+        "61": 5074,
+        "62": 268,
+        "63": 55
+      },
+      "forced": 5397,
+      "forced_without_cycle": 605,
+      "tail_counts": {
+        "Play": 2984,
+        "Cancel": 2128,
+        "Freeze": 2293,
+        "Move": 43390,
+        "Choose": 1338,
+        "Refresh": 989,
+        "HeroPower": 146,
+        "Buy": 364,
+        "Upgrade": 22,
+        "Sell": 238,
+        "Magnetize": 72,
+        "Activate": 6
+      },
+      "tail_cycles": 13865,
+      "tail_actions": 53970,
+      "excess_categories": {
+        "End": 5397,
+        "Cancel": 268,
+        "Choose": 110
+      },
+      "excess_after_end": 0,
+      "forced_prefix_move_freeze_cancel": 244101,
+      "forced_prefix_actions": 323820,
+      "forced_fraction": 0.761212976022567,
+      "above60": 5397,
+      "above60_fraction": 0.761212976022567,
+      "max_actions": 63,
+      "forced_mean_cycle_returns": 11.306466555493794,
+      "forced_prefix_move_freeze_cancel_fraction": 0.753816935334445,
+      "tail_return_fraction": 0.2569019825829164
+    },
+    "v3": {
+      "turns": 7633,
+      "length_counts": {
+        "60": 16,
+        "61": 5684,
+        "62": 207,
+        "63": 41
+      },
+      "forced": 5932,
+      "forced_without_cycle": 838,
+      "tail_counts": {
+        "Buy": 410,
+        "Play": 2837,
+        "Choose": 1154,
+        "Freeze": 2632,
+        "Cancel": 1683,
+        "HeroPower": 70,
+        "Refresh": 1193,
+        "Move": 48833,
+        "Sell": 394,
+        "Magnetize": 75,
+        "Upgrade": 30,
+        "Activate": 9
+      },
+      "tail_cycles": 12963,
+      "tail_actions": 59320,
+      "excess_categories": {
+        "End": 5932,
+        "Cancel": 192,
+        "Choose": 97
+      },
+      "excess_after_end": 0,
+      "forced_prefix_move_freeze_cancel": 267786,
+      "forced_prefix_actions": 355920,
+      "forced_fraction": 0.7771518406917333,
+      "above60": 5932,
+      "above60_fraction": 0.7771518406917333,
+      "max_actions": 63,
+      "forced_mean_cycle_returns": 9.367329737019555,
+      "forced_prefix_move_freeze_cancel_fraction": 0.7523769386378961,
+      "tail_return_fraction": 0.2185266351989211
+    },
+    "v5": {
+      "turns": 7496,
+      "length_counts": {
+        "60": 29,
+        "61": 2795,
+        "62": 31,
+        "63": 3
+      },
+      "forced": 2829,
+      "forced_without_cycle": 623,
+      "tail_counts": {
+        "Move": 23701,
+        "Freeze": 1592,
+        "Sell": 323,
+        "Buy": 291,
+        "Play": 971,
+        "Refresh": 837,
+        "Choose": 490,
+        "HeroPower": 23,
+        "Cancel": 15,
+        "Upgrade": 13,
+        "Magnetize": 32,
+        "Activate": 2
+      },
+      "tail_cycles": 1381,
+      "tail_actions": 28290,
+      "excess_categories": {
+        "End": 2829,
+        "Choose": 34,
+        "Cancel": 3
+      },
+      "excess_after_end": 0,
+      "forced_prefix_move_freeze_cancel": 125523,
+      "forced_prefix_actions": 169740,
+      "forced_fraction": 0.37740128068303097,
+      "above60": 2829,
+      "above60_fraction": 0.37740128068303097,
+      "max_actions": 63,
+      "forced_mean_cycle_returns": 1.9211735595616826,
+      "forced_prefix_move_freeze_cancel_fraction": 0.7395015906680806,
+      "tail_return_fraction": 0.048815835984446804
+    }
+  },
+  "v5_examples": {
+    "high_return": {
+      "lineup_id": 6,
+      "lane": 0,
+      "seat": 4,
+      "model": "v5",
+      "turn": 4,
+      "actions": 61,
+      "cycle_returns": 40,
+      "forced_ends": 1,
+      "action_categories": {
+        "Buy": 1,
+        "Play": 2,
+        "DarkGift": 1,
+        "Choose": 1,
+        "Sell": 1,
+        "Freeze": 9,
+        "Move": 44,
+        "Refresh": 1,
+        "End": 1
+      },
+      "tail_categories": {
+        "Move": 9,
+        "Freeze": 1
+      },
+      "tail_return_count": 9,
+      "tail_action_ids": [
+        225,
+        198,
+        199,
+        218,
+        221,
+        203,
+        210,
+        199,
+        2,
+        218
+      ]
+    },
+    "zero_return": {
+      "lineup_id": 0,
+      "lane": 8,
+      "seat": 5,
+      "model": "v5",
+      "turn": 5,
+      "actions": 61,
+      "cycle_returns": 0,
+      "forced_ends": 1,
+      "action_categories": {
+        "DarkGift": 1,
+        "Choose": 3,
+        "Play": 5,
+        "Move": 45,
+        "Buy": 1,
+        "Freeze": 4,
+        "Refresh": 1,
+        "End": 1
+      },
+      "tail_categories": {
+        "Move": 9,
+        "Freeze": 1
+      },
+      "tail_return_count": 0,
+      "tail_action_ids": [
+        210,
+        215,
+        235,
+        210,
+        217,
+        2,
+        208,
+        202,
+        230,
+        197
+      ]
+    }
+  },
+  "limitations": [
+    "No raw state, uncapped flag or pre-cap unrestricted action mask in hashes: cannot infer how many useful actions were prevented or optimal cap.",
+    "Visible-state non-return does not establish useful progress; novel permutations consume budget too.",
+    "This is existing-trace analysis; no new match, training or cap change."
+  ],
+  "source_sha256": "094a452ad675b07e538e7f2a7b4105c37ae1a46a005350e972d72f7e530b3e61",
+  "source_cap": 60
+}

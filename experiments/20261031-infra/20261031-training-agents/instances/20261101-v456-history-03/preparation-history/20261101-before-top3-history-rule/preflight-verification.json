@@ -1,0 +1,92 @@
+{
+  "verified_at": "2026-11-01T00:32:32.727780+08:00",
+  "instance_id": "20261101-v456-history-03",
+  "training_started": false,
+  "full_python_host_tests": {
+    "passed": 240,
+    "failed": 0,
+    "cuda_executed": true,
+    "new_and_legacy_bf16_role_aware_ppo": "passed",
+    "wandb_repeat_metrics": "passed"
+  },
+  "post_full_platform_gate_tests": {
+    "passed": 17,
+    "failed": 0
+  },
+  "native": {
+    "rust_tests_passed": 862,
+    "clippy_release_all_targets_deny_warnings": "passed in history02, native unchanged",
+    "fmt_check": "passed",
+    "source_hash": "cc7c215c040a574c",
+    "binding_current": true
+  },
+  "development_validation": {
+    "file": "development-initial-validation.json",
+    "source_sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "optimizer_updates": 0,
+    "summary": {
+      "mixed_sampled": {
+        "games": 64,
+        "mean_placement": 3.203125,
+        "first_rate": 0.234375,
+        "top4_rate": 0.734375,
+        "cycle_returns": 141.78125,
+        "cycle_return_fraction": 0.18116029216497978,
+        "max_consecutive_cycle_returns": 34.703125,
+        "cycle_penalty": -1.4178125000000001,
+        "actions_per_game": 826.15625,
+        "cap_end_rate": 0.7832215159331917,
+        "cycle_forfeit_rate": 0.0,
+        "action_limit_forfeit_rate": 0.0,
+        "terminal_turn_range": [
+          9,
+          23
+        ],
+        "natural_terminal_games": 64
+      },
+      "mixed_greedy": {
+        "games": 64,
+        "mean_placement": 3.9375,
+        "first_rate": 0.21875,
+        "top4_rate": 0.59375,
+        "cycle_returns": 601.65625,
+        "cycle_return_fraction": 0.7238668562841499,
+        "max_consecutive_cycle_returns": 54.203125,
+        "cycle_penalty": -6.016562499999916,
+        "actions_per_game": 842.140625,
+        "cap_end_rate": 0.9207942401192935,
+        "cycle_forfeit_rate": 0.0,
+        "action_limit_forfeit_rate": 0.0,
+        "terminal_turn_range": [
+          8,
+          26
+        ],
+        "natural_terminal_games": 64
+      }
+    },
+    "all_128_games_natural_terminal": true,
+    "penalty_equals_minus_cent_per_return": true,
+    "per_game_repeat_fraction_verified": true
+  },
+  "code_files_locked": 27,
+  "config_sha256": {
+    "v4": "6e6419e37a55c45d67cf0d09fcd2cfa27a023ab88d62d085aded99a8ccd53fef",
+    "v5": "821f1bb3cd85a4d2b0883fe0ef3afffa122038003a0d207bae703c4678766fe7",
+    "v6": "8aad89dd7f3a22d788b4ce803da5f8380cdda9dde7b71a74a830134da8a7fb55",
+    "v7": "25deb987124ceae5bf28761cefb99f104e3728bb4e1c80423ee12ee387fa5095",
+    "v8": "f517ca0b88f27631a422e9e692f5ffd1c19b070ad4fcae22fa6bf1d247c7a58b",
+    "v9": "c0df7fe81868e04d38bdb84669a6392f991be3661639a3eda2273f288a36e8e5"
+  },
+  "prior_instances_stopped": true,
+  "formal_training_started": false,
+  "ready_to_start": true,
+  "awaiting": "parent monitor ready and release",
+  "host_preflight": {
+    "checked_at": "2026-11-01T00:32:50.305970+08:00",
+    "cuda": true,
+    "bf16": true,
+    "matching_stage_processes": 0,
+    "baseline_process_completed": true,
+    "all_runtime_hashes_match": true
+  }
+}
