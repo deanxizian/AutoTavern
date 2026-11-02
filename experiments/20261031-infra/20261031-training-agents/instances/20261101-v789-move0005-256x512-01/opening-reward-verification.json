@@ -1,0 +1,74 @@
+{
+  "recorded_at": "2026-11-01T11:25:58.410280+08:00",
+  "status": "passed_preparation_only_startup_paused",
+  "scope": "Early per-action cost and once-only opening milestones; no unrelated parallel-ranking acceptance",
+  "user_requested_pause": true,
+  "training_start_authorized": false,
+  "automatic_resume_allowed": false,
+  "reward_shaping": {
+    "operation_cost": 0,
+    "cycle_cost": 0.01,
+    "cycle_detection": "all_actions",
+    "cycle_forfeit_repetitions": null,
+    "turn_action_forfeit_limit": null,
+    "move_cost": 0.0005,
+    "early_action_costs": [
+      0.001,
+      0.001,
+      0.0005,
+      0.0005,
+      0.0005
+    ],
+    "early_action_penalty_cap": 0.01,
+    "first_turn_minion_bonus": 0.01,
+    "second_turn_tier2_bonus": 0.005,
+    "third_turn_dark_gift_bonus": 0.005
+  },
+  "tests": {
+    "command": ".venv/bin/python with global torch.optim.Adam.step failure guard: pytest -q tests/test_opening_rewards.py tests/test_reward_shaping.py tests/test_stage_chain.py tests/test_stage_extension.py tests/test_actor_sampling.py tests/test_role_termination.py tests/test_tracking.py -k \"not native_wandb_records_each_adam\"",
+    "passed": 228,
+    "deselected_real_adam_logging_cases": 2,
+    "elapsed_seconds": 13.36,
+    "attempted_adam_updates": 0,
+    "cuda_tests_executed": false,
+    "git_diff_check": "passed",
+    "post_check_change": "Line wrapping only; no behavior changes after the passing run"
+  },
+  "parent_review": {
+    "status": "passed_no_blocking_findings",
+    "checked": [
+      "Reward costs/milestones/transaction and independent ledger",
+      "Three prepared configurations and expected protocols",
+      "Manifest config/runtime code hashes",
+      "Pause flags and absence of runtime outputs",
+      "47 historical configuration hashes"
+    ]
+  },
+  "historical_config_hashes_unchanged": 47,
+  "source_weights_and_adam_modified": false,
+  "controller_started": false,
+  "training_started": false,
+  "ranking_started": false,
+  "online_run_started": false,
+  "optimizer_updates": 0,
+  "actual_training_ppo": 0,
+  "actual_training_samples": 0,
+  "actual_ranking_games": 0,
+  "sampling": "Only bounded deterministic CPU/native correctness tests and no-optimizer rollout tests; no training stage or development ranking",
+  "archive": "preparation-history/20261101-112007-before-early-action-reward/archive-manifest.json",
+  "implementation_files_sha256": {
+    "python/taverngym/learning/rewards.py": "b5929c48db476c72f63484f563cc73aa21e7e166d8dcecc3719dbe0f38a190a6",
+    "tests/test_opening_rewards.py": "b1c0adbbb5e31873b752118abecb4247426413e9909aa2bb1c13ff222b62277b",
+    "tests/test_reward_shaping.py": "53e564f2d49e24913467095781a52e66e4a81be38abea1e8c06c3b36d72a6172",
+    "tests/test_role_termination.py": "6a12b8357703b53edc4681ad685fc77231f7aab17871e8c597fca6e86bcb6939",
+    "docs/TRAINING.md": "ca84a2c3d2558f9c8b005ba4fceb19f3c475b67b472d7b08a90515030f2bf3f9",
+    "docs/TRAINING_METRICS.md": "843f0de208ae4f954eea1dab6f0f2d577f4d47e46c918f0d5f5512626dd21204"
+  },
+  "manifest_sha256": "9babcc0eb8d7a4bb09c41520f6fbe7212da8236343fa9cbf32881d18f15c3a15",
+  "prepared_config_sha256": {
+    "v7": "050104a5bc121d59367c4e74c0fc4c3495b9ee25e0e022d92812d6299bf727b7",
+    "v8": "6da6a4e7515b6e64a2e8acdccc41832c4a1626b6413df035447e6f8c1ee57efb",
+    "v9": "5c336bb01b4bb6fe7f0a56603ca4377fd73ca3685d283a7bcbb2969cee332394"
+  },
+  "remaining_scope": "Training/controller/ranking startup remains paused; previously pending parallel ranking acceptance is not resolved by this reward-only task"
+}

@@ -1,0 +1,508 @@
+{
+  "reviewed_at": "2026-11-03T00:35:10.671485+08:00",
+  "repository": "firefighter-eric/AutoTavern",
+  "visibility": "public",
+  "user_requested_action": "create_and_merge_pull_request",
+  "public_files_reviewed": 69,
+  "public_bytes": 1198974,
+  "new_local_only_artifacts": 202,
+  "previously_tracked_wandb_files_removed": 40,
+  "excluded_categories": [
+    "model binaries",
+    "SDK caches",
+    "W&B runtime metadata/inventories/metric exports",
+    "host diagnostics",
+    "controller/monitor snapshots",
+    "recovery grants",
+    "raw per-game outputs and metric curves"
+  ],
+  "scan_result": "No literal GitHub/API/bearer tokens, private keys, passwords or cookies in any included file.",
+  "reference_notes": "User-provided hero/strategy notes and statistics only; no browser/session state.",
+  "local_files_deleted": false,
+  "past_git_history_rewritten": false,
+  "files": [
+    {
+      "path": ".gitattributes",
+      "bytes": 380,
+      "sha256": "2cfa66877856e0bad17f4a081022f54efb67798c2f373c98533028741f7d3661",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 2046,
+      "sha256": "d3293e903f6ba258b757c2ea3340886620790987785bf1337fefee5f233bdc29",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 13187,
+      "sha256": "e2c80a8943c825346785c5873c06ed9a683f3a188667a058f7a1474f6bd7a429",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "configs/hero-selection-priors-hsreplay-20261029.json",
+      "bytes": 4441,
+      "sha256": "9c22fcea462031777e93cbf9d60b9b3034a0f6270fbd81953ebc2be377c7d2ba",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "configs/model-versions.json",
+      "bytes": 5419,
+      "sha256": "8969e6b7e63efbfda622f398c013146a69fda2e26dc302ef757037aa473206c5",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "configs/wandb-metric-schema-v2-expanded.txt",
+      "bytes": 23295,
+      "sha256": "fb2b1651b3d61713c2878c6ab5c3d4e6d3a1658a61977fe966957a62a10af266",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "configs/wandb-metric-schema-v2-map.csv",
+      "bytes": 149054,
+      "sha256": "6c85e8e73d709107106543a08f0d3f93a0ea8191dd6045c7a5eed6110c7639fe",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "configs/wandb-metric-schema-v2-verification.json",
+      "bytes": 1808,
+      "sha256": "a4c134f5017fd6e35120255a2b852370c5d0526959dd9a34c024110a0a99329d",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "configs/wandb-metric-schema-v2.json",
+      "bytes": 14181,
+      "sha256": "bb680bc98b49c8b25413486676697c2fe27a1647ef988db64bf29fc4cc476645",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "docs/TRAINING.md",
+      "bytes": 25203,
+      "sha256": "e02246a7c3bb73d7447da24207abcbff15de5b701de2ce15c3d8402b1cdb76b9",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "docs/TRAINING_METRICS.md",
+      "bytes": 27946,
+      "sha256": "aa3c7b86d17da4ccbde93a846d6e87cedbd5c60174a7bdf689ca28d7e75b4517",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "docs/references/HSREPLAY_STRATEGY_20261029.md",
+      "bytes": 26300,
+      "sha256": "99b0a803eaf84acb14a1341ccedf2360ac7c6b516189be8b6a9297cf8b95ebce",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "docs/references/README.md",
+      "bytes": 1300,
+      "sha256": "37700176907b1a2eae6ed30cdb52f2f5a41a08d629be1612219e2035dfcabd30",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/cuda-preflight.json",
+      "bytes": 559,
+      "sha256": "114f07d58999ffdde7f8af4ebcb95db8343c669832ecfe85b294a14bfa80afb0",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/evaluation-audit/ranking-audit.json",
+      "bytes": 2674,
+      "sha256": "e2e6dabe8b3beba7635ebb1d13127373435341e081ac687cc677b914b18bfcad",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/final-verification.json",
+      "bytes": 8070,
+      "sha256": "b8dcc49c6e43280f3cee38faa854abdeb5b659355a1001489783dbaebd226f4c",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/heldout-final-verification.json",
+      "bytes": 4762,
+      "sha256": "f01351b7a916cda1b86f7ba0eb41e5c253236f770210d1b89c40e77412765016",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/manual-resume02-boundary-verification.json",
+      "bytes": 4223,
+      "sha256": "8df97a99c0a6147ac3e78c18b84ae214036f6bae96aa92ede92bdb941099f409",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/sampling-accounting.json",
+      "bytes": 994,
+      "sha256": "11fd725b2c1dbc4e51a7ebad75a355d2eebebb285cce47cfd17b35416b0f7367",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/source-verification.json",
+      "bytes": 1496,
+      "sha256": "90f7b17224aa44984b20ebcbc60e68c3f645191befdb090d2a230f167ae91ca3",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/training-budget-complete-verification.json",
+      "bytes": 4069,
+      "sha256": "ee5eb1af4129d9de8022ffa2893f5dcc5b9a290fc6b4b0bbd098a1580b454532",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/validation-0025-verification.json",
+      "bytes": 5449,
+      "sha256": "9e35b56c4d5ed88ae74ad76f2b7ca1451165996c06bdfb9843a9fccd434d9d55",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/validation-0050-verification.json",
+      "bytes": 7357,
+      "sha256": "2ebb8f60c8ef5c04c1dd2fed9b5e410aa669915969c969e074c0911308c58120",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/validation-0075-verification.json",
+      "bytes": 5025,
+      "sha256": "3d8237b6aff0f5cfdc0c76c189f68be5f1632298b41cd280ce95e0221c12abb4",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/validation-0100-verification.json",
+      "bytes": 8268,
+      "sha256": "ce7c56070576c257b8295effe8d56bd457d5788ba5ad129262018e26eb8fa143",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/action-reward-baseline.json",
+      "bytes": 720,
+      "sha256": "96d11544978af7c7fabbbea2b3a1b4a0c29784c776e956155179ed76b7948163",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/action-reward-verification.json",
+      "bytes": 4570,
+      "sha256": "50f12d3d80657db76bc1f3c7b5a6f2e07d962b2a583d13ba937f81c09ec28648",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/hero-selection-verification.json",
+      "bytes": 5094,
+      "sha256": "52cff258813713523d05b1de85c6b31775295bb4e8b6c829085199b24395d6fd",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/opening-reward-verification.json",
+      "bytes": 3547,
+      "sha256": "7ac0c65ab9cc54d95a311e556122f0696735789d87ac497b701ded378a1a7f73",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/preparation-history/20261101-113657-before-action-reward-unification/experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend-256x512/config.json",
+      "bytes": 7330,
+      "sha256": "c54ad19f12b47df8068ecea4767ad03c1367bcb03a1900d0a5f1d71d10b6ac63",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/preparation-history/20261101-113657-before-action-reward-unification/python/taverngym/learning/rewards.py",
+      "bytes": 24945,
+      "sha256": "1c0ba879c2b487a993095b502980087c84187e6b4ad0c4177bc31d704fc2792c",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend-256x512/README.md",
+      "bytes": 4928,
+      "sha256": "176b4dd8434285824a3f0095b6f1086efcfe5e662b13e9c155158e4bb6c196cf",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend-256x512/config.json",
+      "bytes": 7330,
+      "sha256": "c54ad19f12b47df8068ecea4767ad03c1367bcb03a1900d0a5f1d71d10b6ac63",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/README.md",
+      "bytes": 2531,
+      "sha256": "441dcb492fb3e096a1999f3950cbc15d4497b3624a16d651419cf4cc2a737b73",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/boundary-repair.json",
+      "bytes": 1838,
+      "sha256": "f40307be1bca6b4dcce57a40d63e58d8cd290de3e72abf263a8ed6807cccaa25",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/config.json",
+      "bytes": 8801,
+      "sha256": "b42764b95596320dff4e2652d4c74a356aa605439ceec3c41d61222e0cc5c752",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/lifecycle.json",
+      "bytes": 1247,
+      "sha256": "2b81d0c5c8cddbf1426338e6d8c65eea72239c56aefc6accc3aa1ec8795750b0",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/pool-binding.json",
+      "bytes": 443,
+      "sha256": "d5471bfe0b1793a62699a436b6ee983a769641c8d1ae417a27c84c993a949001",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/ranking-input.json",
+      "bytes": 8010,
+      "sha256": "1705c751f557bf65d1b8743b1e6de79d2a28c11b922d3bf5fd8787961af92071",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/ranking-summary.json",
+      "bytes": 20744,
+      "sha256": "2167e7508036717cc1f5672b29b9125ef92dd4269d394b972543eae61eb458df",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/resolved-config.json",
+      "bytes": 10021,
+      "sha256": "91e59f4ccec414f839506c9172b2778309947d343aada5a2ae357ae10707ac5e",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/results-summary.json",
+      "bytes": 117283,
+      "sha256": "3b4b1a1de09810d399d03bb6cea86bf1f1e29dc2804d81d37279de18684b1ae9",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/retention.json",
+      "bytes": 3895,
+      "sha256": "6136aea55287332bfa9e272445bbef5bff5c8f0ba3222b88d4f633f871e83e9c",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/source-binding.json",
+      "bytes": 1406,
+      "sha256": "8105537997b9c6f9a1c1efd1683f74efaa81f6b3edc58e0ac59d5e69ea6b2153",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/source-checkpoint.json",
+      "bytes": 814,
+      "sha256": "5fc0f45f61dd8bc29afae555a4f766dcd20dd3a8ba5236779e19b09a7d497da8",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp08-v8-history-ranked/20261101-ppo-v8-move0005-cycle001-forceend-256x512/README.md",
+      "bytes": 4928,
+      "sha256": "ba2b2b37223eabf3cd7bacfab823da970a4cffe68dcb1e3afab4741ac105b5ea",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp08-v8-history-ranked/20261101-ppo-v8-move0005-cycle001-forceend-256x512/config.json",
+      "bytes": 7330,
+      "sha256": "998add3196edf21cd9c30f6da4c5f6e448a72b08471246e5c628bbda22ba38cb",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp09-v9-history-ranked/20261101-ppo-v9-move0005-cycle001-forceend-256x512/README.md",
+      "bytes": 4928,
+      "sha256": "beb8094c3c499e5a7a9baac52147abab980a6faf5cb2aaa9ccc3802f8a3234d9",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261101-exp09-v9-history-ranked/20261101-ppo-v9-move0005-cycle001-forceend-256x512/config.json",
+      "bytes": 7330,
+      "sha256": "ac36f98b747592279fd790bb7982fb13424849fe1e993ed1bca56b720bcbc954",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/20261103-pr-v7-review/verification.json",
+      "bytes": 2224,
+      "sha256": "1816ce3710167739860b1c1b2ff68cd50bd23ab430f00b58f122b43638e0f9a9",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/EXPERIMENT_OVERVIEW.md",
+      "bytes": 35667,
+      "sha256": "36637ea72c355f22f178c0e490d08ee0c6bc3481a7415c44321faafea5a7b183",
+      "reviewed_as": "documentation",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "experiments/experiment-overview.json",
+      "bytes": 249414,
+      "sha256": "c045d066e7655c3c10d5a84bab6901fdb004eea8af2cac7711970a331ed550a8",
+      "reviewed_as": "configuration_schema_or_aggregate_results",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "python/taverngym/learning/experiment.py",
+      "bytes": 30518,
+      "sha256": "7b055d07548a04cf3f4f1a4b361dd6be0048ce2fb93766b2f0467f1f63f943cc",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "python/taverngym/learning/metric_schema_v2.py",
+      "bytes": 5653,
+      "sha256": "ea3819f59af725eeec35ee78ea5c5d166af2f46dfbc5ff63d04d48b07fabcb7b",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "python/taverngym/learning/parallel_ranking.py",
+      "bytes": 14208,
+      "sha256": "f19a5a394a95d4d49a8cd2fd3ac0af6a5f9af3e72060f4bd0410c283a8f21197",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "python/taverngym/learning/rewards.py",
+      "bytes": 25832,
+      "sha256": "04d74df96d68e5fc0c223ee133fcaf3d4d186d371ca760826168f7c4bbf7ea58",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "python/taverngym/learning/stage_chain.py",
+      "bytes": 52808,
+      "sha256": "b2a74ce2ef69489854e8c863d31923e4a3f9a79a49fc94cc171e121f3fcda5b3",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "python/taverngym/learning/stage_extension.py",
+      "bytes": 16828,
+      "sha256": "c4c2a9ef9399e368be8996b4f0405689a511e797b8e8d5c9311748cd6d2096fd",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "python/taverngym/learning/tracking_v2.py",
+      "bytes": 1564,
+      "sha256": "969ea2c3228e28d43d56426796167c161ee33cc77676a81d10f08289ef0cd8a8",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_action_reward_grouping.py",
+      "bytes": 12602,
+      "sha256": "9469c46f4c079572a9b95d51577799899fa0676f805ee12ef98da1c6714eabba",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_hero_selection_reward.py",
+      "bytes": 17777,
+      "sha256": "fb94656815144cdcc4f8839c0ca3c5c80fce08f193eb8b72c55c550e497f3360",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_metric_schema_v2.py",
+      "bytes": 7491,
+      "sha256": "902db28e4f61d84d096b7a1df9e43c4b9715db2464ab86c35fef2af90ccbd0d9",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_opening_rewards.py",
+      "bytes": 22617,
+      "sha256": "b1c0adbbb5e31873b752118abecb4247426413e9909aa2bb1c13ff222b62277b",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_parallel_ranking_native.py",
+      "bytes": 3398,
+      "sha256": "18113b12966a4cc49c3974303fd1e88e4fbfff38066adf1453f56df25937d068",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_reward_shaping.py",
+      "bytes": 35647,
+      "sha256": "189bb3b524f1a5c330ba0296d71a892a0b485a0c8638f95d5a6ec4caa9a241a6",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_role_termination.py",
+      "bytes": 13247,
+      "sha256": "6a12b8357703b53edc4681ad685fc77231f7aab17871e8c597fca6e86bcb6939",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_stage_chain.py",
+      "bytes": 24569,
+      "sha256": "9d36f514a164968dadb83b8ed4a03e88e3b31f5530900295ea62d60be7da2432",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_tracking.py",
+      "bytes": 11869,
+      "sha256": "8a11f617adfb3e8aa7063d3daebf49d47b88cb8516a5269c33ef36ce93dd6d02",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    },
+    {
+      "path": "tests/test_v789_chain.py",
+      "bytes": 7522,
+      "sha256": "68b097968cabc520a350f1997f32e7c1bab46007e6a2418a0fcb7733854c0884",
+      "reviewed_as": "code_or_test",
+      "credential_patterns_found": false
+    }
+  ]
+}

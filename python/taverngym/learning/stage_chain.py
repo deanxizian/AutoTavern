@@ -122,6 +122,51 @@ def inspect_checkpoint(path):
     }
 
 
+def register_lifecycle(root, registry_path, folder, result):
+    """Publish a finalized best only; unchanged policies become preserved aliases."""
+    path = root / registry_path
+    # A separate kernel lock also protects unrelated registry writers that follow this API.
+    with instance_lock(path.parent / ".model-version-lock"):
+        document = read_json(path)
+        versions = document["versions"]
+        selected, source = result["retained_model"], result["source_model"]
+        require(inspect_checkpoint(selected["path"]) == selected,
+                "Lifecycle selected checkpoint changed")
+        require(inspect_checkpoint(source["path"]) == source,
+                "Lifecycle inherited checkpoint changed")
+        cfg = read_json(folder / "config.json")
+        source_version = cfg["initial_model_version"]
+        require(source_version in versions, "Lifecycle source is not registered")
+        unchanged = selected["policy_sha256"] == source["policy_sha256"]
+        version = result["model_version"]
+        entry = {"status": "retired" if unchanged else "active",
+                 "canonical_version": (versions[source_version]["canonical_version"]
+                                       if unchanged else version),
+                 "kind": "trained_policy", "source_version": source_version,
+                 "reason": ("selected_best_is_unchanged_inherited_policy" if unchanged
+                            else "selected_best_policy_changed"),
+                 "fresh_samples": result["fresh_samples"], "trained_ppo_iterations": cfg["iterations"],
+                 "selected_ppo_iteration": selected["ppo_iteration"],
+                 "retained_model": str(Path(selected["path"]).relative_to(root)),
+                 "retained_sha256": selected["sha256"],
+                 "policy_sha256": selected["policy_sha256"],
+                 "adam_moments_sha256": selected["adam_moments_sha256"],
+                 "source_sha256": source["sha256"],
+                 "source_model": str(Path(source["path"]).relative_to(root)),
+                 "policy_and_adam_unchanged": unchanged and
+                     selected["adam_moments_sha256"] == source["adam_moments_sha256"],
+                 "evidence": str((folder / "results.json").relative_to(root)),
+                 "history_and_weights_preserved": True}
+        require(version not in versions or versions[version] == entry,
+                "Refusing to replace a conflicting registered version")
+        versions[version] = entry
+        document["updated_at"] = now()
+        write_json(path, document)
+        write_json(folder / "lifecycle.json", {"registered_at": now(), "version": version,
+                   "entry": entry, "registry_sha256": digest(path),
+                   "adam_total_steps": selected["adam_total_steps"]})
+
+
 def validation_selection(folder, config):
     expected = [0, *range(config["evaluation_every_iterations"], config["iterations"] + 1,
                           config["evaluation_every_iterations"])]
@@ -166,18 +211,22 @@ def validate_evaluation(result, games, seed, opponent_pool=None):
 
 
 def verify_config(config):
-    fixed = {"iterations": 100, "decisions_per_iteration": 131072, "n_envs": 128,
-             "n_steps": 1024, "batch_size": 8192, "micro_batch_size": 1024, "n_epochs": 1,
+    fixed = {"iterations": 100, "decisions_per_iteration": 131072,
+             "batch_size": 8192, "micro_batch_size": 1024, "n_epochs": 1,
              "learning_rate_start": 1e-5, "learning_rate_end": 1e-5,
              "initial_evaluation_games": 64, "evaluation_games": 64,
-             "evaluation_every_iterations": 50, "final_evaluation_games": 128,
+             "final_evaluation_games": 128,
              "evaluation_include_scripted": False, "preserve_optimizer_state": True,
              "evaluation_seed": 40000003, "final_evaluation_seed": 50000003,
              "learning_rate_schedule": "linear", "forward_precision": "bf16",
              "opponent_forward_precision": "bf16",
-             "sampling_driver": "unified_actor", "checkpoint_every_iterations": 50}
+             "sampling_driver": "unified_actor"}
     require(all(config.get(key) == value for key, value in fixed.items()),
             "Configuration differs from this instance's authorized protocol")
+    require((config.get("n_envs"), config.get("n_steps")) in ((128, 1024), (256, 512)),
+            "Configuration differs from this instance's authorized rollout shape")
+    require((config.get("evaluation_every_iterations"), config.get("checkpoint_every_iterations"))
+            in ((50, 50), (25, 25)), "Unsupported validation/checkpoint interval")
     expected_reward = config.get("expected_reward_shaping", {
         "operation_cost": 0, "cycle_cost": .0002, "cycle_detection": "all_actions",
         "cycle_forfeit_repetitions": 3, "turn_action_forfeit_limit": 60})
@@ -564,6 +613,31 @@ class StageChain:
         self.state.update(changes, updated_at=now())
         write_json(self.state_path, self.state)
 
+    def check_deadline(self):
+        deadline = self.state.get("deadline_unix")
+        if deadline is not None and time.time() >= deadline:
+            self.status(status="budget_exhausted", stop_reason="wall_clock_budget_exhausted",
+                        automatic_resume_allowed=False)
+            raise TimeoutError("Authorized wall-clock budget exhausted")
+
+    def initial_result(self):
+        spec = self.manifest.get("initial_source_result")
+        if not spec:
+            return None
+        path = self.root / spec["path"]
+        require(digest(path) == spec["sha256"], "Initial source result changed")
+        result = read_json(path)
+        require(result["status"] == "completed", "Initial source is not fully finalized")
+        require(inspect_checkpoint(result["retained_model"]["path"])
+                == result["retained_model"], "Initial source complete checkpoint changed")
+        require(result["model_version"] == spec["model_version"], "Initial source version changed")
+        return result
+
+    def register_completed(self, stage, folder, result):
+        if not self.manifest.get("register_stage_lifecycle"):
+            return
+        register_lifecycle(self.root, self.manifest["model_version_registry"], folder, result)
+
     def signal(self, signum, frame):
         self.stopping = True
         self.status(status="stopping",
@@ -589,6 +663,7 @@ class StageChain:
 
     def run_child(self, command, stage, index, phase):
         require(not self.stopping, "Explicit stop requested")
+        self.check_deadline()
         folder = self.root / stage["experiment_dir"]
         log = folder / f"{phase}-{time.time_ns()}.log"
         with log.open("x", buffering=1) as stream:
@@ -600,6 +675,7 @@ class StageChain:
                             self.root / "runs" / read_json(folder / "config.json")["name"]))
             try:
                 while self.child.poll() is None:
+                    self.check_deadline()
                     progress_path = folder / "progress.json"
                     progress = read_json(progress_path) if progress_path.exists() else {}
                     self.status(progress=progress, budget=self.budget(index, progress),
@@ -609,7 +685,11 @@ class StageChain:
             except BaseException:
                 if self.child.poll() is None:
                     os.killpg(self.child.pid, signal.SIGTERM)
-                    self.child.wait()
+                    try:
+                        self.child.wait(timeout=10)
+                    except subprocess.TimeoutExpired:
+                        os.killpg(self.child.pid, signal.SIGKILL)
+                        self.child.wait()
                 raise
             code = self.child.returncode
             self.status(last_child_exit_code=code, training_pid=None)
@@ -676,18 +756,24 @@ class StageChain:
                 require(not command.exists() or b"taverngym.learning" not in command.read_bytes(),
                         "Previous controller child is still alive; refusing duplicate execution")
             previous_status = self.state.get("status")
-            require(previous_status not in ("stopping", "stopped"),
+            require(previous_status not in ("stopping", "stopped", "budget_exhausted"),
                     "Explicitly stopped instance cannot auto-resume")
             require(self.resume or previous_status in (None, "ready_to_start"),
                     "Existing instance requires --resume; refusing duplicate launch")
             signal.signal(signal.SIGTERM, self.signal)
             signal.signal(signal.SIGINT, self.signal)
-            self.status(status="starting", stop_reason=None, completed_stages=[])
-            previous = None
-            known_results = {}
+            started = self.state.get("started_unix", time.time())
+            clock = {}
+            if self.manifest.get("wall_clock_limit_seconds"):
+                clock = {"started_unix": started,
+                         "deadline_unix": started + self.manifest["wall_clock_limit_seconds"]}
+            self.status(status="starting", stop_reason=None, completed_stages=[], **clock)
+            previous = self.initial_result()
+            known_results = {previous["model_version"]: previous} if previous else {}
             stages = list(self.manifest["stages"])
             try:
                 for index, stage in enumerate(stages):
+                    self.check_deadline()
                     for path, expected_hash in self.manifest.get("code_sha256", {}).items():
                         require(digest(self.root / path) == expected_hash,
                                 f"Locked runtime code changed: {path}")
@@ -701,10 +787,19 @@ class StageChain:
                         require(digest(previous["retained_model"]["path"])
                                 == previous["retained_model"]["sha256"], "Retained model changed")
                         complete_retention(folder)
+                        self.register_completed(stage, folder, previous)
                         self.record_completed(stage, folder, previous)
                         self.maybe_extend(stages, index, known_results)
                         continue
                     config = read_json(folder / "config.json")
+                    if self.manifest.get("authorized_evaluation_schedule"):
+                        schedule = [0, *range(config["evaluation_every_iterations"],
+                                              config["iterations"] + 1,
+                                              config["evaluation_every_iterations"])]
+                        require(schedule == self.manifest["authorized_evaluation_schedule"]
+                                and config["checkpoint_every_iterations"]
+                                == self.manifest["authorized_checkpoint_every_iterations"],
+                                "Stage validation/checkpoint schedule differs from manifest")
                     binding_path = folder / "source-binding.json"
                     if not binding_path.exists():
                         binding_path = folder / "pool-binding.json"
@@ -737,9 +832,13 @@ class StageChain:
                         if not (folder / "ranking-results.json").exists():
                             self.run_child(self.command("rank", folder), stage, index, "ranking")
                         config = bind_ranked_pool(self.root, folder, previous)
-                    if index:
+                    if previous is not None:
                         config = bind_source(self.root, folder, previous, known_results)
                     verify_config(config)
+                    if self.manifest.get("authorized_rollout_shape"):
+                        require([config["n_envs"], config["n_steps"]]
+                                == self.manifest["authorized_rollout_shape"],
+                                "Stage rollout shape differs from this instance manifest")
                     require(digest(self.root / config["initial_model"])
                             == config["initial_model_sha256"],
                             "Stage source hash mismatch")
@@ -759,6 +858,7 @@ class StageChain:
                     self.run_child(self.command("finalize", folder), stage, index, "finalizing")
                     previous = read_json(results_path)
                     known_results[stage["version"]] = previous
+                    self.register_completed(stage, folder, previous)
                     self.record_completed(stage, folder, previous)
                     self.status(phase="stage_completed", budget=self.budget(index, {}))
                     self.maybe_extend(stages, index, known_results)
@@ -766,7 +866,9 @@ class StageChain:
                             stop_reason=self.state.get("extension_stop_reason") or
                             "Final authorized stage and independent evaluations completed")
             except BaseException as exc:
-                self.status(status="stopped" if self.stopping else "needs_attention",
+                self.status(status=("stopped" if self.stopping else
+                                    "budget_exhausted" if isinstance(exc, TimeoutError)
+                                    else "needs_attention"),
                             error=f"{type(exc).__name__}: {exc}",
                             stop_reason=self.state.get("stop_reason") or
                             "Controller stopped; diagnosis required before recovery")

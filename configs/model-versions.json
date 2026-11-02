@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-11-01T10:51:49.798249+08:00",
+  "updated_at": "2026-11-02T02:56:18.131951+08:00",
   "policy": {
     "retire_when": "Final selected best policy fingerprint equals inherited source policy fingerprint; compare actual policy tensors, not ZIP bytes.",
     "training_not_skipped": "Retired may have trained its full budget; retirement describes the selected retained policy.",
@@ -77,6 +77,25 @@
       "source_sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
       "policy_and_adam_unchanged": true,
       "evidence": "experiments/20261031-exp06-v6-cycle-forfeit/20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend/results.json",
+      "history_and_weights_preserved": true
+    },
+    "v7": {
+      "status": "active",
+      "canonical_version": "v7",
+      "kind": "trained_policy",
+      "source_version": "v5",
+      "reason": "selected_best_policy_changed",
+      "fresh_samples": 13107200,
+      "trained_ppo_iterations": 100,
+      "selected_ppo_iteration": 100,
+      "retained_model": "runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+      "retained_sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354",
+      "policy_sha256": "3c100968fa0bb7b531531b0dd73aadab2a4609981c9d772611c9788e89d706e0",
+      "adam_moments_sha256": "054ddc39c24908827e650434d18833a50e2542ac810400ba9344ba79bdd319f1",
+      "source_sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+      "source_model": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+      "policy_and_adam_unchanged": false,
+      "evidence": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/results.json",
       "history_and_weights_preserved": true
     }
   }

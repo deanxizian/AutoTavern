@@ -1,0 +1,161 @@
+{
+  "instance_id": "20261101-v7-reward-256x512-01",
+  "verified_at": "2026-11-01T12:56:38.409528+08:00",
+  "selection_rule": "strict lower mixed_sampled mean placement only; greedy observational; independent test unused",
+  "selected_best": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+    "sha256": "8082d20b89a7ba339e98b6735da046471edc017dbdb48f87c79f167787570c4e",
+    "bytes": 53931501,
+    "ppo_iteration": 25,
+    "sampled_decisions": 3276800,
+    "stage_optimizer_steps": 400,
+    "adam_total_steps": 7600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6c94463c3114af0ec5718fe906dfc853e5c7d53ceb21e40c07ddc9b9b5a5594a",
+    "adam_moments_sha256": "87061726789630100478edb3f0883b788f4b9851c71e46ba64f5768cfba9683d",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "ppo_boundary": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/checkpoints/iteration-0025.zip",
+    "sha256": "8e59efd7c20583a7dc7e58172de2b67774545cfd968f6ae70b534409c9a7dc57",
+    "bytes": 53931501,
+    "ppo_iteration": 25,
+    "sampled_decisions": 3276800,
+    "stage_optimizer_steps": 400,
+    "adam_total_steps": 7600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6c94463c3114af0ec5718fe906dfc853e5c7d53ceb21e40c07ddc9b9b5a5594a",
+    "adam_moments_sha256": "87061726789630100478edb3f0883b788f4b9851c71e46ba64f5768cfba9683d",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "policy_and_complete_adam_match": true,
+  "evaluations": {
+    "0": {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/evaluation-0000.json",
+      "sha256": "eb70652a6afa0a1f5afaa4314094d57e7b357f7fd39a35ba45545bc2a3487add",
+      "conditions": {
+        "mixed_sampled": {
+          "games": 64,
+          "first_rate": 0.140625,
+          "top4_rate": 0.53125,
+          "mean_placement": 4.125,
+          "cycle_returns": 23.09375,
+          "move_actions": 291.828125,
+          "cap_end_rate": 0.3267588733962331
+        },
+        "mixed_greedy": {
+          "games": 64,
+          "first_rate": 0.109375,
+          "top4_rate": 0.640625,
+          "mean_placement": 3.84375,
+          "cycle_returns": 448.546875,
+          "move_actions": 333.140625,
+          "cap_end_rate": 0.6847621000001032
+        }
+      }
+    },
+    "25": {
+      "path": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/evaluation-0025.json",
+      "sha256": "d9fc8d74a5bf9a52ea88030a4482f0aa064e08a5d871bc6c6d1a110cdb5b3d9d",
+      "conditions": {
+        "mixed_sampled": {
+          "games": 64,
+          "first_rate": 0.15625,
+          "top4_rate": 0.578125,
+          "mean_placement": 3.875,
+          "cycle_returns": 18.671875,
+          "move_actions": 243.609375,
+          "cap_end_rate": 0.2627993432221373
+        },
+        "mixed_greedy": {
+          "games": 64,
+          "first_rate": 0.140625,
+          "top4_rate": 0.546875,
+          "mean_placement": 4.109375,
+          "cycle_returns": 357.859375,
+          "move_actions": 232.453125,
+          "cap_end_rate": 0.517438402837525
+        }
+      }
+    }
+  },
+  "stage_best_only": true,
+  "final_test_executed": false,
+  "future_stages_authorized": false
+}

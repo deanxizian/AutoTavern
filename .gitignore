@@ -23,6 +23,22 @@ venv/
 .huggingface/
 wandb/
 .weave/
+/configs/.model-version-lock/
+
+# Runtime W&B data stays in W&B/local storage; commit code/config/schema only.
+**/wandb.json
+**/wandb-metrics.jsonl
+**/wandb-inventory/
+
+# Publish compact experiment summaries, not raw curves or per-game outputs.
+/experiments/**/metrics.jsonl
+/experiments/**/results.json
+/experiments/**/evaluation-[0-9][0-9][0-9][0-9].json
+/experiments/**/evaluation-*-heldout.json
+/experiments/**/ranking-games.jsonl
+/experiments/**/ranking-results.json
+/experiments/**/ranking-scheduler.json
+/experiments/**/ranking-v[0-9]*.json
 
 # credentials and private configuration
 .env

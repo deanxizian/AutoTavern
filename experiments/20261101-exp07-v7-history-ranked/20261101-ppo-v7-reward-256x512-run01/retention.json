@@ -1,0 +1,108 @@
+{
+  "status": "completed",
+  "kept_model": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+    "sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354",
+    "bytes": 53931490,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 8800,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "3c100968fa0bb7b531531b0dd73aadab2a4609981c9d772611c9788e89d706e0",
+    "adam_moments_sha256": "054ddc39c24908827e650434d18833a50e2542ac810400ba9344ba79bdd319f1",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "removed_models": [
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/final_model.zip",
+      "sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354",
+      "bytes": 53931490
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/interrupted_model.zip",
+      "sha256": "4e646ceeebdf787b445709c7ecf9ce9a5033adba60fd0153ee2c581c4a1377a0",
+      "bytes": 53931493
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/latest_model.zip",
+      "sha256": "a98121374b7be39cf7ff426c37e4417745e49d1cd4d1fba405bb614b03437c3c",
+      "bytes": 53931490
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/starting_model.zip",
+      "sha256": "e42f96fe87aee8eb6c9d52a383ed5d7244d88de8992ea14940ddb8cf1773179b",
+      "bytes": 49265295
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/failed_model.zip",
+      "sha256": "1ff31eb2d4435b3ba2d5f7acc6bd16b18bc0a46a3728120f855cac366bae8caf",
+      "bytes": 49265295
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/failed_model.tmp.zip",
+      "sha256": "4f8233476c0e2a38a2b451edc10e428f0e2bffba85f4e9228dea41d2599ca6d8",
+      "bytes": 4751384
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/checkpoints/iteration-0050.zip",
+      "sha256": "b36acbbdaa1ceb908a00f0975b2d4a2230366d487636c593047bbdc20cf5c69b",
+      "bytes": 53931496
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/checkpoints/iteration-0025.zip",
+      "sha256": "8e59efd7c20583a7dc7e58172de2b67774545cfd968f6ae70b534409c9a7dc57",
+      "bytes": 53931501
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/checkpoints/iteration-0100.zip",
+      "sha256": "a98121374b7be39cf7ff426c37e4417745e49d1cd4d1fba405bb614b03437c3c",
+      "bytes": 53931490
+    },
+    {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/checkpoints/iteration-0075.zip",
+      "sha256": "5eabf99ab00343638c7080bbffa0626a189051a3bf542329dad5ca1d29a7ae19",
+      "bytes": 53931493
+    }
+  ],
+  "heldout_used_for_selection": false,
+  "completed_at": "2026-11-02T02:56:08.748538+08:00"
+}

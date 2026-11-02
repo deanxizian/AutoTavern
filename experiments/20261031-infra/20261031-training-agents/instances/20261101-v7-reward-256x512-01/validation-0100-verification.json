@@ -1,0 +1,255 @@
+{
+  "verified_at": "2026-11-02T02:17:18.248948+08:00",
+  "opponents": "2V3+2V5+2V2+1V0 frozen stochastic",
+  "learner_modes": [
+    "stochastic",
+    "greedy"
+  ],
+  "games_per_mode": 64,
+  "precision": "BF16",
+  "comparison": {
+    "mixed_sampled": {
+      "0": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.53125,
+        "mean_placement": 4.125,
+        "cycle_returns": 23.09375,
+        "cycle_return_fraction": 0.04667558712845442,
+        "max_consecutive_cycle_returns": 4.46875,
+        "cycle_penalty": -0.23093750000000005,
+        "cap_end_rate": 0.3267588733962331,
+        "actions_per_game": 501.578125
+      },
+      "25": {
+        "games": 64,
+        "first_rate": 0.15625,
+        "top4_rate": 0.578125,
+        "mean_placement": 3.875,
+        "cycle_returns": 18.671875,
+        "cycle_return_fraction": 0.042061069383891515,
+        "max_consecutive_cycle_returns": 4.21875,
+        "cycle_penalty": -0.18671875000000002,
+        "cap_end_rate": 0.2627993432221373,
+        "actions_per_game": 459.40625
+      },
+      "50": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.578125,
+        "mean_placement": 4.0,
+        "cycle_returns": 17.0625,
+        "cycle_return_fraction": 0.04038830418517461,
+        "max_consecutive_cycle_returns": 3.5625,
+        "cycle_penalty": -0.17062500000000003,
+        "cap_end_rate": 0.2159718456799049,
+        "actions_per_game": 433.296875
+      },
+      "75": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.578125,
+        "mean_placement": 4.078125,
+        "cycle_returns": 13.4375,
+        "cycle_return_fraction": 0.03496468654431438,
+        "max_consecutive_cycle_returns": 2.84375,
+        "cycle_penalty": -0.13437500000000002,
+        "cap_end_rate": 0.144641553943992,
+        "actions_per_game": 382.984375
+      },
+      "100": {
+        "games": 64,
+        "first_rate": 0.21875,
+        "top4_rate": 0.65625,
+        "mean_placement": 3.453125,
+        "cycle_returns": 14.5,
+        "cycle_return_fraction": 0.03521071688276958,
+        "max_consecutive_cycle_returns": 2.9375,
+        "cycle_penalty": -0.14500000000000002,
+        "cap_end_rate": 0.14708765342146243,
+        "actions_per_game": 408.96875
+      }
+    },
+    "mixed_greedy": {
+      "0": {
+        "games": 64,
+        "first_rate": 0.109375,
+        "top4_rate": 0.640625,
+        "mean_placement": 3.84375,
+        "cycle_returns": 448.546875,
+        "cycle_return_fraction": 0.619223565746072,
+        "max_consecutive_cycle_returns": 41.890625,
+        "cycle_penalty": -4.4854687499999475,
+        "cap_end_rate": 0.6847621000001032,
+        "actions_per_game": 715.34375
+      },
+      "25": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.546875,
+        "mean_placement": 4.109375,
+        "cycle_returns": 357.859375,
+        "cycle_return_fraction": 0.5618593363957033,
+        "max_consecutive_cycle_returns": 38.796875,
+        "cycle_penalty": -3.5785937499999667,
+        "cap_end_rate": 0.517438402837525,
+        "actions_per_game": 620.953125
+      },
+      "50": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.71875,
+        "mean_placement": 3.5625,
+        "cycle_returns": 351.625,
+        "cycle_return_fraction": 0.5520890069755904,
+        "max_consecutive_cycle_returns": 37.609375,
+        "cycle_penalty": -3.5162499999999675,
+        "cap_end_rate": 0.44643574601154795,
+        "actions_per_game": 619.40625
+      },
+      "75": {
+        "games": 64,
+        "first_rate": 0.203125,
+        "top4_rate": 0.640625,
+        "mean_placement": 3.671875,
+        "cycle_returns": 313.984375,
+        "cycle_return_fraction": 0.5166300067975789,
+        "max_consecutive_cycle_returns": 34.59375,
+        "cycle_penalty": -3.139843749999973,
+        "cap_end_rate": 0.3733125124581432,
+        "actions_per_game": 582.671875
+      },
+      "100": {
+        "games": 64,
+        "first_rate": 0.109375,
+        "top4_rate": 0.625,
+        "mean_placement": 3.734375,
+        "cycle_returns": 231.890625,
+        "cycle_return_fraction": 0.46257158779525814,
+        "max_consecutive_cycle_returns": 32.8125,
+        "cycle_penalty": -2.3189062499999906,
+        "cap_end_rate": 0.23822800906416425,
+        "actions_per_game": 487.0
+      }
+    }
+  },
+  "selection_rule": "Mixed stochastic mean placement strictly lowers; earliest ties; greedy observation only",
+  "selected_ppo": 100,
+  "selected_complete_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+    "sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354",
+    "bytes": 53931490,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 8800,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "3c100968fa0bb7b531531b0dd73aadab2a4609981c9d772611c9788e89d706e0",
+    "adam_moments_sha256": "054ddc39c24908827e650434d18833a50e2542ac810400ba9344ba79bdd319f1",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "ppo100_full_boundary": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/checkpoints/iteration-0100.zip",
+    "sha256": "a98121374b7be39cf7ff426c37e4417745e49d1cd4d1fba405bb614b03437c3c",
+    "bytes": 53931490,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 8800,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "3c100968fa0bb7b531531b0dd73aadab2a4609981c9d772611c9788e89d706e0",
+    "adam_moments_sha256": "054ddc39c24908827e650434d18833a50e2542ac810400ba9344ba79bdd319f1",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "val_steps": [
+    0,
+    400,
+    800,
+    1200,
+    1600
+  ],
+  "val25_to_val100_stochastic_improvement": 0.421875,
+  "stage_adam_total": 1600,
+  "samples": 13107200,
+  "recovered_missing_rollout_metrics_ppo": [
+    75
+  ],
+  "independent_test_pending": true,
+  "global_champion_promotion": false
+}

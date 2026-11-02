@@ -151,7 +151,20 @@ def rank_candidates(root, folder, device):
             "Ranking protocol changed")
     reference = {"opponent_pool": protocol["reference_pool"], "frozen_opponents": 6,
                  "forward_precision": "bf16", "opponent_forward_precision": "bf16"}
-    opponents = load_frozen_opponents(reference, device)
+    parallel = protocol.get("parallel_all_candidates", False)
+    opponents = None if parallel else load_frozen_opponents(reference, device)
+    parallel_results = {}
+    if parallel:
+        outputs = [folder / f"ranking-{s['model_version']}.json" for s in inputs["candidates"]]
+        if not all(path.exists() for path in outputs):
+            require(not any(path.exists() for path in outputs),
+                    "Partial parallel ranking outputs require diagnosis; no extra games")
+            from .parallel_ranking import parallel_evaluate
+
+            checkpoints = {s["model_version"]: inspect_checkpoint(root / s["model"])
+                           for s in inputs["candidates"]}
+            torch.manual_seed(protocol["seed"])
+            parallel_results = parallel_evaluate(root, folder, inputs, checkpoints, device)
     rows = []
     for spec in inputs["candidates"]:
         path = root / spec["model"]
@@ -179,12 +192,16 @@ def rank_candidates(root, folder, device):
                     "Sealed ranking result differs from the locked input/protocol")
             rows.append(record)
             continue
-        model = EntityPPO.load(path, device=device, n_envs=1, n_steps=2, batch_size=2,
-                              rollout_buffer_class=PlacementBuffer, rollout_buffer_kwargs={})
-        configure_precision(model, reference, opponents)
-        result = evaluate(model, protocol["games"], protocol["seed"],
-            simulator_config={"turn_action_caps": [60]}, reward_shaping=candidate_protocol,
-            opponent_policy=opponents, frozen_opponents=6, rotate_seats=True)
+        if parallel:
+            result = parallel_results[spec["model_version"]]
+        else:
+            model = EntityPPO.load(path, device=device, n_envs=1, n_steps=2, batch_size=2,
+                                  rollout_buffer_class=PlacementBuffer, rollout_buffer_kwargs={})
+            configure_precision(model, reference, opponents)
+            result = evaluate(model, protocol["games"], protocol["seed"],
+                simulator_config={"turn_action_caps": [60]}, reward_shaping=candidate_protocol,
+                opponent_policy=opponents, frozen_opponents=6, rotate_seats=True)
+            del model
         require(math.isfinite(result["mean_placement"]) and len(result["placements"]) == 64,
                 "Invalid development ranking result")
         record = {"model_version": spec["model_version"], "checkpoint": checkpoint,
@@ -193,7 +210,6 @@ def rank_candidates(root, folder, device):
                   "used_for_stage_best_selection": False, "heldout_used": False}
         write_json(output, record)
         rows.append(record)
-        del model
     order = protocol["version_order"]
     if inputs.get("pool_selection") == "top3":
         require(len(rows) == inputs["candidate_count"]

@@ -60,6 +60,23 @@ V1 起为训练模型。新报告使用 V0；旧配置与接口中的 `scripted`
 “最强三个历史 bot 各两席 + 一个脚本”即三个训练版本各两席 + 一个 V0，V0 不占前三名额。
 
 训练默认将指标与配置记录到 W&B 项目 `eric_eric_/AutoTavern`；train 横轴为实际 Adam 步数，起点评估放在 val 的 step=0。
+2026-11-03 用户要求：W&B 原始运行数据、指标导出、运行元数据与 SDK 缓存不提交 Git，保留在 W&B／本地。
+Git 保留接入代码、配置、字段规范、实验结果摘要及原始来源哈希；逐局输出和原始指标曲线留本地。
+2026-11-01 用户规定：W&B 新命名从 V8 起使用 `configs/wandb-metric-schema-v2.json`，
+W&B 按同一层平铺为七个分区：`train_core/`、`train_reward/`、`train/`、
+`val_core/`、`val_reward/`、`val/`、`test/`。只把 core、reward 单独分出来，
+其他训练／验证指标仍归 train／val，保留 `operation_`、`optimization_`、`progress_`、`performance_` 前缀。
+例如 `train_reward/total`、`val_core/mean_placement`、`val_core/greedy_mean_placement`、
+`val/operation_greedy_cycle_returns`、`test/core_best_sampled_mean_placement`。
+贪心不另建分区；test 全部保留在一个分区，字段用分类／检查点／模式前缀区分。
+V8 及后续新 run 必须使用 schema v2 的七分区规范，不允许回退为旧字段名；
+版本要求见 schema 的 `activation_policy`，实际接入须在后续新进程中完成。
+W&B 的 System 留给 SDK 自动采集 CPU／GPU／内存等硬件状态，
+自定义采样、推理及更新性能写 `train/performance_*`。
+平均名次不伪装成 rate，实际 Adam 横轴仍为 `optimizer_step`；内部选模键和计算口径不变。
+V8 启动前显式接入 v2 输出组件，同时统一 journal 去重、收尾标记和监控映射并封存 schema SHA。
+当前 V7 不追溯改名，不热替换、不补写别名、不因命名变更重启；命名准备不等于授权启动 V8。
+完整映射和接入要求见 `docs/TRAINING_METRICS.md` 的 V8 命名章节。
 每次汇报和表格须明确对手数量与版本、学习者随机／贪心模式及局数，例如“2 个固定 V1 + 5 个脚本，随机采样，64 局”。
 后续混合实验显式设置 `evaluation_include_scripted=false`，验证只保留混合随机／贪心两组，
 不额外跑七脚本对照；混合阵容中的脚本席位保留，历史运行的验证协议不改写。

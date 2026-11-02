@@ -1,5 +1,9 @@
 # PPO 开发环境与训练产物
 
+当前状态（2026-11-02）：V7 已完成 100 PPO 及约定的收尾独立测评，所选 best 为 PPO100／累计 Adam8800。
+配置与结果见 [V7 完成记录](../experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/README.md)。
+下文带日期的准备阶段记录保留当时状态；V8／V9 尚未启动。
+
 跨版本的历史对手池、冠军晋级、agent 监控与自动循环设计，见
 [训练方法论](TRAINING_METHODOLOGY.md)。当前仅有流程与角色草案，尚未启用跨代自动运行。
 
@@ -37,6 +41,99 @@ PPO iteration、epoch、sample、minibatch 和 Adam step 的区别，以及论�
 为旧检查点显式开启；两个参数均为非负的成本绝对值，实际 reward 中相减。
 所有设置写入实验配置与新检查点的 `experiment_config`。
 奖励在环境采样时加入，不更改动作或掩码，推理无须接入额外筛选器。
+
+### 暂停中的 V7–V9：前期逐步成本与开局奖励
+
+2026-11-01 用户确认实施，**仅更新尚未执行的 256×512 准备配置，训练仍暂停**。
+不是免费额度或超额处罚：每个实际成功的非 End 招募动作都会付费。
+
+```json
+"early_action_costs": [0.001, 0.001, 0.0005, 0.0005, 0.0005],
+"early_action_penalty_cap": 0.01,
+"first_turn_minion_bonus": 0.01,
+"second_turn_tier2_bonus": 0.005,
+"third_turn_dark_gift_bonus": 0.005
+```
+
+数组依次对应第1–5回合，第6回合起费用为0；单回合只有本项负罚最多0.01，五回合最多0.05。
+实际成功的买卖、出牌、移动、冻结、刷新、技能、Choose、Cancel 等都计费，菜单点击也计。
+主动／强制 End 计入全部操作统计但免本项费用；英雄选择（回合0）、deferred、拒绝动作、
+未执行的预算拦截不计。真实动作执行后即终局仍收费。费用台账独立于循环历史，同回合跨 rollout
+保留，End／回合变更清当回合台账，reset 清本局状态。
+
+三个奖励每局每项最多一次：第1回合己方战场首次从空变非空（含技能召唤，单纯购买不算）0.01；
+第2回合实际 Upgrade 使酒馆等级从1变2奖励0.005；第3回合付费使用 DarkGift 后，
+完成对应 Discover 的实际 Choose 奖励0.005。DarkGift 按钮本身不奖；按 uses 序号和
+pending source 追踪该次菜单，跨 rollout 保留，取消／其他菜单／End／跨回合不能挪用事务。
+里程碑要求同招募回合的非终局可见变化，排除 End 战斗结算、英雄选择和自动 reset 观测误触发。
+
+维持独立 `move_cost=0.0005`、`cycle_cost=0.01`、`operation_cost=0`，费用可以叠加。
+循环每次返回固定扣0.01、累计线性无封顶；本次0.01回合上限只限前期逐步费。
+不增加刷新、空场、升本或 DarkGift 的其他奖励，不改变合法动作、原生60步强制End或无提前判负规则。
+这些开局偏好可能改变最优策略、诱导过早End或不合适的开局；尚未训练或验证收益。
+阶段 best 仍仅按混合随机 `val/mean_placement` 严格降低选择，独立 test 不参与选择。
+
+历史缺 `early_action_costs` 按五个0、三个 bonus 缺失按0处理；仅缺省 cap 为0.01 不会自行启用费用。
+新增字段的 JSON 数组与内存 tuple 按同一协议比较；其他既有字段仍严格核对，不追溯补写历史日志。
+全部操作与非End收费口径分别记录，见 [指标说明](TRAINING_METRICS.md)。
+
+### 选英雄偏好先验：HSReplay资料准备接入
+
+2026-11-01 用户随后只授权新增开局选英雄偏好Reward；训练、开发排名和线上run继续暂停。
+完整用户资料保存在 [HSReplay策略资料原文](references/HSREPLAY_STRATEGY_20261029.md)，
+结构化来源为 [12英雄双分段均名表](../configs/hero-selection-priors-hsreplay-20261029.json)。
+资料仅给出12英雄的前50%／前1%数值，90英雄列表、116英雄指南与31流派文字均未转成操作规则或补全数字。
+全页约2万局（前1%）不是每英雄样本量；这些均名是人类分段偏好先验，不是本模拟器实力标签。
+
+当前三版256×512准备稿使用前1%作为可配置的默认分段，独立保存前50%原始均名，不混合两个分段。
+`reward_shaping` 内封存稳定Blizzard ID→均名映射，运行不动态读取资料文件：
+
+```json
+"hero_selection_bonus_scale": 0.01,
+"hero_selection_bonus_cap": 0.005,
+"hero_selection_mean_placements": {
+  "TB_BaconShop_HERO_10": 3.04,
+  "TB_BaconShop_HERO_34": 3.38
+}
+```
+
+上例仅演示字段，实际准备稿内嵌全部12项。数据文件和原文路径、SHA-256、cohort与覆盖限制另封存到配置及manifest。
+只有实际成功的初始HeroSelect（动作前turn0、pending为HeroSelect、合法Choose，动作后已选英雄等于该选项）
+可触发，每局只结算一次；其他玩家未选完而仍处于HeroSelect阶段不影响本人的完成判定。
+Discover、芬利后续技能选择、取消、非法动作和终局／reset观测不奖励。
+
+全部实际合法选项都在同一分段数值表中，且至少有两个不同英雄时，奖励为：
+`min(0.005, 0.01 * max(0, 最差可选英雄均名 - 已选英雄均名))`。
+选最差、同分或单候选时为0；任何一个可选英雄未知则整组奖励为0，不把未知当最差，也不用0补数。
+例如给出3.04与3.38，选3.04奖励0.0034。优质已知英雄遇到未知英雄也不自动加奖，避免仅因资料覆盖偏差改变偏好。
+运行时通过缓存的原生catalog解析精确ID→cid+1，启用前验证kind=hero、in_pool与implemented，排除教程别名。
+不改候选池、合法掩码、规则、模型输入或推理选动作方式。
+
+旧配置缺scale默认0关闭，cap默认0.005、均名表默认空，不追溯改写旧模型或日志。
+此Reward与现有前期费用、三项开局奖励、move0.0005、cycle0.01独立，仍以随机val平均名次严格降低选best。
+接入资料和通过正确性检查不代表训练过、不代表验证了跨游戏／分段强度，也不解除启动暂停。
+
+### 操作奖励统一入口与总指标（仅分组，不改数值）
+
+操作相关的加减项现在由奖励层 `_action_step` 统一计算，模型仍只收到一个标量。
+总奖励的数值分解关系为：
+
+```text
+action_reward = operation_penalty + cycle_penalty + move_penalty
+                + early_action_penalty + opening_bonus
+total_reward = placement_reward + hero_selection_bonus + action_reward
+```
+
+`opening_bonus` 已包含首回合首随从上场、第二回合升二本、第三回合完成黑暗之赐选择三个正奖励，
+不能再加一次。选英雄先验单独放在 `hero_selection_bonus`；旧 `operation_penalty` 仍仅指旧联合操作费。
+新增的 `action_reward` 是便于观察的派生小计，不是另一笔奖惩；所有细分指标保留。
+实现保留重构前的浮点累计顺序，不重排实际scalar奖励的加法，避免改变float32奖励／GAE舍入结果。
+上式用于数值分解说明，不要求对浮点累计值重新排序后逐bit相等。
+
+本次没有新建或修改任何费用、阈值、奖励数值、触发规则或对手协议。
+0.01回合上限仍只限制 `early_action_penalty`，不是 `action_reward` 的总上限；
+循环每次扣0.01、累计线性无封顶，移动费和开局奖励仍可叠加，60步强制End等规则保持。
+当前三版准备配置继续暂停，分组改动不构成训练、排名或线上run启动授权。
 
 新模板使用 `cycle_detection="all_actions"`：在同一回合内，对所有非 End 动作检查
 是否返回先前见过的完整可见状态，覆盖出牌→取消、出牌→选择→取消及英雄技能菜单循环。

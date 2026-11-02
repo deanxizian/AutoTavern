@@ -1,0 +1,229 @@
+{
+  "verified_at": "2026-11-02T02:58:18.293882+08:00",
+  "status": "completed",
+  "processes_exited_host_verified": true,
+  "actual_ppo": 100,
+  "actual_samples": 13107200,
+  "actual_stage_adam": 1600,
+  "adam_total": 8800,
+  "retained_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+    "sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354",
+    "bytes": 53931490,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 8800,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "3c100968fa0bb7b531531b0dd73aadab2a4609981c9d772611c9788e89d706e0",
+    "adam_moments_sha256": "054ddc39c24908827e650434d18833a50e2542ac810400ba9344ba79bdd319f1",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "stage_initial_source": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+    "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+    "bytes": 51597964,
+    "ppo_iteration": 100,
+    "sampled_decisions": 13107200,
+    "stage_optimizer_steps": 1600,
+    "adam_total_steps": 7200,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6ccbf9e28071087ff3f073287ae5b257bc24e992086867a4a351898dff73099a",
+    "adam_moments_sha256": "fd3847fb3a01bd043d7637a4131303da7292881a4d29bc9b901159e0179fac40",
+    "model_version": "v5",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    }
+  },
+  "runtime_and_config_frozen_hashes_match": true,
+  "all_frozen_opponents_unchanged": true,
+  "validation_ppo": [
+    0,
+    25,
+    50,
+    75,
+    100
+  ],
+  "validation_mean_placement": {
+    "0": 4.125,
+    "25": 3.875,
+    "50": 4.0,
+    "75": 4.078125,
+    "100": 3.453125
+  },
+  "selected_ppo": 100,
+  "selection": "mixed stochastic val strict mean placement decrease, earliest tie, test never selects",
+  "heldout": {
+    "final": {
+      "reused_from": null,
+      "conditions": {
+        "mixed_sampled": {
+          "games": 128,
+          "first_rate": 0.1171875,
+          "top4_rate": 0.6015625,
+          "mean_placement": 3.90625,
+          "cycle_returns": 15.078125,
+          "cycle_return_fraction": 0.039732122509703725,
+          "max_consecutive_cycle_returns": 3.5078125,
+          "cycle_penalty": -0.15078125,
+          "cap_end_rate": 0.13766466819751455,
+          "actions_per_game": 394.234375
+        },
+        "mixed_greedy": {
+          "games": 128,
+          "first_rate": 0.1640625,
+          "top4_rate": 0.7265625,
+          "mean_placement": 3.4375,
+          "cycle_returns": 270.1484375,
+          "cycle_return_fraction": 0.4747609584866267,
+          "max_consecutive_cycle_returns": 32.75,
+          "cycle_penalty": -2.701484374999982,
+          "cap_end_rate": 0.2596953411177414,
+          "actions_per_game": 546.96875
+        }
+      }
+    },
+    "initial": {
+      "reused_from": null,
+      "conditions": {
+        "mixed_sampled": {
+          "games": 128,
+          "first_rate": 0.15625,
+          "top4_rate": 0.578125,
+          "mean_placement": 4.0390625,
+          "cycle_returns": 23.40625,
+          "cycle_return_fraction": 0.048227352002733995,
+          "max_consecutive_cycle_returns": 4.6875,
+          "cycle_penalty": -0.23406250000000006,
+          "cap_end_rate": 0.33140889691797926,
+          "actions_per_game": 500.75
+        },
+        "mixed_greedy": {
+          "games": 128,
+          "first_rate": 0.125,
+          "top4_rate": 0.578125,
+          "mean_placement": 3.9296875,
+          "cycle_returns": 438.2265625,
+          "cycle_return_fraction": 0.6089379776038841,
+          "max_consecutive_cycle_returns": 41.40625,
+          "cycle_penalty": -4.382265624999951,
+          "cap_end_rate": 0.6871416938083201,
+          "actions_per_game": 711.1171875
+        }
+      }
+    },
+    "best": {
+      "reused_from": "final",
+      "conditions": {
+        "mixed_sampled": {
+          "games": 128,
+          "first_rate": 0.1171875,
+          "top4_rate": 0.6015625,
+          "mean_placement": 3.90625,
+          "cycle_returns": 15.078125,
+          "cycle_return_fraction": 0.039732122509703725,
+          "max_consecutive_cycle_returns": 3.5078125,
+          "cycle_penalty": -0.15078125,
+          "cap_end_rate": 0.13766466819751455,
+          "actions_per_game": 394.234375
+        },
+        "mixed_greedy": {
+          "games": 128,
+          "first_rate": 0.1640625,
+          "top4_rate": 0.7265625,
+          "mean_placement": 3.4375,
+          "cycle_returns": 270.1484375,
+          "cycle_return_fraction": 0.4747609584866267,
+          "max_consecutive_cycle_returns": 32.75,
+          "cycle_penalty": -2.701484374999982,
+          "cap_end_rate": 0.2596953411177414,
+          "actions_per_game": 546.96875
+        }
+      }
+    }
+  },
+  "heldout_placements_independently_recomputed": true,
+  "heldout_unique_executed_games": 512,
+  "heldout_logical_model_mode_cases": 768,
+  "heldout_reused_best_from_final_games": 256,
+  "rank_completed_games": 256,
+  "val_completed_games": 640,
+  "previous_interrupted_val75_game_count_unknown": true,
+  "prior_unrecoverable_training_samples_lower_bound": 125164,
+  "complete_training_plus_prior_waste_lower_bound": 13232364,
+  "preflight_learner_transitions_separate": 64,
+  "repair75_training_samples_added": 0,
+  "repair75_adam_added": 0,
+  "ppo75_original_rollout_metrics_missing_explicitly_marked": true,
+  "manual_resumes": 2,
+  "automatic_recoveries": 1,
+  "original_deadline_unix": 1793562657.5936549,
+  "remaining_wall_seconds_at_completion": 3279.4614408016205,
+  "remaining_training_budget": {
+    "ppo_iterations": 0,
+    "samples": 0,
+    "adam_updates": 0
+  },
+  "stage_lifecycle": "active, changed policy and Adam relative to V5",
+  "global_champion_promotion": false,
+  "v8_v9_started": false,
+  "v4_v6_cleanup_executed": false,
+  "weights_uploaded": false,
+  "prior_source_and_fault_archives_preserved": [
+    "runs/20261101-ppo-v7-manual-resume-20261101-220056-archive/latest_model.zip",
+    "runs/20261101-ppo-v7-manual-resume-20261101-220056-archive/failed_model.zip",
+    "runs/20261101-ppo-v7-manual-resume-20261101-220056-archive/failed_model.tmp.zip",
+    "runs/20261101-ppo-v7-user-stop-20261101-231130-archive/latest_model.zip",
+    "runs/20261101-ppo-v7-user-stop-20261101-231130-archive/20261101-115350-best_model.zip"
+  ],
+  "no_further_execution_authorized": true,
+  "online_wandb_verification": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/final-online-wandb-verification.json",
+  "online_run_state": "finished",
+  "online_initial_best_final_test_mean_placement_verified": true,
+  "online_test_model_rows_unique": true
+}

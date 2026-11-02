@@ -1,0 +1,129 @@
+{
+  "verified_at": "2026-11-02T01:22:52.226926+08:00",
+  "checkpoint_after_repair": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/latest_model.zip",
+    "sha256": "5eabf99ab00343638c7080bbffa0626a189051a3bf542329dad5ca1d29a7ae19",
+    "bytes": 53931493,
+    "ppo_iteration": 75,
+    "sampled_decisions": 9830400,
+    "stage_optimizer_steps": 1200,
+    "adam_total_steps": 8400,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "efd272f088e9d99978487f1bd862b48858a81757c9714450e6c71cfc257aaf93",
+    "adam_moments_sha256": "e93e29dd3783cec2c8a85ecb8a2dc917a7a3b38a583e5828d872a666b19e3416",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "original_policy_and_adam_unchanged": true,
+  "fresh_samples_added": 0,
+  "adam_updates_added": 0,
+  "metrics_through": 75,
+  "recovered_metrics_row": {
+    "iteration": 75,
+    "decisions": 9830400,
+    "train/optimizer_steps": 1200,
+    "train/optimizer_steps_this_iteration": 16,
+    "train/learning_rate": 1e-05,
+    "rollout_seconds": 87.07757335399947,
+    "update_seconds": 8.173468715001945,
+    "recovered_boundary": true,
+    "unrecoverable_metrics": "original rollout outcome/loss absent; not reconstructed"
+  },
+  "validation_mean_placements": {
+    "0": 4.125,
+    "25": 3.875,
+    "50": 4.0,
+    "75": 4.078125
+  },
+  "selected_ppo": 25,
+  "selected_complete_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+    "sha256": "8082d20b89a7ba339e98b6735da046471edc017dbdb48f87c79f167787570c4e",
+    "bytes": 53931501,
+    "ppo_iteration": 25,
+    "sampled_decisions": 3276800,
+    "stage_optimizer_steps": 400,
+    "adam_total_steps": 7600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6c94463c3114af0ec5718fe906dfc853e5c7d53ceb21e40c07ddc9b9b5a5594a",
+    "adam_moments_sha256": "87061726789630100478edb3f0883b788f4b9851c71e46ba64f5768cfba9683d",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "next_ppo": 76,
+  "validation_retry_extra_inference_acknowledged": true
+}

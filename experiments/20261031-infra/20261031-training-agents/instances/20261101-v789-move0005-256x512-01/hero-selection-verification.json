@@ -1,0 +1,106 @@
+{
+  "recorded_at": "2026-11-01T11:33:07.885502+08:00",
+  "status": "passed_preparation_only_startup_paused",
+  "scope": "Initial hero selection preference only. Existing action costs and opening milestones retained; no hero-operation or composition rules.",
+  "provenance": {
+    "data_path": "configs/hero-selection-priors-hsreplay-20261029.json",
+    "data_sha256": "9c22fcea462031777e93cbf9d60b9b3034a0f6270fbd81953ebc2be377c7d2ba",
+    "source_path": "docs/references/HSREPLAY_STRATEGY_20261029.md",
+    "source_sha256": "99b0a803eaf84acb14a1341ccedf2360ac7c6b516189be8b6a9297cf8b95ebce",
+    "source_bytes": 26300,
+    "cohort": "top_1_percent",
+    "numeric_hero_count": 12,
+    "per_hero_sample_counts": null,
+    "page_total_not_per_hero_samples": true,
+    "unknown_policy": "Any unknown offered hero makes the entire offer unscorable: bonus=0; never fill unknown with zero or rank it as worst",
+    "interpretation": "Default human top-1% preference prior, configurable; not simulator strength labels",
+    "frozen_embedded_table": true,
+    "runtime_reads_external_prior_file": false
+  },
+  "reward_shaping": {
+    "operation_cost": 0,
+    "cycle_cost": 0.01,
+    "cycle_detection": "all_actions",
+    "cycle_forfeit_repetitions": null,
+    "turn_action_forfeit_limit": null,
+    "move_cost": 0.0005,
+    "early_action_costs": [
+      0.001,
+      0.001,
+      0.0005,
+      0.0005,
+      0.0005
+    ],
+    "early_action_penalty_cap": 0.01,
+    "first_turn_minion_bonus": 0.01,
+    "second_turn_tier2_bonus": 0.005,
+    "third_turn_dark_gift_bonus": 0.005,
+    "hero_selection_bonus_scale": 0.01,
+    "hero_selection_bonus_cap": 0.005,
+    "hero_selection_mean_placements": {
+      "TB_BaconShop_HERO_10": 3.04,
+      "TB_BaconShop_HERO_37": 3.14,
+      "TB_BaconShop_HERO_40": 3.17,
+      "BG25_HERO_103": 3.24,
+      "TB_BaconShop_HERO_08": 3.31,
+      "BG34_HERO_002": 3.31,
+      "TB_BaconShop_HERO_68": 3.31,
+      "TB_BaconShop_HERO_41": 3.34,
+      "BG22_HERO_002": 3.35,
+      "BG21_HERO_000": 3.35,
+      "BG30_HERO_304": 3.37,
+      "TB_BaconShop_HERO_34": 3.38
+    }
+  },
+  "formula": "If all actual legal offers are known and at least two distinct heroes: min(.005, .01 * max(0, worst_offered_mean - selected_mean)); otherwise zero",
+  "tests": {
+    "passed": 265,
+    "new_hero_tests_passed": 37,
+    "deselected_real_adam_cases": 2,
+    "elapsed_seconds": 13.39,
+    "attempted_adam_updates": 0,
+    "cuda_tests_executed": false,
+    "command": ".venv/bin/python with global torch.optim.Adam.step failure guard: pytest -q tests/test_hero_selection_reward.py tests/test_opening_rewards.py tests/test_reward_shaping.py tests/test_stage_chain.py tests/test_stage_extension.py tests/test_actor_sampling.py tests/test_role_termination.py tests/test_tracking.py -k \"not native_wandb_records_each_adam\"",
+    "git_diff_check": "passed",
+    "post_test_changes": "Line wrapping and equivalent assertion splitting only"
+  },
+  "parent_review": {
+    "status": "passed_no_blocking_findings",
+    "checks": [
+      "Attachment and source byte equality/SHA",
+      "12 rows and both cohorts exact source values",
+      "Active implemented hero ID mapping excludes tutorials",
+      "Reward gating, once flags, active offered set, unknown zero and caching",
+      "Three embedded top1 maps and paused protocol consistency"
+    ]
+  },
+  "historical_config_hashes_unchanged": 47,
+  "training_start_authorized": false,
+  "user_requested_pause": true,
+  "automatic_resume_allowed": false,
+  "actual_training_ppo": 0,
+  "actual_training_adam": 0,
+  "actual_training_samples": 0,
+  "actual_development_ranking_games": 0,
+  "controller_started": false,
+  "training_started": false,
+  "ranking_started": false,
+  "online_run_started": false,
+  "testing_scope": "Only deterministic bounded CPU/native correctness and no-optimizer rollout tests; no training stage/development evaluation",
+  "archive": "preparation-history/20261101-112949-before-hero-selection-prior/archive-manifest.json",
+  "source_sha256": "99b0a803eaf84acb14a1341ccedf2360ac7c6b516189be8b6a9297cf8b95ebce",
+  "prior_data_sha256": "9c22fcea462031777e93cbf9d60b9b3034a0f6270fbd81953ebc2be377c7d2ba",
+  "manifest_sha256": "a07399e93a73f84c14305ba80faeac5e5b0f237c9f91acc666aeee6e3891e5d3",
+  "prepared_config_sha256": {
+    "v7": "c54ad19f12b47df8068ecea4767ad03c1367bcb03a1900d0a5f1d71d10b6ac63",
+    "v8": "998add3196edf21cd9c30f6da4c5f6e448a72b08471246e5c628bbda22ba38cb",
+    "v9": "ac36f98b747592279fd790bb7982fb13424849fe1e993ed1bca56b720bcbc954"
+  },
+  "implementation_files_sha256": {
+    "python/taverngym/learning/rewards.py": "1c0ba879c2b487a993095b502980087c84187e6b4ad0c4177bc31d704fc2792c",
+    "tests/test_hero_selection_reward.py": "fb94656815144cdcc4f8839c0ca3c5c80fce08f193eb8b72c55c550e497f3360",
+    "docs/TRAINING.md": "6c01166adb248868200a88584584ab0f718b87f2ecb23fbc59f53745603a83e3",
+    "docs/TRAINING_METRICS.md": "7fe3afa4335162d40e1c314b36e9a0c6807ad45518ecd215221ec1a00b44e6c6"
+  },
+  "unresolved_unrelated_scope": "Previously pending parallel ranking acceptance remains outside this task"
+}

@@ -1,0 +1,94 @@
+{
+  "status": "PASS",
+  "scope": "development ranking; independent recomputation; no independent test",
+  "games": 256,
+  "per_candidate": {
+    "v1": {
+      "games": 64,
+      "first_rate": 0.03125,
+      "top4_rate": 0.390625,
+      "mean_placement": 4.96875
+    },
+    "v2": {
+      "games": 64,
+      "first_rate": 0.125,
+      "top4_rate": 0.625,
+      "mean_placement": 3.90625
+    },
+    "v3": {
+      "games": 64,
+      "first_rate": 0.203125,
+      "top4_rate": 0.6875,
+      "mean_placement": 3.359375
+    },
+    "v5": {
+      "games": 64,
+      "first_rate": 0.125,
+      "top4_rate": 0.671875,
+      "mean_placement": 3.65625
+    }
+  },
+  "ranked_versions": [
+    "v3",
+    "v5",
+    "v2",
+    "v1"
+  ],
+  "selected_versions": [
+    "v3",
+    "v5",
+    "v2"
+  ],
+  "source_hashes": {
+    "v1": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+    "v2": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+    "v3": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+    "v5": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6"
+  },
+  "input_sha256": "1705c751f557bf65d1b8743b1e6de79d2a28c11b922d3bf5fd8787961af92071",
+  "games_sha256": "6b46efcadf7f3b6ac5832fdc81d4dc430fbb43413e2e334563d332d8fe1deae7",
+  "scheduler_sha256": "fc03426057898b87ad389bce688f644cb86177c160b9438ee43f30b0660c1c03",
+  "result_sha256": "c0991d222ffa532ea0ede43d104d0dff27dcb7e62c1f8e5cb2b785cb40d631c3",
+  "requested_concurrency": 256,
+  "actual_initial_concurrency": 256,
+  "automatic_terminal_resets": 256,
+  "replacement_games": 0,
+  "deferred_actions": 0,
+  "rejected_actions": 0,
+  "elapsed_seconds": 147.76786910300143,
+  "games_per_second": 1.7324469786666754,
+  "inference_seconds": 57.68017869917094,
+  "environment_seconds": 4.430868815281428,
+  "peak_cuda_allocated_bytes": 1089731584,
+  "batch_summary": {
+    "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24": {
+      "calls": 1525,
+      "min": 1,
+      "max": 576,
+      "mean": 253.0655737704918,
+      "max_shards": 4
+    },
+    "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4": {
+      "calls": 1776,
+      "min": 1,
+      "max": 576,
+      "mean": 235.60585585585585,
+      "max_shards": 4
+    },
+    "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1": {
+      "calls": 1764,
+      "min": 1,
+      "max": 576,
+      "mean": 254.7108843537415,
+      "max_shards": 4
+    },
+    "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6": {
+      "calls": 1360,
+      "min": 1,
+      "max": 64,
+      "mean": 24.504411764705882,
+      "max_shards": 1
+    }
+  },
+  "v0_behavior": "unknown"
+}

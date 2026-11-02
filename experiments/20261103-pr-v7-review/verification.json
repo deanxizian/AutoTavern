@@ -1,0 +1,65 @@
+{
+  "verified_at": "2026-11-03T00:18:07.670906+08:00",
+  "scope": "V7 reward/parallel-ranking implementation, completed V7 records, prepared V8 W&B schema",
+  "python_full_suite": {
+    "command": "WANDB_CACHE_DIR=/tmp/autotavern-pr-wandb-cache .venv/bin/python -m pytest -q",
+    "passed": 426,
+    "skipped": 0,
+    "cuda_tests_executed": true
+  },
+  "affected_optional_dependency_guards": {
+    "command": ".venv/bin/python -m pytest -q tests/test_metric_schema_v2.py tests/test_parallel_ranking_native.py",
+    "passed": 44
+  },
+  "base_dependency_simulation": {
+    "training_imports_disabled": true,
+    "passed": 89,
+    "skipped": 22
+  },
+  "local_rust_checks": "Not run: cargo is not installed in the local executor; GitHub CI checks Rust formatting, clippy and release tests.",
+  "validation_points_recomputed": [
+    0,
+    25,
+    50,
+    75,
+    100
+  ],
+  "validation_protocol": {
+    "opponents": {
+      "v3": 2,
+      "v5": 2,
+      "v2": 2,
+      "v0": 1
+    },
+    "learner_modes": [
+      "sampled",
+      "greedy"
+    ],
+    "games_per_mode": 64
+  },
+  "heldout_protocol": {
+    "games_per_mode": 128,
+    "models": [
+      "initial",
+      "best",
+      "final"
+    ],
+    "best_reused_from": "final",
+    "unique_games_executed": 512,
+    "used_for_selection": false
+  },
+  "selected_best_ppo": 100,
+  "selected_best_stage_adam": 1600,
+  "selected_best_total_adam": 8800,
+  "overview_contains_summaries_only": true,
+  "original_experiment_records_modified": false,
+  "source_file_hashes_checked": 67,
+  "v8_schema_status": "prepared; explicit new-process integration required before V8 startup",
+  "new_training_or_evaluation_started": false,
+  "source_sha256": {
+    "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/results.json": "ec25ada59fa175312bf9844f1fdf2bd9b73d05dda0f7bf13022c68232df79ed3",
+    "experiments/experiment-overview.json": "c045d066e7655c3c10d5a84bab6901fdb004eea8af2cac7711970a331ed550a8",
+    "configs/wandb-metric-schema-v2.json": "bb680bc98b49c8b25413486676697c2fe27a1647ef988db64bf29fc4cc476645"
+  },
+  "publication_scope": "Only code/config/schema and aggregate experiment results; raw W&B metadata, curves and per-game data stay local."
+}

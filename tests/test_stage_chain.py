@@ -55,6 +55,27 @@ def test_val_requires_exact_stage_points_and_complete_games(tmp_path):
         chain.validate_evaluation(broken, 64, 40000003)
 
 
+@pytest.mark.parametrize("placements,selected", [((4, 3, 3, 4, 4), 25),
+    ((4, 4, 4, 3, 3), 75), ((3, 3, 3, 3, 3), 0)])
+def test_five_validation_points_choose_real_25_boundaries_without_test(
+        tmp_path, placements, selected):
+    cfg = config()
+    cfg.update(evaluation_every_iterations=25, checkpoint_every_iterations=25)
+    chain.verify_config(cfg)
+    for iteration, placement in zip((0, 25, 50, 75, 100), placements):
+        chain.write_json(tmp_path / f"evaluation-{iteration:04d}.json", evaluation(placement))
+    chain.write_json(tmp_path / "evaluation-best-heldout.json", evaluation(1))
+    assert chain.validation_selection(tmp_path, cfg)[0][0] == selected
+
+
+def test_validation_interval_rejects_20_and_mismatched_checkpoint_protocol():
+    for every, checkpoint_every in ((20, 20), (25, 50), (50, 25)):
+        cfg = config()
+        cfg.update(evaluation_every_iterations=every, checkpoint_every_iterations=checkpoint_every)
+        with pytest.raises(ValueError, match="Unsupported validation/checkpoint interval"):
+            chain.verify_config(cfg)
+
+
 def test_instance_lock_blocks_another_process(tmp_path):
     with chain.instance_lock(tmp_path):
         result = subprocess.run([sys.executable, "-c",

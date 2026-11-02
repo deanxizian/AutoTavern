@@ -14,7 +14,7 @@ from zoneinfo import ZoneInfo
 import numpy as np
 import torch
 from stable_baselines3.common.callbacks import BaseCallback
-from stable_baselines3.common.logger import configure
+from stable_baselines3.common.logger import HumanOutputFormat, configure
 
 from .buffer import CompactPlacementBuffer
 from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO, PlacementBuffer
@@ -45,6 +45,16 @@ def save_model(model, path):
     temporary = path.with_name(path.stem + ".tmp.zip")
     model.save(temporary)
     temporary.replace(path)
+
+
+def configure_experiment_logger(directory, formats):
+    logger = configure(str(directory), formats)
+    # Greedy diagnostics share long prefixes. SB3's default 36-character
+    # truncation makes distinct scalar names collide and aborts logger.dump().
+    for writer in logger.output_formats:
+        if isinstance(writer, HumanOutputFormat):
+            writer.max_length = 128
+    return logger
 
 
 def evaluate(model, games, seed, n_envs=32, threads=4, simulator_config=None, reward_shaping=None,
@@ -430,7 +440,7 @@ def main():
     formats = ["stdout", "csv"]
     if config["tracking_backend"] == "tensorboard":
         formats.append("tensorboard")
-    logger = configure(str(log_directory), formats)
+    logger = configure_experiment_logger(log_directory, formats)
     if config["tracking_backend"] == "wandb":
         tracker = WandbTracker(args.experiment_dir, config)
         logger.output_formats.append(WandbOutputFormat(tracker))

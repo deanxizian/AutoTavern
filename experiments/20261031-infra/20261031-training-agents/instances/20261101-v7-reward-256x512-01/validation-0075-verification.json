@@ -1,0 +1,148 @@
+{
+  "verified_at": "2026-11-02T01:23:58.230308+08:00",
+  "opponents": "2V3+2V5+2V2+1V0 frozen stochastic",
+  "learner_modes": [
+    "stochastic",
+    "greedy"
+  ],
+  "games_per_mode": 64,
+  "precision": "BF16",
+  "comparison": {
+    "mixed_sampled": {
+      "25": {
+        "games": 64,
+        "first_rate": 0.15625,
+        "top4_rate": 0.578125,
+        "mean_placement": 3.875,
+        "cycle_returns": 18.671875,
+        "cycle_return_fraction": 0.042061069383891515,
+        "max_consecutive_cycle_returns": 4.21875,
+        "cycle_penalty": -0.18671875000000002,
+        "cap_end_rate": 0.2627993432221373,
+        "actions_per_game": 459.40625
+      },
+      "50": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.578125,
+        "mean_placement": 4.0,
+        "cycle_returns": 17.0625,
+        "cycle_return_fraction": 0.04038830418517461,
+        "max_consecutive_cycle_returns": 3.5625,
+        "cycle_penalty": -0.17062500000000003,
+        "cap_end_rate": 0.2159718456799049,
+        "actions_per_game": 433.296875
+      },
+      "75": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.578125,
+        "mean_placement": 4.078125,
+        "cycle_returns": 13.4375,
+        "cycle_return_fraction": 0.03496468654431438,
+        "max_consecutive_cycle_returns": 2.84375,
+        "cycle_penalty": -0.13437500000000002,
+        "cap_end_rate": 0.144641553943992,
+        "actions_per_game": 382.984375
+      }
+    },
+    "mixed_greedy": {
+      "25": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.546875,
+        "mean_placement": 4.109375,
+        "cycle_returns": 357.859375,
+        "cycle_return_fraction": 0.5618593363957033,
+        "max_consecutive_cycle_returns": 38.796875,
+        "cycle_penalty": -3.5785937499999667,
+        "cap_end_rate": 0.517438402837525,
+        "actions_per_game": 620.953125
+      },
+      "50": {
+        "games": 64,
+        "first_rate": 0.140625,
+        "top4_rate": 0.71875,
+        "mean_placement": 3.5625,
+        "cycle_returns": 351.625,
+        "cycle_return_fraction": 0.5520890069755904,
+        "max_consecutive_cycle_returns": 37.609375,
+        "cycle_penalty": -3.5162499999999675,
+        "cap_end_rate": 0.44643574601154795,
+        "actions_per_game": 619.40625
+      },
+      "75": {
+        "games": 64,
+        "first_rate": 0.203125,
+        "top4_rate": 0.640625,
+        "mean_placement": 3.671875,
+        "cycle_returns": 313.984375,
+        "cycle_return_fraction": 0.5166300067975789,
+        "max_consecutive_cycle_returns": 34.59375,
+        "cycle_penalty": -3.139843749999973,
+        "cap_end_rate": 0.3733125124581432,
+        "actions_per_game": 582.671875
+      }
+    }
+  },
+  "selection_rule": "Mixed stochastic mean placement strictly lowers; earliest ties; greedy observes only",
+  "selected_ppo": 25,
+  "selected_complete_checkpoint": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+    "sha256": "8082d20b89a7ba339e98b6735da046471edc017dbdb48f87c79f167787570c4e",
+    "bytes": 53931501,
+    "ppo_iteration": 25,
+    "sampled_decisions": 3276800,
+    "stage_optimizer_steps": 400,
+    "adam_total_steps": 7600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "6c94463c3114af0ec5718fe906dfc853e5c7d53ceb21e40c07ddc9b9b5a5594a",
+    "adam_moments_sha256": "87061726789630100478edb3f0883b788f4b9851c71e46ba64f5768cfba9683d",
+    "model_version": "v7",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "boundary_verification": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/manual-resume02-boundary-verification.json",
+  "original_checkpoint_unchanged": true,
+  "fresh_samples_added_by_repair": 0,
+  "adam_updates_added_by_repair": 0,
+  "original_rollout_metrics_missing": true,
+  "retry_extra_validation_games": 128,
+  "previous_partial_validation_completed_games": null
+}

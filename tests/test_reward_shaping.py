@@ -106,8 +106,10 @@ def test_completed_episode_and_explicit_reset_do_not_leak_history(game, costs):
     obs = observation(game)
     reward, totals = shaper.step(0, obs, obs, 1.0, done=True)
     assert reward == 1
-    assert totals == pytest.approx(dict(placement_reward=1, operation_penalty=-0.0002,
-                                      cycle_penalty=-0.0002, total_reward=0.9996,
+    expected = dict.fromkeys(REWARD_METRICS, 0.)
+    expected.update(dict(placement_reward=1, operation_penalty=-0.0002,
+                                      cycle_penalty=-0.0002, action_reward=-0.0004,
+                                      total_reward=0.9996,
                                       reversible_actions=2, cycle_returns=1, actions_per_game=3,
                                       cycle_forfeit_rate=0, cycle_forfeit_turn=0,
                                       cycle_forfeit_placement=0, max_consecutive_cycles=0,
@@ -115,7 +117,10 @@ def test_completed_episode_and_explicit_reset_do_not_leak_history(game, costs):
                                       action_limit_forfeit_placement=0,
                                       opponent_cycle_forfeits=0, opponent_action_limit_forfeits=0,
                                       cycle_return_fraction=1/3, max_consecutive_cycle_returns=1,
-                                      move_actions=2, move_penalty=0, move_action_fraction=2/3))
+                                      move_actions=2, move_penalty=0, move_action_fraction=2/3,
+                                      early_actions=3, early_chargeable_actions=2,
+                                      early_turn1_actions=3, early_turn1_observed=1))
+    assert totals == pytest.approx(expected)
     assert execute(game, shaper, 197) == pytest.approx(-0.0001)
     shaper.reset()
     assert execute(game, shaper, 203) == pytest.approx(-0.0001)

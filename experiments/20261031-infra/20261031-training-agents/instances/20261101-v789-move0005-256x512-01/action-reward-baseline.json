@@ -1,0 +1,11 @@
+{
+  "archived_at": "2026-11-01T11:36:57.196156+08:00",
+  "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/preparation-history/20261101-113657-before-action-reward-unification/python/taverngym/learning/rewards.py",
+  "sha256": "1c0ba879c2b487a993095b502980087c84187e6b4ad0c4177bc31d704fc2792c",
+  "prepared_config_sha256": {
+    "v7": "c54ad19f12b47df8068ecea4767ad03c1367bcb03a1900d0a5f1d71d10b6ac63",
+    "v8": "998add3196edf21cd9c30f6da4c5f6e448a72b08471246e5c628bbda22ba38cb",
+    "v9": "ac36f98b747592279fd790bb7982fb13424849fe1e993ed1bca56b720bcbc954"
+  },
+  "purpose": "Load the actual pre-refactor shaper for fixed-seed step/reward/GAE equivalence tests"
+}

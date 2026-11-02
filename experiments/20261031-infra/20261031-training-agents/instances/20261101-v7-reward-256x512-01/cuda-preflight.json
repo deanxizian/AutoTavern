@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "checked_at": "2026-11-01T11:50:11.915244+08:00",
+  "cuda_available": true,
+  "bf16_supported": true,
+  "gpu": "NVIDIA GeForce RTX 5080",
+  "forward_batch": 256,
+  "all_actions_legal": true,
+  "no_grad": true,
+  "optimizer_updates": 0,
+  "source_adam_total_steps": 7200,
+  "native_steps_executed": 0,
+  "training_samples_collected": 0,
+  "development_games_executed": 0,
+  "source_sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+  "peak_cuda_allocated_bytes": 514883584,
+  "native_build_current": true
+}

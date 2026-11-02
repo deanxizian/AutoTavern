@@ -1,5 +1,11 @@
 # W&B 与训练指标
 
+当前 V7 已完成 100 PPO 与收尾独立测评，实际进度与 best 见
+[实验总览](../experiments/EXPERIMENT_OVERVIEW.md)。下文历史准备记录按当时状态保留；V8 命名组件仍待新进程接入。
+
+2026-11-03 留存约定：`wandb.json`、`wandb-metrics.jsonl`、`wandb-inventory/` 和 SDK 缓存只在本地／W&B 保存。
+Git 仅保存接入代码、配置、字段规范和带原始文件 SHA-256 的结果摘要；原始曲线和逐局输出不随 PR 发布。
+
 2026-10-31 按用户要求切换到 W&B，项目为 `eric_eric_/AutoTavern`。
 配置见 [tracking.json](../configs/tracking.json)，精确 SDK 版本由 uv.lock 锁定。
 W&B 负责 PPO 标量曲线，Weave 使用同一个项目初始化；仅初始化 Weave 不会自动记录 PPO 指标。
@@ -19,6 +25,62 @@ Weave 初始化遇到网络／TLS 错误时，错误写入 `wandb.json` 的 `wea
 `wandb.json` 保存 run ID 和链接；续训复用同一个 run。
 鉴权沿用机器已有 W&B 凭据，不写入仓库或实验配置。
 
+## V8 起的 W&B 命名规范（v2，已准备）
+
+2026-11-01 用户指定：当前 V7 不处理，从 V8 起统一命名。**只把 core、reward 单独分区，
+其余指标仍放 train／val**；test 保留一个分区。七个分区全部同一层，只有一层 `/`，
+格式为 `{分区}/{字段}`，不是可逐级展开的目录树。这是日志输出命名，不改变奖励、数值、
+对局协议、记录频率或内部选模字段。**V7 的运行代码、配置、线上字段和历史记录均保持原样。**
+
+| 平铺分区 | 内容 | 字段例子 |
+| --- | --- | --- |
+| `train_core/` | 训练吃鸡率、前四率、平均名次 | `first_rate`、`top4_rate`、`mean_placement` |
+| `train_reward/` | 训练三类奖励、总奖励及细分奖罚 | `placement`、`hero_selection`、`operation`、`total` |
+| `train/` | 其他训练操作行为、优化、进度及程序性能 | `operation_move_actions`、`optimization_adam_loss`、`progress_ppo_iteration`、`performance_rollout_seconds` |
+| `val_core/` | 随机与贪心验证核心表现 | `mean_placement`、`greedy_mean_placement` |
+| `val_reward/` | 随机与贪心验证全部奖励 | `operation`、`greedy_operation`、`total`、`greedy_total` |
+| `val/` | 其他验证操作行为及验证对应进度 | `operation_cycle_returns`、`operation_greedy_cycle_returns`、`progress_ppo_iteration` |
+| `test/` | 独立种子上的 initial／best／final 收尾测评，包含全部指标 | `core_best_sampled_mean_placement`、`reward_final_sampled_total`、`operation_best_greedy_cycle_returns` |
+
+`core` 为吃鸡率／前四率／平均名次，`reward` 为所有奖励金额、罚分和小计。
+train／val 的其他字段用以下前缀：`operation_` 为操作次数、比例、循环、触顶、里程碑计数与选英雄覆盖诊断，
+`optimization_` 为 Adam 损失／KL／梯度／学习率及 PPO 汇总，
+`progress_` 为 PPO／Adam／采样量计数，`performance_` 为采样／更新／原生推进／模型推理性能。
+随机验证不加模式前缀；贪心核心／奖励字段加 `greedy_`，分别归 `val_core/`／`val_reward/`，
+其他贪心字段在分类之后加 `greedy_`，仍归 `val/`。不建立 train_greedy 或 val_greedy 分区。
+收尾测评在分类之后加 `{initial|best|final}_{sampled|greedy}_`，
+例如 `test/core_best_sampled_mean_placement`，仍使用原混合阵容与既定独立种子。
+
+平均名次保留 `mean_placement`，不加误导性的 `rate`，不变成百分比。
+奖励的领取次数不放 reward 分区：例如 `first_turn_minion_bonus_count` 映射为
+`train/operation_first_turn_minion_milestone_count`；金额则为 `train_reward/first_turn_minion`。
+旧判负计数用 `operation_{模式前缀}legacy_*`，旧联合操作费在 reward 分区用 `{模式前缀}legacy_move_freeze`，
+仍只作兼容诊断。W&B 的 System 留给 SDK 自动采集 CPU、GPU、内存等硬件状态；
+自定义的27项采样／推理／更新性能指标归入 `train/performance_*`，不再向 `system/` 写程序指标。
+历史输入 `system/rollout_seconds` 等仅作为迁移来源，V8输出为 `train/performance_rollout_seconds`。
+W&B 自动 `_step`／`_timestamp`／`_runtime` 与独立系统遥测不手工改名。
+实际阶段 Adam 横轴继续使用保留字段 `optimizer_step`，不是 W&B 内部 `_step`。
+
+主面板规划只保留七个指标：三个 `core`、三个主要 `reward`（placement／hero_selection／operation）
+和总 reward（如 `train_reward/total`、`val_reward/total`、`val_reward/greedy_total`），
+按训练／随机验证／贪心验证区分曲线；其他放诊断分组。这是后续展示规划，
+没有修改当前线上面板。
+
+机器可读定义见 [schema v2](../configs/wandb-metric-schema-v2.json)，完整逐字段对照见
+[v1→v2 映射 CSV](../configs/wandb-metric-schema-v2-map.csv)。已覆盖当前 V7 的221个程序字段与
+收尾将产生的330个字段，共551项一一映射，未增删计算项。
+完整平铺字段清单见 [全部展开](../configs/wandb-metric-schema-v2-expanded.txt)，包含550个指标与独立 Adam 横轴。
+纯名称映射在 `metric_schema_v2.py`，显式启用的后续输出组件为 `tracking_v2.WandbTrackerV2`，
+后者拒绝 V7 及更早版本。它们均未被当前运行入口导入。
+
+V8 启动时必须完成以下接入，准备规范本身不代表已上线或授权启动 V8：
+
+1. 在新进程的 W&B 输出边界明确选用 v2 组件，记录 `metric_schema_version=2` 及 schema 路径和 SHA。
+2. 原生观测、奖励、评估 JSON、选 best 使用的 `mean_placement` 内部键均不改；只转换输出名称。
+3. 本地 journal 去重、历史补录和收尾 test 的已记录标记使用同一映射，避免补录重复或漏判。
+4. 监控兼容新字段，完成完整训练／验证／贪心／收尾的 mock 日志验收，再锁新实例 runtime hash。
+5. 新 run 只写一套 v2 名称，不同时写 v1 别名；不向旧 run 补写新名字，不为改名重启 V7。
+
 ## 关键测评指标与 best 选择
 
 V7 移动成本准备版（2026-11-01，未启动）新增独立 `move_cost=0.0005`，不复用同时处罚
@@ -28,6 +90,62 @@ Move／Freeze 的 `operation_cost`。保留循环成本 0.01；实际移动又�
 `total_reward = placement_reward + operation_penalty + cycle_penalty + move_penalty`。
 历史缺 `move_cost` 等同 0，不补造旧日志的移动指标；这些新增观察不改变随机平均名次严格降低的 best 规则。
 准备方案见 [V7 配置说明](../experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend/README.md)。
+
+2026-11-01 后续新增：**仅暂停中的 V7–V9 256×512 准备稿**加入前期逐步费和三个开局奖励，
+旧 V7 移动费准备稿与所有历史实验不改。第1／2回合每次成功非End招募操作扣0.001，
+第3／4／5回合扣0.0005，每回合只限本项最多0.01，第6回合起关闭；无免费额度或超额阈值。
+T1首个己方随从上场、T2实际升二本、T3完成本次付费DarkGift选择，分别奖励0.01／0.005／0.005，
+各项每局最多一次。此稿未训练，实际统计尚无新训练／验证点。
+
+| 新增指标（同名进入 train／val，贪心使用 val/greedy_） | 口径 |
+| --- | --- |
+| `early_actions` | 每局第1–5回合全部实际成功操作数，**包括主动／强制End和菜单点击**；回合0英雄选择不计 |
+| `early_chargeable_actions` | 上述操作中非End数量；即使该回合费用已封顶仍计操作数，第6回合起不计 |
+| `early_menu_actions` | 前期实际成功的Choose／Cancel数量，单列以观察菜单开销，不代表全部技能事务数 |
+| `early_action_penalty` | 每局前期逐步费累计负值，最多扣0.05；不封顶或改变独立移动／循环费用 |
+| `early_turn1_actions` … `early_turn5_actions` | 每局对应回合的全部实际操作数，包含End；未到达／未执行动作的回合贡献0 |
+| `early_turn1_observed` … `early_turn5_observed` | 每局是否在该回合执行过至少一个真实动作，取0或1，End也算 |
+| `first_turn_minion_bonus`、`second_turn_tier2_bonus`、`third_turn_dark_gift_bonus` | 每局三项奖励分别累计的正值；对应 `*_count` 记本局实际发奖次数0或1 |
+| `opening_bonus` | 每局三项奖励总和，最多0.02；不按购买、菜单打开或任意Choose发奖 |
+
+这些字段均先按完整一局累计，再对已完成局取均值；训练每PPO一点，val／greedy在各自评估点记录。
+每回合的条件平均操作数应为 `mean(early_turnN_actions) / mean(early_turnN_observed)`，
+分母为0时记未知，不能把未到达回合的零当作到达该回合玩家的操作数。
+deferred／拒绝动作／未执行预算拦截不计真实操作；真实非End动作后终局仍收逐步费。
+早期费台账和DarkGift事务跨rollout保留，三个奖励的防重复标志只在episode reset后清除。
+历史缺字段按关闭处理，不补造旧日志。新的回报分解为：
+`action_reward = operation_penalty + cycle_penalty + move_penalty + early_action_penalty + opening_bonus`，
+`total_reward = placement_reward + hero_selection_bonus + action_reward`。
+这是分解恒等关系；实际计算保持原浮点累计顺序，`action_reward` 不会重复加到奖励上。
+这些指标观察行为，不改变混合随机验证平均名次严格降低的选best规则；费用减少或奖励触发不代表实力提升。
+
+`train/action_reward`、`val/action_reward`、`val/greedy_action_reward` 记录每局操作相关正负项的小计，
+按完整局平均，train每PPO一点，val／greedy随原评估点记录。它已包含三个操作里程碑的 `opening_bonus`，
+排除名次奖励与选英雄先验。所有原细分字段仍供诊断，不能把小计与各细分再次相加。
+旧 `operation_penalty` 仅保留原联合费含义，没有改名为总操作奖励。
+0.01回合cap只限early费用，循环罚累计线性无封顶，不因展示合并而截断操作总项。
+此分组不新增或修改reward配置字段，也不补写旧日志；阶段best规则保持。
+
+后续选英雄偏好Reward也仅接入暂停的256×512准备稿。原文只有12个英雄双分段均名，默认取前1%人类分段，
+前50%值独立保留；不是模拟器实力标签，未提供各英雄样本量。只有成功完成初始HeroSelect才结算，每局一次。
+全部合法选项已知且至少两个不同英雄时，`hero_selection_bonus=min(cap, scale*(worst_mean-selected_mean))`；
+本稿scale0.01、cap0.005。最差、同分、单候选为0；任何未知选项使整组奖励为0，不补数或将未知视为最差。
+
+| 选英雄新增字段（train／val／val/greedy_） | 口径 |
+| --- | --- |
+| `hero_selection_bonus` | 每局初始选英雄的偏好奖励，正值最多0.005；独立于 `opening_bonus` |
+| `hero_selection_bonus_count` | 本局是否发放了正奖励，0或1；零奖励不算 |
+| `hero_selection_count` | 启用先验时，本局是否完成了一次合格初始HeroSelect，0或1；未知／单候选也计完成 |
+| `hero_selection_scorable` | 本局选项是否全部有同分段数值且至少两种不同英雄，0或1；同分仍可评分，但奖励为0 |
+| `hero_selection_unknown_offer` | 本局实际合法选项中是否含未知英雄，0或1 |
+| `hero_selection_known_fraction` | 本局已知英雄数量／全部不同合法可选英雄数量；不把padding或被掩码禁选的选项计入 |
+| `hero_selection_offered_heroes`、`hero_selection_unknown_heroes` | 本局实际不同可选英雄数量及其中未知数量 |
+
+上述字段仍先按一局记录再对完整局平均，train每PPO一点，val/greedy随各评估点记录。
+分母需明确：例如已结算选英雄中的可评分比例为mean(scorable)/mean(selection_count)，分母为0则未知。
+scale=0的历史协议关闭选英雄先验，相关新字段为0并不代表历史候选全部已知；不得回填原日志。
+“可评分”只代表资料覆盖满足公式，不代表估计可靠或已经证明英雄强弱。
+来源与字段见 [训练文档](TRAINING.md)；完整资料、配置内嵌数值、原文及结构化数据SHA均随准备稿保留。
 
 当前 V3 的混合验证对手为 **2 个固定 V1 + 3 个固定 V2 + 2 个脚本**，
 学习者随机／贪心各 **64 局／验证点**，所有模型 BF16 前向；固定模型对手始终随机采样。

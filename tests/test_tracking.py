@@ -21,6 +21,27 @@ def test_flat_metric_names_share_baseline_and_validation():
     assert metric_name("train/rollout/top4_rate") == "train/rollout_top4_rate"
 
 
+def test_real_stdout_handles_all_long_greedy_reward_names_without_collision(tmp_path, capsys):
+    from taverngym.learning.experiment import configure_experiment_logger, log_evaluation
+    from taverngym.learning.rewards import REWARD_METRICS
+
+    logger = configure_experiment_logger(tmp_path, ["stdout", "csv"])
+    metrics = dict.fromkeys(REWARD_METRICS, 0.)
+    metrics.update(mean_placement=4.125, first_rate=.140625, top4_rate=.53125)
+    try:
+        log_evaluation(logger, "val", {"conditions": {
+            "mixed_sampled": metrics, "mixed_greedy": metrics}})
+        logger.dump(0)
+    finally:
+        logger.close()
+    output = capsys.readouterr().out
+    assert "greedy_hero_selection_unknown_offer" in output
+    assert "greedy_hero_selection_unknown_heroes" in output
+    csv = (tmp_path / "progress.csv").read_text()
+    assert "val/greedy_hero_selection_unknown_offer" in csv
+    assert "val/greedy_hero_selection_unknown_heroes" in csv
+
+
 def test_move_metrics_follow_train_val_greedy_journal_without_training(tmp_path, monkeypatch):
     from types import SimpleNamespace
     from taverngym.learning.tracking import WandbTracker
@@ -166,7 +187,12 @@ def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_pa
     resolved = json.loads((folder / "resolved-config.json").read_text())
     assert resolved["reward_shaping"] == {
         "cycle_detection": "reversible_segment", "cycle_forfeit_repetitions": None,
-        "turn_action_forfeit_limit": None, **config["reward_shaping"]}
+        "turn_action_forfeit_limit": None, "move_cost": 0,
+        "early_action_costs": [0.] * 5, "early_action_penalty_cap": .01,
+        "first_turn_minion_bonus": 0., "second_turn_tier2_bonus": 0.,
+        "third_turn_dark_gift_bonus": 0., "hero_selection_bonus_scale": 0.,
+        "hero_selection_bonus_cap": .005, "hero_selection_mean_placements": {},
+        **config["reward_shaping"]}
     evaluation = json.loads((folder / "evaluation-0002.json").read_text())
     conditions = evaluation.get("conditions", {"scripted": evaluation})
     assert all(condition["reward_shaping"] == resolved["reward_shaping"]

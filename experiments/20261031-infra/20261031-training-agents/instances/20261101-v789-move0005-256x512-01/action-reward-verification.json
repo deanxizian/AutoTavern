@@ -1,0 +1,82 @@
+{
+  "recorded_at": "2026-11-01T11:41:14.303675+08:00",
+  "status": "passed_structure_only_startup_paused",
+  "scope": {
+    "components": [
+      "operation_penalty",
+      "cycle_penalty",
+      "move_penalty",
+      "early_action_penalty",
+      "opening_bonus"
+    ],
+    "action_reward": "operation_penalty + cycle_penalty + move_penalty + early_action_penalty + opening_bonus",
+    "total_reward": "placement_reward + hero_selection_bonus + action_reward",
+    "semantics": "Derived grouping only; native+components+hero historical floating-point order preserved; subtotal is never paid again",
+    "all_detail_metrics_retained": true,
+    "configuration_fields_or_values_changed": false,
+    "early_cap_applies_only_to": "early_action_penalty",
+    "cycle_penalty_linear_uncapped": true
+  },
+  "baseline": {
+    "archived_at": "2026-11-01T11:36:57.196156+08:00",
+    "path": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/preparation-history/20261101-113657-before-action-reward-unification/python/taverngym/learning/rewards.py",
+    "sha256": "1c0ba879c2b487a993095b502980087c84187e6b4ad0c4177bc31d704fc2792c",
+    "prepared_config_sha256": {
+      "v7": "c54ad19f12b47df8068ecea4767ad03c1367bcb03a1900d0a5f1d71d10b6ac63",
+      "v8": "998add3196edf21cd9c30f6da4c5f6e448a72b08471246e5c628bbda22ba38cb",
+      "v9": "ac36f98b747592279fd790bb7982fb13424849fe1e993ed1bca56b720bcbc954"
+    },
+    "purpose": "Load the actual pre-refactor shaper for fixed-seed step/reward/GAE equivalence tests"
+  },
+  "tests": {
+    "passed": 274,
+    "new_grouping_tests_passed": 9,
+    "deselected_real_adam_cases": 2,
+    "elapsed_seconds": 13.83,
+    "attempted_adam_updates": 0,
+    "cuda_tests_executed": false,
+    "command": ".venv/bin/python with global torch.optim.Adam.step failure guard: pytest -q tests/test_action_reward_grouping.py tests/test_hero_selection_reward.py tests/test_opening_rewards.py tests/test_reward_shaping.py tests/test_stage_chain.py tests/test_stage_extension.py tests/test_actor_sampling.py tests/test_role_termination.py tests/test_tracking.py -k \"not native_wandb_records_each_adam\"",
+    "fixed_seed_checks": [
+      "Actual archived pre-refactor shaper and frozen archived config",
+      "Four native reward protocols preserve old scalars/components/native state/masks/real placement",
+      "Unified actor preserves old transitions over two collect calls",
+      "Float32 PPO rewards/returns/advantages/actions arrays bit-identical",
+      "Early-cap saturation does not cap cycle subtotal",
+      "Opening reward included once and hero reward kept separate",
+      "finish_terminal/finish_forfeit add native reward without paying action subtotal again",
+      "Mock-only train/val/greedy action subtotal and detail metrics"
+    ],
+    "git_diff_check": "passed",
+    "post_test_changes": "Test line wrapping and descriptive function naming only"
+  },
+  "parent_review": {
+    "production_refactor": "passed",
+    "review_note": "Five component order matches baseline; hero remains independent; derived subtotal is not paid twice; finish logic unchanged"
+  },
+  "prepared_config_bytes_unchanged": true,
+  "prepared_config_sha256": {
+    "v7": "c54ad19f12b47df8068ecea4767ad03c1367bcb03a1900d0a5f1d71d10b6ac63",
+    "v8": "998add3196edf21cd9c30f6da4c5f6e448a72b08471246e5c628bbda22ba38cb",
+    "v9": "ac36f98b747592279fd790bb7982fb13424849fe1e993ed1bca56b720bcbc954"
+  },
+  "historical_configs_unchanged": 47,
+  "hsreplay_source_and_prior_unchanged": true,
+  "training_start_authorized": false,
+  "user_requested_pause": true,
+  "automatic_resume_allowed": false,
+  "actual_training_ppo": 0,
+  "actual_training_adam": 0,
+  "actual_training_samples": 0,
+  "actual_development_ranking_games": 0,
+  "controller_started": false,
+  "online_run_started": false,
+  "implementation_files_sha256": {
+    "python/taverngym/learning/rewards.py": "04d74df96d68e5fc0c223ee133fcaf3d4d186d371ca760826168f7c4bbf7ea58",
+    "tests/test_action_reward_grouping.py": "9469c46f4c079572a9b95d51577799899fa0676f805ee12ef98da1c6714eabba",
+    "tests/test_reward_shaping.py": "189bb3b524f1a5c330ba0296d71a892a0b485a0c8638f95d5a6ec4caa9a241a6",
+    "docs/TRAINING.md": "6b4a6d1a1f7a9a00cb24d55dc11e2a7e345c68876cb862d2468d8cd0834f968e",
+    "docs/TRAINING_METRICS.md": "497d6bcdad39f15f616e0eaf82fef9be1b74f86c32292ad189d5a4493d96947f"
+  },
+  "manifest_sha256": "8043b5cd95b50f498f2644682b6cd625ae59d821505951fb3a77d12ddf6bcad2",
+  "unrelated_pending_scope": "Parallel-ranking acceptance remains outside this task"
+}

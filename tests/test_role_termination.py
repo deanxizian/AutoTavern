@@ -194,7 +194,8 @@ class ChosenActor(FreezeActor):
 
 
 @pytest.mark.parametrize("existing_discover", [False, True])
-def test_deferred_opponent_action_does_not_advance_its_shaper(existing_discover):
+@pytest.mark.parametrize("opening_cost", [False, True])
+def test_deferred_opponent_action_does_not_advance_its_shaper(existing_discover, opening_cost):
     game, cards = prepared_game()
     game.debug(json.dumps({"cmd": "set_hero", "p": 0, "hero": "TB_BaconShop_HERO_25"}))
     game.debug(json.dumps({"cmd": "set_hero", "p": 1, "hero": "TB_BaconShop_HERO_70"}))
@@ -208,8 +209,10 @@ def test_deferred_opponent_action_does_not_advance_its_shaper(existing_discover)
             "source": state["players"][1]["powers"][0]["card"],
             "options": [{"Minion": state["players"][1]["board"][0]}]}}]
     opponent = ChosenActor(30 if existing_discover else 203)
-    fixed = FrozenOpponentPool((OpponentGroup("bot_v4", opponent, 1,
-                                             {**CURRENT, "move_cost": .0005}),))
+    protocol = {**CURRENT, "move_cost": .0005}
+    if opening_cost:
+        protocol["early_action_costs"] = [.001, .001, .0005, .0005, .0005]
+    fixed = FrozenOpponentPool((OpponentGroup("bot_v4", opponent, 1, protocol),))
     env = UnifiedActorSampler(1, ChosenActor(30), fixed, frozen_opponents=1,
                               reward_shaping=LEGACY)
     episode = json.loads(env.batch.save(0))
@@ -236,6 +239,9 @@ def test_deferred_opponent_action_does_not_advance_its_shaper(existing_discover)
     assert calls == [] and transitions[0].done and transitions[0].placement == 8
     assert env.opponent_shapers[1]._totals["move_actions"] == 0
     assert env.opponent_shapers[1]._totals["move_penalty"] == 0
+    assert env.opponent_shapers[1]._totals["early_actions"] == 0
+    assert env.opponent_shapers[1]._totals["early_chargeable_actions"] == 0
+    assert env.opponent_shapers[1]._totals["early_action_penalty"] == 0
     assert snapshots[0]["game"]["players"][1]["board"] == state["players"][1]["board"]
     assert len(snapshots[0]["game"]["players"][1]["pending"]) == 1 + int(existing_discover)
 
