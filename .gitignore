@@ -29,6 +29,11 @@ wandb/
 **/wandb.json
 **/wandb-metrics.jsonl
 **/wandb-inventory/
+**/wandb-summary.json
+**/wandb-metadata.json
+*.wandb
+*.wandb.syncstate
+/experiments/**/*wandb*verification.json
 
 # Publish compact experiment summaries, not raw curves or per-game outputs.
 /experiments/**/metrics.jsonl

@@ -54,7 +54,8 @@
 - 模型继续放在 `runs/yyyymmdd-{exp-name}/` 并由 Git 忽略；后续 best 名称使用北京时间前缀。
 - 新实验显式指定 `--experiment-dir experiments/20261031-exp02-mixed-opponents/yyyymmdd-{exp-name}`，
   `--run-dir runs/yyyymmdd-{exp-name}`；两者不要求目录深度相同。
-- 后续使用 W&B。配置、结果和指标 journal 保留；SDK 缓存、旧 TensorBoard、控制台、
+- 后续使用 W&B。Git 保留接入代码、配置、字段规范、实验结果摘要和来源哈希。
+  指标 journal、W&B 在线核验采集的原始指标行、SDK 缓存、旧 TensorBoard、控制台、
   sessions、reruns、实时进度和进程文件留在本地并忽略。
 
 目录迁移对照见 [layout-migration.json](layout-migration.json)。
