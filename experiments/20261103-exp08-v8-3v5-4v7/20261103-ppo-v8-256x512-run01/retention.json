@@ -1,0 +1,93 @@
+{
+  "status": "completed",
+  "kept_model": {
+    "path": "/home/eric/projects/AutoTavern/runs/20261103-ppo-v8-256x512-run01/20261103-014655-best_model.zip",
+    "sha256": "cc9d0507a86cd9aa65c6c0da744f9d134c2a1bfefd78c6a8555f073ec9bb16b0",
+    "bytes": 53932595,
+    "ppo_iteration": 50,
+    "sampled_decisions": 6553600,
+    "stage_optimizer_steps": 800,
+    "adam_total_steps": 9600,
+    "adam_states": 91,
+    "learning_rates": [
+      1e-05
+    ],
+    "policy_sha256": "e63e3d8e739547b9546a8198e79b2b5f182964ea99c15fffea2124be5d93ba35",
+    "adam_moments_sha256": "f720345dc38b8678c1403bbbb5debbf8dd8a413f741e0372a1705136c69b5f7d",
+    "model_version": "v8",
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    }
+  },
+  "removed_models": [
+    {
+      "path": "runs/20261103-ppo-v8-256x512-run01/final_model.zip",
+      "sha256": "e83a788dc8585a02a2f80fddd0f1eb6e504eed9ba5ff34f485a90aaa217864ee",
+      "bytes": 53932614
+    },
+    {
+      "path": "runs/20261103-ppo-v8-256x512-run01/latest_model.zip",
+      "sha256": "613a1126a3a331ca230c719c162d405548a19149d13d2ab21746e1e223534c4b",
+      "bytes": 53932614
+    },
+    {
+      "path": "runs/20261103-ppo-v8-256x512-run01/starting_model.zip",
+      "sha256": "c328c03b053c5d7f2bdda97b2a538f44cd9669650fa785e7d7ddbf2679f8499b",
+      "bytes": 49266607
+    },
+    {
+      "path": "runs/20261103-ppo-v8-256x512-run01/checkpoints/iteration-0050.zip",
+      "sha256": "2ae0f87259ac5e99dc733b7bb624105a661e708cb0cf22873ca18f63e0715432",
+      "bytes": 53932595
+    },
+    {
+      "path": "runs/20261103-ppo-v8-256x512-run01/checkpoints/iteration-0025.zip",
+      "sha256": "3f4c12f2cde28c4a4fc2db7f2344148292701f8ecb1684725c030181c0c25df1",
+      "bytes": 53932589
+    },
+    {
+      "path": "runs/20261103-ppo-v8-256x512-run01/checkpoints/iteration-0100.zip",
+      "sha256": "613a1126a3a331ca230c719c162d405548a19149d13d2ab21746e1e223534c4b",
+      "bytes": 53932614
+    },
+    {
+      "path": "runs/20261103-ppo-v8-256x512-run01/checkpoints/iteration-0075.zip",
+      "sha256": "a09c02342484a8527c72c8c91f6b8f7cef0943181a8b363f7ca04dd19be37732",
+      "bytes": 53932609
+    }
+  ],
+  "heldout_used_for_selection": false,
+  "completed_at": "2026-11-03T05:26:04.275356+08:00"
+}

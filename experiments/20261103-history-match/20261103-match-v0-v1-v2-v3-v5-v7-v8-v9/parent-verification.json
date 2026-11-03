@@ -1,0 +1,102 @@
+{
+  "status": "passed",
+  "at": "2026-11-03T23:15:12.972792+08:00",
+  "completed_lobbies": 320,
+  "model_player_games": 2240,
+  "player_turn_records_including_hero": 33623,
+  "actions_recounted": 1216338,
+  "roster_unique_lanes_and_seats_verified": true,
+  "core_recomputed_independently": {
+    "v0": {
+      "player_games": 320,
+      "first_rate": 0.00625,
+      "top4_rate": 0.025,
+      "mean_placement": 7.425
+    },
+    "v1": {
+      "player_games": 320,
+      "first_rate": 0.046875,
+      "top4_rate": 0.3625,
+      "mean_placement": 5.115625
+    },
+    "v2": {
+      "player_games": 320,
+      "first_rate": 0.096875,
+      "top4_rate": 0.509375,
+      "mean_placement": 4.465625
+    },
+    "v3": {
+      "player_games": 320,
+      "first_rate": 0.134375,
+      "top4_rate": 0.6125,
+      "mean_placement": 3.915625
+    },
+    "v5": {
+      "player_games": 320,
+      "first_rate": 0.15625,
+      "top4_rate": 0.55625,
+      "mean_placement": 4.096875
+    },
+    "v7": {
+      "player_games": 320,
+      "first_rate": 0.165625,
+      "top4_rate": 0.58125,
+      "mean_placement": 3.825
+    },
+    "v8": {
+      "player_games": 320,
+      "first_rate": 0.19375,
+      "top4_rate": 0.671875,
+      "mean_placement": 3.63125
+    },
+    "v9": {
+      "player_games": 320,
+      "first_rate": 0.2,
+      "top4_rate": 0.68125,
+      "mean_placement": 3.525
+    }
+  },
+  "per_turn_trace_counters_and_forced_end_flags_verified": true,
+  "behavior_aggregates_match": true,
+  "model_sha256_unchanged": true,
+  "paired_comparisons": {
+    "v9_minus_v8": {
+      "mean_placement_difference": -0.10625,
+      "paired_bootstrap_95_ci": [
+        -0.446875,
+        0.2375
+      ],
+      "bootstrap_draws": 20000,
+      "bootstrap_seed": 20261103,
+      "resampling_unit": "whole lobby"
+    },
+    "v8_minus_v7": {
+      "mean_placement_difference": -0.19375,
+      "paired_bootstrap_95_ci": [
+        -0.55,
+        0.153125
+      ],
+      "bootstrap_draws": 20000,
+      "bootstrap_seed": 20261103,
+      "resampling_unit": "whole lobby"
+    },
+    "v9_minus_v7": {
+      "mean_placement_difference": -0.3,
+      "paired_bootstrap_95_ci": [
+        -0.628125,
+        0.028125
+      ],
+      "bootstrap_draws": 20000,
+      "bootstrap_seed": 20261103,
+      "resampling_unit": "whole lobby"
+    }
+  },
+  "raw_source_sha256": {
+    "config.json": "c569300c52dcb23908a8bbce17b28543451b3d5368ec6bce9906ba091315087e",
+    "games.jsonl": "a17d537bfe037a4b2260fada6b15ce89d4803137190848f04b42d5ef5daad8c5",
+    "players.jsonl": "26724ef7fc8a93e33918e38669e0b918a99f4b4792461ff18b95553001771e5d",
+    "turns.jsonl.gz": "677836c9911d873824a8321756e78ad913dd89738b7b20140775f0e15c262276",
+    "results.json": "dcb334859d3495efca32f521533e99955b532f48cab9f0beca9c53d12d3571d4",
+    "verification.json": "cdd14ce408744aabbacfb21cdc3f92d57e63ffa5cdf51d99537605581bba8a9d"
+  }
+}

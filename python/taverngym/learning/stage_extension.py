@@ -54,7 +54,8 @@ def extension_gate(root, manifest, results):
 
 
 def ranking_input(manifest, previous, known_results=None):
-    if manifest.get("pool_selection") == "top3":
+    selection = manifest.get("pool_selection")
+    if selection in ("top2", "top3"):
         root = Path(manifest["root"])
         registry = {version: dict(spec) for version, spec in manifest["historical_models"].items()}
         known = {previous["model_version"]: previous, **(known_results or {})}
@@ -94,9 +95,10 @@ def ranking_input(manifest, previous, known_results=None):
         else:
             candidates = [registry[version] for version in order if version in registry]
             expected = len(prefix)
-        require(len(candidates) == expected and (3 if lifecycle else 4) <= expected <= 8,
-                "All available historical versions must participate in top-three selection")
-        result = {"created_at": now(), "pool_selection": "top3", "protected_version": None,
+        minimum = 2 if selection == "top2" else (3 if lifecycle else 4)
+        require(len(candidates) == expected and minimum <= expected <= 8,
+                "All available historical versions must participate in historical selection")
+        result = {"created_at": now(), "pool_selection": selection, "protected_version": None,
                 "learning_source_version": previous["model_version"],
                 "candidate_count": len(candidates), "candidates": candidates,
                 "protocol": manifest["ranking_protocol"], **lifecycle}
@@ -113,6 +115,16 @@ def ranking_input(manifest, previous, known_results=None):
 
 def validate_lifecycle_input(inputs):
     """Validate the sealed snapshot, never the mutable global registry file."""
+    if inputs.get("pool_selection") == "top2":
+        protocol = inputs["protocol"]
+        require(inputs.get("model_version_registry") and protocol.get("parallel_all_candidates")
+                and protocol.get("games") == 64 and protocol.get("seed") == 60000007
+                and protocol.get("precision") == "bf16"
+                and protocol.get("learner_mode") == "stochastic",
+                "Top-two selection requires the sealed lifecycle and parallel BF16 protocol")
+        require(sum(s["count"] for s in protocol["reference_pool"]) == 7
+                and all(s["model_version"] != "v0" for s in protocol["reference_pool"]),
+                "Top-two reference pool requires seven frozen training-model seats")
     if not inputs.get("model_version_registry"):
         return
     document = inputs["model_version_registry_snapshot"]
@@ -149,7 +161,8 @@ def rank_candidates(root, folder, device):
     protocol = inputs["protocol"]
     require(protocol["games"] == 64 and protocol["seed"] == 60000007,
             "Ranking protocol changed")
-    reference = {"opponent_pool": protocol["reference_pool"], "frozen_opponents": 6,
+    frozen = 7 if inputs.get("pool_selection") == "top2" else 6
+    reference = {"opponent_pool": protocol["reference_pool"], "frozen_opponents": frozen,
                  "forward_precision": "bf16", "opponent_forward_precision": "bf16"}
     parallel = protocol.get("parallel_all_candidates", False)
     opponents = None if parallel else load_frozen_opponents(reference, device)
@@ -200,7 +213,7 @@ def rank_candidates(root, folder, device):
             configure_precision(model, reference, opponents)
             result = evaluate(model, protocol["games"], protocol["seed"],
                 simulator_config={"turn_action_caps": [60]}, reward_shaping=candidate_protocol,
-                opponent_policy=opponents, frozen_opponents=6, rotate_seats=True)
+                opponent_policy=opponents, frozen_opponents=frozen, rotate_seats=True)
             del model
         require(math.isfinite(result["mean_placement"]) and len(result["placements"]) == 64,
                 "Invalid development ranking result")
@@ -211,16 +224,18 @@ def rank_candidates(root, folder, device):
         write_json(output, record)
         rows.append(record)
     order = protocol["version_order"]
-    if inputs.get("pool_selection") == "top3":
+    selection = inputs.get("pool_selection")
+    if selection in ("top2", "top3"):
+        size = 2 if selection == "top2" else 3
         require(len(rows) == inputs["candidate_count"]
-                and (3 if inputs.get("model_version_registry") else 4) <= len(rows) <= 8,
-                "Top-three ranking has missing or excessive candidates")
+                and (size if inputs.get("model_version_registry") else 4) <= len(rows) <= 8,
+                "Historical ranking has missing or excessive candidates")
         ranked = sorted(rows, key=lambda item: (item["result"]["mean_placement"],
                                               -order.index(item["model_version"])))
         write_json(folder / "ranking-results.json", {"completed_at": now(), "status": "completed",
-            "input_sha256": input_hash, "pool_selection": "top3", "protocol": protocol,
+            "input_sha256": input_hash, "pool_selection": selection, "protocol": protocol,
             "candidates": rows, "ranked_versions": [item["model_version"] for item in ranked],
-            "selected_versions": [item["model_version"] for item in ranked[:3]],
+            "selected_versions": [item["model_version"] for item in ranked[:size]],
             "protected_version": None, "heldout_used": False,
             "rule": "lowest stochastic mean placement; newer version first on pool-selection ties"})
         return
@@ -237,17 +252,35 @@ def bind_ranked_pool(root, folder, previous):
     ranking = read_json(folder / "ranking-results.json")
     require(ranking["status"] == "completed", "Ranking incomplete")
     config = read_json(folder / "config.json")
-    if ranking.get("pool_selection") == "top3":
+    selection = ranking.get("pool_selection")
+    if selection in ("top2", "top3"):
         inputs = read_json(folder / "ranking-input.json")
         validate_lifecycle_input(inputs)
-        require(ranking["input_sha256"] == digest(folder / "ranking-input.json"),
-                "Top-three pool differs from its sealed ranking input")
+        require(ranking["input_sha256"] == digest(folder / "ranking-input.json")
+                and selection == inputs["pool_selection"],
+                "Historical pool differs from its sealed ranking input")
         versions = ranking["selected_versions"]
-        require(len(set(versions)) == len(versions) == 3, "Top-three pool requires three versions")
+        size = 2 if selection == "top2" else 3
+        require(len(set(versions)) == len(versions) == size,
+                "Historical pool has the wrong number of versions")
         require(not set(versions) & set(inputs.get("excluded_opponent_versions", [])),
                 "Retired version cannot occupy a bound opponent seat")
         registry = {spec["model_version"]: spec for spec in inputs["candidates"]}
-        retained = [dict(registry[version], count=2) for version in versions]
+        if selection == "top2":
+            # Verify the selected order against sealed development results before
+            # assigning the asymmetric four/three seats.
+            order = inputs["protocol"]["version_order"]
+            rows = ranking["candidates"]
+            require(len(rows) == inputs["candidate_count"]
+                    and {r["model_version"] for r in rows} == set(registry),
+                    "Top-two ranking candidates differ from sealed input")
+            expected = sorted(rows, key=lambda row: (row["result"]["mean_placement"],
+                                                    -order.index(row["model_version"])))
+            require(versions == [row["model_version"] for row in expected[:2]],
+                    "Top-two seats do not match the sealed development ranking")
+        counts = [4, 3] if selection == "top2" else [2, 2, 2]
+        retained = [dict(registry[version], count=count)
+                    for version, count in zip(versions, counts)]
     else:
         retained = [dict(spec, count=1) for spec in previous["opponent_pool"]
                     if spec["model_version"] != ranking["removed_version"]]
@@ -256,8 +289,8 @@ def bind_ranked_pool(root, folder, previous):
             "model": str(Path(latest["path"]).relative_to(root)), "sha256": latest["sha256"],
             "model_version": previous["model_version"], "source_stage": previous["model_version"],
             "reward_shaping": previous["reward_shaping"], "protocol_source": previous["config_path"]})
-    require(len(retained) == (3 if ranking.get("pool_selection") == "top3" else 5)
-            and sum(spec["count"] for spec in retained) == 6,
+    require(len(retained) == (2 if selection == "top2" else 3 if selection == "top3" else 5)
+            and sum(spec["count"] for spec in retained) == (7 if selection == "top2" else 6),
             "Bound ranked pool has the wrong seat budget")
     history = folder / "preparation-history" / "before-pool-binding"
     history.mkdir(parents=True, exist_ok=True)

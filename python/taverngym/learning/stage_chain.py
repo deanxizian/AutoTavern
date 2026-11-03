@@ -20,6 +20,7 @@ import time
 
 from .experiment import now, write_json
 from .rewards import reward_protocols_equal
+from .tracking_v2 import tracker_for_config, journal_has_metric
 
 
 def read_json(path):
@@ -322,7 +323,8 @@ def validate_sealed_lifecycle_ranking(root, manifest, previous, known_results, i
     registry_hash = inputs.get("model_version_registry_sha256", "")
     require(len(registry_hash) == 64 and set(registry_hash) <= set("0123456789abcdef"),
             "Sealed ranking registry hash missing or invalid")
-    require(inputs.get("pool_selection") == manifest.get("pool_selection") == "top3"
+    require(inputs.get("pool_selection") == manifest.get("pool_selection")
+            and inputs.get("pool_selection") in ("top2", "top3")
             and inputs.get("protected_version") is None
             and inputs.get("learning_source_version") == previous["model_version"]
             and inputs["protocol"] == manifest["ranking_protocol"],
@@ -385,7 +387,6 @@ def finalize(root, folder, device):
     from .experiment import evaluate_suite, load_frozen_opponents
     from .ppo import EntityPPO, PlacementBuffer
     from .rewards import REWARD_METRICS
-    from .tracking import WandbTracker
 
     torch.set_num_threads(2)
     torch.set_float32_matmul_precision("high")
@@ -465,13 +466,13 @@ def finalize(root, folder, device):
         write_json(output, result)
         heldout[name] = result
         fingerprints[info["policy_sha256"]] = name
-    tracker = WandbTracker(folder, config)
+    tracker = tracker_for_config(folder, config)
     try:
         journal = [json.loads(line) for line in
                    (folder / "wandb-metrics.jsonl").read_text().splitlines()]
         for name, result in heldout.items():
             marker = f"test/{name}_mixed_sampled_mean_placement"
-            if any(marker in row for row in journal):
+            if journal_has_metric(journal, marker, config):
                 continue
             values = {f"test/{name}_{condition}_{key}": row[key]
                       for condition, row in result["conditions"].items()
@@ -514,7 +515,6 @@ def repair_boundary(root, folder, device):
     import torch
     from .experiment import evaluate_suite, load_frozen_opponents, log_evaluation, save_model
     from .ppo import EntityPPO, PlacementBuffer
-    from .tracking import WandbTracker
 
     torch.set_num_threads(2)
     torch.set_float32_matmul_precision("high")
@@ -541,13 +541,12 @@ def repair_boundary(root, folder, device):
             save_model(model, models / config["best_model_filename"])
         journal = [json.loads(line) for line in
                    (folder / "wandb-metrics.jsonl").read_text().splitlines()]
-        if not any("val/mean_placement" in r
-                   and r["optimizer_step"] == info["stage_optimizer_steps"]
-                   for r in journal):
+        if not journal_has_metric(journal, "val/mean_placement", config,
+                                  info["stage_optimizer_steps"]):
             from stable_baselines3.common.logger import configure
             from .tracking import WandbOutputFormat
 
-            tracker = WandbTracker(folder, config)
+            tracker = tracker_for_config(folder, config)
             try:
                 logger = configure(format_strings=[])
                 logger.output_formats.append(WandbOutputFormat(tracker))
@@ -614,8 +613,8 @@ class StageChain:
         write_json(self.state_path, self.state)
 
     def check_deadline(self):
-        deadline = self.state.get("deadline_unix")
-        if deadline is not None and time.time() >= deadline:
+        deadlines = [self.state.get(key) for key in ("deadline_unix", "stage_deadline_unix")]
+        if any(deadline is not None and time.time() >= deadline for deadline in deadlines):
             self.status(status="budget_exhausted", stop_reason="wall_clock_budget_exhausted",
                         automatic_resume_allowed=False)
             raise TimeoutError("Authorized wall-clock budget exhausted")
@@ -637,6 +636,8 @@ class StageChain:
         if not self.manifest.get("register_stage_lifecycle"):
             return
         register_lifecycle(self.root, self.manifest["model_version_registry"], folder, result)
+        from .overview import update_stage_overview
+        update_stage_overview(folder, read_json(folder / "resolved-config.json"), completed=True)
 
     def signal(self, signum, frame):
         self.stopping = True
@@ -773,11 +774,17 @@ class StageChain:
             stages = list(self.manifest["stages"])
             try:
                 for index, stage in enumerate(stages):
+                    self.state.pop("stage_deadline_unix", None)
                     self.check_deadline()
                     for path, expected_hash in self.manifest.get("code_sha256", {}).items():
                         require(digest(self.root / path) == expected_hash,
                                 f"Locked runtime code changed: {path}")
                     folder = self.root / stage["experiment_dir"]
+                    if self.manifest.get("stage_wall_clock_limit_seconds"):
+                        starts = self.state.setdefault("stage_started_unix", {})
+                        stage_start = starts.setdefault(stage["version"], time.time())
+                        self.status(stage_started_unix=starts, stage=stage["version"],
+                            stage_deadline_unix=stage_start + self.manifest["stage_wall_clock_limit_seconds"])
                     no_live_stage_process(folder)
                     results_path = folder / "results.json"
                     if results_path.exists():

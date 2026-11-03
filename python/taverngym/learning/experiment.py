@@ -22,7 +22,8 @@ from .precision import FORWARD_PRECISIONS, configure_precision
 from .rewards import REWARD_METRICS, RewardShapingConfig, reward_protocols_equal
 from .schedule import learning_rate_schedule
 from .opponents import FrozenOpponentPool, OpponentGroup, opponent_groups
-from .tracking import WandbOutputFormat, WandbTracker, tracking_settings
+from .tracking import WandbOutputFormat, tracking_settings
+from .tracking_v2 import tracker_for_config
 from .vector_env import MixedOpponentVectorEnv, NativeVectorEnv
 from .actor_sampling import ActorOpponentVectorEnv
 
@@ -290,6 +291,8 @@ class Recorder(BaseCallback):
             if result["mean_placement"] < self.best:
                 self.best = result["mean_placement"]
                 save_model(model, self.best_model_path)
+                from .overview import update_stage_overview
+                update_stage_overview(self.experiment, self.config)
             metrics["evaluation_mean_placement"] = result["mean_placement"]
         with (self.experiment / "metrics.jsonl").open("a") as stream:
             stream.write(json.dumps(metrics) + "\n")
@@ -442,7 +445,7 @@ def main():
         formats.append("tensorboard")
     logger = configure_experiment_logger(log_directory, formats)
     if config["tracking_backend"] == "wandb":
-        tracker = WandbTracker(args.experiment_dir, config)
+        tracker = tracker_for_config(args.experiment_dir, config)
         logger.output_formats.append(WandbOutputFormat(tracker))
     model.set_logger(logger)
     model.tensorboard_log = str(args.experiment_dir / "tensorboard") if config["tracking_backend"] == "tensorboard" else None
@@ -516,6 +519,8 @@ def main():
             log_evaluation(model.logger, config.get("baseline_prefix", config.get("tensorboard_baseline_prefix", "val")), result)
             model.logger.dump(0)
             save_model(model, recorder.best_model_path)
+            from .overview import update_stage_overview
+            update_stage_overview(args.experiment_dir, config)
         model.learn(remaining_decisions, callback=recorder,
                     reset_num_timesteps=False, log_interval=None)
         save_model(model, args.run_dir / "final_model.zip")

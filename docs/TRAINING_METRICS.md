@@ -1,7 +1,8 @@
 # W&B 与训练指标
 
 当前 V7 已完成 100 PPO 与收尾独立测评，实际进度与 best 见
-[实验总览](../experiments/EXPERIMENT_OVERVIEW.md)。下文历史准备记录按当时状态保留；V8 命名组件仍待新进程接入。
+[实验总览](../experiments/EXPERIMENT_OVERVIEW.md)。下文历史准备记录按当时状态保留。2026-11-03 新 V8 进程已显式接入七分区 v2，
+实例为 `20261103-v89-256x512-01`；V7 的配置与历史 run 不改写。
 
 2026-11-03 留存约定：`wandb.json`、`wandb-metrics.jsonl`、`wandb-inventory/` 和 SDK 缓存只在本地／W&B 保存。
 Git 仅保存接入代码、配置、字段规范和带原始文件 SHA-256 的结果摘要；原始曲线和逐局输出不随 PR 发布。
@@ -25,7 +26,7 @@ Weave 初始化遇到网络／TLS 错误时，错误写入 `wandb.json` 的 `wea
 `wandb.json` 保存 run ID 和链接；续训复用同一个 run。
 鉴权沿用机器已有 W&B 凭据，不写入仓库或实验配置。
 
-## V8 起的 W&B 命名规范（v2，已准备）
+## V8 起的 W&B 命名规范（v2，已接入新 V8）
 
 2026-11-01 用户指定：当前 V7 不处理，从 V8 起统一命名。**只把 core、reward 单独分区，
 其余指标仍放 train／val**；test 保留一个分区。七个分区全部同一层，只有一层 `/`，
@@ -71,15 +72,25 @@ W&B 自动 `_step`／`_timestamp`／`_runtime` 与独立系统遥测不手工改
 收尾将产生的330个字段，共551项一一映射，未增删计算项。
 完整平铺字段清单见 [全部展开](../configs/wandb-metric-schema-v2-expanded.txt)，包含550个指标与独立 Adam 横轴。
 纯名称映射在 `metric_schema_v2.py`，显式启用的后续输出组件为 `tracking_v2.WandbTrackerV2`，
-后者拒绝 V7 及更早版本。它们均未被当前运行入口导入。
+后者拒绝 V7 及更早版本。`experiment`、`stage_chain` 的新进程通过
+`tracker_for_config` 显式选择 v2，要求配置提供版本与 schema SHA；旧版本继续使用原 tracker。
+内部 JSON 与选模键不改。收尾 test 与恢复 val 标记共享 canonical 映射，journal
+用实际 Adam 及 PPO 上下文区分事件，保留 KL 提前停止后同 Adam 轴上的不同 PPO 对局点。
 
-V8 启动时必须完成以下接入，准备规范本身不代表已上线或授权启动 V8：
+2026-11-03 新 V8 已完成以下门禁后启动；后续新版本仍须核验，准备规范本身不代表启动授权：
 
 1. 在新进程的 W&B 输出边界明确选用 v2 组件，记录 `metric_schema_version=2` 及 schema 路径和 SHA。
 2. 原生观测、奖励、评估 JSON、选 best 使用的 `mean_placement` 内部键均不改；只转换输出名称。
 3. 本地 journal 去重、历史补录和收尾 test 的已记录标记使用同一映射，避免补录重复或漏判。
 4. 监控兼容新字段，完成完整训练／验证／贪心／收尾的 mock 日志验收，再锁新实例 runtime hash。
 5. 新 run 只写一套 v2 名称，不同时写 v1 别名；不向旧 run 补写新名字，不为改名重启 V7。
+
+本轮验收：101 项相关测试通过；CUDA/BF16 原生小预检使用 256 个独立诊断样本和 2 次
+内存中 Adam 更新，不计入正式训练。V8 起点完整继承 V7 PPO100／累计 Adam8800；
+首个正式 PPO 已核验 131072 样本、16 次实际 Adam、策略与 moments 改变、冻结对手 SHA 未变。
+在线 W&B 与本地 journal 已独立核验，三类 reward、total、随机／贪心 val 均为 v2，旧别名未写入。
+证据与 schema SHA 见
+[公开核验摘要](../experiments/20261103-pr-v89-review/verification.json)。
 
 ## 关键测评指标与 best 选择
 

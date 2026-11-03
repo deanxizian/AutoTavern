@@ -1,0 +1,619 @@
+{
+  "status": "completed",
+  "completed_at": "2026-11-03T01:30:36.757784+08:00",
+  "config": {
+    "name": "20261103-match-3v0-v1-v2-v3-v5-v7",
+    "games": 320,
+    "parallel_games": 320,
+    "seed": 61103101,
+    "threads": 4,
+    "policy_mode": "stochastic V1 V2 V3 V5 V7; native V0",
+    "forward_precision": "bf16",
+    "simulator_config": {
+      "turn_action_caps": [
+        60
+      ]
+    },
+    "models": {
+      "v1": {
+        "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+        "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+      },
+      "v2": {
+        "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+        "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+      },
+      "v3": {
+        "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+        "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1"
+      },
+      "v5": {
+        "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+        "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6"
+      },
+      "v7": {
+        "path": "runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+        "sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354"
+      }
+    },
+    "seat_assignment": "one fixed lineup, 320 lanes, native rotate_seats; role order rotates per lane",
+    "action_filter": false,
+    "combat_search": false,
+    "training_started": false,
+    "tracking": {
+      "backend": "wandb",
+      "entity": "eric_eric_",
+      "project": "AutoTavern",
+      "weave_project": "eric_eric_/AutoTavern",
+      "mode": "online"
+    },
+    "games_per_lineup": 320,
+    "purpose": "independent requested match, no model or pool selection",
+    "lineups": [
+      {
+        "v0": 3,
+        "v1": 1,
+        "v2": 1,
+        "v3": 1,
+        "v5": 1,
+        "v7": 1
+      }
+    ],
+    "v0": {
+      "kind": "native_scripted",
+      "source": "crates/taverngym/src/bot.rs"
+    },
+    "shards": [
+      {
+        "roles": 5,
+        "games": 320,
+        "seed": 61103101
+      }
+    ],
+    "schedule": "320 lanes in a single shard, one batch per model per global round",
+    "max_global_rounds": 20000,
+    "max_match_seconds": 3600,
+    "trace_format": [
+      "global_round",
+      "action",
+      "before_sha256",
+      "after_sha256_or_null",
+      "after_turn_or_null",
+      "cycle_return",
+      "consecutive_returns",
+      "forced_end",
+      "terminal",
+      "single_end_mask"
+    ],
+    "turn_denominator": "unique turn>0 observed ready for this living player, including observed zero executed-action turns",
+    "diagnostics": {
+      "operation_cost": 0,
+      "cycle_cost": 0,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null
+    },
+    "v0_behavior_metrics": "unknown: native automatic V0 has no Python action/observation callbacks",
+    "budget": {
+      "official_games": 320,
+      "synthetic_tests": true,
+      "native_preflight": "2 lanes, at most 5 global steps, synthetic legal-first policy; no completed extra matches"
+    },
+    "historical_match_replay": false
+  },
+  "groups": {
+    "v0": {
+      "player_games": 960,
+      "first_rate": 0.016666666666666666,
+      "top4_rate": 0.06875,
+      "mean_placement": 6.576041666666667,
+      "placement_counts": {
+        "1": 16,
+        "2": 10,
+        "3": 9,
+        "4": 31,
+        "5": 103,
+        "6": 227,
+        "7": 263,
+        "8": 301
+      }
+    },
+    "v1": {
+      "player_games": 320,
+      "first_rate": 0.065625,
+      "top4_rate": 0.578125,
+      "mean_placement": 4.125,
+      "placement_counts": {
+        "1": 21,
+        "2": 31,
+        "3": 55,
+        "4": 78,
+        "5": 80,
+        "6": 31,
+        "7": 18,
+        "8": 6
+      }
+    },
+    "v2": {
+      "player_games": 320,
+      "first_rate": 0.190625,
+      "top4_rate": 0.746875,
+      "mean_placement": 3.265625,
+      "placement_counts": {
+        "1": 61,
+        "2": 69,
+        "3": 57,
+        "4": 52,
+        "5": 43,
+        "6": 19,
+        "7": 14,
+        "8": 5
+      }
+    },
+    "v3": {
+      "player_games": 320,
+      "first_rate": 0.2125,
+      "top4_rate": 0.821875,
+      "mean_placement": 2.95625,
+      "placement_counts": {
+        "1": 68,
+        "2": 71,
+        "3": 76,
+        "4": 48,
+        "5": 35,
+        "6": 14,
+        "7": 7,
+        "8": 1
+      }
+    },
+    "v5": {
+      "player_games": 320,
+      "first_rate": 0.21875,
+      "top4_rate": 0.778125,
+      "mean_placement": 3.0625,
+      "placement_counts": {
+        "1": 70,
+        "2": 75,
+        "3": 56,
+        "4": 48,
+        "5": 38,
+        "6": 21,
+        "7": 12
+      }
+    },
+    "v7": {
+      "player_games": 320,
+      "first_rate": 0.2625,
+      "top4_rate": 0.86875,
+      "mean_placement": 2.8625,
+      "placement_counts": {
+        "1": 84,
+        "2": 64,
+        "3": 67,
+        "4": 63,
+        "5": 21,
+        "6": 8,
+        "7": 6,
+        "8": 7
+      }
+    }
+  },
+  "behavior": {
+    "v1": {
+      "player_games": 320,
+      "player_turns": 4265,
+      "recruit_actions": 217747,
+      "pooled_actions_per_turn": 51.05439624853459,
+      "player_turn_action_distribution": {
+        "n": 4265,
+        "mean": 51.05439624853459,
+        "min": 1,
+        "max": 63,
+        "p50": 61.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "player_mean_actions_per_turn_distribution": {
+        "n": 320,
+        "mean": 50.88694591819483,
+        "min": 32.4,
+        "max": 61.07142857142857,
+        "p50": 51.22649572649573,
+        "p90": 55.58095238095238,
+        "p95": 56.770054945054945,
+        "p99": 57.89
+      },
+      "recruit_turns_per_player_distribution": {
+        "n": 320,
+        "mean": 13.328125,
+        "min": 8,
+        "max": 26,
+        "p50": 13.0,
+        "p90": 17.0,
+        "p95": 17.05000000000001,
+        "p99": 20.0
+      },
+      "actions_per_player_game_distribution": {
+        "n": 320,
+        "mean": 681.459375,
+        "min": 325,
+        "max": 1373,
+        "p50": 667.0,
+        "p90": 881.2,
+        "p95": 941.1500000000001,
+        "p99": 1051.1
+      },
+      "cycle_returns": 35685,
+      "cycle_returns_per_player_distribution": {
+        "n": 320,
+        "mean": 111.515625,
+        "min": 33,
+        "max": 199,
+        "p50": 112.0,
+        "p90": 149.0,
+        "p95": 162.0,
+        "p99": 175.24
+      },
+      "pooled_cycle_return_fraction": 0.16388285487285703,
+      "player_cycle_return_fraction_distribution": {
+        "n": 320,
+        "mean": 0.16816260948976744,
+        "min": 0.0468384074941452,
+        "max": 0.40476190476190477,
+        "p50": 0.16341465689291776,
+        "p90": 0.227948649011964,
+        "p95": 0.25234950378688953,
+        "p99": 0.30042036836403035
+      },
+      "zero_cycle_player_games": 0,
+      "zero_cycle_player_game_fraction": 0.0,
+      "max_consecutive_cycle_returns": 54,
+      "forced_ends": 3080,
+      "forced_end_turn_fraction": 0.7221570926143025,
+      "observed_zero_action_turns": 0,
+      "same_action_id_repeats_within_turn": 100448,
+      "hero_actions": 320
+    },
+    "v2": {
+      "player_games": 320,
+      "player_turns": 4662,
+      "recruit_actions": 247725,
+      "pooled_actions_per_turn": 53.13706563706564,
+      "player_turn_action_distribution": {
+        "n": 4662,
+        "mean": 53.13706563706564,
+        "min": 1,
+        "max": 63,
+        "p50": 61.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 62.0
+      },
+      "player_mean_actions_per_turn_distribution": {
+        "n": 320,
+        "mean": 53.062944062034916,
+        "min": 38.55555555555556,
+        "max": 61.4,
+        "p50": 53.375,
+        "p90": 58.13764705882353,
+        "p95": 60.313541666666666,
+        "p99": 61.29481818181818
+      },
+      "recruit_turns_per_player_distribution": {
+        "n": 320,
+        "mean": 14.56875,
+        "min": 7,
+        "max": 26,
+        "p50": 15.0,
+        "p90": 18.0,
+        "p95": 19.05000000000001,
+        "p99": 23.810000000000002
+      },
+      "actions_per_player_game_distribution": {
+        "n": 320,
+        "mean": 775.140625,
+        "min": 348,
+        "max": 1480,
+        "p50": 760.5,
+        "p90": 990.1,
+        "p95": 1063.0,
+        "p99": 1301.3400000000001
+      },
+      "cycle_returns": 50089,
+      "cycle_returns_per_player_distribution": {
+        "n": 320,
+        "mean": 156.528125,
+        "min": 38,
+        "max": 329,
+        "p50": 146.5,
+        "p90": 237.0,
+        "p95": 255.05,
+        "p99": 280.24
+      },
+      "pooled_cycle_return_fraction": 0.20219598344938944,
+      "player_cycle_return_fraction_distribution": {
+        "n": 320,
+        "mean": 0.211956469948232,
+        "min": 0.047044632086851626,
+        "max": 0.5880893300248139,
+        "p50": 0.1934904878864069,
+        "p90": 0.3527711627098785,
+        "p95": 0.39310144927536234,
+        "p99": 0.4808385454161191
+      },
+      "zero_cycle_player_games": 0,
+      "zero_cycle_player_game_fraction": 0.0,
+      "max_consecutive_cycle_returns": 59,
+      "forced_ends": 3596,
+      "forced_end_turn_fraction": 0.7713427713427713,
+      "observed_zero_action_turns": 0,
+      "same_action_id_repeats_within_turn": 124131,
+      "hero_actions": 320
+    },
+    "v3": {
+      "player_games": 320,
+      "player_turns": 4839,
+      "recruit_actions": 258428,
+      "pooled_actions_per_turn": 53.40524901839223,
+      "player_turn_action_distribution": {
+        "n": 4839,
+        "mean": 53.40524901839223,
+        "min": 1,
+        "max": 63,
+        "p50": 61.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 62.0
+      },
+      "player_mean_actions_per_turn_distribution": {
+        "n": 320,
+        "mean": 53.272192658999785,
+        "min": 37.45454545454545,
+        "max": 61.44444444444444,
+        "p50": 53.533936651583716,
+        "p90": 58.191826923076924,
+        "p95": 59.64932126696833,
+        "p99": 61.246346153846154
+      },
+      "recruit_turns_per_player_distribution": {
+        "n": 320,
+        "mean": 15.121875,
+        "min": 9,
+        "max": 23,
+        "p50": 15.0,
+        "p90": 19.0,
+        "p95": 20.0,
+        "p99": 23.0
+      },
+      "actions_per_player_game_distribution": {
+        "n": 320,
+        "mean": 808.5875,
+        "min": 408,
+        "max": 1300,
+        "p50": 807.0,
+        "p90": 1008.5000000000001,
+        "p95": 1123.1,
+        "p99": 1244.29
+      },
+      "cycle_returns": 45881,
+      "cycle_returns_per_player_distribution": {
+        "n": 320,
+        "mean": 143.378125,
+        "min": 46,
+        "max": 357,
+        "p50": 141.0,
+        "p90": 209.10000000000002,
+        "p95": 231.05,
+        "p99": 268.86
+      },
+      "pooled_cycle_return_fraction": 0.1775388115838841,
+      "player_cycle_return_fraction_distribution": {
+        "n": 320,
+        "mean": 0.18188349932576425,
+        "min": 0.046890927624872576,
+        "max": 0.43214285714285716,
+        "p50": 0.17618794998105342,
+        "p90": 0.26963694440842545,
+        "p95": 0.3040765949107574,
+        "p99": 0.3485052527529282
+      },
+      "zero_cycle_player_games": 0,
+      "zero_cycle_player_game_fraction": 0.0,
+      "max_consecutive_cycle_returns": 59,
+      "forced_ends": 3751,
+      "forced_end_turn_fraction": 0.7751601570572433,
+      "observed_zero_action_turns": 0,
+      "same_action_id_repeats_within_turn": 122789,
+      "hero_actions": 320
+    },
+    "v5": {
+      "player_games": 320,
+      "player_turns": 4753,
+      "recruit_actions": 177742,
+      "pooled_actions_per_turn": 37.39575005259836,
+      "player_turn_action_distribution": {
+        "n": 4753,
+        "mean": 37.39575005259836,
+        "min": 1,
+        "max": 63,
+        "p50": 40.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "player_mean_actions_per_turn_distribution": {
+        "n": 320,
+        "mean": 36.60507217839497,
+        "min": 15.8,
+        "max": 49.3125,
+        "p50": 37.5625,
+        "p90": 43.705882352941174,
+        "p95": 45.06160130718955,
+        "p99": 47.91136363636364
+      },
+      "recruit_turns_per_player_distribution": {
+        "n": 320,
+        "mean": 14.853125,
+        "min": 8,
+        "max": 24,
+        "p50": 15.0,
+        "p90": 18.0,
+        "p95": 20.0,
+        "p99": 22.0
+      },
+      "actions_per_player_game_distribution": {
+        "n": 320,
+        "mean": 556.44375,
+        "min": 151,
+        "max": 1077,
+        "p50": 567.5,
+        "p90": 769.0,
+        "p95": 813.0500000000002,
+        "p99": 1010.4100000000001
+      },
+      "cycle_returns": 8148,
+      "cycle_returns_per_player_distribution": {
+        "n": 320,
+        "mean": 25.4625,
+        "min": 3,
+        "max": 86,
+        "p50": 24.0,
+        "p90": 39.10000000000002,
+        "p95": 46.05000000000001,
+        "p99": 70.86000000000001
+      },
+      "pooled_cycle_return_fraction": 0.045841725647286516,
+      "player_cycle_return_fraction_distribution": {
+        "n": 320,
+        "mean": 0.04712025850100885,
+        "min": 0.008174386920980926,
+        "max": 0.15513626834381553,
+        "p50": 0.042835069591144484,
+        "p90": 0.0711998148195777,
+        "p95": 0.08429951209797869,
+        "p99": 0.12735568184819435
+      },
+      "zero_cycle_player_games": 0,
+      "zero_cycle_player_game_fraction": 0.0,
+      "max_consecutive_cycle_returns": 25,
+      "forced_ends": 1864,
+      "forced_end_turn_fraction": 0.39217336419103727,
+      "observed_zero_action_turns": 0,
+      "same_action_id_repeats_within_turn": 62187,
+      "hero_actions": 320
+    },
+    "v7": {
+      "player_games": 320,
+      "player_turns": 4796,
+      "recruit_actions": 133924,
+      "pooled_actions_per_turn": 27.924103419516264,
+      "player_turn_action_distribution": {
+        "n": 4796,
+        "mean": 27.924103419516264,
+        "min": 1,
+        "max": 63,
+        "p50": 22.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "player_mean_actions_per_turn_distribution": {
+        "n": 320,
+        "mean": 27.435012423641247,
+        "min": 10.125,
+        "max": 39.0,
+        "p50": 27.514705882352942,
+        "p90": 34.06544117647059,
+        "p95": 35.36545454545455,
+        "p99": 37.108
+      },
+      "recruit_turns_per_player_distribution": {
+        "n": 320,
+        "mean": 14.9875,
+        "min": 8,
+        "max": 24,
+        "p50": 15.0,
+        "p90": 18.0,
+        "p95": 20.0,
+        "p99": 22.810000000000002
+      },
+      "actions_per_player_game_distribution": {
+        "n": 320,
+        "mean": 419.5125,
+        "min": 82,
+        "max": 834,
+        "p50": 415.0,
+        "p90": 588.2,
+        "p95": 664.05,
+        "p99": 731.81
+      },
+      "cycle_returns": 4836,
+      "cycle_returns_per_player_distribution": {
+        "n": 320,
+        "mean": 15.1125,
+        "min": 2,
+        "max": 48,
+        "p50": 13.5,
+        "p90": 25.0,
+        "p95": 29.0,
+        "p99": 36.0
+      },
+      "pooled_cycle_return_fraction": 0.0361100325557779,
+      "player_cycle_return_fraction_distribution": {
+        "n": 320,
+        "mean": 0.036730634366447384,
+        "min": 0.006042296072507553,
+        "max": 0.10483870967741936,
+        "p50": 0.03492437794763376,
+        "p90": 0.056681079989350666,
+        "p95": 0.07048314851054577,
+        "p99": 0.09469690108041666
+      },
+      "zero_cycle_player_games": 0,
+      "zero_cycle_player_game_fraction": 0.0,
+      "max_consecutive_cycle_returns": 15,
+      "forced_ends": 764,
+      "forced_end_turn_fraction": 0.15929941618015012,
+      "observed_zero_action_turns": 0,
+      "same_action_id_repeats_within_turn": 42394,
+      "hero_actions": 320
+    },
+    "v0": {
+      "status": "unknown; native script actions are not exposed to Python"
+    }
+  },
+  "completed_lobbies": 320,
+  "elapsed_seconds": 118.02955758400003,
+  "games_per_second": 2.71118528739939,
+  "inference_and_observe_seconds": 55.37978835298509,
+  "native_step_seconds": 2.265193564985566,
+  "actual_initial_concurrency": 320,
+  "microbatch": null,
+  "gpu_peak_allocated_bytes": 667918848,
+  "gpu_peak_reserved_bytes": 836763648,
+  "rejected_actions": 0,
+  "deferred_actions": 0,
+  "weights_unchanged": true,
+  "limitations": [
+    "V0 behavioral metrics unknown; only rank complement is available.",
+    "Fresh match with same frozen models; not a replay of historical 320 games.",
+    "Turn denominator includes every recruit turn observed ready, even if zero executed actions.",
+    "Within-batch other-seat changes enter post-action public observations.",
+    "Hashed traces support independent cycle/count audits, not full state rendering."
+  ],
+  "verification": "passed",
+  "wandb_url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/gr1d5kj4",
+  "raw_source_sha256": {
+    "config.json": "ed6b0b737d64500681e28eea069a778afabfba8652526003667bf8609d0e7b8a",
+    "run.py": "43fc7e51a0dbd21d64360d319f38fee5cfce7b60561e56a83b55255995057344",
+    "report.py": "8019b777165fe19a4fe61afbf22f503440f6694423a44ebcc0266654b5e26dc8",
+    "preflight.py": "5bc89a64277922b8f86f74578259f736813274f176db0d44f7eaf3e5704aef1f",
+    "games.jsonl": "0757f4dc23b293d897b7e253467840aebe2be7da43375503f7a77255b0273877",
+    "players.jsonl": "2a56b4f70cd4dc904a938063118b040fbff36acb2fcbf98f09e4439df32aead1",
+    "turns.jsonl.gz": "c22d4c694a70febc7ff8a7fe54d3d38d5d5f165b498d3333edb81b72446a6238",
+    "results.json": "0b25a8f8c30529de90dc28cb2931ed4cc2cb5d251fb14e067d8374cfbd1277af",
+    "batches.json": "e81047163b9a4ad20ae26a048bbf9f7f784b0456388a39c1a2d9d67d20e45ce5",
+    "schedule-initial.json": "34cb8a497a25998b3b730aaabb4c08aaa62e757d7d68cdef26d351480ecfd49a"
+  }
+}

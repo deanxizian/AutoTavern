@@ -1,0 +1,74 @@
+{
+  "reviewed_at": "2026-11-03T23:33:19.063332+08:00",
+  "stages": {
+    "v8": {
+      "training_ppo": 100,
+      "new_adam_updates": 1600,
+      "effective_samples": 13107200,
+      "validation_ppo": [
+        0,
+        25,
+        50,
+        75,
+        100
+      ],
+      "validation_games_per_mode": 64,
+      "heldout_games_per_checkpoint_per_mode": 128,
+      "selected_best_ppo": 50,
+      "selected_best_adam_total": 9600,
+      "selected_best_sha256": "cc9d0507a86cd9aa65c6c0da744f9d134c2a1bfefd78c6a8555f073ec9bb16b0",
+      "local_results_sha256": "fe4cbecbe650acf8a066f42f28a793c7592c59adec3be802fbf09cf6693f36b8"
+    },
+    "v9": {
+      "training_ppo": 100,
+      "new_adam_updates": 1600,
+      "effective_samples": 13107200,
+      "validation_ppo": [
+        0,
+        25,
+        50,
+        75,
+        100
+      ],
+      "validation_games_per_mode": 64,
+      "heldout_games_per_checkpoint_per_mode": 128,
+      "selected_best_ppo": 50,
+      "selected_best_adam_total": 10400,
+      "selected_best_sha256": "7684dfe512ad81ed120a2c3331bef8be4f3c7b54196e7db85a19a5411a769104",
+      "local_results_sha256": "eb2ffe669b18e908aac6bb6e6c9109dfe844cd703f2c3a01c1a4ad71ce0a28b5"
+    }
+  },
+  "matches": {
+    "20261103-match-3v0-v1-v2-v3-v5-v7": {
+      "games": 320,
+      "actual_initial_concurrency": 320,
+      "core_metrics_independently_recounted": true,
+      "raw_games_sha256": "0757f4dc23b293d897b7e253467840aebe2be7da43375503f7a77255b0273877"
+    },
+    "20261103-match-v0-v1-v2-v3-v5-v7-v8-v9": {
+      "games": 320,
+      "actual_initial_concurrency": 320,
+      "core_metrics_independently_recounted": true,
+      "raw_games_sha256": "a17d537bfe037a4b2260fada6b15ce89d4803137190848f04b42d5ef5daad8c5"
+    }
+  },
+  "validation": {
+    "full_python_suite_before_pr_fixes": "438 passed, including CUDA; 95.36 seconds",
+    "affected_schema_and_overview_suite": "45 passed; 1.31 seconds",
+    "final_clean_commit_suite": "439 passed, 2 warnings; 91.31 seconds; CUDA tests executed",
+    "rust_changes": false,
+    "local_cargo_available": false,
+    "base_dependency_simulation": "89 passed, 26 skipped; 5.23 seconds"
+  },
+  "publication": {
+    "raw_wandb_and_per_game_data": "local only; excluded from Git",
+    "weights": "local only; excluded from Git",
+    "historical_configs_and_raw_outputs_preserved": true,
+    "git_history_rewritten_by_this_pr": false
+  },
+  "limitations": [
+    "Match rosters differ; historical match averages are not directly ranked together.",
+    "V0 action and cycle behavior was not recorded.",
+    "Independent test results do not select checkpoints, training pools, or champions."
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "registered_at": "2026-11-03T05:26:15.486241+08:00",
+  "version": "v8",
+  "entry": {
+    "status": "active",
+    "canonical_version": "v8",
+    "kind": "trained_policy",
+    "source_version": "v7",
+    "reason": "selected_best_policy_changed",
+    "fresh_samples": 13107200,
+    "trained_ppo_iterations": 100,
+    "selected_ppo_iteration": 50,
+    "retained_model": "runs/20261103-ppo-v8-256x512-run01/20261103-014655-best_model.zip",
+    "retained_sha256": "cc9d0507a86cd9aa65c6c0da744f9d134c2a1bfefd78c6a8555f073ec9bb16b0",
+    "policy_sha256": "e63e3d8e739547b9546a8198e79b2b5f182964ea99c15fffea2124be5d93ba35",
+    "adam_moments_sha256": "f720345dc38b8678c1403bbbb5debbf8dd8a413f741e0372a1705136c69b5f7d",
+    "source_sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354",
+    "source_model": "runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+    "policy_and_adam_unchanged": false,
+    "evidence": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01/results.json",
+    "history_and_weights_preserved": true
+  },
+  "registry_sha256": "946ac9835b31e686e038b53add8971e3acf34365cf08a90e596173e2faef308b",
+  "adam_total_steps": 9600
+}

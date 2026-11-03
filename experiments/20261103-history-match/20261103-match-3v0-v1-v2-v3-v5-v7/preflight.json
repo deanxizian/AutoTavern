@@ -1,0 +1,158 @@
+{
+  "status": "passed",
+  "synthetic": [
+    "hero/recruit split",
+    "A-B-A return",
+    "End resets history",
+    "zero-action observed turn retained",
+    "60 prior actions + End under single-End mask counted as forced",
+    "terminal action included, reset observation excluded"
+  ],
+  "native_preflight": {
+    "lanes": 2,
+    "roles": [
+      5
+    ],
+    "global_rounds": 5,
+    "completed_matches": 0,
+    "executed_actions": 46,
+    "single_shard_batched_calls": {
+      "v1": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          1,
+          2,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1
+        ],
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "v2": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          1,
+          2,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1
+        ],
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "v3": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          1,
+          2,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1
+        ],
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "v5": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          1,
+          2,
+          1
+        ],
+        [
+          2,
+          1,
+          1
+        ],
+        [
+          3,
+          2,
+          1
+        ],
+        [
+          4,
+          2,
+          1
+        ]
+      ],
+      "v7": [
+        [
+          0,
+          2,
+          1
+        ],
+        [
+          1,
+          2,
+          1
+        ],
+        [
+          2,
+          2,
+          1
+        ],
+        [
+          3,
+          2,
+          1
+        ],
+        [
+          4,
+          2,
+          1
+        ]
+      ]
+    }
+  },
+  "training_started": false
+}

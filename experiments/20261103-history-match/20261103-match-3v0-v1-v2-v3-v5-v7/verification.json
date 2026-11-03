@@ -1,0 +1,26 @@
+{
+  "status": "passed",
+  "completed_lobbies": 320,
+  "player_games_per_version": 320,
+  "model_player_games": 1600,
+  "player_turn_records_including_hero": 24915,
+  "executed_actions_recounted": 1037166,
+  "exact_ranks_and_quotas": true,
+  "turn_counts_and_both_weighting_methods_independently_recounted": true,
+  "state_hash_cycles_independently_recounted": true,
+  "source_weights_unchanged": true,
+  "actual_initial_concurrency": 320,
+  "single_shard_merged_gpu_batches_verified": true,
+  "file_sha256": {
+    "config.json": "ed6b0b737d64500681e28eea069a778afabfba8652526003667bf8609d0e7b8a",
+    "run.py": "43fc7e51a0dbd21d64360d319f38fee5cfce7b60561e56a83b55255995057344",
+    "report.py": "8019b777165fe19a4fe61afbf22f503440f6694423a44ebcc0266654b5e26dc8",
+    "preflight.py": "5bc89a64277922b8f86f74578259f736813274f176db0d44f7eaf3e5704aef1f",
+    "games.jsonl": "0757f4dc23b293d897b7e253467840aebe2be7da43375503f7a77255b0273877",
+    "players.jsonl": "2a56b4f70cd4dc904a938063118b040fbff36acb2fcbf98f09e4439df32aead1",
+    "turns.jsonl.gz": "c22d4c694a70febc7ff8a7fe54d3d38d5d5f165b498d3333edb81b72446a6238",
+    "results.json": "0b25a8f8c30529de90dc28cb2931ed4cc2cb5d251fb14e067d8374cfbd1277af",
+    "batches.json": "e81047163b9a4ad20ae26a048bbf9f7f784b0456388a39c1a2d9d67d20e45ce5",
+    "schedule-initial.json": "34cb8a497a25998b3b730aaabb4c08aaa62e757d7d68cdef26d351480ecfd49a"
+  }
+}

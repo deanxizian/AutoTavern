@@ -1,6 +1,6 @@
 {
-  "updated_at": "2026-11-03T00:18:07.665459+08:00",
-  "scope": "Formal completed V1-V7 runs, selected complete checkpoints, per-stage validation and independent heldout, separate frozen-lobby matches, preserved preparation/stopped histories. V4/V6 retired; V8/V9 remain paused.",
+  "updated_at": "2026-11-03T23:13:32.867988+08:00",
+  "scope": "Completed V1-V9 stages, selected complete checkpoints, per-stage validation and independent heldout, separate frozen-lobby matches, preserved preparation/stopped histories. V4/V6 retired; new V8/V9 finite instance completed and exited.",
   "stages": {
     "v1": {
       "experiment_dir": "experiments/20261031-exp01-ppo-scripted/20261031-ppo-small-100ppo-32minibatches",
@@ -2853,11 +2853,4106 @@
       "online_final_verification": "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/final-online-wandb-verification.json",
       "heldout_detail_source": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/results.json",
       "public_results_summary": "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/results-summary.json"
+    },
+    "v8": {
+      "experiment_dir": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01",
+      "status": "completed",
+      "instance_id": "20261103-v89-256x512-01",
+      "completed_ppo": 100,
+      "planned_ppo": 100,
+      "fresh_samples": 13107200,
+      "actual_new_adam_updates": 1600,
+      "source_version": "v7",
+      "source_checkpoint_sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354",
+      "best_ppo": 50,
+      "best_adam_total": 9600,
+      "checkpoint": "runs/20261103-ppo-v8-256x512-run01/20261103-014655-best_model.zip",
+      "checkpoint_sha256": "cc9d0507a86cd9aa65c6c0da744f9d134c2a1bfefd78c6a8555f073ec9bb16b0",
+      "validation_placements": {
+        "0": 4.171875,
+        "25": 4.265625,
+        "50": 4.109375,
+        "75": 4.3125,
+        "100": 4.28125
+      },
+      "roster": "3 V5 + 4 V7",
+      "precision": "BF16",
+      "validation_games_per_mode": 64,
+      "validation_modes": [
+        "stochastic",
+        "greedy"
+      ],
+      "heldout_used_for_selection": false,
+      "metric_schema_version": 2,
+      "metric_schema_sha256": "bb680bc98b49c8b25413486676697c2fe27a1647ef988db64bf29fc4cc476645",
+      "results_sha256": "fe4cbecbe650acf8a066f42f28a793c7592c59adec3be802fbf09cf6693f36b8",
+      "heldout": {
+        "final": {
+          "mixed_sampled": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": false,
+            "mean_placement": 4.359375,
+            "first_rate": 0.078125,
+            "top4_rate": 0.5390625,
+            "placement_reward": 0.04017855506390333,
+            "action_reward": -0.23332421875000003,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -0.13796875000000003,
+            "total_reward": -0.1931456636860967,
+            "reversible_actions": 184.984375,
+            "cycle_returns": 13.796875,
+            "actions_per_game": 368.8828125,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.038193374443125636,
+            "max_consecutive_cycle_returns": 3.2109375,
+            "move_actions": 154.4375,
+            "move_penalty": -0.07721875000000004,
+            "move_action_fraction": 0.4010928940819115,
+            "early_actions": 58.2421875,
+            "early_chargeable_actions": 53.2421875,
+            "early_menu_actions": 7.5546875,
+            "early_action_penalty": -0.030011718750000024,
+            "early_turn1_actions": 5.9453125,
+            "early_turn2_actions": 8.6015625,
+            "early_turn3_actions": 10.96875,
+            "early_turn4_actions": 14.2421875,
+            "early_turn5_actions": 18.484375,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.00953125,
+            "first_turn_minion_bonus_count": 0.953125,
+            "second_turn_tier2_bonus": 7.8125e-05,
+            "second_turn_tier2_bonus_count": 0.015625,
+            "third_turn_dark_gift_bonus": 0.0022656250000000003,
+            "third_turn_dark_gift_bonus_count": 0.453125,
+            "opening_bonus": 0.011875000000000004,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.1069919415661845
+          },
+          "mixed_greedy": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": true,
+            "mean_placement": 3.6484375,
+            "first_rate": 0.1484375,
+            "top4_rate": 0.703125,
+            "placement_reward": 0.24330356111750007,
+            "action_reward": -1.9038632812499963,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -1.8477343749999953,
+            "total_reward": -1.660559720132496,
+            "reversible_actions": 187.1171875,
+            "cycle_returns": 184.7734375,
+            "actions_per_game": 444.3125,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.4047743898627831,
+            "max_consecutive_cycle_returns": 23.328125,
+            "move_actions": 40.7109375,
+            "move_penalty": -0.020355468750000015,
+            "move_action_fraction": 0.0822952974665704,
+            "early_actions": 98.7734375,
+            "early_chargeable_actions": 93.7734375,
+            "early_menu_actions": 11.6796875,
+            "early_action_penalty": -0.04792187500000003,
+            "early_turn1_actions": 14.7578125,
+            "early_turn2_actions": 17.0859375,
+            "early_turn3_actions": 19.2109375,
+            "early_turn4_actions": 22.0546875,
+            "early_turn5_actions": 25.6640625,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.00953125,
+            "first_turn_minion_bonus_count": 0.953125,
+            "second_turn_tier2_bonus": 0.0,
+            "second_turn_tier2_bonus_count": 0.0,
+            "third_turn_dark_gift_bonus": 0.0026171875,
+            "third_turn_dark_gift_bonus_count": 0.5234375,
+            "opening_bonus": 0.012148437500000003,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.12308454391084278
+          }
+        },
+        "initial": {
+          "mixed_sampled": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": false,
+            "mean_placement": 4.5703125,
+            "first_rate": 0.078125,
+            "top4_rate": 0.4765625,
+            "placement_reward": -0.02008930267766118,
+            "action_reward": -0.22788671875000005,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -0.131953125,
+            "total_reward": -0.2479760214276612,
+            "reversible_actions": 189.25,
+            "cycle_returns": 13.1953125,
+            "actions_per_game": 356.90625,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.037943773858745256,
+            "max_consecutive_cycle_returns": 3.0078125,
+            "move_actions": 157.9609375,
+            "move_penalty": -0.07898046875000005,
+            "move_action_fraction": 0.4196756661613444,
+            "early_actions": 55.6484375,
+            "early_chargeable_actions": 50.6484375,
+            "early_menu_actions": 7.3984375,
+            "early_action_penalty": -0.02839843750000002,
+            "early_turn1_actions": 6.03125,
+            "early_turn2_actions": 7.734375,
+            "early_turn3_actions": 10.1953125,
+            "early_turn4_actions": 13.421875,
+            "early_turn5_actions": 18.265625,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.008984375,
+            "first_turn_minion_bonus_count": 0.8984375,
+            "second_turn_tier2_bonus": 0.00015625,
+            "second_turn_tier2_bonus_count": 0.03125,
+            "third_turn_dark_gift_bonus": 0.0023046875,
+            "third_turn_dark_gift_bonus_count": 0.4609375,
+            "opening_bonus": 0.011445312500000002,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.1371291469706465
+          },
+          "mixed_greedy": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": true,
+            "mean_placement": 4.2421875,
+            "first_rate": 0.078125,
+            "top4_rate": 0.609375,
+            "placement_reward": 0.07366069918498397,
+            "action_reward": -2.527644531249995,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -2.4385937499999866,
+            "total_reward": -2.453983832065011,
+            "reversible_actions": 243.78125,
+            "cycle_returns": 243.859375,
+            "actions_per_game": 495.1796875,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.47283024244869265,
+            "max_consecutive_cycle_returns": 32.2421875,
+            "move_actions": 106.328125,
+            "move_penalty": -0.053164062500000026,
+            "move_action_fraction": 0.1886020615646246,
+            "early_actions": 97.3828125,
+            "early_chargeable_actions": 92.3828125,
+            "early_menu_actions": 11.2734375,
+            "early_action_penalty": -0.047917968750000026,
+            "early_turn1_actions": 14.0234375,
+            "early_turn2_actions": 17.625,
+            "early_turn3_actions": 19.71875,
+            "early_turn4_actions": 21.296875,
+            "early_turn5_actions": 24.71875,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.009375,
+            "first_turn_minion_bonus_count": 0.9375,
+            "second_turn_tier2_bonus": 0.0,
+            "second_turn_tier2_bonus_count": 0.0,
+            "third_turn_dark_gift_bonus": 0.0026562499999999998,
+            "third_turn_dark_gift_bonus_count": 0.53125,
+            "opening_bonus": 0.012031250000000004,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.2569238635944809
+          }
+        },
+        "best": {
+          "mixed_sampled": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": false,
+            "mean_placement": 4.3046875,
+            "first_rate": 0.1328125,
+            "top4_rate": 0.546875,
+            "placement_reward": 0.055803557857871056,
+            "action_reward": -0.23603125000000008,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -0.135390625,
+            "total_reward": -0.18022769214212903,
+            "reversible_actions": 194.6015625,
+            "cycle_returns": 13.5390625,
+            "actions_per_game": 382.6875,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.036420982324411266,
+            "max_consecutive_cycle_returns": 3.3359375,
+            "move_actions": 162.90625,
+            "move_penalty": -0.08145312500000004,
+            "move_action_fraction": 0.40502145229355807,
+            "early_actions": 59.25,
+            "early_chargeable_actions": 54.25,
+            "early_menu_actions": 7.9296875,
+            "early_action_penalty": -0.030164062500000022,
+            "early_turn1_actions": 6.2109375,
+            "early_turn2_actions": 8.6640625,
+            "early_turn3_actions": 10.421875,
+            "early_turn4_actions": 13.921875,
+            "early_turn5_actions": 20.03125,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.00890625,
+            "first_turn_minion_bonus_count": 0.890625,
+            "second_turn_tier2_bonus": 0.0001171875,
+            "second_turn_tier2_bonus_count": 0.0234375,
+            "third_turn_dark_gift_bonus": 0.001953125,
+            "third_turn_dark_gift_bonus_count": 0.390625,
+            "opening_bonus": 0.0109765625,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.12717783198578214
+          },
+          "mixed_greedy": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": true,
+            "mean_placement": 4.3046875,
+            "first_rate": 0.1328125,
+            "top4_rate": 0.5234375,
+            "placement_reward": 0.05580355366691947,
+            "action_reward": -2.325777343749995,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -2.2457812499999887,
+            "total_reward": -2.2699737900830756,
+            "reversible_actions": 220.3671875,
+            "cycle_returns": 224.578125,
+            "actions_per_game": 474.03125,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.45306521240452263,
+            "max_consecutive_cycle_returns": 29.9453125,
+            "move_actions": 87.484375,
+            "move_penalty": -0.04374218750000003,
+            "move_action_fraction": 0.16043763931222782,
+            "early_actions": 101.6875,
+            "early_chargeable_actions": 96.6875,
+            "early_menu_actions": 13.6953125,
+            "early_action_penalty": -0.047894531250000025,
+            "early_turn1_actions": 16.09375,
+            "early_turn2_actions": 18.265625,
+            "early_turn3_actions": 19.59375,
+            "early_turn4_actions": 21.4296875,
+            "early_turn5_actions": 26.3046875,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.008828125,
+            "first_turn_minion_bonus_count": 0.8828125,
+            "second_turn_tier2_bonus": 0.0,
+            "second_turn_tier2_bonus_count": 0.0,
+            "third_turn_dark_gift_bonus": 0.0028125,
+            "third_turn_dark_gift_bonus_count": 0.5625,
+            "opening_bonus": 0.011640625000000002,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.2327186920393311
+          }
+        }
+      },
+      "canonical_version": "v8",
+      "training_status": "completed",
+      "lifecycle_status": "active",
+      "completed_at": "2026-11-03T05:26:03.784291+08:00"
+    },
+    "v9": {
+      "experiment_dir": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01",
+      "status": "completed",
+      "instance_id": "20261103-v89-256x512-01",
+      "completed_ppo": 100,
+      "planned_ppo": 100,
+      "fresh_samples": 13107200,
+      "actual_new_adam_updates": 1600,
+      "source_version": "v8",
+      "source_checkpoint_sha256": "cc9d0507a86cd9aa65c6c0da744f9d134c2a1bfefd78c6a8555f073ec9bb16b0",
+      "best_ppo": 50,
+      "best_adam_total": 10400,
+      "checkpoint": "runs/20261103-ppo-v9-256x512-run01/20261103-052858-best_model.zip",
+      "checkpoint_sha256": "7684dfe512ad81ed120a2c3331bef8be4f3c7b54196e7db85a19a5411a769104",
+      "validation_placements": {
+        "0": 4.84375,
+        "25": 4.234375,
+        "50": 4.109375,
+        "75": 4.71875,
+        "100": 4.953125
+      },
+      "roster": "4 V8 + 3 V3",
+      "precision": "BF16",
+      "validation_games_per_mode": 64,
+      "validation_modes": [
+        "stochastic",
+        "greedy"
+      ],
+      "heldout_used_for_selection": false,
+      "metric_schema_version": 2,
+      "metric_schema_sha256": "bb680bc98b49c8b25413486676697c2fe27a1647ef988db64bf29fc4cc476645",
+      "results_sha256": "eb2ffe669b18e908aac6bb6e6c9109dfe844cd703f2c3a01c1a4ad71ce0a28b5",
+      "heldout": {
+        "final": {
+          "mixed_sampled": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": false,
+            "mean_placement": 4.4296875,
+            "first_rate": 0.0859375,
+            "top4_rate": 0.5625,
+            "placement_reward": 0.020089272409677505,
+            "action_reward": -0.21088671875000012,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -0.116171875,
+            "total_reward": -0.19079744634032259,
+            "reversible_actions": 183.4375,
+            "cycle_returns": 11.6171875,
+            "actions_per_game": 365.859375,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.03263076552534157,
+            "max_consecutive_cycle_returns": 2.7421875,
+            "move_actions": 154.8515625,
+            "move_penalty": -0.07742578125000005,
+            "move_action_fraction": 0.41158974546596905,
+            "early_actions": 56.015625,
+            "early_chargeable_actions": 51.015625,
+            "early_menu_actions": 7.6484375,
+            "early_action_penalty": -0.028968750000000022,
+            "early_turn1_actions": 5.453125,
+            "early_turn2_actions": 8.0546875,
+            "early_turn3_actions": 10.6015625,
+            "early_turn4_actions": 13.0703125,
+            "early_turn5_actions": 18.8359375,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.009296875,
+            "first_turn_minion_bonus_count": 0.9296875,
+            "second_turn_tier2_bonus": 3.90625e-05,
+            "second_turn_tier2_bonus_count": 0.0078125,
+            "third_turn_dark_gift_bonus": 0.00234375,
+            "third_turn_dark_gift_bonus_count": 0.46875,
+            "opening_bonus": 0.0116796875,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.11181057906138671
+          },
+          "mixed_greedy": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": true,
+            "mean_placement": 3.8671875,
+            "first_rate": 0.1328125,
+            "top4_rate": 0.640625,
+            "placement_reward": 0.18080355832353234,
+            "action_reward": -2.1009882812499936,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -2.0355468749999943,
+            "total_reward": -1.9201847229264613,
+            "reversible_actions": 204.1015625,
+            "cycle_returns": 203.5546875,
+            "actions_per_game": 465.1796875,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.43245069467689623,
+            "max_consecutive_cycle_returns": 28.1796875,
+            "move_actions": 59.171875,
+            "move_penalty": -0.02958593750000002,
+            "move_action_fraction": 0.12418595048473685,
+            "early_actions": 97.703125,
+            "early_chargeable_actions": 92.703125,
+            "early_menu_actions": 10.8203125,
+            "early_action_penalty": -0.04796484375000003,
+            "early_turn1_actions": 14.1015625,
+            "early_turn2_actions": 17.1953125,
+            "early_turn3_actions": 19.2890625,
+            "early_turn4_actions": 21.5390625,
+            "early_turn5_actions": 25.578125,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.009453125,
+            "first_turn_minion_bonus_count": 0.9453125,
+            "second_turn_tier2_bonus": 0.0,
+            "second_turn_tier2_bonus_count": 0.0,
+            "third_turn_dark_gift_bonus": 0.0026562499999999998,
+            "third_turn_dark_gift_bonus_count": 0.53125,
+            "opening_bonus": 0.012109375000000002,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.17912504152436187
+          }
+        },
+        "initial": {
+          "mixed_sampled": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": false,
+            "mean_placement": 4.7109375,
+            "first_rate": 0.109375,
+            "top4_rate": 0.453125,
+            "placement_reward": -0.06026787403970957,
+            "action_reward": -0.22995312500000004,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -0.13625,
+            "total_reward": -0.29022099903970966,
+            "reversible_actions": 179.484375,
+            "cycle_returns": 13.625,
+            "actions_per_game": 351.34375,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.04041960104903117,
+            "max_consecutive_cycle_returns": 3.328125,
+            "move_actions": 150.3046875,
+            "move_penalty": -0.07515234375000004,
+            "move_action_fraction": 0.4040598382926347,
+            "early_actions": 60.0234375,
+            "early_chargeable_actions": 55.0234375,
+            "early_menu_actions": 8.0703125,
+            "early_action_penalty": -0.030230468750000024,
+            "early_turn1_actions": 5.8984375,
+            "early_turn2_actions": 8.8359375,
+            "early_turn3_actions": 11.6171875,
+            "early_turn4_actions": 13.3125,
+            "early_turn5_actions": 20.359375,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.009140625,
+            "first_turn_minion_bonus_count": 0.9140625,
+            "second_turn_tier2_bonus": 3.90625e-05,
+            "second_turn_tier2_bonus_count": 0.0078125,
+            "third_turn_dark_gift_bonus": 0.0024999999999999996,
+            "third_turn_dark_gift_bonus_count": 0.5,
+            "opening_bonus": 0.011679687500000003,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.12465327409545435
+          },
+          "mixed_greedy": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": true,
+            "mean_placement": 4.3203125,
+            "first_rate": 0.1328125,
+            "top4_rate": 0.5390625,
+            "placement_reward": 0.051339272409677505,
+            "action_reward": -2.3857851562499954,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -2.3053124999999888,
+            "total_reward": -2.334445883840318,
+            "reversible_actions": 228.8203125,
+            "cycle_returns": 230.53125,
+            "actions_per_game": 490.3359375,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.4572395482883571,
+            "max_consecutive_cycle_returns": 32.0234375,
+            "move_actions": 88.4296875,
+            "move_penalty": -0.044214843750000024,
+            "move_action_fraction": 0.1592464813655346,
+            "early_actions": 101.7890625,
+            "early_chargeable_actions": 96.7890625,
+            "early_menu_actions": 13.3984375,
+            "early_action_penalty": -0.048015625000000034,
+            "early_turn1_actions": 15.3671875,
+            "early_turn2_actions": 18.7265625,
+            "early_turn3_actions": 19.59375,
+            "early_turn4_actions": 22.1640625,
+            "early_turn5_actions": 25.9375,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.00890625,
+            "first_turn_minion_bonus_count": 0.890625,
+            "second_turn_tier2_bonus": 0.0,
+            "second_turn_tier2_bonus_count": 0.0,
+            "third_turn_dark_gift_bonus": 0.0028515625,
+            "third_turn_dark_gift_bonus_count": 0.5703125,
+            "opening_bonus": 0.011757812500000003,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.2272776684002355
+          }
+        },
+        "best": {
+          "mixed_sampled": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": false,
+            "mean_placement": 4.59375,
+            "first_rate": 0.078125,
+            "top4_rate": 0.46875,
+            "placement_reward": -0.026785732712596655,
+            "action_reward": -0.22346875000000008,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -0.123671875,
+            "total_reward": -0.25025448271259676,
+            "reversible_actions": 193.265625,
+            "cycle_returns": 12.3671875,
+            "actions_per_game": 373.734375,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.033502253727671585,
+            "max_consecutive_cycle_returns": 2.8671875,
+            "move_actions": 162.8046875,
+            "move_penalty": -0.08140234375000005,
+            "move_action_fraction": 0.418496476812501,
+            "early_actions": 60.125,
+            "early_chargeable_actions": 55.125,
+            "early_menu_actions": 7.5859375,
+            "early_action_penalty": -0.030113281250000026,
+            "early_turn1_actions": 5.796875,
+            "early_turn2_actions": 8.578125,
+            "early_turn3_actions": 11.015625,
+            "early_turn4_actions": 14.171875,
+            "early_turn5_actions": 20.5625,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.00890625,
+            "first_turn_minion_bonus_count": 0.890625,
+            "second_turn_tier2_bonus": 0.00015625,
+            "second_turn_tier2_bonus_count": 0.03125,
+            "third_turn_dark_gift_bonus": 0.0026562499999999998,
+            "third_turn_dark_gift_bonus_count": 0.53125,
+            "opening_bonus": 0.011718750000000002,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.11780397246280261
+          },
+          "mixed_greedy": {
+            "games": 128,
+            "seed": 50000003,
+            "deterministic": true,
+            "mean_placement": 3.84375,
+            "first_rate": 0.15625,
+            "top4_rate": 0.6015625,
+            "placement_reward": 0.18749998277053237,
+            "action_reward": -2.0551562499999942,
+            "operation_penalty": 0.0,
+            "cycle_penalty": -1.9930468749999937,
+            "total_reward": -1.8676562672294619,
+            "reversible_actions": 198.1796875,
+            "cycle_returns": 199.3046875,
+            "actions_per_game": 459.78125,
+            "cycle_forfeit_rate": 0.0,
+            "cycle_forfeit_turn": 0.0,
+            "cycle_forfeit_placement": 0.0,
+            "max_consecutive_cycles": 0.0,
+            "action_limit_forfeit_rate": 0.0,
+            "action_limit_forfeit_turn": 0.0,
+            "action_limit_forfeit_placement": 0.0,
+            "opponent_cycle_forfeits": 0.0,
+            "opponent_action_limit_forfeits": 0.0,
+            "cycle_return_fraction": 0.42115303850821706,
+            "max_consecutive_cycle_returns": 25.703125,
+            "move_actions": 54.03125,
+            "move_penalty": -0.02701562500000002,
+            "move_action_fraction": 0.11090751144554853,
+            "early_actions": 98.984375,
+            "early_chargeable_actions": 93.984375,
+            "early_menu_actions": 12.109375,
+            "early_action_penalty": -0.04782812500000003,
+            "early_turn1_actions": 14.8515625,
+            "early_turn2_actions": 18.0703125,
+            "early_turn3_actions": 19.4375,
+            "early_turn4_actions": 21.59375,
+            "early_turn5_actions": 25.03125,
+            "early_turn1_observed": 1.0,
+            "early_turn2_observed": 1.0,
+            "early_turn3_observed": 1.0,
+            "early_turn4_observed": 1.0,
+            "early_turn5_observed": 1.0,
+            "first_turn_minion_bonus": 0.009453125,
+            "first_turn_minion_bonus_count": 0.9453125,
+            "second_turn_tier2_bonus": 0.0,
+            "second_turn_tier2_bonus_count": 0.0,
+            "third_turn_dark_gift_bonus": 0.0032812499999999994,
+            "third_turn_dark_gift_bonus_count": 0.65625,
+            "opening_bonus": 0.012734375000000003,
+            "hero_selection_bonus": 0.0,
+            "hero_selection_bonus_count": 0.0,
+            "hero_selection_count": 1.0,
+            "hero_selection_scorable": 0.0,
+            "hero_selection_unknown_offer": 1.0,
+            "hero_selection_known_fraction": 0.06640625,
+            "hero_selection_offered_heroes": 2.0,
+            "hero_selection_unknown_heroes": 1.8671875,
+            "cap_end_rate": 0.16299828169508276
+          }
+        }
+      },
+      "canonical_version": "v9",
+      "training_status": "completed",
+      "lifecycle_status": "active",
+      "completed_at": "2026-11-03T09:38:47.330623+08:00"
     }
   },
   "latest_match": {
-    "path": "experiments/20261031-exp05-v5-cycle-forfeit/20261101-match-v0-v1-v2-v3-v5-turn-diagnostics",
+    "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9",
     "result": {
+      "status": "completed",
+      "completed_at": "2026-11-03T23:12:29.472130+08:00",
+      "groups": {
+        "v0": {
+          "player_games": 320,
+          "first_rate": 0.00625,
+          "top4_rate": 0.025,
+          "mean_placement": 7.425,
+          "placement_counts": {
+            "1": 2,
+            "2": 1,
+            "3": 1,
+            "4": 4,
+            "5": 11,
+            "6": 28,
+            "7": 54,
+            "8": 219
+          }
+        },
+        "v1": {
+          "player_games": 320,
+          "first_rate": 0.046875,
+          "top4_rate": 0.3625,
+          "mean_placement": 5.115625,
+          "placement_counts": {
+            "1": 15,
+            "2": 17,
+            "3": 33,
+            "4": 51,
+            "5": 58,
+            "6": 57,
+            "7": 59,
+            "8": 30
+          }
+        },
+        "v2": {
+          "player_games": 320,
+          "first_rate": 0.096875,
+          "top4_rate": 0.509375,
+          "mean_placement": 4.465625,
+          "placement_counts": {
+            "1": 31,
+            "2": 37,
+            "3": 43,
+            "4": 52,
+            "5": 49,
+            "6": 40,
+            "7": 42,
+            "8": 26
+          }
+        },
+        "v3": {
+          "player_games": 320,
+          "first_rate": 0.134375,
+          "top4_rate": 0.6125,
+          "mean_placement": 3.915625,
+          "placement_counts": {
+            "1": 43,
+            "2": 52,
+            "3": 47,
+            "4": 54,
+            "5": 43,
+            "6": 40,
+            "7": 34,
+            "8": 7
+          }
+        },
+        "v5": {
+          "player_games": 320,
+          "first_rate": 0.15625,
+          "top4_rate": 0.55625,
+          "mean_placement": 4.096875,
+          "placement_counts": {
+            "1": 50,
+            "2": 48,
+            "3": 42,
+            "4": 38,
+            "5": 38,
+            "6": 46,
+            "7": 43,
+            "8": 15
+          }
+        },
+        "v7": {
+          "player_games": 320,
+          "first_rate": 0.165625,
+          "top4_rate": 0.58125,
+          "mean_placement": 3.825,
+          "placement_counts": {
+            "1": 53,
+            "2": 55,
+            "3": 43,
+            "4": 35,
+            "5": 54,
+            "6": 47,
+            "7": 24,
+            "8": 9
+          }
+        },
+        "v8": {
+          "player_games": 320,
+          "first_rate": 0.19375,
+          "top4_rate": 0.671875,
+          "mean_placement": 3.63125,
+          "placement_counts": {
+            "1": 62,
+            "2": 56,
+            "3": 56,
+            "4": 41,
+            "5": 28,
+            "6": 32,
+            "7": 36,
+            "8": 9
+          }
+        },
+        "v9": {
+          "player_games": 320,
+          "first_rate": 0.2,
+          "top4_rate": 0.68125,
+          "mean_placement": 3.525,
+          "placement_counts": {
+            "1": 64,
+            "2": 54,
+            "3": 55,
+            "4": 45,
+            "5": 39,
+            "6": 30,
+            "7": 28,
+            "8": 5
+          }
+        }
+      },
+      "behavior": {
+        "v1": {
+          "player_games": 320,
+          "player_turns": 4034,
+          "recruit_actions": 204882,
+          "pooled_actions_per_turn": 50.788795240456125,
+          "player_turn_action_distribution": {
+            "n": 4034,
+            "mean": 50.788795240456125,
+            "min": 1,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "player_mean_actions_per_turn_distribution": {
+            "n": 320,
+            "mean": 50.62215078819798,
+            "min": 31.444444444444443,
+            "max": 61.0,
+            "p50": 51.222527472527474,
+            "p90": 55.16971153846154,
+            "p95": 56.23357142857144,
+            "p99": 57.574461538461534
+          },
+          "recruit_turns_per_player_distribution": {
+            "n": 320,
+            "mean": 12.60625,
+            "min": 8,
+            "max": 21,
+            "p50": 13.0,
+            "p90": 16.0,
+            "p95": 17.0,
+            "p99": 19.0
+          },
+          "actions_per_player_game_distribution": {
+            "n": 320,
+            "mean": 641.25625,
+            "min": 284,
+            "max": 1124,
+            "p50": 633.5,
+            "p90": 833.3000000000001,
+            "p95": 889.05,
+            "p99": 1079.5500000000002
+          },
+          "cycle_returns": 35091,
+          "cycle_returns_per_player_distribution": {
+            "n": 320,
+            "mean": 109.659375,
+            "min": 43,
+            "max": 203,
+            "p50": 108.5,
+            "p90": 148.10000000000002,
+            "p95": 155.0,
+            "p99": 179.48000000000002
+          },
+          "pooled_cycle_return_fraction": 0.17127419685477493,
+          "player_cycle_return_fraction_distribution": {
+            "n": 320,
+            "mean": 0.1777759190165337,
+            "min": 0.05218317358892439,
+            "max": 0.382051282051282,
+            "p50": 0.1729764293431526,
+            "p90": 0.25460434563369666,
+            "p95": 0.27192003739196763,
+            "p99": 0.3148206823189727
+          },
+          "zero_cycle_player_games": 0,
+          "zero_cycle_player_game_fraction": 0.0,
+          "max_consecutive_cycle_returns": 56,
+          "forced_ends": 2899,
+          "forced_end_turn_fraction": 0.7186415468517601,
+          "observed_zero_action_turns": 0,
+          "same_action_id_repeats_within_turn": 96293,
+          "hero_actions": 320
+        },
+        "v2": {
+          "player_games": 320,
+          "player_turns": 4301,
+          "recruit_actions": 225139,
+          "pooled_actions_per_turn": 52.34573355033713,
+          "player_turn_action_distribution": {
+            "n": 4301,
+            "mean": 52.34573355033713,
+            "min": 1,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 62.0,
+            "p99": 62.0
+          },
+          "player_mean_actions_per_turn_distribution": {
+            "n": 320,
+            "mean": 52.238510577708645,
+            "min": 33.875,
+            "max": 61.5,
+            "p50": 52.34848484848485,
+            "p90": 58.23626373626374,
+            "p95": 60.143750000000004,
+            "p99": 61.327
+          },
+          "recruit_turns_per_player_distribution": {
+            "n": 320,
+            "mean": 13.440625,
+            "min": 7,
+            "max": 24,
+            "p50": 13.0,
+            "p90": 18.0,
+            "p95": 19.0,
+            "p99": 21.0
+          },
+          "actions_per_player_game_distribution": {
+            "n": 320,
+            "mean": 704.559375,
+            "min": 272,
+            "max": 1294,
+            "p50": 693.0,
+            "p90": 937.1,
+            "p95": 1024.7500000000002,
+            "p99": 1125.39
+          },
+          "cycle_returns": 48633,
+          "cycle_returns_per_player_distribution": {
+            "n": 320,
+            "mean": 151.978125,
+            "min": 37,
+            "max": 354,
+            "p50": 142.0,
+            "p90": 237.0,
+            "p95": 259.0,
+            "p99": 284.43
+          },
+          "pooled_cycle_return_fraction": 0.21601321850057076,
+          "player_cycle_return_fraction_distribution": {
+            "n": 320,
+            "mean": 0.22865456003249213,
+            "min": 0.04322429906542056,
+            "max": 0.6541353383458647,
+            "p50": 0.20399227640318576,
+            "p90": 0.36304202327468654,
+            "p95": 0.45058394160583953,
+            "p99": 0.5453223502839871
+          },
+          "zero_cycle_player_games": 0,
+          "zero_cycle_player_game_fraction": 0.0,
+          "max_consecutive_cycle_returns": 59,
+          "forced_ends": 3230,
+          "forced_end_turn_fraction": 0.7509881422924901,
+          "observed_zero_action_turns": 0,
+          "same_action_id_repeats_within_turn": 115257,
+          "hero_actions": 320
+        },
+        "v3": {
+          "player_games": 320,
+          "player_turns": 4588,
+          "recruit_actions": 243663,
+          "pooled_actions_per_turn": 53.108761987794246,
+          "player_turn_action_distribution": {
+            "n": 4588,
+            "mean": 53.108761987794246,
+            "min": 1,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "player_mean_actions_per_turn_distribution": {
+            "n": 320,
+            "mean": 52.78854440478388,
+            "min": 37.22222222222222,
+            "max": 61.45454545454545,
+            "p50": 53.24264705882353,
+            "p90": 57.57053571428572,
+            "p95": 58.74666666666667,
+            "p99": 61.2028021978022
+          },
+          "recruit_turns_per_player_distribution": {
+            "n": 320,
+            "mean": 14.3375,
+            "min": 8,
+            "max": 26,
+            "p50": 14.0,
+            "p90": 18.0,
+            "p95": 20.0,
+            "p99": 22.0
+          },
+          "actions_per_player_game_distribution": {
+            "n": 320,
+            "mean": 762.446875,
+            "min": 336,
+            "max": 1494,
+            "p50": 749.0,
+            "p90": 1003.7000000000002,
+            "p95": 1074.3500000000004,
+            "p99": 1231.53
+          },
+          "cycle_returns": 43751,
+          "cycle_returns_per_player_distribution": {
+            "n": 320,
+            "mean": 136.721875,
+            "min": 33,
+            "max": 322,
+            "p50": 129.5,
+            "p90": 203.20000000000005,
+            "p95": 225.0,
+            "p99": 270.44000000000005
+          },
+          "pooled_cycle_return_fraction": 0.1795553695062443,
+          "player_cycle_return_fraction_distribution": {
+            "n": 320,
+            "mean": 0.18656113728826057,
+            "min": 0.04836065573770492,
+            "max": 0.4264705882352941,
+            "p50": 0.17328648827690635,
+            "p90": 0.2966954204450732,
+            "p95": 0.3289195034998479,
+            "p99": 0.3673289840572589
+          },
+          "zero_cycle_player_games": 0,
+          "zero_cycle_player_game_fraction": 0.0,
+          "max_consecutive_cycle_returns": 59,
+          "forced_ends": 3544,
+          "forced_end_turn_fraction": 0.7724498692240628,
+          "observed_zero_action_turns": 0,
+          "same_action_id_repeats_within_turn": 117411,
+          "hero_actions": 320
+        },
+        "v5": {
+          "player_games": 320,
+          "player_turns": 4471,
+          "recruit_actions": 160608,
+          "pooled_actions_per_turn": 35.92216506374413,
+          "player_turn_action_distribution": {
+            "n": 4471,
+            "mean": 35.92216506374413,
+            "min": 1,
+            "max": 63,
+            "p50": 35.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "player_mean_actions_per_turn_distribution": {
+            "n": 320,
+            "mean": 34.83434834087864,
+            "min": 13.875,
+            "max": 49.888888888888886,
+            "p50": 35.42261904761905,
+            "p90": 43.190178571428575,
+            "p95": 44.70029411764706,
+            "p99": 47.83541666666667
+          },
+          "recruit_turns_per_player_distribution": {
+            "n": 320,
+            "mean": 13.971875,
+            "min": 8,
+            "max": 26,
+            "p50": 14.0,
+            "p90": 18.0,
+            "p95": 19.05000000000001,
+            "p99": 22.810000000000002
+          },
+          "actions_per_player_game_distribution": {
+            "n": 320,
+            "mean": 502.9,
+            "min": 112,
+            "max": 1107,
+            "p50": 480.5,
+            "p90": 743.4000000000003,
+            "p95": 849.1,
+            "p99": 916.6700000000001
+          },
+          "cycle_returns": 7216,
+          "cycle_returns_per_player_distribution": {
+            "n": 320,
+            "mean": 22.55,
+            "min": 3,
+            "max": 69,
+            "p50": 21.0,
+            "p90": 38.0,
+            "p95": 42.0,
+            "p99": 54.81
+          },
+          "pooled_cycle_return_fraction": 0.04492926877864117,
+          "player_cycle_return_fraction_distribution": {
+            "n": 320,
+            "mean": 0.0471329010986458,
+            "min": 0.011450381679389313,
+            "max": 0.1728395061728395,
+            "p50": 0.042179392142327646,
+            "p90": 0.07383579452648423,
+            "p95": 0.08495256578863368,
+            "p99": 0.11207896466017199
+          },
+          "zero_cycle_player_games": 0,
+          "zero_cycle_player_game_fraction": 0.0,
+          "max_consecutive_cycle_returns": 18,
+          "forced_ends": 1634,
+          "forced_end_turn_fraction": 0.3654663386267054,
+          "observed_zero_action_turns": 0,
+          "same_action_id_repeats_within_turn": 55799,
+          "hero_actions": 320
+        },
+        "v7": {
+          "player_games": 320,
+          "player_turns": 4583,
+          "recruit_actions": 125556,
+          "pooled_actions_per_turn": 27.396028802094698,
+          "player_turn_action_distribution": {
+            "n": 4583,
+            "mean": 27.396028802094698,
+            "min": 1,
+            "max": 62,
+            "p50": 22.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "player_mean_actions_per_turn_distribution": {
+            "n": 320,
+            "mean": 26.68655895662269,
+            "min": 12.8,
+            "max": 39.94444444444444,
+            "p50": 26.615384615384617,
+            "p90": 33.81458333333333,
+            "p95": 36.230614973262036,
+            "p99": 38.58282894736842
+          },
+          "recruit_turns_per_player_distribution": {
+            "n": 320,
+            "mean": 14.321875,
+            "min": 8,
+            "max": 26,
+            "p50": 14.0,
+            "p90": 18.0,
+            "p95": 19.0,
+            "p99": 21.0
+          },
+          "actions_per_player_game_distribution": {
+            "n": 320,
+            "mean": 393.3625,
+            "min": 124,
+            "max": 963,
+            "p50": 377.5,
+            "p90": 573.3000000000001,
+            "p95": 658.0,
+            "p99": 774.21
+          },
+          "cycle_returns": 4461,
+          "cycle_returns_per_player_distribution": {
+            "n": 320,
+            "mean": 13.940625,
+            "min": 1,
+            "max": 45,
+            "p50": 13.0,
+            "p90": 23.100000000000023,
+            "p95": 28.0,
+            "p99": 36.81
+          },
+          "pooled_cycle_return_fraction": 0.03552996272579566,
+          "player_cycle_return_fraction_distribution": {
+            "n": 320,
+            "mean": 0.03617046759791889,
+            "min": 0.0029411764705882353,
+            "max": 0.11923076923076924,
+            "p50": 0.033894697634820545,
+            "p90": 0.05703786031837086,
+            "p95": 0.06465732211793615,
+            "p99": 0.083151404338803
+          },
+          "zero_cycle_player_games": 0,
+          "zero_cycle_player_game_fraction": 0.0,
+          "max_consecutive_cycle_returns": 16,
+          "forced_ends": 677,
+          "forced_end_turn_fraction": 0.1477198341697578,
+          "observed_zero_action_turns": 0,
+          "same_action_id_repeats_within_turn": 39301,
+          "hero_actions": 320
+        },
+        "v8": {
+          "player_games": 320,
+          "player_turns": 4676,
+          "recruit_actions": 129611,
+          "pooled_actions_per_turn": 27.718349016253207,
+          "player_turn_action_distribution": {
+            "n": 4676,
+            "mean": 27.718349016253207,
+            "min": 1,
+            "max": 62,
+            "p50": 22.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "player_mean_actions_per_turn_distribution": {
+            "n": 320,
+            "mean": 27.17793518850398,
+            "min": 12.142857142857142,
+            "max": 41.6,
+            "p50": 27.52777777777778,
+            "p90": 33.93786764705882,
+            "p95": 35.60666666666667,
+            "p99": 39.15511029411765
+          },
+          "recruit_turns_per_player_distribution": {
+            "n": 320,
+            "mean": 14.6125,
+            "min": 7,
+            "max": 23,
+            "p50": 15.0,
+            "p90": 19.0,
+            "p95": 20.0,
+            "p99": 21.0
+          },
+          "actions_per_player_game_distribution": {
+            "n": 320,
+            "mean": 406.034375,
+            "min": 86,
+            "max": 833,
+            "p50": 412.0,
+            "p90": 577.0,
+            "p95": 638.3500000000001,
+            "p99": 722.1
+          },
+          "cycle_returns": 4695,
+          "cycle_returns_per_player_distribution": {
+            "n": 320,
+            "mean": 14.671875,
+            "min": 0,
+            "max": 70,
+            "p50": 14.0,
+            "p90": 23.0,
+            "p95": 28.05000000000001,
+            "p99": 39.0
+          },
+          "pooled_cycle_return_fraction": 0.03622377730285238,
+          "player_cycle_return_fraction_distribution": {
+            "n": 320,
+            "mean": 0.03731538896367942,
+            "min": 0.0,
+            "max": 0.14675052410901468,
+            "p50": 0.03307888040712468,
+            "p90": 0.0625,
+            "p95": 0.07304001279556423,
+            "p99": 0.09691266804042785
+          },
+          "zero_cycle_player_games": 2,
+          "zero_cycle_player_game_fraction": 0.00625,
+          "max_consecutive_cycle_returns": 35,
+          "forced_ends": 669,
+          "forced_end_turn_fraction": 0.143071000855432,
+          "observed_zero_action_turns": 0,
+          "same_action_id_repeats_within_turn": 41042,
+          "hero_actions": 320
+        },
+        "v9": {
+          "player_games": 320,
+          "player_turns": 4730,
+          "recruit_actions": 124639,
+          "pooled_actions_per_turn": 26.3507399577167,
+          "player_turn_action_distribution": {
+            "n": 4730,
+            "mean": 26.3507399577167,
+            "min": 1,
+            "max": 63,
+            "p50": 21.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "player_mean_actions_per_turn_distribution": {
+            "n": 320,
+            "mean": 25.993347065071674,
+            "min": 9.25,
+            "max": 40.78947368421053,
+            "p50": 25.81390977443609,
+            "p90": 32.205000000000005,
+            "p95": 33.5025,
+            "p99": 38.485
+          },
+          "recruit_turns_per_player_distribution": {
+            "n": 320,
+            "mean": 14.78125,
+            "min": 8,
+            "max": 26,
+            "p50": 15.0,
+            "p90": 19.0,
+            "p95": 20.0,
+            "p99": 23.810000000000002
+          },
+          "actions_per_player_game_distribution": {
+            "n": 320,
+            "mean": 390.496875,
+            "min": 75,
+            "max": 1002,
+            "p50": 374.0,
+            "p90": 567.0,
+            "p95": 627.0,
+            "p99": 723.6700000000001
+          },
+          "cycle_returns": 4170,
+          "cycle_returns_per_player_distribution": {
+            "n": 320,
+            "mean": 13.03125,
+            "min": 1,
+            "max": 42,
+            "p50": 12.0,
+            "p90": 22.0,
+            "p95": 24.0,
+            "p99": 32.81
+          },
+          "pooled_cycle_return_fraction": 0.03345662272643394,
+          "player_cycle_return_fraction_distribution": {
+            "n": 320,
+            "mean": 0.03461212612405063,
+            "min": 0.004524886877828055,
+            "max": 0.13425925925925927,
+            "p50": 0.03117523923444976,
+            "p90": 0.0541325196163906,
+            "p95": 0.06544628281205463,
+            "p99": 0.09343931722841024
+          },
+          "zero_cycle_player_games": 0,
+          "zero_cycle_player_game_fraction": 0.0,
+          "max_consecutive_cycle_returns": 12,
+          "forced_ends": 575,
+          "forced_end_turn_fraction": 0.12156448202959831,
+          "observed_zero_action_turns": 0,
+          "same_action_id_repeats_within_turn": 38429,
+          "hero_actions": 320
+        },
+        "v0": {
+          "status": "unknown; native script actions are not exposed to Python"
+        }
+      },
+      "by_turn": {
+        "v1": {
+          "1": {
+            "n": 320,
+            "mean": 12.6625,
+            "min": 3,
+            "max": 61,
+            "p50": 13.0,
+            "p90": 17.0,
+            "p95": 19.0,
+            "p99": 47.81
+          },
+          "2": {
+            "n": 320,
+            "mean": 30.9,
+            "min": 1,
+            "max": 61,
+            "p50": 21.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "3": {
+            "n": 320,
+            "mean": 48.028125,
+            "min": 3,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "4": {
+            "n": 320,
+            "mean": 53.359375,
+            "min": 3,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "5": {
+            "n": 320,
+            "mean": 58.303125,
+            "min": 3,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "6": {
+            "n": 320,
+            "mean": 56.546875,
+            "min": 3,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "7": {
+            "n": 320,
+            "mean": 57.446875,
+            "min": 3,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.81
+          },
+          "8": {
+            "n": 320,
+            "mean": 57.803125,
+            "min": 8,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.81
+          },
+          "9": {
+            "n": 317,
+            "mean": 58.034700315457414,
+            "min": 4,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "10": {
+            "n": 289,
+            "mean": 57.57439446366782,
+            "min": 7,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.120000000000005
+          },
+          "11": {
+            "n": 254,
+            "mean": 58.08661417322835,
+            "min": 1,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "12": {
+            "n": 203,
+            "mean": 57.86699507389162,
+            "min": 1,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "13": {
+            "n": 161,
+            "mean": 56.47826086956522,
+            "min": 2,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.400000000000006
+          },
+          "14": {
+            "n": 102,
+            "mean": 58.35294117647059,
+            "min": 14,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "15": {
+            "n": 60,
+            "mean": 57.4,
+            "min": 4,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "16": {
+            "n": 43,
+            "mean": 55.372093023255815,
+            "min": 4,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "17": {
+            "n": 22,
+            "mean": 55.09090909090909,
+            "min": 9,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.79
+          },
+          "18": {
+            "n": 13,
+            "mean": 54.46153846153846,
+            "min": 3,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "19": {
+            "n": 6,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "20": {
+            "n": 3,
+            "mean": 37.333333333333336,
+            "min": 23,
+            "max": 61,
+            "p50": 28.0,
+            "p90": 54.400000000000006,
+            "p95": 57.699999999999996,
+            "p99": 60.339999999999996
+          },
+          "21": {
+            "n": 1,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          }
+        },
+        "v2": {
+          "1": {
+            "n": 320,
+            "mean": 30.7,
+            "min": 2,
+            "max": 63,
+            "p50": 15.0,
+            "p90": 62.0,
+            "p95": 62.0,
+            "p99": 63.0
+          },
+          "2": {
+            "n": 320,
+            "mean": 36.55625,
+            "min": 2,
+            "max": 63,
+            "p50": 30.5,
+            "p90": 62.0,
+            "p95": 62.0,
+            "p99": 63.0
+          },
+          "3": {
+            "n": 320,
+            "mean": 41.6375,
+            "min": 4,
+            "max": 63,
+            "p50": 43.5,
+            "p90": 61.10000000000002,
+            "p95": 62.0,
+            "p99": 63.0
+          },
+          "4": {
+            "n": 320,
+            "mean": 49.340625,
+            "min": 5,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.05000000000001,
+            "p99": 62.0
+          },
+          "5": {
+            "n": 320,
+            "mean": 54.88125,
+            "min": 3,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "6": {
+            "n": 320,
+            "mean": 57.578125,
+            "min": 2,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "7": {
+            "n": 320,
+            "mean": 57.7875,
+            "min": 1,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "8": {
+            "n": 317,
+            "mean": 58.22712933753943,
+            "min": 4,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "9": {
+            "n": 310,
+            "mean": 58.325806451612905,
+            "min": 3,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "10": {
+            "n": 290,
+            "mean": 58.84827586206897,
+            "min": 3,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "11": {
+            "n": 262,
+            "mean": 58.52671755725191,
+            "min": 2,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "12": {
+            "n": 229,
+            "mean": 58.10480349344978,
+            "min": 6,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "13": {
+            "n": 194,
+            "mean": 58.29381443298969,
+            "min": 3,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "14": {
+            "n": 149,
+            "mean": 57.691275167785236,
+            "min": 8,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "15": {
+            "n": 106,
+            "mean": 57.4622641509434,
+            "min": 6,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "16": {
+            "n": 78,
+            "mean": 57.8974358974359,
+            "min": 4,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "17": {
+            "n": 57,
+            "mean": 57.29824561403509,
+            "min": 2,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "18": {
+            "n": 33,
+            "mean": 59.878787878787875,
+            "min": 33,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "19": {
+            "n": 19,
+            "mean": 58.21052631578947,
+            "min": 8,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "20": {
+            "n": 7,
+            "mean": 46,
+            "min": 6,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "21": {
+            "n": 6,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "22": {
+            "n": 2,
+            "mean": 61.5,
+            "min": 61,
+            "max": 62,
+            "p50": 61.5,
+            "p90": 61.9,
+            "p95": 61.95,
+            "p99": 61.99
+          },
+          "23": {
+            "n": 1,
+            "mean": 48,
+            "min": 48,
+            "max": 48,
+            "p50": 48.0,
+            "p90": 48.0,
+            "p95": 48.0,
+            "p99": 48.0
+          },
+          "24": {
+            "n": 1,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          }
+        },
+        "v3": {
+          "1": {
+            "n": 320,
+            "mean": 31.121875,
+            "min": 3,
+            "max": 63,
+            "p50": 15.0,
+            "p90": 62.0,
+            "p95": 62.0,
+            "p99": 63.0
+          },
+          "2": {
+            "n": 320,
+            "mean": 35.021875,
+            "min": 2,
+            "max": 63,
+            "p50": 24.0,
+            "p90": 62.0,
+            "p95": 62.0,
+            "p99": 63.0
+          },
+          "3": {
+            "n": 320,
+            "mean": 39.803125,
+            "min": 3,
+            "max": 63,
+            "p50": 36.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 63.0
+          },
+          "4": {
+            "n": 320,
+            "mean": 50.515625,
+            "min": 7,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "5": {
+            "n": 320,
+            "mean": 56.365625,
+            "min": 7,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "6": {
+            "n": 320,
+            "mean": 57.78125,
+            "min": 8,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "7": {
+            "n": 320,
+            "mean": 58.903125,
+            "min": 14,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "8": {
+            "n": 320,
+            "mean": 58.953125,
+            "min": 3,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "9": {
+            "n": 318,
+            "mean": 58.81761006289308,
+            "min": 4,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "10": {
+            "n": 310,
+            "mean": 59.18709677419355,
+            "min": 2,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "11": {
+            "n": 290,
+            "mean": 58.717241379310344,
+            "min": 2,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 62.0
+          },
+          "12": {
+            "n": 259,
+            "mean": 59.06949806949807,
+            "min": 12,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "13": {
+            "n": 221,
+            "mean": 58.52036199095023,
+            "min": 7,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "14": {
+            "n": 176,
+            "mean": 56.89772727272727,
+            "min": 1,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "15": {
+            "n": 142,
+            "mean": 58.852112676056336,
+            "min": 6,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.59
+          },
+          "16": {
+            "n": 109,
+            "mean": 60.174311926605505,
+            "min": 8,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "17": {
+            "n": 79,
+            "mean": 59.78481012658228,
+            "min": 21,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.22
+          },
+          "18": {
+            "n": 50,
+            "mean": 58.2,
+            "min": 4,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.51
+          },
+          "19": {
+            "n": 31,
+            "mean": 60.806451612903224,
+            "min": 55,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "20": {
+            "n": 17,
+            "mean": 59.294117647058826,
+            "min": 38,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "21": {
+            "n": 11,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "22": {
+            "n": 6,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "23": {
+            "n": 3,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "24": {
+            "n": 2,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "25": {
+            "n": 2,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "26": {
+            "n": 2,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          }
+        },
+        "v5": {
+          "1": {
+            "n": 320,
+            "mean": 7.640625,
+            "min": 1,
+            "max": 33,
+            "p50": 7.0,
+            "p90": 14.0,
+            "p95": 16.0,
+            "p99": 19.810000000000002
+          },
+          "2": {
+            "n": 320,
+            "mean": 9.671875,
+            "min": 1,
+            "max": 27,
+            "p50": 9.0,
+            "p90": 17.0,
+            "p95": 20.0,
+            "p99": 22.0
+          },
+          "3": {
+            "n": 320,
+            "mean": 12.4,
+            "min": 2,
+            "max": 50,
+            "p50": 11.0,
+            "p90": 21.100000000000023,
+            "p95": 25.0,
+            "p99": 34.81
+          },
+          "4": {
+            "n": 320,
+            "mean": 18.296875,
+            "min": 1,
+            "max": 61,
+            "p50": 16.0,
+            "p90": 32.0,
+            "p95": 39.0,
+            "p99": 61.0
+          },
+          "5": {
+            "n": 320,
+            "mean": 26.471875,
+            "min": 1,
+            "max": 61,
+            "p50": 21.0,
+            "p90": 57.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "6": {
+            "n": 320,
+            "mean": 35.2,
+            "min": 2,
+            "max": 62,
+            "p50": 31.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "7": {
+            "n": 320,
+            "mean": 38.25,
+            "min": 1,
+            "max": 63,
+            "p50": 38.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "8": {
+            "n": 320,
+            "mean": 44.75625,
+            "min": 1,
+            "max": 62,
+            "p50": 56.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "9": {
+            "n": 316,
+            "mean": 48.449367088607595,
+            "min": 3,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "10": {
+            "n": 300,
+            "mean": 49.69,
+            "min": 1,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.00999999999999
+          },
+          "11": {
+            "n": 277,
+            "mean": 50.888086642599276,
+            "min": 1,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "12": {
+            "n": 246,
+            "mean": 50.84146341463415,
+            "min": 4,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.55000000000001
+          },
+          "13": {
+            "n": 203,
+            "mean": 54.30541871921182,
+            "min": 5,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "14": {
+            "n": 173,
+            "mean": 53.283236994219656,
+            "min": 5,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "15": {
+            "n": 128,
+            "mean": 56.4140625,
+            "min": 14,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "16": {
+            "n": 100,
+            "mean": 54.43,
+            "min": 2,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "17": {
+            "n": 68,
+            "mean": 52.661764705882355,
+            "min": 8,
+            "max": 62,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.33
+          },
+          "18": {
+            "n": 41,
+            "mean": 57.36585365853659,
+            "min": 22,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "19": {
+            "n": 21,
+            "mean": 51.095238095238095,
+            "min": 9,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "20": {
+            "n": 16,
+            "mean": 59.625,
+            "min": 39,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "21": {
+            "n": 9,
+            "mean": 61.22222222222222,
+            "min": 61,
+            "max": 63,
+            "p50": 61.0,
+            "p90": 61.4,
+            "p95": 62.2,
+            "p99": 62.84
+          },
+          "22": {
+            "n": 6,
+            "mean": 51.666666666666664,
+            "min": 5,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "23": {
+            "n": 4,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "24": {
+            "n": 1,
+            "mean": 35,
+            "min": 35,
+            "max": 35,
+            "p50": 35.0,
+            "p90": 35.0,
+            "p95": 35.0,
+            "p99": 35.0
+          },
+          "25": {
+            "n": 1,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "26": {
+            "n": 1,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          }
+        },
+        "v7": {
+          "1": {
+            "n": 320,
+            "mean": 5.95625,
+            "min": 1,
+            "max": 17,
+            "p50": 5.0,
+            "p90": 11.0,
+            "p95": 13.0,
+            "p99": 16.0
+          },
+          "2": {
+            "n": 320,
+            "mean": 8.253125,
+            "min": 1,
+            "max": 23,
+            "p50": 7.0,
+            "p90": 14.100000000000023,
+            "p95": 17.0,
+            "p99": 20.0
+          },
+          "3": {
+            "n": 320,
+            "mean": 10.2125,
+            "min": 1,
+            "max": 39,
+            "p50": 10.0,
+            "p90": 16.100000000000023,
+            "p95": 20.0,
+            "p99": 24.0
+          },
+          "4": {
+            "n": 320,
+            "mean": 13.221875,
+            "min": 1,
+            "max": 50,
+            "p50": 12.0,
+            "p90": 22.100000000000023,
+            "p95": 27.0,
+            "p99": 34.620000000000005
+          },
+          "5": {
+            "n": 320,
+            "mean": 18.03125,
+            "min": 1,
+            "max": 61,
+            "p50": 16.0,
+            "p90": 32.10000000000002,
+            "p95": 39.0,
+            "p99": 54.05000000000001
+          },
+          "6": {
+            "n": 320,
+            "mean": 25.528125,
+            "min": 2,
+            "max": 62,
+            "p50": 23.5,
+            "p90": 48.10000000000002,
+            "p95": 57.05000000000001,
+            "p99": 61.0
+          },
+          "7": {
+            "n": 320,
+            "mean": 28.034375,
+            "min": 1,
+            "max": 61,
+            "p50": 24.0,
+            "p90": 54.10000000000002,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "8": {
+            "n": 320,
+            "mean": 32.34375,
+            "min": 1,
+            "max": 61,
+            "p50": 31.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "9": {
+            "n": 318,
+            "mean": 37.5062893081761,
+            "min": 4,
+            "max": 61,
+            "p50": 36.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "10": {
+            "n": 311,
+            "mean": 36.556270096463024,
+            "min": 2,
+            "max": 62,
+            "p50": 36.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "11": {
+            "n": 295,
+            "mean": 38.5864406779661,
+            "min": 1,
+            "max": 61,
+            "p50": 39.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "12": {
+            "n": 259,
+            "mean": 38.75675675675676,
+            "min": 2,
+            "max": 62,
+            "p50": 39.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "13": {
+            "n": 218,
+            "mean": 39.903669724770644,
+            "min": 4,
+            "max": 61,
+            "p50": 40.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "14": {
+            "n": 183,
+            "mean": 40.21857923497268,
+            "min": 2,
+            "max": 61,
+            "p50": 41.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "15": {
+            "n": 146,
+            "mean": 45.65068493150685,
+            "min": 4,
+            "max": 62,
+            "p50": 58.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "16": {
+            "n": 109,
+            "mean": 43.99082568807339,
+            "min": 5,
+            "max": 62,
+            "p50": 50.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "17": {
+            "n": 75,
+            "mean": 44.22666666666667,
+            "min": 2,
+            "max": 61,
+            "p50": 52.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "18": {
+            "n": 50,
+            "mean": 39.68,
+            "min": 2,
+            "max": 61,
+            "p50": 43.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "19": {
+            "n": 30,
+            "mean": 41.3,
+            "min": 1,
+            "max": 61,
+            "p50": 51.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "20": {
+            "n": 15,
+            "mean": 50.46666666666667,
+            "min": 9,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "21": {
+            "n": 8,
+            "mean": 56.25,
+            "min": 23,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "22": {
+            "n": 2,
+            "mean": 38,
+            "min": 15,
+            "max": 61,
+            "p50": 38.0,
+            "p90": 56.4,
+            "p95": 58.699999999999996,
+            "p99": 60.54
+          },
+          "23": {
+            "n": 1,
+            "mean": 42,
+            "min": 42,
+            "max": 42,
+            "p50": 42.0,
+            "p90": 42.0,
+            "p95": 42.0,
+            "p99": 42.0
+          },
+          "24": {
+            "n": 1,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "25": {
+            "n": 1,
+            "mean": 61,
+            "min": 61,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "26": {
+            "n": 1,
+            "mean": 27,
+            "min": 27,
+            "max": 27,
+            "p50": 27.0,
+            "p90": 27.0,
+            "p95": 27.0,
+            "p99": 27.0
+          }
+        },
+        "v8": {
+          "1": {
+            "n": 320,
+            "mean": 6.378125,
+            "min": 1,
+            "max": 61,
+            "p50": 5.0,
+            "p90": 11.0,
+            "p95": 13.0,
+            "p99": 18.0
+          },
+          "2": {
+            "n": 320,
+            "mean": 8.5,
+            "min": 1,
+            "max": 61,
+            "p50": 8.0,
+            "p90": 13.0,
+            "p95": 15.0,
+            "p99": 20.0
+          },
+          "3": {
+            "n": 320,
+            "mean": 10.94375,
+            "min": 2,
+            "max": 29,
+            "p50": 10.5,
+            "p90": 17.0,
+            "p95": 18.0,
+            "p99": 23.0
+          },
+          "4": {
+            "n": 320,
+            "mean": 14.315625,
+            "min": 1,
+            "max": 46,
+            "p50": 12.0,
+            "p90": 23.0,
+            "p95": 31.0,
+            "p99": 39.81
+          },
+          "5": {
+            "n": 320,
+            "mean": 19.125,
+            "min": 1,
+            "max": 61,
+            "p50": 17.0,
+            "p90": 32.10000000000002,
+            "p95": 39.0,
+            "p99": 54.81
+          },
+          "6": {
+            "n": 320,
+            "mean": 26.559375,
+            "min": 2,
+            "max": 61,
+            "p50": 24.0,
+            "p90": 51.10000000000002,
+            "p95": 59.05000000000001,
+            "p99": 61.0
+          },
+          "7": {
+            "n": 320,
+            "mean": 30.98125,
+            "min": 1,
+            "max": 61,
+            "p50": 30.0,
+            "p90": 54.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "8": {
+            "n": 319,
+            "mean": 34.11912225705329,
+            "min": 2,
+            "max": 61,
+            "p50": 30.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "9": {
+            "n": 315,
+            "mean": 37.56825396825397,
+            "min": 4,
+            "max": 62,
+            "p50": 36.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "10": {
+            "n": 305,
+            "mean": 37.37377049180328,
+            "min": 2,
+            "max": 61,
+            "p50": 38.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "11": {
+            "n": 285,
+            "mean": 38.12982456140351,
+            "min": 1,
+            "max": 62,
+            "p50": 38.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "12": {
+            "n": 256,
+            "mean": 38.421875,
+            "min": 2,
+            "max": 62,
+            "p50": 39.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "13": {
+            "n": 225,
+            "mean": 36.44,
+            "min": 1,
+            "max": 61,
+            "p50": 35.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "14": {
+            "n": 206,
+            "mean": 38.92718446601942,
+            "min": 1,
+            "max": 61,
+            "p50": 41.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "15": {
+            "n": 177,
+            "mean": 40.48022598870057,
+            "min": 1,
+            "max": 62,
+            "p50": 43.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "16": {
+            "n": 131,
+            "mean": 38.282442748091604,
+            "min": 1,
+            "max": 61,
+            "p50": 37.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "17": {
+            "n": 90,
+            "mean": 40.72222222222222,
+            "min": 1,
+            "max": 61,
+            "p50": 46.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "18": {
+            "n": 59,
+            "mean": 40.49152542372882,
+            "min": 2,
+            "max": 61,
+            "p50": 49.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "19": {
+            "n": 36,
+            "mean": 45.388888888888886,
+            "min": 5,
+            "max": 61,
+            "p50": 52.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "20": {
+            "n": 19,
+            "mean": 44.31578947368421,
+            "min": 7,
+            "max": 61,
+            "p50": 45.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "21": {
+            "n": 9,
+            "mean": 35.55555555555556,
+            "min": 13,
+            "max": 61,
+            "p50": 25.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "22": {
+            "n": 3,
+            "mean": 45.333333333333336,
+            "min": 32,
+            "max": 61,
+            "p50": 43.0,
+            "p90": 57.4,
+            "p95": 59.2,
+            "p99": 60.64
+          },
+          "23": {
+            "n": 1,
+            "mean": 30,
+            "min": 30,
+            "max": 30,
+            "p50": 30.0,
+            "p90": 30.0,
+            "p95": 30.0,
+            "p99": 30.0
+          }
+        },
+        "v9": {
+          "1": {
+            "n": 320,
+            "mean": 6.046875,
+            "min": 1,
+            "max": 32,
+            "p50": 5.0,
+            "p90": 10.0,
+            "p95": 12.0,
+            "p99": 18.430000000000007
+          },
+          "2": {
+            "n": 320,
+            "mean": 8.63125,
+            "min": 1,
+            "max": 27,
+            "p50": 8.0,
+            "p90": 14.0,
+            "p95": 16.0,
+            "p99": 21.0
+          },
+          "3": {
+            "n": 320,
+            "mean": 10.4125,
+            "min": 1,
+            "max": 46,
+            "p50": 10.0,
+            "p90": 16.0,
+            "p95": 19.05000000000001,
+            "p99": 21.810000000000002
+          },
+          "4": {
+            "n": 320,
+            "mean": 13.7375,
+            "min": 2,
+            "max": 47,
+            "p50": 12.0,
+            "p90": 23.0,
+            "p95": 27.05000000000001,
+            "p99": 40.620000000000005
+          },
+          "5": {
+            "n": 320,
+            "mean": 18.990625,
+            "min": 1,
+            "max": 61,
+            "p50": 17.0,
+            "p90": 33.0,
+            "p95": 40.05000000000001,
+            "p99": 59.24000000000001
+          },
+          "6": {
+            "n": 320,
+            "mean": 25.028125,
+            "min": 3,
+            "max": 61,
+            "p50": 22.0,
+            "p90": 49.0,
+            "p95": 57.150000000000034,
+            "p99": 61.0
+          },
+          "7": {
+            "n": 320,
+            "mean": 28.45625,
+            "min": 1,
+            "max": 61,
+            "p50": 26.0,
+            "p90": 52.10000000000002,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "8": {
+            "n": 320,
+            "mean": 32.184375,
+            "min": 1,
+            "max": 62,
+            "p50": 29.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "9": {
+            "n": 319,
+            "mean": 37.62068965517241,
+            "min": 2,
+            "max": 63,
+            "p50": 37.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "10": {
+            "n": 313,
+            "mean": 36.61980830670927,
+            "min": 2,
+            "max": 62,
+            "p50": 35.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "11": {
+            "n": 296,
+            "mean": 36.013513513513516,
+            "min": 2,
+            "max": 61,
+            "p50": 34.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "12": {
+            "n": 270,
+            "mean": 36.53703703703704,
+            "min": 1,
+            "max": 61,
+            "p50": 35.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "13": {
+            "n": 239,
+            "mean": 34.48953974895397,
+            "min": 2,
+            "max": 62,
+            "p50": 34.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "14": {
+            "n": 207,
+            "mean": 34.966183574879224,
+            "min": 1,
+            "max": 61,
+            "p50": 34.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "15": {
+            "n": 172,
+            "mean": 35.656976744186046,
+            "min": 2,
+            "max": 61,
+            "p50": 35.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "16": {
+            "n": 123,
+            "mean": 35.67479674796748,
+            "min": 1,
+            "max": 62,
+            "p50": 34.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "17": {
+            "n": 83,
+            "mean": 42.30120481927711,
+            "min": 3,
+            "max": 61,
+            "p50": 47.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "18": {
+            "n": 55,
+            "mean": 34.70909090909091,
+            "min": 1,
+            "max": 61,
+            "p50": 34.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "19": {
+            "n": 34,
+            "mean": 32.05882352941177,
+            "min": 5,
+            "max": 61,
+            "p50": 28.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "20": {
+            "n": 20,
+            "mean": 37.9,
+            "min": 4,
+            "max": 61,
+            "p50": 38.5,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "21": {
+            "n": 14,
+            "mean": 38.214285714285715,
+            "min": 13,
+            "max": 61,
+            "p50": 32.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "22": {
+            "n": 9,
+            "mean": 31.11111111111111,
+            "min": 3,
+            "max": 61,
+            "p50": 26.0,
+            "p90": 60.2,
+            "p95": 60.6,
+            "p99": 60.92
+          },
+          "23": {
+            "n": 7,
+            "mean": 34.57142857142857,
+            "min": 2,
+            "max": 61,
+            "p50": 37.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "24": {
+            "n": 4,
+            "mean": 58.5,
+            "min": 51,
+            "max": 61,
+            "p50": 61.0,
+            "p90": 61.0,
+            "p95": 61.0,
+            "p99": 61.0
+          },
+          "25": {
+            "n": 3,
+            "mean": 39.666666666666664,
+            "min": 21,
+            "max": 61,
+            "p50": 37.0,
+            "p90": 56.2,
+            "p95": 58.599999999999994,
+            "p99": 60.519999999999996
+          },
+          "26": {
+            "n": 2,
+            "mean": 27.5,
+            "min": 10,
+            "max": 45,
+            "p50": 27.5,
+            "p90": 41.5,
+            "p95": 43.25,
+            "p99": 44.65
+          }
+        }
+      },
+      "completed_lobbies": 320,
+      "elapsed_seconds": 147.40120111098804,
+      "games_per_second": 2.170945674717067,
+      "inference_and_observe_seconds": 71.1484605387086,
+      "native_step_seconds": 2.398165461010649,
+      "global_rounds": 1590,
+      "actual_initial_concurrency": 320,
+      "microbatch": null,
+      "gpu_peak_allocated_bytes": 712798720,
+      "gpu_peak_reserved_bytes": 884998144,
+      "rejected_actions": 0,
+      "deferred_actions": 0,
+      "weights_unchanged": true,
+      "limitations": [
+        "V0 behavioral metrics unknown; only rank complement is available.",
+        "Fresh match with same frozen models; not a replay of historical 320 games.",
+        "Turn denominator includes every recruit turn observed ready, even if zero executed actions.",
+        "Within-batch other-seat changes enter post-action public observations.",
+        "Hashed traces support independent cycle/count audits, not full state rendering."
+      ],
+      "config_path": "config.json",
+      "source_manifest": "source-manifest.json",
+      "verification": "verification.json",
+      "wandb_url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/p4ptewar",
+      "raw_results_sha256": "dcb334859d3495efca32f521533e99955b532f48cab9f0beca9c53d12d3571d4",
+      "local_batch_distribution_source": {
+        "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/batches.json",
+        "sha256": "4720c7e6cf1b7c5174c178f2aa89ddc061e92f5a71c6c84b2d6478c1ea9d2d08"
+      }
+    },
+    "wandb_url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/p4ptewar"
+  },
+  "previous_matches": {
+    "20261031-exp02-mixed-opponents/20261031-match-2script-3v1-3v2": {
+      "status": "completed",
+      "completed_at": "2026-10-31T19:15:08.484264+08:00",
+      "config": {
+        "name": "20261031-match-2script-3v1-3v2",
+        "games": 256,
+        "parallel_games": 64,
+        "seed": 45000323,
+        "threads": 4,
+        "lineup": {
+          "scripted": 2,
+          "v1": 3,
+          "v2": 3
+        },
+        "policy_mode": "stochastic for both V1 and V2",
+        "forward_precision": "bf16",
+        "simulator_config": {
+          "turn_action_caps": [
+            60
+          ]
+        },
+        "models": {
+          "v1": {
+            "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+            "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+            "ppo_iteration": 100
+          },
+          "v2": {
+            "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+            "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+            "ppo_iteration": 100,
+            "selection": "best fixed validation mean placement against 2 V1 + 5 scripted; not selected on this match"
+          }
+        },
+        "seat_assignment": "native per-game random seat permutation; interleaved V1/V2 roles with first-policy priority balanced across lanes",
+        "action_filter": false,
+        "combat_search": false,
+        "training_started": false,
+        "tracking": {
+          "backend": "wandb",
+          "entity": "eric_eric_",
+          "project": "AutoTavern",
+          "weave_project": "eric_eric_/AutoTavern",
+          "mode": "online"
+        }
+      },
+      "lobbies": 256,
+      "groups": {
+        "v1": {
+          "seats_per_lobby": 3,
+          "player_games": 768,
+          "first_places": 87,
+          "first_rate": 0.11328125,
+          "top4_rate": 0.5885416666666666,
+          "mean_placement": 3.98046875,
+          "lobby_win_share": 0.33984375,
+          "placement_counts": {
+            "1": 87,
+            "2": 102,
+            "3": 131,
+            "4": 132,
+            "5": 136,
+            "6": 117,
+            "7": 41,
+            "8": 22
+          },
+          "first_rate_ci95": [
+            0.09375,
+            0.1328125
+          ],
+          "mean_placement_ci95": [
+            3.8736979166666665,
+            4.088541666666666
+          ],
+          "lobby_win_share_ci95": [
+            0.28125,
+            0.3984375
+          ]
+        },
+        "v2": {
+          "seats_per_lobby": 3,
+          "player_games": 768,
+          "first_places": 165,
+          "first_rate": 0.21484375,
+          "top4_rate": 0.7122395833333334,
+          "mean_placement": 3.3763020833333335,
+          "lobby_win_share": 0.64453125,
+          "placement_counts": {
+            "1": 165,
+            "2": 153,
+            "3": 118,
+            "4": 111,
+            "5": 88,
+            "6": 71,
+            "7": 38,
+            "8": 24
+          },
+          "first_rate_ci95": [
+            0.1953125,
+            0.234375
+          ],
+          "mean_placement_ci95": [
+            3.265625,
+            3.4908854166666665
+          ],
+          "lobby_win_share_ci95": [
+            0.5859375,
+            0.703125
+          ]
+        },
+        "scripted": {
+          "seats_per_lobby": 2,
+          "player_games": 512,
+          "first_places": 4,
+          "first_rate": 0.0078125,
+          "top4_rate": 0.048828125,
+          "mean_placement": 6.96484375,
+          "lobby_win_share": 0.015625,
+          "placement_counts": {
+            "1": 4,
+            "2": 1,
+            "3": 7,
+            "4": 13,
+            "5": 32,
+            "6": 68,
+            "7": 177,
+            "8": 210
+          },
+          "first_rate_ci95": [
+            0.001953125,
+            0.015625
+          ],
+          "mean_placement_ci95": [
+            6.875,
+            7.05078125
+          ],
+          "lobby_win_share_ci95": [
+            0.00390625,
+            0.03125
+          ]
+        }
+      },
+      "v2_vs_v1": {
+        "pairwise_ahead_rate": 0.5980902777777778,
+        "pairs_per_lobby": 9,
+        "pair_comparisons": 2304,
+        "mean_placement_delta_v2_minus_v1": -0.6041666666666667,
+        "pairwise_ahead_rate_ci95": [
+          0.5672634548611112,
+          0.62890625
+        ],
+        "mean_placement_delta_ci95": [
+          -0.8138020833333334,
+          -0.3893229166666667
+        ]
+      },
+      "confidence_method": "10,000 whole-lobby bootstrap samples; percentile 95% intervals",
+      "elapsed_seconds": 67.16507097700378,
+      "vector_steps": 4870,
+      "deferred_actions": 0,
+      "rejected_actions": 0,
+      "weights_unchanged": true,
+      "training_started": false,
+      "optimizer_updates": 0,
+      "forward_batch_sizes": {
+        "v1": {
+          "calls": 4720,
+          "mean": 113.85550847457627,
+          "p50": 126.0,
+          "max": 192
+        },
+        "v2": {
+          "calls": 4869,
+          "mean": 121.04970219757651,
+          "p50": 136.0,
+          "max": 192
+        }
+      },
+      "peak_gpu_allocated_bytes": 378414080,
+      "limitations": [
+        "Results apply to this 2-script/3-V1/3-V2 stochastic BF16 lobby composition.",
+        "Player seats in a lobby are correlated; confidence intervals resample whole lobbies.",
+        "Script ranks are the exact unordered complement of the six unique model ranks.",
+        "Pairwise ahead rate compares final placements, not individual combat outcomes."
+      ]
+    },
+    "20261031-exp03-v2-continuation/20261031-match-2script-2v1-2v2-2v3": {
+      "status": "completed",
+      "completed_at": "2026-10-31T22:49:59.667176+08:00",
+      "config": {
+        "name": "20261031-match-2script-2v1-2v2-2v3",
+        "games": 256,
+        "parallel_games": 64,
+        "seed": 61000401,
+        "threads": 4,
+        "lineup": {
+          "scripted": 2,
+          "v1": 2,
+          "v2": 2,
+          "v3": 2
+        },
+        "policy_mode": "stochastic for V1, V2 and V3",
+        "forward_precision": "bf16",
+        "simulator_config": {
+          "turn_action_caps": [
+            60
+          ]
+        },
+        "models": {
+          "v1": {
+            "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+            "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+            "ppo_iteration": 100
+          },
+          "v2": {
+            "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+            "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+            "ppo_iteration": 100,
+            "selection": "best fixed validation mean placement against 2 V1 + 5 scripted; not selected on this match"
+          },
+          "v3": {
+            "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+            "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+            "ppo_iteration": 150,
+            "selection": "best mixed-stochastic validation mean placement among PPO0/50/100/150/200; not selected on this match"
+          }
+        },
+        "seat_assignment": "native random physical seats; interleaved roles; first-policy priority rotates across lanes and episodes",
+        "action_filter": false,
+        "combat_search": false,
+        "training_started": false,
+        "tracking": {
+          "backend": "wandb",
+          "entity": "eric_eric_",
+          "project": "AutoTavern",
+          "weave_project": "eric_eric_/AutoTavern",
+          "mode": "online"
+        }
+      },
+      "lobbies": 256,
+      "groups": {
+        "v1": {
+          "seats_per_lobby": 2,
+          "player_games": 512,
+          "first_places": 44,
+          "first_rate": 0.0859375,
+          "top4_rate": 0.509765625,
+          "mean_placement": 4.326171875,
+          "lobby_win_share": 0.171875,
+          "placement_counts": {
+            "1": 44,
+            "2": 52,
+            "3": 73,
+            "4": 92,
+            "5": 106,
+            "6": 81,
+            "7": 48,
+            "8": 16
+          },
+          "first_rate_ci95": [
+            0.064453125,
+            0.109375
+          ],
+          "mean_placement_ci95": [
+            4.171875,
+            4.474609375
+          ],
+          "lobby_win_share_ci95": [
+            0.12890625,
+            0.21875
+          ]
+        },
+        "v2": {
+          "seats_per_lobby": 2,
+          "player_games": 512,
+          "first_places": 79,
+          "first_rate": 0.154296875,
+          "top4_rate": 0.662109375,
+          "mean_placement": 3.6953125,
+          "lobby_win_share": 0.30859375,
+          "placement_counts": {
+            "1": 79,
+            "2": 91,
+            "3": 80,
+            "4": 89,
+            "5": 65,
+            "6": 61,
+            "7": 32,
+            "8": 15
+          },
+          "first_rate_ci95": [
+            0.126953125,
+            0.18359375
+          ],
+          "mean_placement_ci95": [
+            3.5390625,
+            3.849609375
+          ],
+          "lobby_win_share_ci95": [
+            0.25390625,
+            0.3671875
+          ]
+        },
+        "v3": {
+          "seats_per_lobby": 2,
+          "player_games": 512,
+          "first_places": 122,
+          "first_rate": 0.23828125,
+          "top4_rate": 0.76171875,
+          "mean_placement": 3.083984375,
+          "lobby_win_share": 0.4765625,
+          "placement_counts": {
+            "1": 122,
+            "2": 111,
+            "3": 97,
+            "4": 60,
+            "5": 56,
+            "6": 45,
+            "7": 14,
+            "8": 7
+          },
+          "first_rate_ci95": [
+            0.20703125,
+            0.2676269531249993
+          ],
+          "mean_placement_ci95": [
+            2.955078125,
+            3.220703125
+          ],
+          "lobby_win_share_ci95": [
+            0.4140625,
+            0.5352539062499986
+          ]
+        },
+        "scripted": {
+          "seats_per_lobby": 2,
+          "player_games": 512,
+          "first_places": 11,
+          "first_rate": 0.021484375,
+          "top4_rate": 0.06640625,
+          "mean_placement": 6.89453125,
+          "lobby_win_share": 0.04296875,
+          "placement_counts": {
+            "1": 11,
+            "2": 2,
+            "3": 6,
+            "4": 15,
+            "5": 29,
+            "6": 69,
+            "7": 162,
+            "8": 218
+          },
+          "first_rate_ci95": [
+            0.009765625,
+            0.03515625
+          ],
+          "mean_placement_ci95": [
+            6.78515625,
+            6.99609375
+          ],
+          "lobby_win_share_ci95": [
+            0.01953125,
+            0.0703125
+          ]
+        }
+      },
+      "v2_vs_v1": {
+        "pairwise_ahead_rate": 0.60546875,
+        "pairs_per_lobby": 4,
+        "pair_comparisons": 1024,
+        "mean_placement_delta_newer_minus_older": -0.630859375,
+        "pairwise_ahead_rate_ci95": [
+          0.564453125,
+          0.646484375
+        ],
+        "mean_placement_delta_ci95": [
+          -0.890625,
+          -0.37109375
+        ]
+      },
+      "v3_vs_v1": {
+        "pairwise_ahead_rate": 0.6796875,
+        "pairs_per_lobby": 4,
+        "pair_comparisons": 1024,
+        "mean_placement_delta_newer_minus_older": -1.2421875,
+        "pairwise_ahead_rate_ci95": [
+          0.6416015625,
+          0.716796875
+        ],
+        "mean_placement_delta_ci95": [
+          -1.48046875,
+          -0.99609375
+        ]
+      },
+      "v3_vs_v2": {
+        "pairwise_ahead_rate": 0.5927734375,
+        "pairs_per_lobby": 4,
+        "pair_comparisons": 1024,
+        "mean_placement_delta_newer_minus_older": -0.611328125,
+        "pairwise_ahead_rate_ci95": [
+          0.5556640625,
+          0.62890625
+        ],
+        "mean_placement_delta_ci95": [
+          -0.841796875,
+          -0.37109375
+        ]
+      },
+      "confidence_method": "10,000 whole-lobby bootstrap samples; percentile 95% intervals",
+      "elapsed_seconds": 123.07882697200694,
+      "vector_steps": 4786,
+      "deferred_actions": 0,
+      "rejected_actions": 0,
+      "weights_unchanged": true,
+      "training_started": false,
+      "optimizer_updates": 0,
+      "forward_batch_sizes": {
+        "v1": {
+          "calls": 4785,
+          "mean": 72.8528735632184,
+          "p50": 78.0,
+          "max": 128
+        },
+        "v2": {
+          "calls": 4693,
+          "mean": 82.12657148945237,
+          "p50": 88.0,
+          "max": 128
+        },
+        "v3": {
+          "calls": 4785,
+          "mean": 86.52497387669801,
+          "p50": 95.0,
+          "max": 128
+        }
+      },
+      "peak_gpu_allocated_bytes": 288487424,
+      "limitations": [
+        "Results apply to this 2-script/2-V1/2-V2/2-V3 stochastic BF16 lobby composition.",
+        "Player seats in a lobby are correlated; confidence intervals resample whole lobbies.",
+        "Script ranks are the exact unordered complement of the six unique model ranks.",
+        "Pairwise ahead rate compares final placements, not individual combat outcomes."
+      ]
+    },
+    "20261031-exp05-v5-cycle-forfeit/20261101-match-v0-v1-v2-v3-v5": {
+      "status": "completed",
+      "completed_at": "2026-11-01T10:21:01.155809+08:00",
+      "config": {
+        "name": "20261101-match-v0-v1-v2-v3-v5",
+        "games": 320,
+        "parallel_games": 32,
+        "seed": 61101501,
+        "threads": 4,
+        "policy_mode": "stochastic for V1, V2, V3 and V5; native scripted V0",
+        "forward_precision": "bf16",
+        "simulator_config": {
+          "turn_action_caps": [
+            60
+          ]
+        },
+        "models": {
+          "v1": {
+            "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+            "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+            "ppo_iteration": 100
+          },
+          "v2": {
+            "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+            "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+            "ppo_iteration": 100,
+            "selection": "best fixed validation mean placement against 2 V1 + 5 scripted; not selected on this match"
+          },
+          "v3": {
+            "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+            "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+            "ppo_iteration": 150,
+            "selection": "best mixed-stochastic validation mean placement among PPO0/50/100/150/200; not selected on this match"
+          },
+          "v5": {
+            "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+            "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
+            "ppo_iteration": 100,
+            "selection": "retained V5 best before this match; no selection on these results"
+          }
+        },
+        "seat_assignment": "each of 10 lineups plays 32 lobbies; all versions have 512 player entries; native random physical seats; interleaved neural roles rotated per lane",
+        "action_filter": false,
+        "combat_search": false,
+        "training_started": false,
+        "tracking": {
+          "backend": "wandb",
+          "entity": "eric_eric_",
+          "project": "AutoTavern",
+          "weave_project": "eric_eric_/AutoTavern",
+          "mode": "online"
+        },
+        "games_per_lineup": 32,
+        "purpose": "independent requested match; not used to select models or training opponents",
+        "lineups": [
+          {
+            "v0": 2,
+            "v1": 2,
+            "v2": 2,
+            "v3": 1,
+            "v5": 1
+          },
+          {
+            "v0": 2,
+            "v1": 2,
+            "v2": 1,
+            "v3": 2,
+            "v5": 1
+          },
+          {
+            "v0": 2,
+            "v1": 2,
+            "v2": 1,
+            "v3": 1,
+            "v5": 2
+          },
+          {
+            "v0": 2,
+            "v1": 1,
+            "v2": 2,
+            "v3": 2,
+            "v5": 1
+          },
+          {
+            "v0": 2,
+            "v1": 1,
+            "v2": 2,
+            "v3": 1,
+            "v5": 2
+          },
+          {
+            "v0": 2,
+            "v1": 1,
+            "v2": 1,
+            "v3": 2,
+            "v5": 2
+          },
+          {
+            "v0": 1,
+            "v1": 2,
+            "v2": 2,
+            "v3": 2,
+            "v5": 1
+          },
+          {
+            "v0": 1,
+            "v1": 2,
+            "v2": 2,
+            "v3": 1,
+            "v5": 2
+          },
+          {
+            "v0": 1,
+            "v1": 2,
+            "v2": 1,
+            "v3": 2,
+            "v5": 2
+          },
+          {
+            "v0": 1,
+            "v1": 1,
+            "v2": 2,
+            "v3": 2,
+            "v5": 2
+          }
+        ],
+        "v0": {
+          "kind": "native_scripted",
+          "source": "crates/taverngym/src/bot.rs"
+        }
+      },
+      "lobbies": 320,
+      "groups": {
+        "v0": {
+          "player_games": 512,
+          "first_places": 3,
+          "placement_counts": {
+            "1": 3,
+            "2": 3,
+            "3": 4,
+            "4": 7,
+            "5": 14,
+            "6": 65,
+            "7": 160,
+            "8": 256
+          },
+          "first_rate": 0.005859375,
+          "first_rate_ci95": [
+            0.0,
+            0.013671875
+          ],
+          "top4_rate": 0.033203125,
+          "top4_rate_ci95": [
+            0.01953125,
+            0.048828125
+          ],
+          "mean_placement": 7.181640625,
+          "mean_placement_ci95": [
+            7.095703125,
+            7.263671875
+          ],
+          "lobby_win_share": 0.009375,
+          "lobby_win_share_ci95": [
+            0.0,
+            0.021875
+          ]
+        },
+        "v1": {
+          "player_games": 512,
+          "first_places": 39,
+          "placement_counts": {
+            "1": 39,
+            "2": 44,
+            "3": 68,
+            "4": 94,
+            "5": 105,
+            "6": 91,
+            "7": 56,
+            "8": 15
+          },
+          "first_rate": 0.076171875,
+          "first_rate_ci95": [
+            0.0546875,
+            0.099609375
+          ],
+          "top4_rate": 0.478515625,
+          "top4_rate_ci95": [
+            0.439453125,
+            0.517578125
+          ],
+          "mean_placement": 4.47265625,
+          "mean_placement_ci95": [
+            4.322265625,
+            4.619140625
+          ],
+          "lobby_win_share": 0.121875,
+          "lobby_win_share_ci95": [
+            0.0875,
+            0.159375
+          ]
+        },
+        "v2": {
+          "player_games": 512,
+          "first_places": 70,
+          "placement_counts": {
+            "1": 70,
+            "2": 82,
+            "3": 84,
+            "4": 82,
+            "5": 68,
+            "6": 64,
+            "7": 41,
+            "8": 21
+          },
+          "first_rate": 0.13671875,
+          "first_rate_ci95": [
+            0.109375,
+            0.1640625
+          ],
+          "top4_rate": 0.62109375,
+          "top4_rate_ci95": [
+            0.58203125,
+            0.658203125
+          ],
+          "mean_placement": 3.892578125,
+          "mean_placement_ci95": [
+            3.736279296875,
+            4.05078125
+          ],
+          "lobby_win_share": 0.21875,
+          "lobby_win_share_ci95": [
+            0.175,
+            0.2625
+          ]
+        },
+        "v3": {
+          "player_games": 512,
+          "first_places": 96,
+          "placement_counts": {
+            "1": 96,
+            "2": 93,
+            "3": 90,
+            "4": 75,
+            "5": 65,
+            "6": 52,
+            "7": 28,
+            "8": 13
+          },
+          "first_rate": 0.1875,
+          "first_rate_ci95": [
+            0.158203125,
+            0.21875
+          ],
+          "top4_rate": 0.69140625,
+          "top4_rate_ci95": [
+            0.654296875,
+            0.728515625
+          ],
+          "mean_placement": 3.494140625,
+          "mean_placement_ci95": [
+            3.33984375,
+            3.6484375
+          ],
+          "lobby_win_share": 0.3,
+          "lobby_win_share_ci95": [
+            0.253125,
+            0.35
+          ]
+        },
+        "v5": {
+          "player_games": 512,
+          "first_places": 112,
+          "placement_counts": {
+            "1": 112,
+            "2": 98,
+            "3": 74,
+            "4": 62,
+            "5": 68,
+            "6": 48,
+            "7": 35,
+            "8": 15
+          },
+          "first_rate": 0.21875,
+          "first_rate_ci95": [
+            0.1875,
+            0.251953125
+          ],
+          "top4_rate": 0.67578125,
+          "top4_rate_ci95": [
+            0.63671875,
+            0.712890625
+          ],
+          "mean_placement": 3.458984375,
+          "mean_placement_ci95": [
+            3.296875,
+            3.62109375
+          ],
+          "lobby_win_share": 0.35,
+          "lobby_win_share_ci95": [
+            0.3,
+            0.403125
+          ]
+        }
+      },
+      "pairwise": {
+        "v0_vs_v1": {
+          "ahead_rate_first_vs_second": 0.07625,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.05375,
+            0.1
+          ]
+        },
+        "v0_vs_v2": {
+          "ahead_rate_first_vs_second": 0.0875,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.06625,
+            0.11125
+          ]
+        },
+        "v0_vs_v3": {
+          "ahead_rate_first_vs_second": 0.05875,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.04125,
+            0.07875
+          ]
+        },
+        "v0_vs_v5": {
+          "ahead_rate_first_vs_second": 0.06125,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.0425,
+            0.08125
+          ]
+        },
+        "v1_vs_v2": {
+          "ahead_rate_first_vs_second": 0.40375,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.36375,
+            0.445
+          ]
+        },
+        "v1_vs_v3": {
+          "ahead_rate_first_vs_second": 0.34875,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.31,
+            0.3875
+          ]
+        },
+        "v1_vs_v5": {
+          "ahead_rate_first_vs_second": 0.34125,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.3025,
+            0.3825
+          ]
+        },
+        "v2_vs_v3": {
+          "ahead_rate_first_vs_second": 0.44875,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.4075,
+            0.49
+          ]
+        },
+        "v2_vs_v5": {
+          "ahead_rate_first_vs_second": 0.43125,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.39,
+            0.47125
+          ]
+        },
+        "v3_vs_v5": {
+          "ahead_rate_first_vs_second": 0.5,
+          "pair_comparisons": 800,
+          "ahead_rate_ci95": [
+            0.45875,
+            0.54125
+          ]
+        }
+      },
+      "confidence_method": "10,000 stratified whole-lobby bootstrap samples, preserving 32 lobbies per lineup; seat-weighted ratios; percentile 95% intervals",
+      "elapsed_seconds": 219.7113297140022,
+      "vector_steps": 14400,
+      "deferred_actions": 0,
+      "rejected_actions": 0,
+      "weights_unchanged": true,
+      "training_started": false,
+      "optimizer_updates": 0,
+      "limitations": [
+        "Results apply to these ten balanced eight-player lineups and stochastic BF16 inference.",
+        "Each version has 512 player entries across 320 lobbies; correlated seats are not independent.",
+        "V0 aggregate ranks are the exact unordered complement of neural-seat ranks.",
+        "Pairwise ahead rate compares final placement, not combat outcomes.",
+        "Independent test results do not select checkpoints or training opponents."
+      ]
+    },
+    "20261031-exp05-v5-cycle-forfeit/20261101-match-v0-v1-v2-v3-v5-turn-diagnostics": {
       "status": "completed",
       "completed_at": "2026-11-01T10:32:13.167357+08:00",
       "config": {
@@ -5921,854 +10016,628 @@
         "Within-batch other-seat changes enter post-action public observations.",
         "Hashed traces support independent cycle/count audits, not full state rendering."
       ]
-    }
-  },
-  "previous_matches": {
-    "20261031-exp02-mixed-opponents/20261031-match-2script-3v1-3v2": {
-      "status": "completed",
-      "completed_at": "2026-10-31T19:15:08.484264+08:00",
-      "config": {
-        "name": "20261031-match-2script-3v1-3v2",
-        "games": 256,
-        "parallel_games": 64,
-        "seed": 45000323,
-        "threads": 4,
-        "lineup": {
-          "scripted": 2,
-          "v1": 3,
-          "v2": 3
-        },
-        "policy_mode": "stochastic for both V1 and V2",
-        "forward_precision": "bf16",
-        "simulator_config": {
-          "turn_action_caps": [
-            60
-          ]
-        },
-        "models": {
-          "v1": {
-            "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
-            "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
-            "ppo_iteration": 100
-          },
-          "v2": {
-            "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
-            "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
-            "ppo_iteration": 100,
-            "selection": "best fixed validation mean placement against 2 V1 + 5 scripted; not selected on this match"
-          }
-        },
-        "seat_assignment": "native per-game random seat permutation; interleaved V1/V2 roles with first-policy priority balanced across lanes",
-        "action_filter": false,
-        "combat_search": false,
-        "training_started": false,
-        "tracking": {
-          "backend": "wandb",
-          "entity": "eric_eric_",
-          "project": "AutoTavern",
-          "weave_project": "eric_eric_/AutoTavern",
-          "mode": "online"
-        }
-      },
-      "lobbies": 256,
-      "groups": {
-        "v1": {
-          "seats_per_lobby": 3,
-          "player_games": 768,
-          "first_places": 87,
-          "first_rate": 0.11328125,
-          "top4_rate": 0.5885416666666666,
-          "mean_placement": 3.98046875,
-          "lobby_win_share": 0.33984375,
-          "placement_counts": {
-            "1": 87,
-            "2": 102,
-            "3": 131,
-            "4": 132,
-            "5": 136,
-            "6": 117,
-            "7": 41,
-            "8": 22
-          },
-          "first_rate_ci95": [
-            0.09375,
-            0.1328125
-          ],
-          "mean_placement_ci95": [
-            3.8736979166666665,
-            4.088541666666666
-          ],
-          "lobby_win_share_ci95": [
-            0.28125,
-            0.3984375
-          ]
-        },
-        "v2": {
-          "seats_per_lobby": 3,
-          "player_games": 768,
-          "first_places": 165,
-          "first_rate": 0.21484375,
-          "top4_rate": 0.7122395833333334,
-          "mean_placement": 3.3763020833333335,
-          "lobby_win_share": 0.64453125,
-          "placement_counts": {
-            "1": 165,
-            "2": 153,
-            "3": 118,
-            "4": 111,
-            "5": 88,
-            "6": 71,
-            "7": 38,
-            "8": 24
-          },
-          "first_rate_ci95": [
-            0.1953125,
-            0.234375
-          ],
-          "mean_placement_ci95": [
-            3.265625,
-            3.4908854166666665
-          ],
-          "lobby_win_share_ci95": [
-            0.5859375,
-            0.703125
-          ]
-        },
-        "scripted": {
-          "seats_per_lobby": 2,
-          "player_games": 512,
-          "first_places": 4,
-          "first_rate": 0.0078125,
-          "top4_rate": 0.048828125,
-          "mean_placement": 6.96484375,
-          "lobby_win_share": 0.015625,
-          "placement_counts": {
-            "1": 4,
-            "2": 1,
-            "3": 7,
-            "4": 13,
-            "5": 32,
-            "6": 68,
-            "7": 177,
-            "8": 210
-          },
-          "first_rate_ci95": [
-            0.001953125,
-            0.015625
-          ],
-          "mean_placement_ci95": [
-            6.875,
-            7.05078125
-          ],
-          "lobby_win_share_ci95": [
-            0.00390625,
-            0.03125
-          ]
-        }
-      },
-      "v2_vs_v1": {
-        "pairwise_ahead_rate": 0.5980902777777778,
-        "pairs_per_lobby": 9,
-        "pair_comparisons": 2304,
-        "mean_placement_delta_v2_minus_v1": -0.6041666666666667,
-        "pairwise_ahead_rate_ci95": [
-          0.5672634548611112,
-          0.62890625
-        ],
-        "mean_placement_delta_ci95": [
-          -0.8138020833333334,
-          -0.3893229166666667
-        ]
-      },
-      "confidence_method": "10,000 whole-lobby bootstrap samples; percentile 95% intervals",
-      "elapsed_seconds": 67.16507097700378,
-      "vector_steps": 4870,
-      "deferred_actions": 0,
-      "rejected_actions": 0,
-      "weights_unchanged": true,
-      "training_started": false,
-      "optimizer_updates": 0,
-      "forward_batch_sizes": {
-        "v1": {
-          "calls": 4720,
-          "mean": 113.85550847457627,
-          "p50": 126.0,
-          "max": 192
-        },
-        "v2": {
-          "calls": 4869,
-          "mean": 121.04970219757651,
-          "p50": 136.0,
-          "max": 192
-        }
-      },
-      "peak_gpu_allocated_bytes": 378414080,
-      "limitations": [
-        "Results apply to this 2-script/3-V1/3-V2 stochastic BF16 lobby composition.",
-        "Player seats in a lobby are correlated; confidence intervals resample whole lobbies.",
-        "Script ranks are the exact unordered complement of the six unique model ranks.",
-        "Pairwise ahead rate compares final placements, not individual combat outcomes."
-      ]
     },
-    "20261031-exp03-v2-continuation/20261031-match-2script-2v1-2v2-2v3": {
-      "status": "completed",
-      "completed_at": "2026-10-31T22:49:59.667176+08:00",
-      "config": {
-        "name": "20261031-match-2script-2v1-2v2-2v3",
-        "games": 256,
-        "parallel_games": 64,
-        "seed": 61000401,
-        "threads": 4,
-        "lineup": {
-          "scripted": 2,
-          "v1": 2,
-          "v2": 2,
-          "v3": 2
+    "20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7": {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7",
+      "result": {
+        "status": "completed",
+        "completed_at": "2026-11-03T01:30:36.757784+08:00",
+        "config": {
+          "name": "20261103-match-3v0-v1-v2-v3-v5-v7",
+          "games": 320,
+          "parallel_games": 320,
+          "seed": 61103101,
+          "threads": 4,
+          "policy_mode": "stochastic V1 V2 V3 V5 V7; native V0",
+          "forward_precision": "bf16",
+          "simulator_config": {
+            "turn_action_caps": [
+              60
+            ]
+          },
+          "models": {
+            "v1": {
+              "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+              "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+            },
+            "v2": {
+              "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+              "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+            },
+            "v3": {
+              "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+              "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1"
+            },
+            "v5": {
+              "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+              "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6"
+            },
+            "v7": {
+              "path": "runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+              "sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354"
+            }
+          },
+          "seat_assignment": "one fixed lineup, 320 lanes, native rotate_seats; role order rotates per lane",
+          "action_filter": false,
+          "combat_search": false,
+          "training_started": false,
+          "tracking": {
+            "backend": "wandb",
+            "entity": "eric_eric_",
+            "project": "AutoTavern",
+            "weave_project": "eric_eric_/AutoTavern",
+            "mode": "online"
+          },
+          "games_per_lineup": 320,
+          "purpose": "independent requested match, no model or pool selection",
+          "lineups": [
+            {
+              "v0": 3,
+              "v1": 1,
+              "v2": 1,
+              "v3": 1,
+              "v5": 1,
+              "v7": 1
+            }
+          ],
+          "v0": {
+            "kind": "native_scripted",
+            "source": "crates/taverngym/src/bot.rs"
+          },
+          "shards": [
+            {
+              "roles": 5,
+              "games": 320,
+              "seed": 61103101
+            }
+          ],
+          "schedule": "320 lanes in a single shard, one batch per model per global round",
+          "max_global_rounds": 20000,
+          "max_match_seconds": 3600,
+          "trace_format": [
+            "global_round",
+            "action",
+            "before_sha256",
+            "after_sha256_or_null",
+            "after_turn_or_null",
+            "cycle_return",
+            "consecutive_returns",
+            "forced_end",
+            "terminal",
+            "single_end_mask"
+          ],
+          "turn_denominator": "unique turn>0 observed ready for this living player, including observed zero executed-action turns",
+          "diagnostics": {
+            "operation_cost": 0,
+            "cycle_cost": 0,
+            "cycle_detection": "all_actions",
+            "cycle_forfeit_repetitions": null,
+            "turn_action_forfeit_limit": null
+          },
+          "v0_behavior_metrics": "unknown: native automatic V0 has no Python action/observation callbacks",
+          "budget": {
+            "official_games": 320,
+            "synthetic_tests": true,
+            "native_preflight": "2 lanes, at most 5 global steps, synthetic legal-first policy; no completed extra matches"
+          },
+          "historical_match_replay": false
         },
-        "policy_mode": "stochastic for V1, V2 and V3",
-        "forward_precision": "bf16",
-        "simulator_config": {
-          "turn_action_caps": [
-            60
-          ]
-        },
-        "models": {
+        "groups": {
+          "v0": {
+            "player_games": 960,
+            "first_rate": 0.016666666666666666,
+            "top4_rate": 0.06875,
+            "mean_placement": 6.576041666666667,
+            "placement_counts": {
+              "1": 16,
+              "2": 10,
+              "3": 9,
+              "4": 31,
+              "5": 103,
+              "6": 227,
+              "7": 263,
+              "8": 301
+            }
+          },
           "v1": {
-            "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
-            "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
-            "ppo_iteration": 100
+            "player_games": 320,
+            "first_rate": 0.065625,
+            "top4_rate": 0.578125,
+            "mean_placement": 4.125,
+            "placement_counts": {
+              "1": 21,
+              "2": 31,
+              "3": 55,
+              "4": 78,
+              "5": 80,
+              "6": 31,
+              "7": 18,
+              "8": 6
+            }
           },
           "v2": {
-            "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
-            "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
-            "ppo_iteration": 100,
-            "selection": "best fixed validation mean placement against 2 V1 + 5 scripted; not selected on this match"
+            "player_games": 320,
+            "first_rate": 0.190625,
+            "top4_rate": 0.746875,
+            "mean_placement": 3.265625,
+            "placement_counts": {
+              "1": 61,
+              "2": 69,
+              "3": 57,
+              "4": 52,
+              "5": 43,
+              "6": 19,
+              "7": 14,
+              "8": 5
+            }
           },
           "v3": {
-            "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
-            "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
-            "ppo_iteration": 150,
-            "selection": "best mixed-stochastic validation mean placement among PPO0/50/100/150/200; not selected on this match"
-          }
-        },
-        "seat_assignment": "native random physical seats; interleaved roles; first-policy priority rotates across lanes and episodes",
-        "action_filter": false,
-        "combat_search": false,
-        "training_started": false,
-        "tracking": {
-          "backend": "wandb",
-          "entity": "eric_eric_",
-          "project": "AutoTavern",
-          "weave_project": "eric_eric_/AutoTavern",
-          "mode": "online"
-        }
-      },
-      "lobbies": 256,
-      "groups": {
-        "v1": {
-          "seats_per_lobby": 2,
-          "player_games": 512,
-          "first_places": 44,
-          "first_rate": 0.0859375,
-          "top4_rate": 0.509765625,
-          "mean_placement": 4.326171875,
-          "lobby_win_share": 0.171875,
-          "placement_counts": {
-            "1": 44,
-            "2": 52,
-            "3": 73,
-            "4": 92,
-            "5": 106,
-            "6": 81,
-            "7": 48,
-            "8": 16
-          },
-          "first_rate_ci95": [
-            0.064453125,
-            0.109375
-          ],
-          "mean_placement_ci95": [
-            4.171875,
-            4.474609375
-          ],
-          "lobby_win_share_ci95": [
-            0.12890625,
-            0.21875
-          ]
-        },
-        "v2": {
-          "seats_per_lobby": 2,
-          "player_games": 512,
-          "first_places": 79,
-          "first_rate": 0.154296875,
-          "top4_rate": 0.662109375,
-          "mean_placement": 3.6953125,
-          "lobby_win_share": 0.30859375,
-          "placement_counts": {
-            "1": 79,
-            "2": 91,
-            "3": 80,
-            "4": 89,
-            "5": 65,
-            "6": 61,
-            "7": 32,
-            "8": 15
-          },
-          "first_rate_ci95": [
-            0.126953125,
-            0.18359375
-          ],
-          "mean_placement_ci95": [
-            3.5390625,
-            3.849609375
-          ],
-          "lobby_win_share_ci95": [
-            0.25390625,
-            0.3671875
-          ]
-        },
-        "v3": {
-          "seats_per_lobby": 2,
-          "player_games": 512,
-          "first_places": 122,
-          "first_rate": 0.23828125,
-          "top4_rate": 0.76171875,
-          "mean_placement": 3.083984375,
-          "lobby_win_share": 0.4765625,
-          "placement_counts": {
-            "1": 122,
-            "2": 111,
-            "3": 97,
-            "4": 60,
-            "5": 56,
-            "6": 45,
-            "7": 14,
-            "8": 7
-          },
-          "first_rate_ci95": [
-            0.20703125,
-            0.2676269531249993
-          ],
-          "mean_placement_ci95": [
-            2.955078125,
-            3.220703125
-          ],
-          "lobby_win_share_ci95": [
-            0.4140625,
-            0.5352539062499986
-          ]
-        },
-        "scripted": {
-          "seats_per_lobby": 2,
-          "player_games": 512,
-          "first_places": 11,
-          "first_rate": 0.021484375,
-          "top4_rate": 0.06640625,
-          "mean_placement": 6.89453125,
-          "lobby_win_share": 0.04296875,
-          "placement_counts": {
-            "1": 11,
-            "2": 2,
-            "3": 6,
-            "4": 15,
-            "5": 29,
-            "6": 69,
-            "7": 162,
-            "8": 218
-          },
-          "first_rate_ci95": [
-            0.009765625,
-            0.03515625
-          ],
-          "mean_placement_ci95": [
-            6.78515625,
-            6.99609375
-          ],
-          "lobby_win_share_ci95": [
-            0.01953125,
-            0.0703125
-          ]
-        }
-      },
-      "v2_vs_v1": {
-        "pairwise_ahead_rate": 0.60546875,
-        "pairs_per_lobby": 4,
-        "pair_comparisons": 1024,
-        "mean_placement_delta_newer_minus_older": -0.630859375,
-        "pairwise_ahead_rate_ci95": [
-          0.564453125,
-          0.646484375
-        ],
-        "mean_placement_delta_ci95": [
-          -0.890625,
-          -0.37109375
-        ]
-      },
-      "v3_vs_v1": {
-        "pairwise_ahead_rate": 0.6796875,
-        "pairs_per_lobby": 4,
-        "pair_comparisons": 1024,
-        "mean_placement_delta_newer_minus_older": -1.2421875,
-        "pairwise_ahead_rate_ci95": [
-          0.6416015625,
-          0.716796875
-        ],
-        "mean_placement_delta_ci95": [
-          -1.48046875,
-          -0.99609375
-        ]
-      },
-      "v3_vs_v2": {
-        "pairwise_ahead_rate": 0.5927734375,
-        "pairs_per_lobby": 4,
-        "pair_comparisons": 1024,
-        "mean_placement_delta_newer_minus_older": -0.611328125,
-        "pairwise_ahead_rate_ci95": [
-          0.5556640625,
-          0.62890625
-        ],
-        "mean_placement_delta_ci95": [
-          -0.841796875,
-          -0.37109375
-        ]
-      },
-      "confidence_method": "10,000 whole-lobby bootstrap samples; percentile 95% intervals",
-      "elapsed_seconds": 123.07882697200694,
-      "vector_steps": 4786,
-      "deferred_actions": 0,
-      "rejected_actions": 0,
-      "weights_unchanged": true,
-      "training_started": false,
-      "optimizer_updates": 0,
-      "forward_batch_sizes": {
-        "v1": {
-          "calls": 4785,
-          "mean": 72.8528735632184,
-          "p50": 78.0,
-          "max": 128
-        },
-        "v2": {
-          "calls": 4693,
-          "mean": 82.12657148945237,
-          "p50": 88.0,
-          "max": 128
-        },
-        "v3": {
-          "calls": 4785,
-          "mean": 86.52497387669801,
-          "p50": 95.0,
-          "max": 128
-        }
-      },
-      "peak_gpu_allocated_bytes": 288487424,
-      "limitations": [
-        "Results apply to this 2-script/2-V1/2-V2/2-V3 stochastic BF16 lobby composition.",
-        "Player seats in a lobby are correlated; confidence intervals resample whole lobbies.",
-        "Script ranks are the exact unordered complement of the six unique model ranks.",
-        "Pairwise ahead rate compares final placements, not individual combat outcomes."
-      ]
-    },
-    "20261031-exp05-v5-cycle-forfeit/20261101-match-v0-v1-v2-v3-v5": {
-      "status": "completed",
-      "completed_at": "2026-11-01T10:21:01.155809+08:00",
-      "config": {
-        "name": "20261101-match-v0-v1-v2-v3-v5",
-        "games": 320,
-        "parallel_games": 32,
-        "seed": 61101501,
-        "threads": 4,
-        "policy_mode": "stochastic for V1, V2, V3 and V5; native scripted V0",
-        "forward_precision": "bf16",
-        "simulator_config": {
-          "turn_action_caps": [
-            60
-          ]
-        },
-        "models": {
-          "v1": {
-            "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
-            "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
-            "ppo_iteration": 100
-          },
-          "v2": {
-            "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
-            "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
-            "ppo_iteration": 100,
-            "selection": "best fixed validation mean placement against 2 V1 + 5 scripted; not selected on this match"
-          },
-          "v3": {
-            "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
-            "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
-            "ppo_iteration": 150,
-            "selection": "best mixed-stochastic validation mean placement among PPO0/50/100/150/200; not selected on this match"
+            "player_games": 320,
+            "first_rate": 0.2125,
+            "top4_rate": 0.821875,
+            "mean_placement": 2.95625,
+            "placement_counts": {
+              "1": 68,
+              "2": 71,
+              "3": 76,
+              "4": 48,
+              "5": 35,
+              "6": 14,
+              "7": 7,
+              "8": 1
+            }
           },
           "v5": {
-            "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
-            "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6",
-            "ppo_iteration": 100,
-            "selection": "retained V5 best before this match; no selection on these results"
+            "player_games": 320,
+            "first_rate": 0.21875,
+            "top4_rate": 0.778125,
+            "mean_placement": 3.0625,
+            "placement_counts": {
+              "1": 70,
+              "2": 75,
+              "3": 56,
+              "4": 48,
+              "5": 38,
+              "6": 21,
+              "7": 12
+            }
+          },
+          "v7": {
+            "player_games": 320,
+            "first_rate": 0.2625,
+            "top4_rate": 0.86875,
+            "mean_placement": 2.8625,
+            "placement_counts": {
+              "1": 84,
+              "2": 64,
+              "3": 67,
+              "4": 63,
+              "5": 21,
+              "6": 8,
+              "7": 6,
+              "8": 7
+            }
           }
         },
-        "seat_assignment": "each of 10 lineups plays 32 lobbies; all versions have 512 player entries; native random physical seats; interleaved neural roles rotated per lane",
-        "action_filter": false,
-        "combat_search": false,
-        "training_started": false,
-        "tracking": {
-          "backend": "wandb",
-          "entity": "eric_eric_",
-          "project": "AutoTavern",
-          "weave_project": "eric_eric_/AutoTavern",
-          "mode": "online"
-        },
-        "games_per_lineup": 32,
-        "purpose": "independent requested match; not used to select models or training opponents",
-        "lineups": [
-          {
-            "v0": 2,
-            "v1": 2,
-            "v2": 2,
-            "v3": 1,
-            "v5": 1
+        "behavior": {
+          "v1": {
+            "player_games": 320,
+            "player_turns": 4265,
+            "recruit_actions": 217747,
+            "pooled_actions_per_turn": 51.05439624853459,
+            "player_turn_action_distribution": {
+              "n": 4265,
+              "mean": 51.05439624853459,
+              "min": 1,
+              "max": 63,
+              "p50": 61.0,
+              "p90": 61.0,
+              "p95": 61.0,
+              "p99": 61.0
+            },
+            "player_mean_actions_per_turn_distribution": {
+              "n": 320,
+              "mean": 50.88694591819483,
+              "min": 32.4,
+              "max": 61.07142857142857,
+              "p50": 51.22649572649573,
+              "p90": 55.58095238095238,
+              "p95": 56.770054945054945,
+              "p99": 57.89
+            },
+            "recruit_turns_per_player_distribution": {
+              "n": 320,
+              "mean": 13.328125,
+              "min": 8,
+              "max": 26,
+              "p50": 13.0,
+              "p90": 17.0,
+              "p95": 17.05000000000001,
+              "p99": 20.0
+            },
+            "actions_per_player_game_distribution": {
+              "n": 320,
+              "mean": 681.459375,
+              "min": 325,
+              "max": 1373,
+              "p50": 667.0,
+              "p90": 881.2,
+              "p95": 941.1500000000001,
+              "p99": 1051.1
+            },
+            "cycle_returns": 35685,
+            "cycle_returns_per_player_distribution": {
+              "n": 320,
+              "mean": 111.515625,
+              "min": 33,
+              "max": 199,
+              "p50": 112.0,
+              "p90": 149.0,
+              "p95": 162.0,
+              "p99": 175.24
+            },
+            "pooled_cycle_return_fraction": 0.16388285487285703,
+            "player_cycle_return_fraction_distribution": {
+              "n": 320,
+              "mean": 0.16816260948976744,
+              "min": 0.0468384074941452,
+              "max": 0.40476190476190477,
+              "p50": 0.16341465689291776,
+              "p90": 0.227948649011964,
+              "p95": 0.25234950378688953,
+              "p99": 0.30042036836403035
+            },
+            "zero_cycle_player_games": 0,
+            "zero_cycle_player_game_fraction": 0.0,
+            "max_consecutive_cycle_returns": 54,
+            "forced_ends": 3080,
+            "forced_end_turn_fraction": 0.7221570926143025,
+            "observed_zero_action_turns": 0,
+            "same_action_id_repeats_within_turn": 100448,
+            "hero_actions": 320
           },
-          {
-            "v0": 2,
-            "v1": 2,
-            "v2": 1,
-            "v3": 2,
-            "v5": 1
+          "v2": {
+            "player_games": 320,
+            "player_turns": 4662,
+            "recruit_actions": 247725,
+            "pooled_actions_per_turn": 53.13706563706564,
+            "player_turn_action_distribution": {
+              "n": 4662,
+              "mean": 53.13706563706564,
+              "min": 1,
+              "max": 63,
+              "p50": 61.0,
+              "p90": 61.0,
+              "p95": 61.0,
+              "p99": 62.0
+            },
+            "player_mean_actions_per_turn_distribution": {
+              "n": 320,
+              "mean": 53.062944062034916,
+              "min": 38.55555555555556,
+              "max": 61.4,
+              "p50": 53.375,
+              "p90": 58.13764705882353,
+              "p95": 60.313541666666666,
+              "p99": 61.29481818181818
+            },
+            "recruit_turns_per_player_distribution": {
+              "n": 320,
+              "mean": 14.56875,
+              "min": 7,
+              "max": 26,
+              "p50": 15.0,
+              "p90": 18.0,
+              "p95": 19.05000000000001,
+              "p99": 23.810000000000002
+            },
+            "actions_per_player_game_distribution": {
+              "n": 320,
+              "mean": 775.140625,
+              "min": 348,
+              "max": 1480,
+              "p50": 760.5,
+              "p90": 990.1,
+              "p95": 1063.0,
+              "p99": 1301.3400000000001
+            },
+            "cycle_returns": 50089,
+            "cycle_returns_per_player_distribution": {
+              "n": 320,
+              "mean": 156.528125,
+              "min": 38,
+              "max": 329,
+              "p50": 146.5,
+              "p90": 237.0,
+              "p95": 255.05,
+              "p99": 280.24
+            },
+            "pooled_cycle_return_fraction": 0.20219598344938944,
+            "player_cycle_return_fraction_distribution": {
+              "n": 320,
+              "mean": 0.211956469948232,
+              "min": 0.047044632086851626,
+              "max": 0.5880893300248139,
+              "p50": 0.1934904878864069,
+              "p90": 0.3527711627098785,
+              "p95": 0.39310144927536234,
+              "p99": 0.4808385454161191
+            },
+            "zero_cycle_player_games": 0,
+            "zero_cycle_player_game_fraction": 0.0,
+            "max_consecutive_cycle_returns": 59,
+            "forced_ends": 3596,
+            "forced_end_turn_fraction": 0.7713427713427713,
+            "observed_zero_action_turns": 0,
+            "same_action_id_repeats_within_turn": 124131,
+            "hero_actions": 320
           },
-          {
-            "v0": 2,
-            "v1": 2,
-            "v2": 1,
-            "v3": 1,
-            "v5": 2
+          "v3": {
+            "player_games": 320,
+            "player_turns": 4839,
+            "recruit_actions": 258428,
+            "pooled_actions_per_turn": 53.40524901839223,
+            "player_turn_action_distribution": {
+              "n": 4839,
+              "mean": 53.40524901839223,
+              "min": 1,
+              "max": 63,
+              "p50": 61.0,
+              "p90": 61.0,
+              "p95": 61.0,
+              "p99": 62.0
+            },
+            "player_mean_actions_per_turn_distribution": {
+              "n": 320,
+              "mean": 53.272192658999785,
+              "min": 37.45454545454545,
+              "max": 61.44444444444444,
+              "p50": 53.533936651583716,
+              "p90": 58.191826923076924,
+              "p95": 59.64932126696833,
+              "p99": 61.246346153846154
+            },
+            "recruit_turns_per_player_distribution": {
+              "n": 320,
+              "mean": 15.121875,
+              "min": 9,
+              "max": 23,
+              "p50": 15.0,
+              "p90": 19.0,
+              "p95": 20.0,
+              "p99": 23.0
+            },
+            "actions_per_player_game_distribution": {
+              "n": 320,
+              "mean": 808.5875,
+              "min": 408,
+              "max": 1300,
+              "p50": 807.0,
+              "p90": 1008.5000000000001,
+              "p95": 1123.1,
+              "p99": 1244.29
+            },
+            "cycle_returns": 45881,
+            "cycle_returns_per_player_distribution": {
+              "n": 320,
+              "mean": 143.378125,
+              "min": 46,
+              "max": 357,
+              "p50": 141.0,
+              "p90": 209.10000000000002,
+              "p95": 231.05,
+              "p99": 268.86
+            },
+            "pooled_cycle_return_fraction": 0.1775388115838841,
+            "player_cycle_return_fraction_distribution": {
+              "n": 320,
+              "mean": 0.18188349932576425,
+              "min": 0.046890927624872576,
+              "max": 0.43214285714285716,
+              "p50": 0.17618794998105342,
+              "p90": 0.26963694440842545,
+              "p95": 0.3040765949107574,
+              "p99": 0.3485052527529282
+            },
+            "zero_cycle_player_games": 0,
+            "zero_cycle_player_game_fraction": 0.0,
+            "max_consecutive_cycle_returns": 59,
+            "forced_ends": 3751,
+            "forced_end_turn_fraction": 0.7751601570572433,
+            "observed_zero_action_turns": 0,
+            "same_action_id_repeats_within_turn": 122789,
+            "hero_actions": 320
           },
-          {
-            "v0": 2,
-            "v1": 1,
-            "v2": 2,
-            "v3": 2,
-            "v5": 1
+          "v5": {
+            "player_games": 320,
+            "player_turns": 4753,
+            "recruit_actions": 177742,
+            "pooled_actions_per_turn": 37.39575005259836,
+            "player_turn_action_distribution": {
+              "n": 4753,
+              "mean": 37.39575005259836,
+              "min": 1,
+              "max": 63,
+              "p50": 40.0,
+              "p90": 61.0,
+              "p95": 61.0,
+              "p99": 61.0
+            },
+            "player_mean_actions_per_turn_distribution": {
+              "n": 320,
+              "mean": 36.60507217839497,
+              "min": 15.8,
+              "max": 49.3125,
+              "p50": 37.5625,
+              "p90": 43.705882352941174,
+              "p95": 45.06160130718955,
+              "p99": 47.91136363636364
+            },
+            "recruit_turns_per_player_distribution": {
+              "n": 320,
+              "mean": 14.853125,
+              "min": 8,
+              "max": 24,
+              "p50": 15.0,
+              "p90": 18.0,
+              "p95": 20.0,
+              "p99": 22.0
+            },
+            "actions_per_player_game_distribution": {
+              "n": 320,
+              "mean": 556.44375,
+              "min": 151,
+              "max": 1077,
+              "p50": 567.5,
+              "p90": 769.0,
+              "p95": 813.0500000000002,
+              "p99": 1010.4100000000001
+            },
+            "cycle_returns": 8148,
+            "cycle_returns_per_player_distribution": {
+              "n": 320,
+              "mean": 25.4625,
+              "min": 3,
+              "max": 86,
+              "p50": 24.0,
+              "p90": 39.10000000000002,
+              "p95": 46.05000000000001,
+              "p99": 70.86000000000001
+            },
+            "pooled_cycle_return_fraction": 0.045841725647286516,
+            "player_cycle_return_fraction_distribution": {
+              "n": 320,
+              "mean": 0.04712025850100885,
+              "min": 0.008174386920980926,
+              "max": 0.15513626834381553,
+              "p50": 0.042835069591144484,
+              "p90": 0.0711998148195777,
+              "p95": 0.08429951209797869,
+              "p99": 0.12735568184819435
+            },
+            "zero_cycle_player_games": 0,
+            "zero_cycle_player_game_fraction": 0.0,
+            "max_consecutive_cycle_returns": 25,
+            "forced_ends": 1864,
+            "forced_end_turn_fraction": 0.39217336419103727,
+            "observed_zero_action_turns": 0,
+            "same_action_id_repeats_within_turn": 62187,
+            "hero_actions": 320
           },
-          {
-            "v0": 2,
-            "v1": 1,
-            "v2": 2,
-            "v3": 1,
-            "v5": 2
+          "v7": {
+            "player_games": 320,
+            "player_turns": 4796,
+            "recruit_actions": 133924,
+            "pooled_actions_per_turn": 27.924103419516264,
+            "player_turn_action_distribution": {
+              "n": 4796,
+              "mean": 27.924103419516264,
+              "min": 1,
+              "max": 63,
+              "p50": 22.0,
+              "p90": 61.0,
+              "p95": 61.0,
+              "p99": 61.0
+            },
+            "player_mean_actions_per_turn_distribution": {
+              "n": 320,
+              "mean": 27.435012423641247,
+              "min": 10.125,
+              "max": 39.0,
+              "p50": 27.514705882352942,
+              "p90": 34.06544117647059,
+              "p95": 35.36545454545455,
+              "p99": 37.108
+            },
+            "recruit_turns_per_player_distribution": {
+              "n": 320,
+              "mean": 14.9875,
+              "min": 8,
+              "max": 24,
+              "p50": 15.0,
+              "p90": 18.0,
+              "p95": 20.0,
+              "p99": 22.810000000000002
+            },
+            "actions_per_player_game_distribution": {
+              "n": 320,
+              "mean": 419.5125,
+              "min": 82,
+              "max": 834,
+              "p50": 415.0,
+              "p90": 588.2,
+              "p95": 664.05,
+              "p99": 731.81
+            },
+            "cycle_returns": 4836,
+            "cycle_returns_per_player_distribution": {
+              "n": 320,
+              "mean": 15.1125,
+              "min": 2,
+              "max": 48,
+              "p50": 13.5,
+              "p90": 25.0,
+              "p95": 29.0,
+              "p99": 36.0
+            },
+            "pooled_cycle_return_fraction": 0.0361100325557779,
+            "player_cycle_return_fraction_distribution": {
+              "n": 320,
+              "mean": 0.036730634366447384,
+              "min": 0.006042296072507553,
+              "max": 0.10483870967741936,
+              "p50": 0.03492437794763376,
+              "p90": 0.056681079989350666,
+              "p95": 0.07048314851054577,
+              "p99": 0.09469690108041666
+            },
+            "zero_cycle_player_games": 0,
+            "zero_cycle_player_game_fraction": 0.0,
+            "max_consecutive_cycle_returns": 15,
+            "forced_ends": 764,
+            "forced_end_turn_fraction": 0.15929941618015012,
+            "observed_zero_action_turns": 0,
+            "same_action_id_repeats_within_turn": 42394,
+            "hero_actions": 320
           },
-          {
-            "v0": 2,
-            "v1": 1,
-            "v2": 1,
-            "v3": 2,
-            "v5": 2
-          },
-          {
-            "v0": 1,
-            "v1": 2,
-            "v2": 2,
-            "v3": 2,
-            "v5": 1
-          },
-          {
-            "v0": 1,
-            "v1": 2,
-            "v2": 2,
-            "v3": 1,
-            "v5": 2
-          },
-          {
-            "v0": 1,
-            "v1": 2,
-            "v2": 1,
-            "v3": 2,
-            "v5": 2
-          },
-          {
-            "v0": 1,
-            "v1": 1,
-            "v2": 2,
-            "v3": 2,
-            "v5": 2
+          "v0": {
+            "status": "unknown; native script actions are not exposed to Python"
           }
+        },
+        "completed_lobbies": 320,
+        "elapsed_seconds": 118.02955758400003,
+        "games_per_second": 2.71118528739939,
+        "inference_and_observe_seconds": 55.37978835298509,
+        "native_step_seconds": 2.265193564985566,
+        "actual_initial_concurrency": 320,
+        "microbatch": null,
+        "gpu_peak_allocated_bytes": 667918848,
+        "gpu_peak_reserved_bytes": 836763648,
+        "rejected_actions": 0,
+        "deferred_actions": 0,
+        "weights_unchanged": true,
+        "limitations": [
+          "V0 behavioral metrics unknown; only rank complement is available.",
+          "Fresh match with same frozen models; not a replay of historical 320 games.",
+          "Turn denominator includes every recruit turn observed ready, even if zero executed actions.",
+          "Within-batch other-seat changes enter post-action public observations.",
+          "Hashed traces support independent cycle/count audits, not full state rendering."
         ],
-        "v0": {
-          "kind": "native_scripted",
-          "source": "crates/taverngym/src/bot.rs"
+        "verification": "passed",
+        "wandb_url": "https://forge.coreweave.com/wandb/eric_eric_/AutoTavern/runs/gr1d5kj4",
+        "raw_source_sha256": {
+          "config.json": "ed6b0b737d64500681e28eea069a778afabfba8652526003667bf8609d0e7b8a",
+          "run.py": "43fc7e51a0dbd21d64360d319f38fee5cfce7b60561e56a83b55255995057344",
+          "report.py": "8019b777165fe19a4fe61afbf22f503440f6694423a44ebcc0266654b5e26dc8",
+          "preflight.py": "5bc89a64277922b8f86f74578259f736813274f176db0d44f7eaf3e5704aef1f",
+          "games.jsonl": "0757f4dc23b293d897b7e253467840aebe2be7da43375503f7a77255b0273877",
+          "players.jsonl": "2a56b4f70cd4dc904a938063118b040fbff36acb2fcbf98f09e4439df32aead1",
+          "turns.jsonl.gz": "c22d4c694a70febc7ff8a7fe54d3d38d5d5f165b498d3333edb81b72446a6238",
+          "results.json": "0b25a8f8c30529de90dc28cb2931ed4cc2cb5d251fb14e067d8374cfbd1277af",
+          "batches.json": "e81047163b9a4ad20ae26a048bbf9f7f784b0456388a39c1a2d9d67d20e45ce5",
+          "schedule-initial.json": "34cb8a497a25998b3b730aaabb4c08aaa62e757d7d68cdef26d351480ecfd49a"
         }
-      },
-      "lobbies": 320,
-      "groups": {
-        "v0": {
-          "player_games": 512,
-          "first_places": 3,
-          "placement_counts": {
-            "1": 3,
-            "2": 3,
-            "3": 4,
-            "4": 7,
-            "5": 14,
-            "6": 65,
-            "7": 160,
-            "8": 256
-          },
-          "first_rate": 0.005859375,
-          "first_rate_ci95": [
-            0.0,
-            0.013671875
-          ],
-          "top4_rate": 0.033203125,
-          "top4_rate_ci95": [
-            0.01953125,
-            0.048828125
-          ],
-          "mean_placement": 7.181640625,
-          "mean_placement_ci95": [
-            7.095703125,
-            7.263671875
-          ],
-          "lobby_win_share": 0.009375,
-          "lobby_win_share_ci95": [
-            0.0,
-            0.021875
-          ]
-        },
-        "v1": {
-          "player_games": 512,
-          "first_places": 39,
-          "placement_counts": {
-            "1": 39,
-            "2": 44,
-            "3": 68,
-            "4": 94,
-            "5": 105,
-            "6": 91,
-            "7": 56,
-            "8": 15
-          },
-          "first_rate": 0.076171875,
-          "first_rate_ci95": [
-            0.0546875,
-            0.099609375
-          ],
-          "top4_rate": 0.478515625,
-          "top4_rate_ci95": [
-            0.439453125,
-            0.517578125
-          ],
-          "mean_placement": 4.47265625,
-          "mean_placement_ci95": [
-            4.322265625,
-            4.619140625
-          ],
-          "lobby_win_share": 0.121875,
-          "lobby_win_share_ci95": [
-            0.0875,
-            0.159375
-          ]
-        },
-        "v2": {
-          "player_games": 512,
-          "first_places": 70,
-          "placement_counts": {
-            "1": 70,
-            "2": 82,
-            "3": 84,
-            "4": 82,
-            "5": 68,
-            "6": 64,
-            "7": 41,
-            "8": 21
-          },
-          "first_rate": 0.13671875,
-          "first_rate_ci95": [
-            0.109375,
-            0.1640625
-          ],
-          "top4_rate": 0.62109375,
-          "top4_rate_ci95": [
-            0.58203125,
-            0.658203125
-          ],
-          "mean_placement": 3.892578125,
-          "mean_placement_ci95": [
-            3.736279296875,
-            4.05078125
-          ],
-          "lobby_win_share": 0.21875,
-          "lobby_win_share_ci95": [
-            0.175,
-            0.2625
-          ]
-        },
-        "v3": {
-          "player_games": 512,
-          "first_places": 96,
-          "placement_counts": {
-            "1": 96,
-            "2": 93,
-            "3": 90,
-            "4": 75,
-            "5": 65,
-            "6": 52,
-            "7": 28,
-            "8": 13
-          },
-          "first_rate": 0.1875,
-          "first_rate_ci95": [
-            0.158203125,
-            0.21875
-          ],
-          "top4_rate": 0.69140625,
-          "top4_rate_ci95": [
-            0.654296875,
-            0.728515625
-          ],
-          "mean_placement": 3.494140625,
-          "mean_placement_ci95": [
-            3.33984375,
-            3.6484375
-          ],
-          "lobby_win_share": 0.3,
-          "lobby_win_share_ci95": [
-            0.253125,
-            0.35
-          ]
-        },
-        "v5": {
-          "player_games": 512,
-          "first_places": 112,
-          "placement_counts": {
-            "1": 112,
-            "2": 98,
-            "3": 74,
-            "4": 62,
-            "5": 68,
-            "6": 48,
-            "7": 35,
-            "8": 15
-          },
-          "first_rate": 0.21875,
-          "first_rate_ci95": [
-            0.1875,
-            0.251953125
-          ],
-          "top4_rate": 0.67578125,
-          "top4_rate_ci95": [
-            0.63671875,
-            0.712890625
-          ],
-          "mean_placement": 3.458984375,
-          "mean_placement_ci95": [
-            3.296875,
-            3.62109375
-          ],
-          "lobby_win_share": 0.35,
-          "lobby_win_share_ci95": [
-            0.3,
-            0.403125
-          ]
-        }
-      },
-      "pairwise": {
-        "v0_vs_v1": {
-          "ahead_rate_first_vs_second": 0.07625,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.05375,
-            0.1
-          ]
-        },
-        "v0_vs_v2": {
-          "ahead_rate_first_vs_second": 0.0875,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.06625,
-            0.11125
-          ]
-        },
-        "v0_vs_v3": {
-          "ahead_rate_first_vs_second": 0.05875,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.04125,
-            0.07875
-          ]
-        },
-        "v0_vs_v5": {
-          "ahead_rate_first_vs_second": 0.06125,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.0425,
-            0.08125
-          ]
-        },
-        "v1_vs_v2": {
-          "ahead_rate_first_vs_second": 0.40375,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.36375,
-            0.445
-          ]
-        },
-        "v1_vs_v3": {
-          "ahead_rate_first_vs_second": 0.34875,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.31,
-            0.3875
-          ]
-        },
-        "v1_vs_v5": {
-          "ahead_rate_first_vs_second": 0.34125,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.3025,
-            0.3825
-          ]
-        },
-        "v2_vs_v3": {
-          "ahead_rate_first_vs_second": 0.44875,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.4075,
-            0.49
-          ]
-        },
-        "v2_vs_v5": {
-          "ahead_rate_first_vs_second": 0.43125,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.39,
-            0.47125
-          ]
-        },
-        "v3_vs_v5": {
-          "ahead_rate_first_vs_second": 0.5,
-          "pair_comparisons": 800,
-          "ahead_rate_ci95": [
-            0.45875,
-            0.54125
-          ]
-        }
-      },
-      "confidence_method": "10,000 stratified whole-lobby bootstrap samples, preserving 32 lobbies per lineup; seat-weighted ratios; percentile 95% intervals",
-      "elapsed_seconds": 219.7113297140022,
-      "vector_steps": 14400,
-      "deferred_actions": 0,
-      "rejected_actions": 0,
-      "weights_unchanged": true,
-      "training_started": false,
-      "optimizer_updates": 0,
-      "limitations": [
-        "Results apply to these ten balanced eight-player lineups and stochastic BF16 inference.",
-        "Each version has 512 player entries across 320 lobbies; correlated seats are not independent.",
-        "V0 aggregate ranks are the exact unordered complement of neural-seat ranks.",
-        "Pairwise ahead rate compares final placement, not combat outcomes.",
-        "Independent test results do not select checkpoints or training opponents."
-      ]
+      }
     }
   },
   "source_file_sha256": {
@@ -6804,7 +10673,7 @@
     "experiments/20261031-infra/20261031-training-agents/instances/20261101-v789-move0005-256x512-01/opening-reward-verification.json": "7ac0c65ab9cc54d95a311e556122f0696735789d87ac497b701ded378a1a7f73",
     "python/taverngym/learning/rewards.py": "04d74df96d68e5fc0c223ee133fcaf3d4d186d371ca760826168f7c4bbf7ea58",
     "docs/TRAINING.md": "e02246a7c3bb73d7447da24207abcbff15de5b701de2ce15c3d8402b1cdb76b9",
-    "docs/TRAINING_METRICS.md": "aa3c7b86d17da4ccbde93a846d6e87cedbd5c60174a7bdf689ca28d7e75b4517",
+    "docs/TRAINING_METRICS.md": "828f8bfc464c4d8872cc0da2d8f1d93cf7ca41207003881e80024a097fbe4cad",
     "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend-256x512/config.json": "c54ad19f12b47df8068ecea4767ad03c1367bcb03a1900d0a5f1d71d10b6ac63",
     "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-move0005-cycle001-forceend-256x512/README.md": "176b4dd8434285824a3f0095b6f1086efcfe5e662b13e9c155158e4bb6c196cf",
     "experiments/20261101-exp08-v8-history-ranked/20261101-ppo-v8-move0005-cycle001-forceend-256x512/config.json": "998add3196edf21cd9c30f6da4c5f6e448a72b08471246e5c628bbda22ba38cb",
@@ -6835,10 +10704,19 @@
     "experiments/20261031-infra/20261031-training-agents/instances/20261101-v7-reward-256x512-01/final-verification.json": "b8dcc49c6e43280f3cee38faa854abdeb5b659355a1001489783dbaebd226f4c",
     "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/retention.json": "6136aea55287332bfa9e272445bbef5bff5c8f0ba3222b88d4f633f871e83e9c",
     "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/lifecycle.json": "2b81d0c5c8cddbf1426338e6d8c65eea72239c56aefc6accc3aa1ec8795750b0",
-    "configs/model-versions.json": "8969e6b7e63efbfda622f398c013146a69fda2e26dc302ef757037aa473206c5",
+    "configs/model-versions.json": "d742da52c95d80309509ba5cfa88dc165abe98267418e33f373f99685ecfa45f",
     "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/README.md": "441dcb492fb3e096a1999f3950cbc15d4497b3624a16d651419cf4cc2a737b73",
     "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/results-summary.json": "3b4b1a1de09810d399d03bb6cea86bf1f1e29dc2804d81d37279de18684b1ae9",
-    "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/ranking-summary.json": "2167e7508036717cc1f5672b29b9125ef92dd4269d394b972543eae61eb458df"
+    "experiments/20261101-exp07-v7-history-ranked/20261101-ppo-v7-reward-256x512-run01/ranking-summary.json": "2167e7508036717cc1f5672b29b9125ef92dd4269d394b972543eae61eb458df",
+    "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/config.json": "ed6b0b737d64500681e28eea069a778afabfba8652526003667bf8609d0e7b8a",
+    "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/results-summary.json": "f8f1ee8776bfd2d27a2bc152b2dfdc50ce64d1a44da0fb5d8eb51b979d764618",
+    "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/verification.json": "e8cd8149801ff0c8f28cef52ec0b492de553f72b1e3df1e412c2a892c4fd401d",
+    "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/source-manifest.json": "5846cfade15ed562c4d7e2fde708b17da1e49953be975f68504810a6d854dae6",
+    "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/config.json": "c569300c52dcb23908a8bbce17b28543451b3d5368ec6bce9906ba091315087e",
+    "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/source-manifest.json": "06499d3a54c6ee3398df25a83122273c6b4813d14316bdd8e48246327ef507c5",
+    "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/results-summary.json": "cc09dc9bfdd75a87954cf4c1fd7e7a2546395c6744fb40c585afe5dfd71365bc",
+    "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/verification.json": "cdd14ce408744aabbacfb21cdc3f92d57e63ffa5cdf51d99537605581bba8a9d",
+    "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/results.json": "dcb334859d3495efca32f521533e99955b532f48cab9f0beca9c53d12d3571d4"
   },
   "training_instances": {
     "20261101-v789-move0005-256x512-01": {
@@ -7491,8 +11369,28 @@
   "publication_scope": {
     "raw_data_storage": "W&B and local artifact storage",
     "git_content": "Code, configuration, field schema, compact results and source hashes",
-    "previously_tracked_wandb_files_removed": 40,
+    "previously_tracked_wandb_files_removed": 42,
     "local_files_preserved": true,
-    "past_commits_unchanged": true
+    "this_publication_rewrites_history": false,
+    "prior_user_authorized_history_cleanup": {
+      "date_beijing": "2026-11-03",
+      "historical_file_paths_removed": 44,
+      "remote_branches_rewritten": 8
+    }
+  },
+  "current_finite_instance": {
+    "instance_id": "20261103-v89-256x512-01",
+    "status": "completed",
+    "training_and_heldout_completed": true,
+    "controller_exited": true,
+    "versions": [
+      "v8",
+      "v9"
+    ],
+    "PPO_completed": 200,
+    "effective_samples": 26214400,
+    "actual_new_Adam": 3200,
+    "no_V10": true,
+    "evidence": "experiments/20261031-infra/20261031-training-agents/instances/20261103-v89-256x512-01/chain-completion-verification.json"
   }
 }

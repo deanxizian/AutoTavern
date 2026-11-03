@@ -24,7 +24,8 @@ def merged_actions(shards, policies, statistics):
     """Merge candidate and reference seats across every shard by checkpoint hash."""
     for shard in shards:
         shard["obs"] = shard["env"].observe()
-        shard["ready"] = shard["obs"]["ready"] & np.repeat(shard["active"], 7)
+        roles = shard.get("role_count", shard["env"].n_slots // len(shard["active"]))
+        shard["ready"] = shard["obs"]["ready"] & np.repeat(shard["active"], roles)
         shard["actions"] = np.zeros(shard["env"].n_slots, dtype=np.int64)
     for identity, policy in policies.items():
         chunks = [(s, np.flatnonzero(s["ready"] & (s["identities"] == identity))) for s in shards]
@@ -51,7 +52,9 @@ def parallel_evaluate(root, folder, inputs, checkpoints, device):
     games, seed = protocol["games"], protocol["seed"]
     candidates = inputs["candidates"]
     reference = protocol["reference_pool"]
-    require(games == 64 and sum(s["count"] for s in reference) == 6,
+    frozen = sum(s["count"] for s in reference)
+    role_count = 1 + frozen
+    require(games == 64 and frozen == (7 if inputs.get("pool_selection") == "top2" else 6),
             "Unexpected parallel ranking protocol")
     require(not (folder / "ranking-games.jsonl").exists(),
             "Partial parallel ranking exists; preserve it and diagnose before rerunning")
@@ -76,6 +79,10 @@ def parallel_evaluate(root, folder, inputs, checkpoints, device):
         require(not actual or (actual.get("cycle_forfeit_repetitions") is None
                               and actual.get("turn_action_forfeit_limit") is None),
                 "Parallel native ranking requires disabled early forfeits")
+    if inputs.get("pool_selection") == "top2":
+        fingerprints = [checkpoints[s["model_version"]]["policy_sha256"] for s in candidates]
+        require(len(set(fingerprints)) == len(fingerprints),
+                "Duplicate candidate policies must be registered as retired aliases before ranking")
     for spec in all_specs:
         path = root / spec["model"]
         require(digest(path) == spec["sha256"], "Ranking model hash changed before loading")
@@ -91,24 +98,24 @@ def parallel_evaluate(root, folder, inputs, checkpoints, device):
         require(all(not c or (c.get("cycle_forfeit_repetitions") is None
                              and c.get("turn_action_forfeit_limit") is None) for c in configs),
                 "Parallel native ranking requires disabled early forfeits")
-        env = tg.BatchEnv(games, seed=seed, controlled=range(7), threads=4,
+        env = tg.BatchEnv(games, seed=seed, controlled=range(role_count), threads=4,
                           config={"turn_action_caps": [60]}, rotate_seats=True)
-        actual = [ActionRewardShaper(RewardShapingConfig(**(configs[i % 7] or {
+        actual = [ActionRewardShaper(RewardShapingConfig(**(configs[i % role_count] or {
                       "operation_cost": 0, "cycle_cost": 0})))
-                  for i in range(games * 7)]
+                  for i in range(games * role_count)]
         diagnostic = [ActionRewardShaper(RewardShapingConfig(
             operation_cost=0, cycle_cost=.01, cycle_detection="all_actions"))
-            for _ in range(games * 7)]
+            for _ in range(games * role_count)]
         shards.append({"spec": spec, "roles": roles, "configs": configs, "env": env,
-                       "initial_seats": env.slot_seats.copy(),
+                       "initial_seats": env.slot_seats.copy(), "role_count": role_count,
                        "identities": np.tile([s["sha256"] for s in roles], games),
                        "active": np.ones(games, dtype=bool),
-                       "places": np.zeros((games, 7), dtype=np.int64),
+                       "places": np.zeros((games, role_count), dtype=np.int64),
                        "actual": actual, "diagnostic": diagnostic,
                        "turns": [defaultdict(lambda: {"actions": 0, "forced_ends": 0,
                            "cycle_returns": 0, "max_consecutive_cycle_returns": 0})
-                           for _ in range(games * 7)],
-                       "totals": [None] * (games * 7), "episodes": [None] * games})
+                           for _ in range(games * role_count)],
+                       "totals": [None] * (games * role_count), "episodes": [None] * games})
     statistics = defaultdict(list)
     requested = games * len(candidates)
     started = time.monotonic()
@@ -116,7 +123,10 @@ def parallel_evaluate(root, folder, inputs, checkpoints, device):
                 "actual_initial_concurrency": sum(len(s["active"]) for s in shards),
                 "games_per_candidate": games, "seed": seed, "precision": "bf16",
                 "automatic_terminal_resets": 0, "replacement_games": 0, "hash_to_versions": versions,
-                "diagnostics": "all_actions; read-only; V0 behavior unknown"}
+                "controlled_seats_per_game": role_count,
+                "v0_seats_per_game": 8 - role_count,
+                "diagnostics": ("all_actions; read-only; V0 behavior unknown" if role_count == 7
+                                else "all_actions; read-only; all eight seats controlled")}
     write_json(folder / "ranking-scheduler.json", metadata)
     rounds = deferred = 0
     inference_seconds = environment_seconds = 0.
@@ -161,7 +171,7 @@ def parallel_evaluate(root, folder, inputs, checkpoints, device):
                         if actual is not None:
                             s["totals"][slot] = actual
                     for slot in np.flatnonzero(dones):
-                        lane, role = divmod(int(slot), 7)
+                        lane, role = divmod(int(slot), role_count)
                         require(s["places"][lane, role] == 0, "Duplicate ranking terminal")
                         place = int(info["placement"][slot])
                         s["places"][lane, role] = place
@@ -185,12 +195,13 @@ def parallel_evaluate(root, folder, inputs, checkpoints, device):
                     for lane in np.flatnonzero(finished):
                         places = s["places"][lane].tolist()
                         v0 = sorted(set(range(1, 9)) - set(places))
-                        require(len(v0) == 1 and len(set(places)) == 7, "Invalid eight-seat ranking")
+                        require(len(v0) == 8 - role_count and len(set(places)) == role_count,
+                                "Invalid eight-seat ranking")
                         players = [{"model_version": spec["model_version"],
                                     "checkpoint_sha256": spec["sha256"],
-                                    "seat": int(s["initial_seats"][lane * 7 + role]),
+                                    "seat": int(s["initial_seats"][lane * role_count + role]),
                                     "placement": places[role],
-                                    "turns": dict(s["turns"][lane * 7 + role])}
+                                    "turns": dict(s["turns"][lane * role_count + role])}
                                    for role, spec in enumerate(s["roles"])]
                         record = {"candidate": s["spec"]["model_version"], "lane": int(lane),
                                   "seed": seed, "episode_index": 0, "players": players,

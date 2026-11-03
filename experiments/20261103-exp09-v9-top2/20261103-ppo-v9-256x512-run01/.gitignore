@@ -1,0 +1,5 @@
+# Raw full-game evaluations stay local; publish results-summary.json with source SHA.
+results.json
+ranking-results.json
+ranking-v*.json
+ranking-scheduler.json

@@ -124,7 +124,9 @@ def test_future_tracker_preserves_values_and_writes_each_mode_once(tmp_path, mon
         return run
 
     monkeypatch.setitem(sys.modules, "wandb", SimpleNamespace(init=init, Settings=lambda **k: k))
-    config = {"model_version": "v8", "tracking": {"mode": "offline"}}
+    config = {"model_version": "v8", "metric_schema_version": 2,
+              "metric_schema_sha256": __import__("hashlib").sha256(SCHEMA_PATH.read_bytes()).hexdigest(),
+              "tracking": {"mode": "offline"}}
     tracker = WandbTrackerV2(tmp_path, config)
     try:
         tracker.log({"rollout/mean_placement": 3.5, "rollout/action_reward": -.2,
@@ -147,7 +149,7 @@ def test_future_tracker_preserves_values_and_writes_each_mode_once(tmp_path, mon
         {"test/core_best_sampled_mean_placement": 3.125, "optimizer_step": 400},
     ]
     assert configurations[0]["metric_schema_version"] == 2
-    assert "metric_schema_version" not in config
+    assert config["metric_schema_version"] == 2
 
 
 @pytest.mark.parametrize("version", [None, "v1", "v7", "unknown"])
@@ -157,3 +159,96 @@ def test_future_tracker_refuses_to_change_a_v7_or_unspecified_run(tmp_path, vers
 
     with pytest.raises(ValueError, match="V8\\+"):
         WandbTrackerV2(tmp_path, {"model_version": version})
+
+
+def test_v8_output_boundary_resume_and_finalization_share_canonical_dedup(tmp_path, monkeypatch):
+    pytest.importorskip("stable_baselines3")
+    import hashlib
+    import sys
+    from types import SimpleNamespace
+    from stable_baselines3.common.logger import configure
+    from taverngym.learning.experiment import log_evaluation
+    from taverngym.learning.rewards import REWARD_METRICS
+    from taverngym.learning.tracking import WandbOutputFormat
+    from taverngym.learning.tracking_v2 import tracker_for_config, journal_has_metric
+
+    sent = []
+    run = SimpleNamespace(entity="eric_eric_", project="AutoTavern", id="v8", url="mock",
+        define_metric=lambda *a, **k: None, log=sent.append, finish=lambda **k: None)
+    monkeypatch.setitem(sys.modules, "wandb", SimpleNamespace(init=lambda **k: run,
+                                                             Settings=lambda **k: k))
+    cfg = {"model_version": "v8", "metric_schema_version": 2,
+           "metric_schema_sha256": hashlib.sha256(SCHEMA_PATH.read_bytes()).hexdigest(),
+           "tracking": {"mode": "offline"}}
+    for missing in ("metric_schema_version", "metric_schema_sha256"):
+        with pytest.raises(ValueError):
+            tracker_for_config(tmp_path, {k: v for k, v in cfg.items() if k != missing})
+    tracker = tracker_for_config(tmp_path, cfg)
+    episode = {**dict.fromkeys(REWARD_METRICS, 0.), "mean_placement": 3.5,
+               "first_rate": .25, "top4_rate": .75, "cap_end_rate": .1}
+    # The real experiment output adapter receives train, val, greedy, PPO and
+    # performance together; the Adam callback logs directly through the tracker.
+    tracker.log({"train/loss": 1., "train/learning_rate": 1e-5,
+                 "train/optimizer_steps": 16}, 16)
+    logger = configure(format_strings=[])
+    logger.output_formats.append(WandbOutputFormat(tracker))
+    for key, value in episode.items():
+        logger.record("rollout/" + key, value)
+    logger.record("ppo_summary/loss", 1.)
+    logger.record("time/rollout_seconds", 2.)
+    logger.record("progress/ppo_iterations", 1)
+    log_evaluation(logger, "val", {"conditions": {
+        "mixed_sampled": episode, "mixed_greedy": episode}})
+    logger.dump(16)
+    for checkpoint in ("initial", "best", "final"):
+        tracker.log({f"test/{checkpoint}_mixed_{mode}_{key}": value
+                     for mode in ("sampled", "greedy")
+                     for key, value in episode.items()}, 16)
+    tracker.finish()
+    before = list(sent)
+    resumed = tracker_for_config(tmp_path, cfg)
+    for row in before:
+        resumed.log(row, row["optimizer_step"])
+    resumed.finish()
+    assert sent == before
+    rows = [json.loads(line) for line in (tmp_path / "wandb-metrics.jsonl").read_text().splitlines()]
+    assert journal_has_metric(rows, "val/mean_placement", cfg, 16)
+    assert journal_has_metric(rows, "test/best_mixed_sampled_mean_placement", cfg)
+    assert {k.split("/")[0] for row in rows for k in row if "/" in k} == {
+        "train_core", "train_reward", "train", "val_core", "val_reward", "val", "test"}
+    for scope in ("train_reward", "val_reward"):
+        assert all(any(f"{scope}/{metric}" in row for row in rows)
+                   for metric in ("placement", "hero_selection", "operation", "total"))
+
+
+def test_zero_adam_ppo_still_records_distinct_outcomes_and_replays_once(tmp_path, monkeypatch):
+    pytest.importorskip("stable_baselines3")
+    import hashlib
+    import sys
+    from types import SimpleNamespace
+    from taverngym.learning.tracking_v2 import tracker_for_config
+
+    sent = []
+    run = SimpleNamespace(entity="eric_eric_", project="AutoTavern", id="zero-adam", url="mock",
+        define_metric=lambda *a, **k: None, log=sent.append, finish=lambda **k: None)
+    monkeypatch.setitem(sys.modules, "wandb", SimpleNamespace(init=lambda **k: run,
+                                                             Settings=lambda **k: k))
+    cfg = {"model_version": "v8", "metric_schema_version": 2,
+           "metric_schema_sha256": hashlib.sha256(SCHEMA_PATH.read_bytes()).hexdigest(),
+           "tracking": {"mode": "offline"}}
+    rows = [{"progress/ppo_iterations": iteration,
+             "rollout/mean_placement": placement, "time/update_seconds": 1.}
+            for iteration, placement in ((1, 4.), (2, 3.))]
+    tracker = tracker_for_config(tmp_path, cfg)
+    for row in rows:
+        tracker.log(row, 16)
+    tracker.log({"train/loss": 1.}, 16)
+    tracker.finish()
+    resumed = tracker_for_config(tmp_path, cfg)
+    for row in rows:
+        resumed.log(row, 16)
+    resumed.log({"train/loss": 1.}, 16)
+    resumed.finish()
+    assert [r["train_core/mean_placement"] for r in sent
+            if "train_core/mean_placement" in r] == [4., 3.]
+    assert len(sent) == 3

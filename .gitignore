@@ -44,6 +44,16 @@ wandb/
 /experiments/**/ranking-results.json
 /experiments/**/ranking-scheduler.json
 /experiments/**/ranking-v[0-9]*.json
+/experiments/**/games.jsonl
+/experiments/**/players.jsonl
+/experiments/**/turns.jsonl
+/experiments/**/batches.json
+/experiments/**/performance-sync.json
+/experiments/**/tracking-error.json
+/experiments/**/controller-status.json
+/experiments/**/monitor-status.json
+/experiments/**/monitor-journal.jsonl
+/experiments/**/launch-evidence.json
 
 # credentials and private configuration
 .env
@@ -81,8 +91,8 @@ guard-*.json
 /docs/papers/*
 !/docs/papers/README.md
 
-# Transient experiment state and verbose logs. Keep configs, metrics, result JSON,
-# benchmark samples and reproduction scripts under version control.
+# Transient experiment state and verbose logs. Keep configs, compact result
+# summaries, benchmark samples and reproduction scripts under version control.
 /experiments/**/tensorboard/
 /experiments/**/events.out.tfevents.*
 /experiments/**/sessions/

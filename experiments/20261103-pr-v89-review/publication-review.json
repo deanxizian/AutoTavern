@@ -1,0 +1,374 @@
+{
+  "reviewed_at": "2026-11-03T23:38:20.937003+08:00",
+  "repository": "firefighter-eric/AutoTavern",
+  "user_requested_action": "create_and_merge_pull_request",
+  "public_files_reviewed_excluding_this_manifest": 59,
+  "public_bytes_excluding_this_manifest": 975040,
+  "local_only_artifacts_preserved": 52,
+  "excluded_categories": [
+    "model weights",
+    "W&B runtime data and SDK caches",
+    "per-game and per-action outputs",
+    "raw metric journals",
+    "host/process/monitor snapshots",
+    "recovery and launch authorization records"
+  ],
+  "git_history_rewrite": false,
+  "credential_pattern_scan": "No literal credentials matched in any reviewed public file; historical source-path fields are not credential fields.",
+  "files": [
+    {
+      "path": ".gitignore",
+      "bytes": 2501,
+      "sha256": "d21251a17c16f019c91953f9a6ac0e69963e90a579475b23cc8ec5fa6c87ff3d",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "configs/model-versions.json",
+      "bytes": 7499,
+      "sha256": "d742da52c95d80309509ba5cfa88dc165abe98267418e33f373f99685ecfa45f",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "docs/TRAINING_METRICS.md",
+      "bytes": 28965,
+      "sha256": "828f8bfc464c4d8872cc0da2d8f1d93cf7ca41207003881e80024a097fbe4cad",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01/.gitignore",
+      "bytes": 159,
+      "sha256": "5d0024d0cac8d57877038c1810a4d91bac06044587e1a1598c61515da883ee62",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01/README.md",
+      "bytes": 1189,
+      "sha256": "6196009e0a480666536e1382356df62fa3e83b9e7c8cca6629020479c727afd4",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01/config.json",
+      "bytes": 9577,
+      "sha256": "99fb249f76aec5870e1020134e587aee1e5176e6ef8b76fa8ccd5d020e763ad8",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01/lifecycle.json",
+      "bytes": 1204,
+      "sha256": "715964b7cc383626f48dfc83560044f0ec806d0c0d923c9b5e1b85b3e812dfbb",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01/resolved-config.json",
+      "bytes": 10786,
+      "sha256": "0a62c0dead95e282689985a411db58588556f4eed7917dd5e167438474dd259c",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01/results-summary.json",
+      "bytes": 50290,
+      "sha256": "871280faac3ab741ca285a35093c77c48de2817d7706a7ae53a00dec0c79ba6a",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp08-v8-3v5-4v7/20261103-ppo-v8-256x512-run01/retention.json",
+      "bytes": 3237,
+      "sha256": "30d9da516c02a26413932be5f05a1f9c295a48a92852d4fb85f49961e3a5a1c2",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp08-v8-3v5-4v7/README.md",
+      "bytes": 693,
+      "sha256": "02388d7b150f2b31337cb707be0aeab89042b948d0bd20e657f5e1419a9861a3",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/.gitignore",
+      "bytes": 159,
+      "sha256": "5d0024d0cac8d57877038c1810a4d91bac06044587e1a1598c61515da883ee62",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/README.md",
+      "bytes": 1679,
+      "sha256": "0c42c735cc36b095ff9d34a20ff8c0fb514ca950693b3cba6f1c723501f99421",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/config.json",
+      "bytes": 9380,
+      "sha256": "b25d303b507fc4950d2a541164cbfc1f31a0dc58be8d9edb0ba66c8b855fefe6",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/lifecycle.json",
+      "bytes": 1195,
+      "sha256": "8c92b14c3b219e05eafed1229774ae86f61685bdefa032b1008776d25a9649bf",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/ranking-input.json",
+      "bytes": 14435,
+      "sha256": "969965f947d5bb34c1fffef25e5f6621b19f5c34f3a9c4fb8f9f37ba02164db2",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/ranking-scheduler-summary.json",
+      "bytes": 3041,
+      "sha256": "bebe811170c50c3bb0e62557adbb04fe2e376aca9b32d65bb1ae3bf469b1493a",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/ranking-summary.json",
+      "bytes": 28854,
+      "sha256": "e936216b5d8ad601bab27e74fb2b114b8755bedf49539783b40603ae792d8955",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/resolved-config.json",
+      "bytes": 10580,
+      "sha256": "dd858108d4573b0db8c918199ba277882bd697a37d0f30b3f70ffd1fe877ced2",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/results-summary.json",
+      "bytes": 50008,
+      "sha256": "1ed8fbb85e6cab9e3ab42b4cd4c1c89ccbf214133fdf28d784d3d76c8e8288b6",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/20261103-ppo-v9-256x512-run01/retention.json",
+      "bytes": 3238,
+      "sha256": "1af23f1da283eb9b683af5c410b5ce165bb3b27d625a8b8923c00d102cf59aac",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-exp09-v9-top2/README.md",
+      "bytes": 1320,
+      "sha256": "b822fc40ede118f2fb7df9d9af4af7bb85f31b512f5a995dc1b872057be80424",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/config.json",
+      "bytes": 3047,
+      "sha256": "ed6b0b737d64500681e28eea069a778afabfba8652526003667bf8609d0e7b8a",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/entry-sha256.txt",
+      "bytes": 727,
+      "sha256": "ccb9fed3ff54baa903b276b0f2b260245ba22a5dc62ca3728943df032aa53e78",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/parent-verification.json",
+      "bytes": 1939,
+      "sha256": "eb3cbd3dfddad84db2338bbd748234cafe5c86f4566ff8c024b14f3242e5191f",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/preflight.json",
+      "bytes": 2100,
+      "sha256": "5ff8d16236bb3583c426f1ed05bbec10980d8edc6607d2a36ad0b2b02720bff5",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/preflight.py",
+      "bytes": 3969,
+      "sha256": "5bc89a64277922b8f86f74578259f736813274f176db0d44f7eaf3e5704aef1f",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/report.py",
+      "bytes": 3293,
+      "sha256": "8019b777165fe19a4fe61afbf22f503440f6694423a44ebcc0266654b5e26dc8",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/results-summary.json",
+      "bytes": 17905,
+      "sha256": "f8f1ee8776bfd2d27a2bc152b2dfdc50ce64d1a44da0fb5d8eb51b979d764618",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/run.py",
+      "bytes": 18558,
+      "sha256": "43fc7e51a0dbd21d64360d319f38fee5cfce7b60561e56a83b55255995057344",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/source-manifest.json",
+      "bytes": 1180,
+      "sha256": "5846cfade15ed562c4d7e2fde708b17da1e49953be975f68504810a6d854dae6",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/sync_performance.py",
+      "bytes": 1050,
+      "sha256": "8e5cee93fb4ec95574b8e2fd9c091b944dc7b2ae486151e6c9412cd43f62c6e0",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/verification.json",
+      "bytes": 1396,
+      "sha256": "e8cd8149801ff0c8f28cef52ec0b492de553f72b1e3df1e412c2a892c4fd401d",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-3v0-v1-v2-v3-v5-v7/verify.py",
+      "bytes": 9716,
+      "sha256": "1830d512ca06a8ce9e0ef19b83999423abb43fcb5f406b2a5c4877d6234cc539",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/README.md",
+      "bytes": 1538,
+      "sha256": "e5fb33e3b9c881351eabcd84e52dcf8666ef6de935c163bf837d914f94509fd8",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/config.json",
+      "bytes": 3491,
+      "sha256": "c569300c52dcb23908a8bbce17b28543451b3d5368ec6bce9906ba091315087e",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/entry-sha256.txt",
+      "bytes": 868,
+      "sha256": "c3471a07e802844b8558ca7b326d1e213a96e606c57ee21fdcddd4d35f549490",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/parent-verification.json",
+      "bytes": 2863,
+      "sha256": "bd16c59e12979e5b243c5f997f08dd0e98266cdda582d361e99878fa7c656fb3",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/preflight.json",
+      "bytes": 2734,
+      "sha256": "a45815044116f986eabe75b85a78190ace2bc09658f81482322a0e781b04daa6",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/preflight.py",
+      "bytes": 3969,
+      "sha256": "815d33f0e752ea9cc6a619847182ad0c63aeb0895c3907505bada0f0e035ec1b",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/report.py",
+      "bytes": 3305,
+      "sha256": "acc873f13cb55d9cbda59ad442f45d1e7ef5111e2ce93e1a86899ea61bae8dbb",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/results-summary.json",
+      "bytes": 52289,
+      "sha256": "cc09dc9bfdd75a87954cf4c1fd7e7a2546395c6744fb40c585afe5dfd71365bc",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/run.py",
+      "bytes": 18558,
+      "sha256": "a9d5a1cfa0784b4b025970bb93b2aeef23c22e27ca2a2402ea929b6505378428",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/source-manifest.json",
+      "bytes": 1639,
+      "sha256": "06499d3a54c6ee3398df25a83122273c6b4813d14316bdd8e48246327ef507c5",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/sync_performance.py",
+      "bytes": 1033,
+      "sha256": "f3d1da9a2b301b169f30c05b8c79112be0be153490d8818f408a10f59aa1d258",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/verification.json",
+      "bytes": 1396,
+      "sha256": "cdd14ce408744aabbacfb21cdc3f92d57e63ffa5cdf51d99537605581bba8a9d",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-history-match/20261103-match-v0-v1-v2-v3-v5-v7-v8-v9/verify.py",
+      "bytes": 9706,
+      "sha256": "f998408ed4977abaec2c5e0a219a8db5014a1137f554c5b4d7ae6f633dfac3f3",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/20261103-pr-v89-review/verification.json",
+      "bytes": 2649,
+      "sha256": "82747964fa74668a5b47cd41d468f8bfc5ef1430ccdbda1d2e6d628d2234b0fb",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/EXPERIMENT_OVERVIEW.md",
+      "bytes": 41345,
+      "sha256": "95bf8b3289072628f3d93a60f1d8a686b21de0a57f72c082e4b2b185c149ae6e",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "experiments/experiment-overview.json",
+      "bytes": 371237,
+      "sha256": "6ccaf6033d2f7c146d8d6ed10c6ae405ddfd11654270ef9db26d6990c3d6b173",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "python/taverngym/learning/experiment.py",
+      "bytes": 30801,
+      "sha256": "9a02c1415ada22b1c3cacfa680fe0c58edaa446e31babe3af1f737aa6b09bb60",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "python/taverngym/learning/overview.py",
+      "bytes": 5236,
+      "sha256": "e014f1b5567d92975d0809c102203cbc6fd24b98a8f159ba5cc1f5b6da9753f3",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "python/taverngym/learning/parallel_ranking.py",
+      "bytes": 15091,
+      "sha256": "cffcd8edeafed909561f9b43153e334c70c2cd632a7d39740823eb60f75537c9",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "python/taverngym/learning/stage_chain.py",
+      "bytes": 53577,
+      "sha256": "3a87b2073a4a9c8d2bed0a4717d35bd76634f2f559e62a3619e399bbe5ccca1a",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "python/taverngym/learning/stage_extension.py",
+      "bytes": 18955,
+      "sha256": "c7372897a5c00775e8771b4443f8e5fbb20255bc0e7d62bc72f58e4f93019013",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "python/taverngym/learning/tracking_v2.py",
+      "bytes": 4961,
+      "sha256": "e65307f758a92b4eb751b2aafe65fe94f45c23f87c394f5db64637664adb3246",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "tests/test_metric_schema_v2.py",
+      "bytes": 12421,
+      "sha256": "6b36027904e8017d6517c225208b147e236d8466d363d7e0344eecab1659a93a",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "tests/test_overview.py",
+      "bytes": 2792,
+      "sha256": "f0890b5d7e47376507c5585c2e5ebadab0938bf1d0ed062a26fd558e91f76823",
+      "literal_credential_pattern_matches": []
+    },
+    {
+      "path": "tests/test_top2_ranking.py",
+      "bytes": 7717,
+      "sha256": "e9b1958532933a194ccb8496afac94660d4a49458ee257dbc6b6da469881a494",
+      "literal_credential_pattern_matches": []
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "registry": "configs/model-versions.json",
+  "models": {
+    "v1": {
+      "path": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+    },
+    "v2": {
+      "path": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+    },
+    "v3": {
+      "path": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1"
+    },
+    "v5": {
+      "path": "runs/20261101-ppo-v5-1script-1v1-1v2-2v3-2v4-cycle001-forceend/20261101-031510-best_model.zip",
+      "sha256": "39d3571bc9005827dbaefa09e5a48a10a555109dccefdad565e707bc43ee07b6"
+    },
+    "v7": {
+      "path": "runs/20261101-ppo-v7-reward-256x512-run01/20261101-115350-best_model.zip",
+      "sha256": "cdb10c8bb08587b52dd2100ba71302920c549561747f47a7eb1e72fa7333f354"
+    }
+  },
+  "v0": {
+    "path": "crates/taverngym/src/bot.rs",
+    "sha256": "63b24e6d48a65bab585c415753b437804e6039b71d6b6fb5a5f3f497e4789855"
+  }
+}
