@@ -1,0 +1,16 @@
+{
+  "name": "20261031-turn-actions-over60",
+  "checkpoint_ppo_iteration": 144,
+  "snapshot_sha256": "5c041a419807518c602a8ffadb6f80b3f61c6f9379789d029d563dee44711b23",
+  "games_per_mode": 64,
+  "opponents": "2 fixed V1 + 3 fixed V2 + 2 scripted, all remain capped at 60",
+  "learner_diagnostic_cap": 200,
+  "learner_forward_precision": "bf16",
+  "training_started": false,
+  "weights_uploaded": false,
+  "modes": [
+    "sampled",
+    "greedy"
+  ],
+  "seed": 61000301
+}

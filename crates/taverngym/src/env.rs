@@ -68,6 +68,14 @@ impl SoloEnv {
         self.game.players[self.agent].placement
     }
 
+    pub fn forfeit(&mut self) -> Result<f32, String> {
+        if self.done() || !self.game.needs_action(self.agent) || self.game.turn == 0 {
+            return Err("forfeit requires a ready living recruit-phase agent".into());
+        }
+        self.game.concede(self.agent)?;
+        Ok(placement_reward(self.placement(), self.game.players.len()))
+    }
+
     /// Let bots act until the agent must decide (or the episode ends).
     fn advance(&mut self) {
         let mut guard = 0;

@@ -44,6 +44,9 @@ pub struct Episode {
     pub index: u64,
     /// Per controlled seat: its episode has ended (eliminated, or the game is over).
     pub finished: Vec<bool>,
+    /// Optional per-game role-to-seat map. Empty preserves the legacy fixed seats.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub seats: Vec<PlayerId>,
 }
 
 /// What [`BatchEnv::step`] reports for one slot.
@@ -59,6 +62,10 @@ pub struct SlotResult {
     pub placement: u8,
     /// The slot was ready and its action was illegal or out of range: it was ignored.
     pub rejected: bool,
+    /// Legal at the batch snapshot, but an earlier seat changed this player's
+    /// decision (e.g. a recruit-phase elimination triggers Bigglesworth's Discover).
+    /// No action or penalty is applied; observe again before choosing a new action.
+    pub deferred: bool,
 }
 
 /// Many games stepped together; see the module documentation.
@@ -68,6 +75,7 @@ pub struct BatchEnv {
     controlled: Vec<PlayerId>,
     episodes: Vec<Episode>,
     threads: usize,
+    rotate_seats: bool,
     /// Reward for a rejected action (the action is ignored).
     pub illegal_penalty: f32,
 }
@@ -84,6 +92,18 @@ fn splitmix64(mut z: u64) -> u64 {
 
 fn over(g: &Game) -> bool {
     g.is_over() || g.stopped_reason.is_some()
+}
+
+// A new Discover can replace a menu with the same legal action indices. Checking
+// just legality would then apply an answer to the wrong menu.
+fn pending_stamp(g: &Game, p: PlayerId) -> (usize, Option<Vec<u8>>) {
+    let pending = &g.players[p].pending;
+    (
+        pending.len(),
+        pending
+            .last()
+            .map(|top| serde_json::to_vec(top).expect("serializable pending decision")),
+    )
 }
 
 /// Let the bot seats act until a controlled seat must act, or the game is over.
@@ -179,10 +199,51 @@ impl BatchEnv {
             controlled,
             episodes: Vec::new(),
             threads: threads.max(1),
+            rotate_seats: false,
             illegal_penalty: -0.01,
         };
         env.episodes = (0..n_games).map(|i| env.fresh(i, 0)).collect();
         Ok(env)
+    }
+
+    /// As `new`, but independently shuffle role seats at every game reset. Role 0
+    /// remains the learner slot; uncontrolled seats still use the built-in bots.
+    pub fn new_rotating(
+        n_games: usize,
+        seed: u64,
+        cfg: RulesConfig,
+        controlled: Vec<PlayerId>,
+        threads: usize,
+    ) -> Result<BatchEnv, String> {
+        let mut env = Self::new(n_games, seed, cfg, controlled, threads)?;
+        env.rotate_seats = true;
+        env.episodes = (0..n_games).map(|i| env.fresh(i, 0)).collect();
+        Ok(env)
+    }
+
+    fn seats<'a>(&'a self, episode: &'a Episode) -> &'a [PlayerId] {
+        if episode.seats.is_empty() {
+            &self.controlled
+        } else {
+            &episode.seats
+        }
+    }
+
+    pub fn slot_seats(&self) -> Vec<PlayerId> {
+        self.episodes
+            .iter()
+            .flat_map(|e| self.seats(e).iter().copied())
+            .collect()
+    }
+
+    /// Training episodes end at the learner's elimination. Its placement/reward
+    /// was already reported; no opponent experience needs the remaining game.
+    pub fn reset_finished_first(&mut self) {
+        for i in 0..self.episodes.len() {
+            if self.episodes[i].finished[0] {
+                self.episodes[i] = self.fresh(i, self.episodes[i].index + 1);
+            }
+        }
     }
 
     fn game_seed(&self, game: usize, index: u64) -> u64 {
@@ -191,11 +252,26 @@ impl BatchEnv {
 
     fn fresh(&self, game: usize, index: u64) -> Episode {
         let mut g = Game::new(self.game_seed(game, index), self.cfg.clone());
-        advance(&mut g, &self.controlled);
+        let seats = if self.rotate_seats {
+            // A separate role RNG must not consume the simulator's card/combat RNG.
+            crate::rng::Rng::new(self.game_seed(game, index) ^ 0x726f_6c65_7365_6174)
+                .sample_indices(self.cfg.num_players, self.controlled.len())
+        } else {
+            vec![]
+        };
+        advance(
+            &mut g,
+            if seats.is_empty() {
+                &self.controlled
+            } else {
+                &seats
+            },
+        );
         Episode {
             game: g,
             index,
             finished: vec![false; self.controlled.len()],
+            seats,
         }
     }
 
@@ -249,7 +325,6 @@ impl BatchEnv {
             }
         }
         let k = self.controlled.len();
-        let controlled = &self.controlled;
         // One output row per slot, packed for the chunked workers.
         let mut rows: Vec<ObsRow> = floats
             .chunks_mut(OBS_FLOATS)
@@ -261,6 +336,7 @@ impl BatchEnv {
         let mut eps: Vec<&Episode> = self.episodes.iter().collect();
         par_chunks(self.threads, &mut eps, &mut rows, k, |_, eps, rows| {
             for (e, rows) in eps.iter().zip(rows.chunks_mut(k)) {
+                let controlled = self.seats(e);
                 for (j, (f, c, m, r)) in rows.iter_mut().enumerate() {
                     let p = controlled[j];
                     let o = observe(&e.game, p);
@@ -281,11 +357,111 @@ impl BatchEnv {
         Ok(())
     }
 
+    /// Private sampling transport: encode directly into independent caller-owned
+    /// little-endian byte slices. No aggregate f32/i32 output allocation or aliasing.
+    pub fn observe_encoded(
+        &self,
+        floats_le: &mut [u8],
+        cards_le: &mut [u8],
+        masks: &mut [u8],
+        ready: &mut [u8],
+    ) -> Result<(), String> {
+        let n = self
+            .episodes
+            .len()
+            .checked_mul(self.controlled.len())
+            .ok_or("observation slot count overflow")?;
+        let float_row = OBS_FLOATS.checked_mul(4).ok_or("float row size overflow")?;
+        let card_row = OBS_CARDS.checked_mul(4).ok_or("card row size overflow")?;
+        let floats_len = n.checked_mul(float_row).ok_or("float byte size overflow")?;
+        let cards_len = n.checked_mul(card_row).ok_or("card byte size overflow")?;
+        let masks_len = n.checked_mul(N_ACTIONS).ok_or("mask byte size overflow")?;
+        for (name, actual, expected) in [
+            ("float bytes", floats_le.len(), floats_len),
+            ("card bytes", cards_le.len(), cards_len),
+            ("mask bytes", masks.len(), masks_len),
+            ("ready bytes", ready.len(), n),
+        ] {
+            if actual != expected {
+                return Err(format!("{name}: {actual} entries, expected {expected}"));
+            }
+        }
+        let k = self.controlled.len();
+        let mut rows: Vec<_> = floats_le
+            .chunks_mut(float_row)
+            .zip(cards_le.chunks_mut(card_row))
+            .zip(masks.chunks_mut(N_ACTIONS))
+            .zip(ready.iter_mut())
+            .map(|(((f, c), m), r)| (f, c, m, r))
+            .collect();
+        let mut eps: Vec<&Episode> = self.episodes.iter().collect();
+        par_chunks(self.threads, &mut eps, &mut rows, k, |_, eps, rows| {
+            for (episode, rows) in eps.iter().zip(rows.chunks_mut(k)) {
+                for (role, (f, c, m, r)) in rows.iter_mut().enumerate() {
+                    let seat = self.seats(episode)[role];
+                    let observation = observe(&episode.game, seat);
+                    assert_eq!(observation.floats.len(), OBS_FLOATS);
+                    assert_eq!(observation.cards.len(), OBS_CARDS);
+                    for (word, value) in
+                        f.as_chunks_mut::<4>().0.iter_mut().zip(&observation.floats)
+                    {
+                        word.copy_from_slice(&value.to_le_bytes());
+                    }
+                    for (word, value) in c.as_chunks_mut::<4>().0.iter_mut().zip(&observation.cards)
+                    {
+                        word.copy_from_slice(&value.to_le_bytes());
+                    }
+                    let act = !episode.finished[role]
+                        && !over(&episode.game)
+                        && episode.game.needs_action(seat);
+                    **r = u8::from(act);
+                    if act {
+                        let legal = episode.game.legal_mask(seat);
+                        assert_eq!(legal.len(), N_ACTIONS);
+                        for (dst, legal) in m.iter_mut().zip(legal) {
+                            *dst = u8::from(legal);
+                        }
+                    } else {
+                        m.fill(0);
+                    }
+                }
+            }
+        });
+        Ok(())
+    }
+
     /// Apply one action per slot (see the module documentation); `out` gets one result per
     /// slot.
     pub fn step(&mut self, actions: &[i64], out: &mut [SlotResult]) -> Result<(), String> {
+        self.step_active(actions, &vec![true; self.n_games()], out)
+    }
+
+    /// Hold inactive games completely unchanged while other games finish their
+    /// opponents' actions. This never creates an unrecorded learner transition.
+    pub fn step_active(
+        &mut self,
+        actions: &[i64],
+        active: &[bool],
+        out: &mut [SlotResult],
+    ) -> Result<(), String> {
+        self.step_active_skipping(actions, active, &vec![false; self.n_slots()], out)
+    }
+
+    /// Hold selected roles at their current request while other ready roles act.
+    /// This supports pre-action budget termination without inventing another
+    /// role's action or executing stale actions after elimination effects.
+    pub fn step_active_skipping(
+        &mut self,
+        actions: &[i64],
+        active: &[bool],
+        skipped: &[bool],
+        out: &mut [SlotResult],
+    ) -> Result<(), String> {
         let n = self.n_slots();
-        if actions.len() != n || out.len() != n {
+        if active.len() != self.n_games() {
+            return Err("active must contain one flag per game".into());
+        }
+        if actions.len() != n || out.len() != n || skipped.len() != n {
             return Err(format!(
                 "{} actions and {} results for {n} slots",
                 actions.len(),
@@ -299,7 +475,18 @@ impl BatchEnv {
             let this = &*self;
             par_chunks(self.threads, &mut eps, &mut work, k, |first, eps, work| {
                 for (gi, (e, slots)) in eps.iter_mut().zip(work.chunks_mut(k)).enumerate() {
-                    this.step_game(first + gi, e, slots);
+                    if active[first + gi] {
+                        this.step_game(
+                            first + gi,
+                            e,
+                            slots,
+                            &skipped[(first + gi) * k..(first + gi + 1) * k],
+                        );
+                    } else {
+                        for (_, result) in slots {
+                            **result = SlotResult::default();
+                        }
+                    }
                 }
             });
         }
@@ -307,35 +494,70 @@ impl BatchEnv {
         Ok(())
     }
 
-    fn step_game(&self, gi: usize, e: &mut Episode, slots: &mut [(&i64, &mut SlotResult)]) {
+    fn step_game(
+        &self,
+        gi: usize,
+        e: &mut Episode,
+        slots: &mut [(&i64, &mut SlotResult)],
+        skipped: &[bool],
+    ) {
         let n = e.game.players.len();
+        let controlled = self.seats(e).to_vec();
         // The seats that must act now, as the caller observed them. A seat that comes to
         // need an action while the others' actions are applied (a new turn's offer after
         // the last seat ended its turn) waits for the next `observe`.
         let ready: Vec<bool> = (0..self.controlled.len())
-            .map(|j| !e.finished[j] && !over(&e.game) && e.game.needs_action(self.controlled[j]))
+            .map(|j| !e.finished[j] && !over(&e.game) && e.game.needs_action(controlled[j]))
+            .collect();
+        let legal_at_start: Vec<bool> = slots
+            .iter()
+            .enumerate()
+            .map(|(j, (a, _))| {
+                ready[j]
+                    && usize::try_from(**a)
+                        .ok()
+                        .filter(|&a| a < N_ACTIONS)
+                        .is_some_and(|a| e.game.legal_mask(controlled[j])[a])
+            })
+            .collect();
+        let menus: Vec<_> = controlled
+            .iter()
+            .map(|&p| pending_stamp(&e.game, p))
             .collect();
         for (j, (a, r)) in slots.iter_mut().enumerate() {
             **r = SlotResult::default();
-            let p = self.controlled[j];
-            if !ready[j] || over(&e.game) || !e.game.needs_action(p) {
+            let p = controlled[j];
+            if !ready[j] || skipped[j] {
+                continue;
+            }
+            if !legal_at_start[j] {
+                r.rejected = true;
+                r.reward += self.illegal_penalty;
+                continue;
+            }
+            if over(&e.game) || !e.game.needs_action(p) {
+                r.deferred = true;
+                continue;
+            }
+            if menus[j] != pending_stamp(&e.game, p) {
+                r.deferred = true;
                 continue;
             }
             let legal = e.game.legal_mask(p);
-            let ok = usize::try_from(**a)
-                .ok()
-                .filter(|&a| a < legal.len() && legal[a]);
-            match ok.map(|a| e.game.apply_index(p, a)) {
-                Some(Ok(())) => {}
-                _ => {
-                    r.rejected = true;
-                    r.reward += self.illegal_penalty;
-                }
+            let action = **a as usize; // Range checked at the snapshot above.
+            if !legal[action] {
+                r.deferred = true;
+                continue;
+            }
+            // A still-legal action rejected by the engine remains an error.
+            if e.game.apply_index(p, action).is_err() {
+                r.rejected = true;
+                r.reward += self.illegal_penalty;
             }
         }
-        advance(&mut e.game, &self.controlled);
+        advance(&mut e.game, &controlled);
         for (j, (_, r)) in slots.iter_mut().enumerate() {
-            let p = self.controlled[j];
+            let p = controlled[j];
             if !e.finished[j] && (over(&e.game) || !e.game.players[p].alive) {
                 e.finished[j] = true;
                 r.done = true;
@@ -346,6 +568,59 @@ impl BatchEnv {
         if e.finished.iter().all(|x| *x) {
             *e = self.fresh(gi, e.index + 1);
         }
+    }
+
+    /// Explicitly forfeit selected controlled roles simultaneously within each
+    /// game; validate the entire request before mutating any game.
+    /// Unselected games stay unchanged. Terminal rewards are reported once.
+    pub fn forfeit(&mut self, selected: &[bool], out: &mut [SlotResult]) -> Result<(), String> {
+        let k = self.controlled.len();
+        if selected.len() != self.n_slots() || out.len() != self.n_slots() {
+            return Err("forfeit requires one flag and result per slot".into());
+        }
+        for (gi, flags) in selected.chunks(k).enumerate() {
+            for j in flags
+                .iter()
+                .enumerate()
+                .filter_map(|(j, &flag)| flag.then_some(j))
+            {
+                let e = &self.episodes[gi];
+                let p = self.seats(e)[j];
+                if e.finished[j] || over(&e.game) || !e.game.needs_action(p) || e.game.turn == 0 {
+                    return Err("forfeit requires a ready living recruit-phase role".into());
+                }
+            }
+        }
+        out.fill(SlotResult::default());
+        for (gi, flags) in selected.chunks(k).enumerate() {
+            if !flags.iter().any(|&flag| flag) {
+                continue;
+            }
+            let controlled = self.seats(&self.episodes[gi]).to_vec();
+            let e = &mut self.episodes[gi];
+            let selected: Vec<_> = flags
+                .iter()
+                .enumerate()
+                .filter_map(|(j, &flag)| flag.then_some(controlled[j]))
+                .collect();
+            e.game.concede_many(&selected)?;
+            for (role, &p) in controlled.iter().enumerate() {
+                if !e.finished[role] && (over(&e.game) || !e.game.players[p].alive) {
+                    e.finished[role] = true;
+                    out[gi * k + role] = SlotResult {
+                        done: true,
+                        placement: e.game.players[p].placement,
+                        reward: placement_reward(e.game.players[p].placement, e.game.players.len()),
+                        ..SlotResult::default()
+                    };
+                }
+            }
+            if e.finished.iter().all(|&finished| finished) {
+                let index = e.index + 1;
+                self.episodes[gi] = self.fresh(gi, index);
+            }
+        }
+        Ok(())
     }
 
     /// Game `i` and its episode state as JSON.
@@ -371,6 +646,16 @@ impl BatchEnv {
                 e.finished.len(),
                 self.controlled.len()
             ));
+        }
+        if !e.seats.is_empty() {
+            let mut sorted = e.seats.clone();
+            sorted.sort_unstable();
+            sorted.dedup();
+            if sorted.len() != self.controlled.len()
+                || sorted.iter().any(|&p| p >= e.game.players.len())
+            {
+                return Err("invalid per-game role seats".into());
+            }
         }
         self.episodes[i] = e;
         Ok(())
@@ -464,6 +749,120 @@ mod tests {
     }
 
     #[test]
+    fn forfeit_reports_current_rank_once_and_keeps_other_games_unchanged() {
+        let mut env =
+            BatchEnv::new_rotating(2, 17, RulesConfig::default(), (0..8).collect(), 2).unwrap();
+        let mut out = vec![SlotResult::default(); 16];
+        // Finish hero selection; every living role is now ready in recruit.
+        while env.game(0).turn == 0 {
+            let actions: Vec<i64> = (0..16)
+                .map(|slot| {
+                    let e = env.episode(slot / 8);
+                    let p = env.seats(e)[slot % 8];
+                    e.game
+                        .legal_mask(p)
+                        .iter()
+                        .position(|&legal| legal)
+                        .unwrap_or(0) as i64
+                })
+                .collect();
+            env.step(&actions, &mut out).unwrap();
+        }
+        let other = env.save(1).unwrap();
+        let seats = env.seats(env.episode(0)).to_vec();
+        for role in 0..7 {
+            let mut flags = vec![false; 16];
+            flags[role] = true;
+            env.forfeit(&flags, &mut out).unwrap();
+            let placement = 8 - role as u8;
+            assert!(out[role].done);
+            assert_eq!(out[role].placement, placement);
+            assert_eq!(out[role].reward, placement_reward(placement, 8));
+            assert!(out[8..].iter().all(|r| *r == SlotResult::default()));
+            assert_eq!(env.save(1).unwrap(), other);
+            if role < 6 {
+                assert!(!env.game(0).players[seats[role]].alive);
+                assert_eq!(env.game(0).players[seats[role]].placement, placement);
+                assert!(env.forfeit(&flags, &mut out).is_err());
+            } else {
+                assert!(out[7].done);
+                assert_eq!(out[7].placement, 1);
+                assert_eq!(out[7].reward, 1.0);
+                assert_eq!(env.episode(0).index, 1);
+            }
+        }
+    }
+
+    #[test]
+    fn invalid_forfeit_request_is_atomic() {
+        let mut env = BatchEnv::new(2, 3, RulesConfig::default(), vec![0, 1], 1).unwrap();
+        let before: Vec<_> = (0..2).map(|i| env.save(i).unwrap()).collect();
+        let mut out = vec![SlotResult::default(); 4];
+        // Hero selection has not finished: even simultaneous forfeits are invalid.
+        assert!(env.forfeit(&[true, true, false, false], &mut out).is_err());
+        assert!(env.forfeit(&[true, false, true, false], &mut out).is_err());
+        assert!(env.forfeit(&[true], &mut out).is_err());
+        for (i, saved) in before.iter().enumerate() {
+            assert_eq!(env.save(i).unwrap(), *saved);
+        }
+    }
+
+    #[test]
+    fn simultaneous_forfeits_follow_physical_seat_ties_not_logical_role_order() {
+        for controlled in [vec![0, 1, 2], vec![2, 0, 1], vec![1, 2, 0]] {
+            let mut env =
+                BatchEnv::new(1, 17, RulesConfig::default(), controlled.clone(), 1).unwrap();
+            let mut out = vec![SlotResult::default(); 3];
+            while env.game(0).turn == 0 {
+                let actions: Vec<i64> = controlled
+                    .iter()
+                    .map(|&p| {
+                        env.game(0)
+                            .legal_mask(p)
+                            .iter()
+                            .position(|&legal| legal)
+                            .unwrap_or(0) as i64
+                    })
+                    .collect();
+                env.step(&actions, &mut out).unwrap();
+            }
+            env.forfeit(&[true, true, true], &mut out).unwrap();
+            for (role, &seat) in controlled.iter().enumerate() {
+                assert!(out[role].done);
+                assert_eq!(out[role].placement, 6 + seat as u8);
+                assert_eq!(out[role].reward, placement_reward(6 + seat as u8, 8));
+            }
+        }
+    }
+
+    #[test]
+    fn skipping_one_ready_role_keeps_other_actual_actions() {
+        let mut env = BatchEnv::new(1, 17, RulesConfig::default(), vec![0, 1], 1).unwrap();
+        let mut out = vec![SlotResult::default(); 2];
+        while env.game(0).turn == 0 {
+            let actions: Vec<i64> = (0..2)
+                .map(|p| {
+                    env.game(0)
+                        .legal_mask(p)
+                        .iter()
+                        .position(|&legal| legal)
+                        .unwrap_or(0) as i64
+                })
+                .collect();
+            env.step(&actions, &mut out).unwrap();
+        }
+        let frozen = env.game(0).players[0].shop.iter().any(|item| item.frozen);
+        env.step_active_skipping(&[2, 2], &[true], &[false, true], &mut out)
+            .unwrap();
+        assert_eq!(
+            env.game(0).players[0].shop.iter().any(|item| item.frozen),
+            !frozen
+        );
+        assert!(!env.game(0).players[1].shop.iter().any(|item| item.frozen));
+        assert!(out.iter().all(|result| !result.rejected && !result.done));
+    }
+
+    #[test]
     fn bad_arguments_are_errors() {
         let cfg = RulesConfig::default;
         assert!(BatchEnv::new(0, 1, cfg(), vec![0], 1).is_err());
@@ -474,5 +873,112 @@ mod tests {
         let mut out = vec![SlotResult::default(); 2];
         assert!(env.step(&[0, 0], &mut out).is_err());
         assert!(env.load(0, "{}").is_err());
+    }
+
+    fn assert_encoded_exact(env: &BatchEnv) {
+        let n = env.n_slots();
+        let mut f = vec![0.0; n * OBS_FLOATS];
+        let mut c = vec![0; n * OBS_CARDS];
+        let mut m = vec![0; n * N_ACTIONS];
+        let mut r = vec![0; n];
+        let state: Vec<_> = (0..env.n_games()).map(|i| env.save(i).unwrap()).collect();
+        env.observe(&mut f, &mut c, &mut m, &mut r).unwrap();
+        let expected_f: Vec<_> = f.iter().flat_map(|x| x.to_le_bytes()).collect();
+        let expected_c: Vec<_> = c.iter().flat_map(|x| x.to_le_bytes()).collect();
+        for sentinel in [0xA5, 0x5A] {
+            let mut bf = vec![sentinel; n * OBS_FLOATS * 4];
+            let mut bc = vec![sentinel; n * OBS_CARDS * 4];
+            let mut bm = vec![sentinel; n * N_ACTIONS];
+            let mut br = vec![sentinel; n];
+            env.observe_encoded(&mut bf, &mut bc, &mut bm, &mut br)
+                .unwrap();
+            assert_eq!(bf, expected_f);
+            assert_eq!(bc, expected_c);
+            assert_eq!(bm, m);
+            assert_eq!(br, r);
+            assert!(br.iter().all(|&value| value <= 1));
+            assert!(bm.iter().all(|&value| value <= 1));
+            for (mask, &ready) in bm.chunks(N_ACTIONS).zip(&br) {
+                if ready == 0 {
+                    assert!(mask.iter().all(|&value| value == 0));
+                }
+            }
+        }
+        assert_eq!(
+            state,
+            (0..env.n_games())
+                .map(|i| env.save(i).unwrap())
+                .collect::<Vec<_>>()
+        );
+    }
+
+    #[test]
+    fn encoded_observation_writes_every_byte_and_preserves_state_across_mutations() {
+        for threads in [1, 2] {
+            let cfg = RulesConfig {
+                hero_choices: 2,
+                turn_action_caps: vec![60],
+                ..RulesConfig::default()
+            };
+            let mut env =
+                BatchEnv::new_rotating(2, 92300001, cfg, (0..7).collect(), threads).unwrap();
+            let mut out = vec![SlotResult::default(); env.n_slots()];
+            let saved = env.save(0).unwrap();
+            for step in 0..80 {
+                assert_encoded_exact(&env);
+                let actions: Vec<i64> = (0..env.n_slots())
+                    .map(|slot| {
+                        let episode = env.episode(slot / 7);
+                        let seat = env.seats(episode)[slot % 7];
+                        episode
+                            .game
+                            .legal_mask(seat)
+                            .iter()
+                            .position(|&legal| legal)
+                            .unwrap_or(0) as i64
+                    })
+                    .collect();
+                env.step_active(&actions, &[true, step % 3 != 0], &mut out)
+                    .unwrap();
+                if step == 10 {
+                    env.load(0, &saved).unwrap();
+                }
+                env.reset_finished_first();
+            }
+            assert_encoded_exact(&env);
+        }
+    }
+
+    #[test]
+    fn encoded_observation_rejects_invalid_lengths_before_any_output_write() {
+        let env = BatchEnv::new(1, 92300002, RulesConfig::default(), vec![0], 1).unwrap();
+        for field in 0..4 {
+            let mut f = vec![0xA5; OBS_FLOATS * 4];
+            let mut c = vec![0xA5; OBS_CARDS * 4];
+            let mut m = vec![0xA5; N_ACTIONS];
+            let mut r = vec![0xA5; 1];
+            match field {
+                0 => {
+                    f.pop();
+                }
+                1 => {
+                    c.pop();
+                }
+                2 => {
+                    m.pop();
+                }
+                _ => {
+                    r.pop();
+                }
+            }
+            assert!(env.observe_encoded(&mut f, &mut c, &mut m, &mut r).is_err());
+            assert!(
+                f.iter()
+                    .chain(&c)
+                    .chain(&m)
+                    .chain(&r)
+                    .all(|&value| value == 0xA5)
+            );
+        }
     }
 }

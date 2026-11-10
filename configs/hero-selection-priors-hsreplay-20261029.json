@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "source": {
+    "path": "docs/references/HSREPLAY_STRATEGY_20261029.md",
+    "sha256": "99b0a803eaf84acb14a1341ccedf2360ac7c6b516189be8b6a9297cf8b95ebce",
+    "bytes": 26300,
+    "as_of_date": "2026-10-29",
+    "origin": "User-provided HSReplay research attachment; preserved verbatim",
+    "mode": "solo",
+    "window": "last 7 days",
+    "numeric_heroes_provided": 12,
+    "per_hero_sample_counts": null,
+    "coverage_note": "Only 12 heroes have numeric values in the provided document; 90 listed heroes and 116 written guides are not complete numeric tables. No missing values inferred.",
+    "interpretation": "Human-cohort preference prior only; not simulator strength, promotion evidence, or a calibrated label"
+  },
+  "default_cohort": "top_1_percent",
+  "cohorts": {
+    "top_50_percent": {
+      "rating_threshold": 6200,
+      "page_total_games_approx": 540000
+    },
+    "top_1_percent": {
+      "rating_threshold": 12000,
+      "page_total_games_approx": 20000
+    }
+  },
+  "heroes": [
+    {
+      "name_zh": "贸易亲王加里维克斯",
+      "blizzard_id": "TB_BaconShop_HERO_10",
+      "mean_placement": {
+        "top_50_percent": 4.66,
+        "top_1_percent": 3.04
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "加拉克苏斯大王",
+      "blizzard_id": "TB_BaconShop_HERO_37",
+      "mean_placement": {
+        "top_50_percent": 3.72,
+        "top_1_percent": 3.14
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "芬利·莫格顿爵士",
+      "blizzard_id": "TB_BaconShop_HERO_40",
+      "mean_placement": {
+        "top_50_percent": 4.31,
+        "top_1_percent": 3.17
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "塔隆·血魔",
+      "blizzard_id": "BG25_HERO_103",
+      "mean_placement": {
+        "top_50_percent": 4.08,
+        "top_1_percent": 3.24
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "伊利丹·怒风",
+      "blizzard_id": "TB_BaconShop_HERO_08",
+      "mean_placement": {
+        "top_50_percent": 4.09,
+        "top_1_percent": 3.31
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "钟表先生克劳沃斯",
+      "blizzard_id": "BG34_HERO_002",
+      "mean_placement": {
+        "top_50_percent": 4.17,
+        "top_1_percent": 3.31
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "天空上尉库拉格",
+      "blizzard_id": "TB_BaconShop_HERO_68",
+      "mean_placement": {
+        "top_50_percent": 4.26,
+        "top_1_percent": 3.31
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "雷诺·杰克逊",
+      "blizzard_id": "TB_BaconShop_HERO_41",
+      "mean_placement": {
+        "top_50_percent": 4.36,
+        "top_1_percent": 3.34
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "德雷克塔尔",
+      "blizzard_id": "BG22_HERO_002",
+      "mean_placement": {
+        "top_50_percent": 4.14,
+        "top_1_percent": 3.35
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "凯瑞尔·罗姆",
+      "blizzard_id": "BG21_HERO_000",
+      "mean_placement": {
+        "top_50_percent": 4.14,
+        "top_1_percent": 3.35
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "经理马林",
+      "blizzard_id": "BG30_HERO_304",
+      "mean_placement": {
+        "top_50_percent": 4.11,
+        "top_1_percent": 3.37
+      },
+      "hero_sample_count": null
+    },
+    {
+      "name_zh": "帕奇维克",
+      "blizzard_id": "TB_BaconShop_HERO_34",
+      "mean_placement": {
+        "top_50_percent": 3.99,
+        "top_1_percent": 3.38
+      },
+      "hero_sample_count": null
+    }
+  ],
+  "selection_policy": {
+    "scope": "Successful initial HeroSelect only; once per learner episode",
+    "scale": 0.01,
+    "cap": 0.005,
+    "formula": "min(cap, scale * max(0, worst_offered_mean - selected_mean))",
+    "eligibility": "All actually legal offered heroes have a value in one fixed cohort, and at least two distinct offered heroes",
+    "unknown_policy": "Any unknown offered hero makes the entire offer unscorable: bonus=0; never fill unknown with zero or rank it as worst",
+    "catalog_resolution": "Exact Blizzard ID to cid+1; require kind=hero, in_pool and implemented; no tutorial aliases"
+  },
+  "implementation_scope": "Hero selection preference only; no 116 hero-operation rules or 31 composition rules"
+}

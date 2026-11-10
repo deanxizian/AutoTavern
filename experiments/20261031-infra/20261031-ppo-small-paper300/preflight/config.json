@@ -1,0 +1,30 @@
+{
+  "name": "20261031-ppo-small-paper400-preflight",
+  "iterations": 2,
+  "decisions_per_iteration": 16384,
+  "n_envs": 128,
+  "n_steps": 128,
+  "batch_size": 8192,
+  "micro_batch_size": 256,
+  "n_epochs": 1,
+  "learning_rate_start": 6e-06,
+  "learning_rate_end": 5e-06,
+  "learning_rate_schedule": "linear",
+  "seed": 900001,
+  "env_threads": 4,
+  "checkpoint_every_iterations": 1,
+  "initial_evaluation_games": 0,
+  "evaluation_every_iterations": 10,
+  "evaluation_games": 0,
+  "final_evaluation_games": 0,
+  "evaluation_seed": 20000001,
+  "final_evaluation_seed": 30000001,
+  "rollout_storage": "lossless packed RAM: float32 numerics, packed binary flags, uint16 card IDs",
+  "paper_alignment": {
+    "model_size": "d=192, layers=4, approximately 3.5M trainable parameters",
+    "iterations": 400,
+    "decisions_per_iteration": "4,194,304 approximates the reported 4.2 million",
+    "undisclosed_early_training_details": "LR endpoints, minibatch/epochs and several PPO coefficients borrowed from final-stage Table 7; linear schedule is a local choice",
+    "opponents": "seven identical built-in scripted bots; original calibrated libraries not reproduced"
+  }
+}

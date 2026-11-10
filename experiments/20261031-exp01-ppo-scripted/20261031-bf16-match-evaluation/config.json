@@ -1,0 +1,21 @@
+{
+  "name": "20261031-v1-bf16-match-evaluation",
+  "source_sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+  "games_per_condition": 256,
+  "games_per_block": 64,
+  "blocks": 4,
+  "seeds": [60000001, 60000101, 60000201, 60000301],
+  "opponents": "seven identical native scripted bots",
+  "rotate_seats": true,
+  "simulator_config": {"turn_action_caps": [60]},
+  "precisions": ["FP32 weights and forward, matmul high permits TF32", "FP32 weights, BF16 autocast neural forward, FP32 probabilities"],
+  "policy_modes": ["sampled", "greedy"],
+  "action_filter": false,
+  "reward_shaping_costs": [0.0, 0.0],
+  "reward_shaping_purpose": "count cycles only; reward remains native placement utility",
+  "primary_metrics": ["mean_placement", "top4_rate", "first_rate"],
+  "uncertainty": "paired game bootstrap 10000 replicates, 95 percent percentile intervals",
+  "wandb_axis": "evaluated_games; optimizer_step remains zero because this is evaluation only",
+  "training_started": false,
+  "weights_uploaded": false
+}

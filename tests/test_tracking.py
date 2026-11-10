@@ -1,0 +1,222 @@
+"""Logging must preserve individual updates, evaluation points and live files."""
+
+import json
+import subprocess
+import sys
+from dataclasses import asdict
+
+import pytest
+
+torch = pytest.importorskip("torch")
+pytest.importorskip("sb3_contrib")
+
+from taverngym.learning.tracking import metric_name
+
+
+def test_flat_metric_names_share_baseline_and_validation():
+    assert metric_name("baseline/mean_placement") == "val/mean_placement"
+    assert metric_name("val/mean_placement") == "val/mean_placement"
+    assert metric_name("rollout/mean_placement") == "train/mean_placement"
+    assert metric_name("ppo_summary/approx_kl") == "train/ppo_approx_kl"
+    assert metric_name("train/rollout/top4_rate") == "train/rollout_top4_rate"
+
+
+def test_real_stdout_handles_all_long_greedy_reward_names_without_collision(tmp_path, capsys):
+    from taverngym.learning.experiment import configure_experiment_logger, log_evaluation
+    from taverngym.learning.rewards import REWARD_METRICS
+
+    logger = configure_experiment_logger(tmp_path, ["stdout", "csv"])
+    metrics = dict.fromkeys(REWARD_METRICS, 0.)
+    metrics.update(mean_placement=4.125, first_rate=.140625, top4_rate=.53125)
+    try:
+        log_evaluation(logger, "val", {"conditions": {
+            "mixed_sampled": metrics, "mixed_greedy": metrics}})
+        logger.dump(0)
+    finally:
+        logger.close()
+    output = capsys.readouterr().out
+    assert "greedy_hero_selection_unknown_offer" in output
+    assert "greedy_hero_selection_unknown_heroes" in output
+    csv = (tmp_path / "progress.csv").read_text()
+    assert "val/greedy_hero_selection_unknown_offer" in csv
+    assert "val/greedy_hero_selection_unknown_heroes" in csv
+
+
+def test_move_metrics_follow_train_val_greedy_journal_without_training(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from taverngym.learning.tracking import WandbTracker
+
+    logs = []
+    run = SimpleNamespace(entity="eric_eric_", project="AutoTavern", id="fake", url="offline",
+        define_metric=lambda *a, **k: None, log=logs.append, finish=lambda **k: None)
+    monkeypatch.setitem(sys.modules, "wandb", SimpleNamespace(init=lambda **k: run,
+                                                             Settings=lambda **k: k))
+    tracker = WandbTracker(tmp_path, {"tracking": {"mode": "offline"}})
+    try:
+        tracker.log({"rollout/move_actions": 3, "rollout/move_penalty": -.0015,
+                     "rollout/move_action_fraction": .25}, 0)
+        tracker.log({"val/move_actions": 4, "val/move_penalty": -.002,
+                     "val/move_action_fraction": .2, "val/greedy_move_actions": 5,
+                     "val/greedy_move_penalty": -.0025, "val/greedy_move_action_fraction": .5}, 0)
+    finally:
+        tracker.finish()
+    rows = [json.loads(line) for line in (tmp_path / "wandb-metrics.jsonl").read_text().splitlines()]
+    assert rows == logs
+    assert rows[0] == {"train/move_actions": 3, "train/move_penalty": -.0015,
+                       "train/move_action_fraction": .25, "optimizer_step": 0}
+    assert rows[1]["val/greedy_move_penalty"] == -.0025
+    assert rows[1]["val/move_actions"] == 4
+
+
+def test_weave_connection_failure_preserves_wandb_metrics(tmp_path, monkeypatch):
+    from types import SimpleNamespace
+    from taverngym.learning.tracking import WandbTracker
+
+    values, finished = [], []
+    run = SimpleNamespace(entity="eric_eric_", project="AutoTavern", id="fake", url="https://example.test/run",
+                           define_metric=lambda *a, **k: None, log=values.append,
+                           finish=lambda **k: finished.append(True))
+    monkeypatch.setitem(sys.modules, "wandb", SimpleNamespace(init=lambda **k: run, Settings=lambda **k: k))
+
+    def unavailable(project):
+        assert project == "eric_eric_/AutoTavern"
+        raise ConnectionError("test TLS endpoint unavailable")
+
+    monkeypatch.setitem(sys.modules, "weave", SimpleNamespace(init=unavailable))
+    with pytest.warns(RuntimeWarning, match="W&B metrics remain enabled"):
+        tracker = WandbTracker(tmp_path, {"tracking": {"mode": "online"}})
+    tracker.log({"val/mean_placement": 4.0}, 0)
+    tracker.finish()
+    assert values == [{"val/mean_placement": 4.0, "optimizer_step": 0}]
+    assert finished == [True]
+    metadata = json.loads((tmp_path / "wandb.json").read_text())
+    assert not metadata["weave_initialized"] and "ConnectionError" in metadata["weave_error"]
+    assert json.loads((tmp_path / "wandb-metrics.jsonl").read_text())["optimizer_step"] == 0
+
+
+def test_live_bridge_reads_both_active_event_files_and_resumes(tmp_path):
+    pytest.importorskip("tensorboard")
+    from torch.utils.tensorboard import SummaryWriter
+    from taverngym.learning.migrate_wandb import EventFiles, journal_keys
+
+    first = SummaryWriter(str(tmp_path), filename_suffix=".summary")
+    second = SummaryWriter(str(tmp_path), filename_suffix=".adam")
+    first.add_scalar("baseline/mean_placement", 8.0, 0)
+    second.add_scalar("train/loss", .5, 1)
+    first.flush()
+    second.flush()
+    seen, reader = set(), EventFiles(tmp_path)
+    batches, counts = reader.reload(seen)
+    assert [step for step, _ in batches] == [0, 1]
+    assert counts["train/loss"] == 1
+    # The older summary file is still being written after the newer Adam file.
+    first.add_scalar("val/mean_placement", 4.0, 2)
+    second.add_scalar("train/loss", .4, 2)
+    first.flush()
+    second.flush()
+    batches, _ = reader.reload(seen)
+    assert batches == [(2, {"val/mean_placement": 4.0, "train/loss": pytest.approx(.4)})]
+    journal = tmp_path / "wandb-metrics.jsonl"
+    journal.write_text('\n'.join(json.dumps({name: 1, "optimizer_step": step}) for name, step in seen) + '\n')
+    recovered, _ = EventFiles(tmp_path).reload(journal_keys(journal))
+    assert recovered == []
+    first.close()
+    second.close()
+
+
+@pytest.mark.parametrize("sampling_driver", ["synchronous", "unified_actor"])
+def test_native_wandb_records_each_adam_and_step_zero_without_tensorboard(tmp_path, sampling_driver):
+    pytest.importorskip("wandb")
+    from taverngym.learning.model import ModelConfig
+    from taverngym.learning.policy import EntityPolicy
+    from taverngym.learning.ppo import EntityPPO
+    from taverngym.learning.vector_env import NativeVectorEnv
+
+    torch.set_num_threads(2)
+    env = NativeVectorEnv(2, seed=4)
+    model = EntityPPO(EntityPolicy, env, n_steps=16, batch_size=16, n_epochs=1,
+                      policy_kwargs={"model_config": asdict(ModelConfig(
+                          d_model=32, n_layers=1, n_heads=4, ff_dim=64, text_dim=16))},
+                      seed=4, device="cpu")
+    text = torch.randn(model.policy.network.identity.num_embeddings, 16)
+    text[0].zero_()
+    model.policy.network.set_text_embeddings(text)
+    initial = tmp_path / "initial.zip"
+    model.save(initial)
+    config = {
+        "name": "offline-logging-test", "iterations": 2, "decisions_per_iteration": 32,
+        "n_envs": 2, "n_steps": 16, "batch_size": 16, "micro_batch_size": 4, "n_epochs": 1,
+        "learning_rate_start": 3e-4, "learning_rate_end": 3e-6,
+        "seed": 4, "env_threads": 1, "checkpoint_every_iterations": 1,
+        "evaluation_every_iterations": 1, "evaluation_games": 1,
+        "initial_evaluation_games": 1, "final_evaluation_games": 0,
+        "evaluation_seed": 101, "final_evaluation_seed": 102,
+        "simulator_config": {"turn_action_caps": [3]},
+        "reward_shaping": {"operation_cost": 0.0001, "cycle_cost": 0.0002},
+        "forward_precision": "bf16",
+        "tracking": {"mode": "offline"},
+    }
+    if sampling_driver == "unified_actor":
+        config.update(sampling_driver=sampling_driver, opponent_model=str(initial),
+                      frozen_opponents=2, evaluation_matrix=True, evaluation_include_scripted=False)
+        config["reward_shaping"]["cycle_detection"] = "all_actions"
+    config_path = tmp_path / "config.json"
+    config_path.write_text(json.dumps(config))
+    folder, runs = tmp_path / "experiment", tmp_path / "models"
+    result = subprocess.run([sys.executable, "-m", "taverngym.learning.experiment",
+                             "--config", str(config_path), "--model", str(initial),
+                             "--experiment-dir", str(folder), "--run-dir", str(runs),
+                             "--device", "cpu"], capture_output=True, text=True)
+    assert result.returncode == 0, result.stdout + result.stderr
+    rows = [json.loads(line) for line in (folder / "wandb-metrics.jsonl").read_text().splitlines()]
+    assert [r["optimizer_step"] for r in rows if "train/loss" in r] == [1, 2, 3, 4]
+    assert [r["optimizer_step"] for r in rows if "val/mean_placement" in r] == [0, 2, 4]
+    validation = [r for r in rows if "val/mean_placement" in r]
+    for row in validation:
+        assert row["val/total_reward"] == pytest.approx(
+            row["val/placement_reward"] + row["val/operation_penalty"] + row["val/cycle_penalty"])
+        assert row["val/actions_per_game"] > 0
+        assert "val/cycle_returns" in row
+        assert "val/cycle_return_fraction" in row
+        assert "val/max_consecutive_cycle_returns" in row
+        assert 0 <= row["val/cycle_return_fraction"] <= 1
+    assert len([r for r in rows if "train/ppo_loss" in r]) == 2
+    assert all(name.count("/") <= 1 for row in rows for name in row)
+    assert not list(folder.rglob("events.out.tfevents.*"))
+    assert not (folder / "tensorboard").exists()
+    resolved = json.loads((folder / "resolved-config.json").read_text())
+    assert resolved["reward_shaping"] == {
+        "cycle_detection": "reversible_segment", "cycle_forfeit_repetitions": None,
+        "turn_action_forfeit_limit": None, "move_cost": 0,
+        "early_action_costs": [0.] * 5, "early_action_penalty_cap": .01,
+        "first_turn_minion_bonus": 0., "second_turn_tier2_bonus": 0.,
+        "third_turn_dark_gift_bonus": 0., "hero_selection_bonus_scale": 0.,
+        "hero_selection_bonus_cap": .005, "hero_selection_mean_placements": {},
+        **config["reward_shaping"]}
+    evaluation = json.loads((folder / "evaluation-0002.json").read_text())
+    conditions = evaluation.get("conditions", {"scripted": evaluation})
+    assert all(condition["reward_shaping"] == resolved["reward_shaping"]
+               for condition in conditions.values())
+    if sampling_driver == "unified_actor":
+        assert set(conditions) == {"mixed_sampled", "mixed_greedy"}
+        assert not any(key.startswith("val/scripted_") for row in rows for key in row)
+    assert resolved["forward_precision"] == "bf16"
+    assert resolved["precision_settings"]["learner_sampling_forward"] == "bf16"
+    assert resolved["precision_settings"]["learner_update_forward"] == "bf16"
+    if sampling_driver == "unified_actor":
+        assert resolved["sampling_driver"] == sampling_driver and resolved["frozen_opponents"] == 2
+        assert resolved["precision_settings"]["opponent_forward"] == "bf16"
+        assert all(f"val/{prefix}mean_placement" in row for row in validation
+                   for prefix in ("", "greedy_"))
+        assert all(f"val/greedy_{metric}" in row for row in validation
+                   for metric in ("cycle_returns", "cycle_penalty", "cycle_return_fraction",
+                                  "max_consecutive_cycle_returns"))
+        assert all(row["system/actor_learner_samples"] == 32 for row in rows if "system/actor_learner_samples" in row)
+    best_path = runs / resolved["best_model_filename"]
+    assert best_path.is_file() and list(runs.glob("*-best_model.zip")) == [best_path]
+    assert not (runs / "best_model.zip").exists()
+    restored = EntityPPO.load(runs / "final_model.zip", device="cpu")
+    assert restored.optimizer_step_count() == 4
+    assert restored.policy.forward_precision == "bf16"
+    assert getattr(restored, "_after_optimizer_step", None) is None
+    model.env.close()

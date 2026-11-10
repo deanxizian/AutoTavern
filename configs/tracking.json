@@ -1,0 +1,7 @@
+{
+  "backend": "wandb",
+  "entity": "eric_eric_",
+  "project": "AutoTavern",
+  "weave_project": "eric_eric_/AutoTavern",
+  "mode": "online"
+}

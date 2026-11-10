@@ -1,0 +1,88 @@
+{
+  "status": "passed",
+  "rust": {
+    "status": "passed",
+    "cargo_fmt_exit": 0,
+    "cargo_clippy_exit": 0,
+    "cargo_test_exit": 0,
+    "test_binaries": 38,
+    "passed": 882,
+    "failed": 0,
+    "ignored": 0,
+    "logs": [
+      "cargo-fmt.log",
+      "cargo-clippy.log",
+      "cargo-test.log"
+    ],
+    "completed_at": "2026-11-07T16:01:05.033087+00:00"
+  },
+  "python": {
+    "command": "source /root/autodl-tmp/bootstrap/eric-tool-env.sh; uv run --locked --group train --extra test python -m pytest -q",
+    "passed": 448,
+    "failed": 0,
+    "skipped": 0,
+    "seconds": 90.42,
+    "prior_attempt": {
+      "passed": 447,
+      "failed": 1,
+      "cause": "Pre-existing Eric test patched tracking.WandbTracker instead of selected chain.tracker_for_config, so a mocked repair test accidentally reached real account-dependent W&B initialization. Native engine/evaluation/model were all stubbed; unrelated to37.0.2 integration.",
+      "fix": "Patch the selected tracker factory at its call site; production historical tracking behavior unchanged.",
+      "targeted_regression": "1passed /1.57s"
+    }
+  },
+  "cuda_preflight": {
+    "status": "passed",
+    "seed": 37024001,
+    "formal_budget_samples": 0,
+    "preflight_samples": 8192,
+    "preflight_adam_updates": 1,
+    "micro_batch_size": 1024,
+    "parameter_dtype": "float32",
+    "gradient_dtype": "float32",
+    "adam_dtype": "float32",
+    "forward_precision": "bf16",
+    "elapsed_seconds": 4.388732214923948,
+    "peak_cuda_allocated_bytes": 3979751424,
+    "peak_cuda_reserved_bytes": 4871684096,
+    "updates": [
+      {
+        "step": 1,
+        "policy_gradient_loss": -1.4780089259147644e-06,
+        "value_loss": 0.3202921748161316,
+        "entropy_loss": -2.240966111421585,
+        "placement_loss": 2.3012695610523224,
+        "placement_label_fraction": 0.834228515625,
+        "approx_kl": 1.3875251170247793e-08,
+        "clip_fraction": 0.0,
+        "loss": 0.3857896402478218,
+        "grad_norm": 5.021908283233643
+      }
+    ],
+    "initialization_unchanged_sha256": "94d7cf1184dd16e2fb4344c9531929d3fef4b0999f4810278d184cd841324363",
+    "checkpoint": "/root/autodl-tmp/AutoTavern-Eric/runs/20261108-eric-3702-fresh-v1-preflight/preflight-complete.zip",
+    "build_info": {
+      "source_hash": "0f1e29b2c698b4e9",
+      "profile": "release",
+      "file": "/root/autodl-tmp/AutoTavern-Eric/python/taverngym/_core.abi3.so"
+    },
+    "hero_choices": 2
+  },
+  "formal_samples_used_by_preflight": 0,
+  "formal_optimizer_updates_used_by_preflight": 0,
+  "experiment_cli_help_exit": 0,
+  "evidence_files": {
+    "/root/autodl-tmp/bootstrap/eric-3702-status/cargo-fmt.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/cargo-clippy.log": "a128d0e95fc38b73e2b1113cb0a6e6939cea55e727c17e4be0896bf7be2ffaab",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/cargo-test.log": "8a86f7dee7c4de719b18276536c8283a94a7a0ccac3e761e562864bb274cd757",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/pytest-full.log": "8e5825a456dedcaece1bb9eec9c435b1829c21178ca8fe92637d5dda82b6c5e6",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/pytest-repair-regression.log": "43557565734a08c43e5a3973973179f5bf3692ffb6987e822d48d508730995f8",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/pytest-full-afterfix.log": "fd18f095c0a68cbe89b835d6ab2817af4685535417c3fc2745cb0ba36bf904cc",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/cuda-preflight.log": "0f2cc140cb20dda7ce09194cdc4575af43a2b8d44425b405242bfaf031960a87",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/cuda-preflight.json": "0f2cc140cb20dda7ce09194cdc4575af43a2b8d44425b405242bfaf031960a87",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/experiment-help.log": "36321eefa0a1997d765b94ab7dd380544c20f68feaba45c590d2ed2b24b4be73",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/installed-environment.json": "0f1e5a55ed4215ab43970e4bbd2d15cfa171f9d0f1e87379ad6a8f9695a68f4f",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/mirror-lock-verification.json": "9459cc324606c8a89f9bdfb8703e45b863aab6eadcb291cb6603d8ff1b714c18",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/text-generation.log": "9960f173545c4e4f96331f40649aec47a1a9d8a75785abecad2b94932a0d419f",
+    "/root/autodl-tmp/bootstrap/eric-3702-status/text-encoder-download.json": "1a037ee6ee145ca0632d140f2bcfe4e96da514a9280a28cc004212e2eb5df001"
+  }
+}

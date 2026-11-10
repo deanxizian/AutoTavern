@@ -1,0 +1,17 @@
+{
+  "checkpoint": "runs/20261031-ppo-v3-2v1-3v2-warmup/checkpoints/iteration-0150.zip",
+  "checkpoint_ppo_iteration": 150,
+  "sha256": "9bb73e90c26c1fdf53884b21997ecd916afbfaf2b933c13c577345a8ef1cc521",
+  "games_per_mode": 16,
+  "seed": 61000301,
+  "opponents": "2 fixed V1 + 3 fixed V2 + 2 scripted; all capped at 60",
+  "learner_cap": 200,
+  "precision": "bf16",
+  "training_started": false,
+  "detector": "Exact visible features+cards revisit within the same turn, across all action types; mask ignored",
+  "limitations": [
+    "Visible repetition does not prove hidden simulator state is unchanged.",
+    "Non-revisit actions are not proven useful; no cap counterfactual.",
+    "This is PPO150, distinct from the prior PPO144 audit."
+  ]
+}

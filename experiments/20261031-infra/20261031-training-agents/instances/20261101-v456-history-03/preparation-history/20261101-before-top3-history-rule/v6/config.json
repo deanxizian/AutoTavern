@@ -1,0 +1,162 @@
+{
+  "name": "20261101-ppo-v6-1script-1v1-1v2-1v3-1v4-2v5-cycle001-forceend",
+  "iterations": 100,
+  "decisions_per_iteration": 131072,
+  "n_envs": 128,
+  "n_steps": 1024,
+  "batch_size": 8192,
+  "micro_batch_size": 1024,
+  "n_epochs": 1,
+  "learning_rate_start": 1e-05,
+  "learning_rate_end": 1e-05,
+  "learning_rate_schedule": "linear",
+  "seed": 44,
+  "env_threads": 4,
+  "checkpoint_every_iterations": 50,
+  "initial_evaluation_games": 64,
+  "evaluation_every_iterations": 50,
+  "evaluation_games": 64,
+  "final_evaluation_games": 128,
+  "evaluation_seed": 40000003,
+  "final_evaluation_seed": 50000003,
+  "rollout_storage": "lossless packed RAM: float32 numerics, packed binary flags, uint16 card IDs",
+  "simulator_config": {
+    "turn_action_caps": [
+      60
+    ]
+  },
+  "evaluation_policy": "1 scripted + 1 fixed V1 + 1 fixed V2 + 1 fixed V3 + 1 fixed V4 + 2 fixed V5; learner sampled/greedy 64 games each at PPO0/50/100; stochastic strict decrease selects best; independent initial/best/final sampled/greedy 128 games each",
+  "precision": "BF16 neural forwards; FP32 probabilities, GAE, losses, weights, gradients and Adam",
+  "budget_definition": "100 PPO iterations x 131072 fresh learner samples; at most 16 Adam updates per PPO; epoch=1",
+  "derived_budget": {
+    "minibatches_per_epoch": 16,
+    "optimizer_updates_per_iteration_max": 16,
+    "total_optimizer_updates_max": 1600,
+    "total_fresh_samples": 13107200,
+    "gradient_accumulation": 8,
+    "microbatch_backwards_per_iteration_max": 128,
+    "total_microbatch_backwards_max": 12800,
+    "packed_observation_cache_gib": 0.403564453125,
+    "complete_training_cache_gib": 0.408447265625,
+    "warmup_ppo_iterations": 0,
+    "warmup_stage_adam_updates_max": 0,
+    "initial_ppo_update_lr": 1e-05,
+    "source_adam_updates": null,
+    "final_total_adam_updates_max": null
+  },
+  "model_retention_policy": {
+    "selection": "fixed mixed stochastic val mean placement; earliest wins ties",
+    "after_evaluation": "retain timestamped stage best after initial/best/final heldout evaluations; preserve V1/V2 opponents and every inherited source checkpoint",
+    "records": "W&B scalars, exact opponent hashes and precision, config, evaluations, cleanup manifest"
+  },
+  "tracking_backend": "wandb",
+  "train_per_optimizer_step": true,
+  "validation_prefix": "val",
+  "baseline_prefix": "val",
+  "reward_shaping": {
+    "operation_cost": 0,
+    "cycle_cost": 0.01,
+    "cycle_detection": "all_actions",
+    "cycle_forfeit_repetitions": null,
+    "turn_action_forfeit_limit": null
+  },
+  "initial_model": null,
+  "frozen_opponents": 6,
+  "evaluation_matrix": true,
+  "stage_initialization": "Continue actual previous-stage selected best including Adam; fresh local counters; constant LR1e-5",
+  "opponents": "1 scripted + 1 fixed V1 + 1 fixed V2 + 1 fixed V3 + 1 fixed V4 + 2 fixed V5 + 1 learner; rotate physical seats every game",
+  "sampling_driver": "unified_actor",
+  "forward_precision": "bf16",
+  "opponent_forward_precision": "bf16",
+  "sampling_description": "arbitrary named frozen-policy groups, batched separately by policy; all sampling no_grad; learner-only recomputation and backward during PPO",
+  "tracking": {
+    "backend": "wandb",
+    "entity": "eric_eric_",
+    "project": "AutoTavern",
+    "weave_project": "eric_eric_/AutoTavern",
+    "mode": "online"
+  },
+  "preserve_optimizer_state": true,
+  "initial_model_sha256": null,
+  "opponent_pool": [
+    {
+      "name": "bot_v1",
+      "count": 1,
+      "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24",
+      "model_version": "v1",
+      "reward_shaping": null
+    },
+    {
+      "name": "bot_v2",
+      "count": 1,
+      "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+      "model_version": "v2",
+      "reward_shaping": null
+    },
+    {
+      "name": "bot_v3",
+      "count": 1,
+      "model": "runs/20261031-ppo-v3-2v1-3v2-warmup/20261031-194747-best_model.zip",
+      "sha256": "c8856c03f234b06839c0b631454b95c63ecb53266310785d6e046bd8d8ce17a1",
+      "model_version": "v3",
+      "reward_shaping": null
+    },
+    {
+      "name": "bot_v4",
+      "model": null,
+      "sha256": null,
+      "model_version": "v4",
+      "source_stage": "v4",
+      "reward_shaping": {
+        "operation_cost": 0,
+        "cycle_cost": 0.01,
+        "cycle_detection": "all_actions",
+        "cycle_forfeit_repetitions": null,
+        "turn_action_forfeit_limit": null
+      },
+      "protocol_source": null,
+      "count": 1
+    },
+    {
+      "name": "bot_v5",
+      "model": null,
+      "sha256": null,
+      "model_version": "v5",
+      "source_stage": "v5",
+      "reward_shaping": {
+        "operation_cost": 0,
+        "cycle_cost": 0.01,
+        "cycle_detection": "all_actions",
+        "cycle_forfeit_repetitions": null,
+        "turn_action_forfeit_limit": null
+      },
+      "protocol_source": null,
+      "count": 2
+    }
+  ],
+  "model_version": "v6",
+  "config_status": "prepared_not_started",
+  "initial_model_version": null,
+  "evaluation_include_scripted": false,
+  "initial_model_ppo_iteration": null,
+  "source_binding_required": true,
+  "learning_rate_description": "constant 1e-5 for every Adam update; equal linear endpoints; no warmup or decay",
+  "source_stage": "v5",
+  "expected_opponent_counts": {
+    "bot_v1": 1,
+    "bot_v2": 1,
+    "bot_v3": 1,
+    "bot_v4": 1,
+    "bot_v5": 2
+  },
+  "instance_id": "20261101-v456-history-03",
+  "expected_reward_shaping": {
+    "operation_cost": 0,
+    "cycle_cost": 0.01,
+    "cycle_detection": "all_actions",
+    "cycle_forfeit_repetitions": null,
+    "turn_action_forfeit_limit": null
+  }
+}
