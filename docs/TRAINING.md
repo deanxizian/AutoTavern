@@ -388,6 +388,13 @@ count divisible by the rollout size. New checkpoints persist `_ppo_completion`:
 collection/update checkpoints remain `in_progress` until optimization completes.
 An interrupted minibatch cannot become a resumable source by changing its filename.
 
+The generic `learning.train --checkpoint-every N` interval counts additional learner
+decisions. Periodic saves occur in the post-update hook at the first completed PPO
+boundary crossing each interval (at most one save per boundary), never during rollout
+collection. A newer interrupted archive does not invalidate an older completed save.
+Iteration log payloads include the PPO iteration as well as actual Adam steps, so
+successful KL-stopped iterations sharing an Adam count remain distinct in schema v2.
+
 Legacy zero-step initializations remain supported. A legacy checkpoint with positive
 samples needs its audited `<model>.zip.boundary.json` alongside the unchanged ZIP.
 The boundary must bind `checkpoint_sha256`, `samples`, `source_Adam_offset`,

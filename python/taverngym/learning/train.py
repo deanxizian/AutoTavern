@@ -9,7 +9,6 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import torch
-from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.logger import configure
 
 from .env import make_vector_env
@@ -96,6 +95,7 @@ def main():
                          "train/sampled_decisions": current.num_timesteps}, step)
 
     def record_iteration(current):
+        nonlocal next_checkpoint
         for name, value in list(logger.name_to_value.items()):
             if name.startswith("train/"):
                 if name != "train/n_updates":
@@ -108,18 +108,26 @@ def main():
             logger.record("rollout/first_rate", sum(p == 1 for p in places) / len(places))
         logger.record("time/rollout_seconds", current.last_rollout_seconds)
         logger.record("time/update_seconds", current.last_train_seconds)
+        logger.record("progress/ppo_iterations", current.num_timesteps //
+                      (current.n_steps * current.n_envs))
+        logger.record("progress/sampled_decisions", current.num_timesteps)
         logger.dump(current.optimizer_step_count())
+        # Rollout callbacks run before optimization; only this post-update hook
+        # can save an archive that is safe to continue. Round the requested
+        # decision interval up to a completed PPO boundary, saving at most once.
+        if current.num_timesteps >= next_checkpoint:
+            current.save(args.run_dir / "checkpoints" /
+                         f"ppo-small_{current.num_timesteps}_steps.zip")
+            crossed = (current.num_timesteps - next_checkpoint) // args.checkpoint_every + 1
+            next_checkpoint += crossed * args.checkpoint_every
 
     model._after_optimizer_step = record_optimizer_step
     model._after_update = record_iteration
-    callback = CheckpointCallback(
-        save_freq=max(1, args.checkpoint_every // env.num_envs),
-        save_path=str(args.run_dir / "checkpoints"), name_prefix="ppo-small",
-    )
     start = model.num_timesteps
+    next_checkpoint = start + args.checkpoint_every
     status = "completed"
     try:
-        model.learn(total_timesteps=args.total_timesteps, callback=callback,
+        model.learn(total_timesteps=args.total_timesteps,
                     reset_num_timesteps=False, log_interval=None)
     except KeyboardInterrupt:
         status = "interrupted"
