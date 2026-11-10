@@ -4,7 +4,7 @@
 
 use pyo3::exceptions::{PyRuntimeError, PyValueError};
 use pyo3::prelude::*;
-use pyo3::types::PyBytes;
+use pyo3::types::{PyByteArray, PyBytes};
 
 use taverngym::actions::{Action, N_ACTIONS};
 use taverngym::batch::{BatchEnv, SlotResult};
@@ -46,6 +46,27 @@ fn f32_bytes<'py>(py: Python<'py>, v: &[f32]) -> Bound<'py, PyBytes> {
 fn i32_bytes<'py>(py: Python<'py>, v: &[i32]) -> Bound<'py, PyBytes> {
     let b: Vec<u8> = v.iter().flat_map(|x| x.to_le_bytes()).collect();
     PyBytes::new(py, &b)
+}
+
+// Batched observations contain millions of values. Fill the owned Python bytes
+// directly instead of allocating and copying an intermediate byte Vec. Explicit
+// little-endian encoding keeps the existing wire contract on every host.
+fn batch_f32_bytes<'py>(py: Python<'py>, values: &[f32]) -> PyResult<Bound<'py, PyBytes>> {
+    PyBytes::new_with(py, std::mem::size_of_val(values), |bytes| {
+        for (word, value) in bytes.as_chunks_mut::<4>().0.iter_mut().zip(values) {
+            word.copy_from_slice(&value.to_le_bytes());
+        }
+        Ok(())
+    })
+}
+
+fn batch_i32_bytes<'py>(py: Python<'py>, values: &[i32]) -> PyResult<Bound<'py, PyBytes>> {
+    PyBytes::new_with(py, std::mem::size_of_val(values), |bytes| {
+        for (word, value) in bytes.as_chunks_mut::<4>().0.iter_mut().zip(values) {
+            word.copy_from_slice(&value.to_le_bytes());
+        }
+        Ok(())
+    })
 }
 
 type ObsBytes<'py> = (Bound<'py, PyBytes>, Bound<'py, PyBytes>);
@@ -203,6 +224,10 @@ impl PySoloEnv {
         let r = py.detach(|| self.env.step(action));
         (r.reward, r.done, r.illegal)
     }
+    fn forfeit(&mut self, py: Python<'_>) -> PyResult<f32> {
+        py.detach(|| self.env.forfeit())
+            .map_err(PyValueError::new_err)
+    }
     fn observe<'py>(&self, py: Python<'py>) -> ObsBytes<'py> {
         obs_bytes(py, &self.env.observe())
     }
@@ -225,6 +250,13 @@ impl PySoloEnv {
     }
 }
 
+type EncodedBatchObs<'py> = (
+    Bound<'py, PyByteArray>,
+    Bound<'py, PyByteArray>,
+    Bound<'py, PyByteArray>,
+    Bound<'py, PyByteArray>,
+);
+
 type BatchObs<'py> = (
     Bound<'py, PyBytes>,
     Bound<'py, PyBytes>,
@@ -241,7 +273,7 @@ struct PyBatchEnv {
 #[pymethods]
 impl PyBatchEnv {
     #[new]
-    #[pyo3(signature = (n_games, seed=0, controlled=vec![0], config_json=None, threads=1))]
+    #[pyo3(signature = (n_games, seed=0, controlled=vec![0], config_json=None, threads=1, rotate_seats=false))]
     fn new(
         py: Python<'_>,
         n_games: usize,
@@ -249,10 +281,17 @@ impl PyBatchEnv {
         controlled: Vec<usize>,
         config_json: Option<&str>,
         threads: usize,
+        rotate_seats: bool,
     ) -> PyResult<Self> {
         let cfg = parse_config(config_json)?;
         let env = py
-            .detach(|| BatchEnv::new(n_games, seed, cfg, controlled, threads))
+            .detach(|| {
+                if rotate_seats {
+                    BatchEnv::new_rotating(n_games, seed, cfg, controlled, threads)
+                } else {
+                    BatchEnv::new(n_games, seed, cfg, controlled, threads)
+                }
+            })
             .map_err(PyValueError::new_err)?;
         Ok(PyBatchEnv { env })
     }
@@ -267,6 +306,13 @@ impl PyBatchEnv {
     #[getter]
     fn controlled(&self) -> Vec<usize> {
         self.env.controlled().to_vec()
+    }
+    #[getter]
+    fn slot_seats(&self) -> Vec<usize> {
+        self.env.slot_seats()
+    }
+    fn reset_finished_first(&mut self, py: Python<'_>) {
+        py.detach(|| self.env.reset_finished_first());
     }
     #[getter]
     fn illegal_penalty(&self) -> f32 {
@@ -285,15 +331,66 @@ impl PyBatchEnv {
         py.detach(|| env.observe(&mut f, &mut c, &mut m, &mut r))
             .map_err(PyRuntimeError::new_err)?;
         Ok((
-            f32_bytes(py, &f),
-            i32_bytes(py, &c),
+            batch_f32_bytes(py, &f)?,
+            batch_i32_bytes(py, &c)?,
             PyBytes::new(py, &m),
             PyBytes::new(py, &r),
         ))
     }
+    /// Private sampling path: every returned writable owner is newly allocated.
+    /// Owners remain attached to Python while only closure-provided byte slices
+    /// and an immutable environment borrow cross detach into joined Rust workers.
+    fn _observe_encoded<'py>(&self, py: Python<'py>) -> PyResult<EncodedBatchObs<'py>> {
+        let n = self
+            .env
+            .n_games()
+            .checked_mul(self.env.controlled().len())
+            .ok_or_else(|| PyValueError::new_err("observation slot count overflow"))?;
+        let bytes = |width: usize| {
+            n.checked_mul(width)
+                .filter(|&length| isize::try_from(length).is_ok())
+                .ok_or_else(|| PyValueError::new_err("observation byte size overflow"))
+        };
+        let f_bytes = OBS_FLOATS
+            .checked_mul(4)
+            .ok_or_else(|| PyValueError::new_err("float row size overflow"))?;
+        let c_bytes = OBS_CARDS
+            .checked_mul(4)
+            .ok_or_else(|| PyValueError::new_err("card row size overflow"))?;
+        let env = &self.env;
+        let (mut cards, mut masks, mut ready) = (None, None, None);
+        let floats = PyByteArray::new_with(py, bytes(f_bytes)?, |f| {
+            cards = Some(PyByteArray::new_with(py, bytes(c_bytes)?, |c| {
+                masks = Some(PyByteArray::new_with(py, bytes(N_ACTIONS)?, |m| {
+                    ready = Some(PyByteArray::new_with(py, n, |r| {
+                        py.detach(|| env.observe_encoded(f, c, m, r))
+                            .map_err(PyRuntimeError::new_err)
+                    })?);
+                    Ok(())
+                })?);
+                Ok(())
+            })?);
+            Ok(())
+        })?;
+        // Each successful nested allocator necessarily populated its returned owner.
+        Ok((
+            floats,
+            cards.expect("allocated card owner"),
+            masks.expect("allocated mask owner"),
+            ready.expect("allocated ready owner"),
+        ))
+    }
     /// One action per slot as little-endian int64 bytes; returns (rewards f32, dones u8,
-    /// placements u8, rejected u8) as bytes, one entry per slot.
-    fn step<'py>(&mut self, py: Python<'py>, actions: &[u8]) -> PyResult<BatchObs<'py>> {
+    /// placements u8, action status u8) as bytes, one entry per slot.
+    /// Status bit 0 = rejected, bit 1 = deferred after another seat changed legality.
+    #[pyo3(signature = (actions, active=None, skipped=None))]
+    fn step<'py>(
+        &mut self,
+        py: Python<'py>,
+        actions: &[u8],
+        active: Option<&[u8]>,
+        skipped: Option<&[u8]>,
+    ) -> PyResult<BatchObs<'py>> {
         let n = self.env.n_slots();
         if actions.len() != n * 8 {
             return Err(PyValueError::new_err(format!(
@@ -305,20 +402,50 @@ impl PyBatchEnv {
         let (chunks, _) = actions.as_chunks::<8>();
         let acts: Vec<i64> = chunks.iter().map(|b| i64::from_le_bytes(*b)).collect();
         let mut out = vec![SlotResult::default(); n];
+        let flags: Option<Vec<bool>> = active.map(|a| a.iter().map(|&x| x != 0).collect());
+        let held: Option<Vec<bool>> = skipped.map(|a| a.iter().map(|&x| x != 0).collect());
         let env = &mut self.env;
-        py.detach(|| env.step(&acts, &mut out))
-            .map_err(PyValueError::new_err)?;
+        py.detach(|| match (flags, held) {
+            (flags, Some(held)) => {
+                let flags = flags.unwrap_or_else(|| vec![true; env.n_games()]);
+                env.step_active_skipping(&acts, &flags, &held, &mut out)
+            }
+            (Some(flags), None) => env.step_active(&acts, &flags, &mut out),
+            (None, None) => env.step(&acts, &mut out),
+        })
+        .map_err(PyValueError::new_err)?;
         let rewards: Vec<f32> = out.iter().map(|r| r.reward).collect();
         let dones: Vec<u8> = out.iter().map(|r| r.done as u8).collect();
         let places: Vec<u8> = out.iter().map(|r| r.placement).collect();
-        let rejected: Vec<u8> = out.iter().map(|r| r.rejected as u8).collect();
+        let status: Vec<u8> = out
+            .iter()
+            .map(|r| r.rejected as u8 | (r.deferred as u8) << 1)
+            .collect();
         Ok((
             f32_bytes(py, &rewards),
             PyBytes::new(py, &dones),
             PyBytes::new(py, &places),
-            PyBytes::new(py, &rejected),
+            PyBytes::new(py, &status),
         ))
     }
+    /// Explicit surrender flags (one byte per controlled slot), with normal
+    /// terminal rewards and placements. No policy action is substituted.
+    fn forfeit<'py>(&mut self, py: Python<'py>, selected: &[u8]) -> PyResult<BatchObs<'py>> {
+        let flags: Vec<bool> = selected.iter().map(|&flag| flag != 0).collect();
+        let mut out = vec![SlotResult::default(); self.env.n_slots()];
+        py.detach(|| self.env.forfeit(&flags, &mut out))
+            .map_err(PyValueError::new_err)?;
+        let rewards: Vec<f32> = out.iter().map(|r| r.reward).collect();
+        let dones: Vec<u8> = out.iter().map(|r| r.done as u8).collect();
+        let places: Vec<u8> = out.iter().map(|r| r.placement).collect();
+        Ok((
+            f32_bytes(py, &rewards),
+            PyBytes::new(py, &dones),
+            PyBytes::new(py, &places),
+            PyBytes::new(py, &vec![0u8; out.len()]),
+        ))
+    }
+
     /// Game `i` and its episode state as JSON (`load` restores it exactly).
     fn save(&self, py: Python<'_>, i: usize) -> PyResult<String> {
         py.detach(|| self.env.save(i))

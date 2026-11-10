@@ -18,6 +18,42 @@
 venv/
 .pytest_cache/
 .ruff_cache/
+.uv-cache/
+.cache/
+.huggingface/
+wandb/
+.weave/
+/configs/.model-version-lock/
+
+# Runtime W&B data stays in W&B/local storage; commit code/config/schema only.
+**/wandb.json
+**/wandb-metrics.jsonl
+**/wandb-inventory/
+**/wandb-summary.json
+**/wandb-metadata.json
+*.wandb
+*.wandb.syncstate
+/experiments/**/*wandb*verification.json
+
+# Publish compact experiment summaries, not raw curves or per-game outputs.
+/experiments/**/metrics.jsonl
+/experiments/**/results.json
+/experiments/**/evaluation-[0-9][0-9][0-9][0-9].json
+/experiments/**/evaluation-*-heldout.json
+/experiments/**/ranking-games.jsonl
+/experiments/**/ranking-results.json
+/experiments/**/ranking-scheduler.json
+/experiments/**/ranking-v[0-9]*.json
+/experiments/**/games.jsonl
+/experiments/**/players.jsonl
+/experiments/**/turns.jsonl
+/experiments/**/batches.json
+/experiments/**/performance-sync.json
+/experiments/**/tracking-error.json
+/experiments/**/controller-status.json
+/experiments/**/monitor-status.json
+/experiments/**/monitor-journal.jsonl
+/experiments/**/launch-evidence.json
 
 # credentials and private configuration
 .env
@@ -27,6 +63,7 @@ venv/
 *.key
 *.p12
 .ssh/
+.aws/
 id_rsa*
 id_ed25519*
 .netrc
@@ -48,3 +85,36 @@ guard-*.json
 *.npz
 *.npy
 *.pkl
+*_model.zip
+
+# Local paper downloads, translations and rendered previews; keep the source index.
+/docs/papers/*
+!/docs/papers/README.md
+
+# Transient experiment state and verbose logs. Keep configs, compact result
+# summaries, benchmark samples and reproduction scripts under version control.
+/experiments/**/tensorboard/
+/experiments/**/events.out.tfevents.*
+/experiments/**/sessions/
+/experiments/**/process.json
+/experiments/**/launcher.json
+/experiments/**/resume-launch.json
+/experiments/**/controller.lock
+/experiments/**/progress.json
+/experiments/**/progress.csv
+/experiments/**/training.json
+/experiments/**/*console*.txt
+/experiments/**/events.txt
+/experiments/**/*build*.txt
+/experiments/**/*stderr.txt
+/experiments/**/legacy-runs/
+/experiments/**/reruns/
+/experiments/**/*.zip
+/experiments/**/*.bin
+/experiments/**/*.tmp
+/experiments/**/partial-results.json
+/experiments/**/*-actions.jsonl.gz
+/experiments/**/turns.jsonl.gz
+
+# Fixed-N periodic journals and live state fingerprints remain local.
+/experiments/**/periodic-raw/

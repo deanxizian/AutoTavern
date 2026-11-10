@@ -1,0 +1,134 @@
+{
+  "kind": "archival_actual_training_recipe_not_a_restart_request",
+  "display_version": "V8",
+  "canonical_run": "eric-v7-3702-c007",
+  "original_frozen_config_sha256": "bfbd9eec840420d4d8daabdf2d203de15d71c5098727060d8d992e5ac15f09e2",
+  "actual_recipe": {
+    "iterations": 100,
+    "decisions_per_iteration": 131072,
+    "n_envs": 256,
+    "n_steps": 512,
+    "batch_size": 8192,
+    "micro_batch_size": 1024,
+    "n_epochs": 1,
+    "learning_rate_start": 1e-05,
+    "learning_rate_end": 1e-05,
+    "learning_rate_schedule": "constant",
+    "seed": 44060011,
+    "env_threads": 4,
+    "sampling_driver": "unified_actor",
+    "forward_precision": "bf16",
+    "opponent_forward_precision": "bf16",
+    "frozen_opponents": 6,
+    "evaluation_matrix": true,
+    "evaluation_include_scripted": false,
+    "reward_shaping": {
+      "operation_cost": 0,
+      "cycle_cost": 0.01,
+      "cycle_detection": "all_actions",
+      "cycle_forfeit_repetitions": null,
+      "turn_action_forfeit_limit": null,
+      "move_cost": 0.0005,
+      "early_action_costs": [
+        0.001,
+        0.001,
+        0.0005,
+        0.0005,
+        0.0005
+      ],
+      "early_action_penalty_cap": 0.01,
+      "first_turn_minion_bonus": 0.01,
+      "second_turn_tier2_bonus": 0.005,
+      "third_turn_dark_gift_bonus": 0.005,
+      "hero_selection_bonus_scale": 0.01,
+      "hero_selection_bonus_cap": 0.005,
+      "hero_selection_mean_placements": {
+        "TB_BaconShop_HERO_10": 3.04,
+        "TB_BaconShop_HERO_37": 3.14,
+        "TB_BaconShop_HERO_40": 3.17,
+        "BG25_HERO_103": 3.24,
+        "TB_BaconShop_HERO_08": 3.31,
+        "BG34_HERO_002": 3.31,
+        "TB_BaconShop_HERO_68": 3.31,
+        "TB_BaconShop_HERO_41": 3.34,
+        "BG22_HERO_002": 3.35,
+        "BG21_HERO_000": 3.35,
+        "BG30_HERO_304": 3.37,
+        "TB_BaconShop_HERO_34": 3.38
+      }
+    },
+    "simulator_config": {
+      "turn_action_caps": [
+        60
+      ],
+      "hero_choices": 2
+    },
+    "ppo_reference": {
+      "gamma": 1.0,
+      "gae_lambda": 0.995,
+      "clip_range": 0.2,
+      "target_kl": 0.05,
+      "ent_coef": 0.002,
+      "vf_coef": 0.5,
+      "max_grad_norm": 1.0,
+      "aux_coef": 0.05,
+      "normalize_advantage": true
+    },
+    "model_config": {
+      "d_model": 192,
+      "n_layers": 4,
+      "n_heads": 8,
+      "ff_dim": 1024,
+      "text_dim": 384,
+      "dropout": 0.0
+    },
+    "source_adam_total_steps": 10400,
+    "initial_model_sha256": "ef9b9017e35542447146129b20f98ab572d4c08afc51ed8a13622986ff15c131",
+    "max_samples": 13107200,
+    "max_wall_seconds": 21600,
+    "aux_coef": 0.05,
+    "evaluation_seed": 45060011,
+    "final_evaluation_seed": 46070011,
+    "initial_source": "C004 best100; historical local display V8, cumulative Adam10400",
+    "opponent_pool": [
+      {
+        "canonical_version": "eric-v7-3702-c002",
+        "sha256": "2a6471eba928b9e258ae4cdea5bc8928adb4ea35604ebc28ede18c677e3d02ff",
+        "count": 2,
+        "reward_shaping": {
+          "operation_cost": 0,
+          "move_cost": 0.0005,
+          "cycle_cost": 0.01,
+          "cycle_detection": "all_actions",
+          "cycle_forfeit_repetitions": null,
+          "turn_action_forfeit_limit": null
+        }
+      },
+      {
+        "canonical_version": "v7",
+        "sha256": "aed5d24b51fa7d13c6667552d66ea4304d8177323907c6bfb75fa724224d53e0",
+        "count": 2,
+        "reward_shaping": null
+      },
+      {
+        "canonical_version": "eric-v7-3702-c001",
+        "sha256": "6594805096baf2d4997a6c12d5e77d60fc763290b66215a978d283a16afa617b",
+        "count": 2,
+        "reward_shaping": {
+          "operation_cost": 0,
+          "move_cost": 0.0005,
+          "cycle_cost": 0.01,
+          "cycle_detection": "all_actions",
+          "cycle_forfeit_repetitions": null,
+          "turn_action_forfeit_limit": null
+        }
+      }
+    ]
+  },
+  "formal_PPO_completed": 100,
+  "formal_new_samples": 13107200,
+  "formal_new_adam": 1600,
+  "best_PPO": 75,
+  "best_new_adam": 1200,
+  "best_total_adam": 11600
+}

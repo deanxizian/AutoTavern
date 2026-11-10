@@ -1,0 +1,94 @@
+{
+  "name": "20261031-ppo-v3-2v1-3v2-warmup",
+  "iterations": 100,
+  "decisions_per_iteration": 131072,
+  "n_envs": 128,
+  "n_steps": 1024,
+  "batch_size": 8192,
+  "micro_batch_size": 1024,
+  "n_epochs": 1,
+  "learning_rate_start": 0.000003,
+  "learning_rate_end": 0.000005,
+  "learning_rate_schedule": "warmup_linear",
+  "seed": 44,
+  "env_threads": 4,
+  "checkpoint_every_iterations": 25,
+  "initial_evaluation_games": 64,
+  "evaluation_every_iterations": 25,
+  "evaluation_games": 64,
+  "final_evaluation_games": 128,
+  "evaluation_seed": 40000003,
+  "final_evaluation_seed": 50000003,
+  "rollout_storage": "lossless packed RAM: float32 numerics, packed binary flags, uint16 card IDs",
+  "simulator_config": {
+    "turn_action_caps": [
+      60
+    ]
+  },
+  "evaluation_policy": "four conditions: (2 frozen V1 + 3 frozen V2 + 2 scripted)/seven scripted x stochastic/greedy; 64 games each; only mixed stochastic selects best",
+  "precision": "BF16 neural forwards; FP32 probabilities, GAE, losses, weights, gradients and Adam",
+  "budget_definition": "100 PPO iterations, 16 minibatches of 8192 each, epoch=1",
+  "derived_budget": {
+    "minibatches_per_epoch": 16,
+    "optimizer_updates_per_iteration_max": 16,
+    "total_optimizer_updates_max": 1600,
+    "total_fresh_samples": 13107200,
+    "gradient_accumulation": 8,
+    "microbatch_backwards_per_iteration_max": 128,
+    "total_microbatch_backwards_max": 12800,
+    "packed_observation_cache_gib": 0.403564453125,
+    "complete_training_cache_gib": 0.408447265625,
+    "warmup_ppo_iterations": 5,
+    "warmup_stage_adam_updates_max": 80,
+    "initial_ppo_update_lr": 0.0000044,
+    "source_adam_updates": 3200,
+    "final_total_adam_updates_max": 4800
+  },
+  "model_retention_policy": {
+    "selection": "fixed mixed stochastic val mean placement; earliest wins ties",
+    "after_evaluation": "retain timestamped stage best only after initial/best/final heldout evaluations; keep both V1 and V2 sources",
+    "records": "W&B scalars, exact opponent hashes and precision, config, evaluations, cleanup manifest"
+  },
+  "tracking_backend": "wandb",
+  "train_per_optimizer_step": true,
+  "validation_prefix": "val",
+  "baseline_prefix": "val",
+  "reward_shaping": {
+    "operation_cost": 0.0001,
+    "cycle_cost": 0.0002
+  },
+  "initial_model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+  "frozen_opponents": 5,
+  "evaluation_matrix": true,
+  "stage_initialization": "continue V2 best including Adam moments and global step; stage-local counters restart at zero",
+  "opponents": "2 fixed V1 + 3 fixed V2 + 2 scripted + 1 learner; rotate physical seats each game",
+  "sampling_driver": "unified_actor",
+  "forward_precision": "bf16",
+  "opponent_forward_precision": "bf16",
+  "sampling_description": "arbitrary named frozen-policy groups, batched separately by policy; all sampling no_grad; learner-only recomputation and backward during PPO",
+  "tracking": {
+    "backend": "wandb",
+    "entity": "eric_eric_",
+    "project": "AutoTavern",
+    "weave_project": "eric_eric_/AutoTavern",
+    "mode": "online"
+  },
+  "learning_rate_peak": 0.00001,
+  "learning_rate_warmup_fraction": 0.05,
+  "preserve_optimizer_state": true,
+  "initial_model_sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4",
+  "opponent_pool": [
+    {
+      "name": "bot_v1",
+      "count": 2,
+      "model": "runs/20261031-ppo-small-100ppo-32minibatches/20261031-131146-best_model.zip",
+      "sha256": "7173d82343fcc79742838c72725c582966a3c5b7c84e15014debea292f32de24"
+    },
+    {
+      "name": "bot_v2",
+      "count": 3,
+      "model": "runs/20261031-ppo-mixed-2v1-bf16-actor/20261031-165718-best_model.zip",
+      "sha256": "e4a748e933af5b642c50c223502d127ed1742599d841ab7d3838cf26df7ea6b4"
+    }
+  ]
+}

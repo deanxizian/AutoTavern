@@ -1,0 +1,61 @@
+{
+  "name": "20261031-ppo-small-100ppo-32minibatches",
+  "iterations": 100,
+  "decisions_per_iteration": 262144,
+  "n_envs": 256,
+  "n_steps": 1024,
+  "batch_size": 8192,
+  "micro_batch_size": 1024,
+  "n_epochs": 1,
+  "learning_rate_start": 0.0003,
+  "learning_rate_end": 3e-06,
+  "learning_rate_schedule": "linear",
+  "seed": 42,
+  "env_threads": 4,
+  "checkpoint_every_iterations": 25,
+  "initial_evaluation_games": 64,
+  "evaluation_every_iterations": 25,
+  "evaluation_games": 64,
+  "final_evaluation_games": 128,
+  "evaluation_seed": 20000001,
+  "final_evaluation_seed": 30000001,
+  "rollout_storage": "lossless packed RAM: float32 numerics, packed binary flags, uint16 card IDs",
+  "simulator_config": {
+    "turn_action_caps": [
+      60
+    ]
+  },
+  "evaluation_policy": "stochastic, fixed evaluation seed, isolated from training RNG",
+  "precision": "FP32 parameters, gradients and Adam; matmul precision high permits TF32; no BF16 autocast",
+  "paper_alignment": {
+    "scope": "local next-version configuration, not a reproduction of the paper early/final budget",
+    "model": "d=192, layers=4, 3491978 trainable parameters",
+    "learning_rate": "user-selected 3e-4, linearly decays to the previously discussed 3e-6 floor",
+    "epochs": "1, retains the executed baseline and user preference; 2 epochs was an unexecuted earlier candidate",
+    "opponents": "seven identical built-in scripted bots",
+    "warmup": "none",
+    "stage_kl_anchor": "none, begins from zero-step initialization"
+  },
+  "budget_definition": "100 PPO iterations; each rollout has 32 effective minibatches per epoch; epochs=1",
+  "derived_budget": {
+    "minibatches_per_epoch": 32,
+    "optimizer_updates_per_iteration_max": 32,
+    "total_optimizer_updates_max": 3200,
+    "total_fresh_samples": 26214400,
+    "gradient_accumulation": 8,
+    "microbatch_backwards_per_iteration_max": 256,
+    "total_microbatch_backwards_max": 25600,
+    "packed_observation_cache_gib": 0.80712890625,
+    "complete_training_cache_gib": 0.81689453125
+  },
+  "model_retention_policy": {
+    "selection": "fixed-seed evaluation mean placement; earliest wins ties",
+    "after_evaluation": "retain best_model.zip only for this experiment",
+    "records": "keep metrics, evaluation JSON, TensorBoard, source hashes and cleanup manifest",
+    "note": "training entry point writes temporary models; retention is a separate post-evaluation step"
+  },
+  "tensorboard_train_per_optimizer_step": true,
+  "tensorboard_step_unit": "optimizer_step",
+  "tensorboard_validation_prefix": "val",
+  "tensorboard_baseline_prefix": "baseline"
+}

@@ -1,0 +1,29 @@
+name: Clean up the merged V8 publication branch
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+
+jobs:
+  delete-publication-branch:
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.head.ref == 'codex/publish-eric-v8-3702' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Delete only the merged publication branch at the reviewed head
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          git_api="repos/${GITHUB_REPOSITORY}/git"
+          current="$(gh api "$git_api/ref/heads/codex/publish-eric-v8-3702" --jq '.object.sha')"
+          test "$current" = "$EXPECTED_HEAD"
+          gh api --method DELETE "$git_api/refs/heads/codex/publish-eric-v8-3702"

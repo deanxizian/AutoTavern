@@ -1,0 +1,378 @@
+{
+  "rule_version": "37.0.2",
+  "source_FNV": "5007e0ac24cc5f70",
+  "card_data_sha256": "7a02d10794cf80c56fa77b1dd235d49b892c8d3e31c2cf56887f696e2cf922a6",
+  "hero_choices": 2,
+  "turn_action_caps": [
+    60
+  ],
+  "training_pool": "2C002+2V7+2C001+1V0 frozen; only learner updated",
+  "reference_pool": "2V1+2V2+2V7+1V0 frozen; one tested learner per game",
+  "precision": "BF16 forward; FP32 parameters/gradients/Adam",
+  "independent_games_total": 2048,
+  "independent_random_games_per_model": 768,
+  "independent_greedy_games_per_model": 256,
+  "sampled_seeds": [
+    61002001,
+    61002002,
+    61002003
+  ],
+  "greedy_seeds": [
+    61002101,
+    61002102
+  ],
+  "bootstrap_seed": 61002999,
+  "bootstrap_replicates": 10000,
+  "test_results": {
+    "sampled": {
+      "purpose": "delivery_test",
+      "per_seed": [
+        {
+          "seed": 61002001,
+          "paired_games": 256,
+          "reference_first_rate": 0.16796875,
+          "candidate_first_rate": 0.20703125,
+          "reference_top4_rate": 0.66796875,
+          "candidate_top4_rate": 0.73828125,
+          "reference_mean_placement": 3.62890625,
+          "candidate_mean_placement": 3.30078125,
+          "mean_difference_candidate_minus_reference": -0.328125,
+          "difference_ci95": [
+            -0.62890625,
+            -0.02734375
+          ],
+          "bootstrap_seed": 61002999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        },
+        {
+          "seed": 61002002,
+          "paired_games": 256,
+          "reference_first_rate": 0.21875,
+          "candidate_first_rate": 0.1875,
+          "reference_top4_rate": 0.6875,
+          "candidate_top4_rate": 0.7734375,
+          "reference_mean_placement": 3.51171875,
+          "candidate_mean_placement": 3.2421875,
+          "mean_difference_candidate_minus_reference": -0.26953125,
+          "difference_ci95": [
+            -0.58203125,
+            0.05078125
+          ],
+          "bootstrap_seed": 61002999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        },
+        {
+          "seed": 61002003,
+          "paired_games": 256,
+          "reference_first_rate": 0.24609375,
+          "candidate_first_rate": 0.203125,
+          "reference_top4_rate": 0.70703125,
+          "candidate_top4_rate": 0.73828125,
+          "reference_mean_placement": 3.39453125,
+          "candidate_mean_placement": 3.27734375,
+          "mean_difference_candidate_minus_reference": -0.1171875,
+          "difference_ci95": [
+            -0.45703125,
+            0.21875
+          ],
+          "bootstrap_seed": 61002999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        }
+      ],
+      "aggregate": {
+        "paired_games": 768,
+        "reference_first_rate": 0.2109375,
+        "candidate_first_rate": 0.19921875,
+        "reference_top4_rate": 0.6875,
+        "candidate_top4_rate": 0.75,
+        "reference_mean_placement": 3.51171875,
+        "candidate_mean_placement": 3.2734375,
+        "mean_difference_candidate_minus_reference": -0.23828125,
+        "difference_ci95": [
+          -0.421875,
+          -0.049479166666666664
+        ],
+        "bootstrap_seed": 61002999,
+        "bootstrap_samples": 10000,
+        "unit": "whole native seed/lane game pair",
+        "negative_difference_is_better": true
+      }
+    },
+    "greedy": {
+      "purpose": "delivery_test",
+      "per_seed": [
+        {
+          "seed": 61002101,
+          "paired_games": 128,
+          "reference_first_rate": 0.1953125,
+          "candidate_first_rate": 0.171875,
+          "reference_top4_rate": 0.7109375,
+          "candidate_top4_rate": 0.7421875,
+          "reference_mean_placement": 3.5,
+          "candidate_mean_placement": 3.375,
+          "mean_difference_candidate_minus_reference": -0.125,
+          "difference_ci95": [
+            -0.5546875,
+            0.3046875
+          ],
+          "bootstrap_seed": 61002999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        },
+        {
+          "seed": 61002102,
+          "paired_games": 128,
+          "reference_first_rate": 0.140625,
+          "candidate_first_rate": 0.203125,
+          "reference_top4_rate": 0.6640625,
+          "candidate_top4_rate": 0.765625,
+          "reference_mean_placement": 3.734375,
+          "candidate_mean_placement": 3.2890625,
+          "mean_difference_candidate_minus_reference": -0.4453125,
+          "difference_ci95": [
+            -0.8671875,
+            -0.0234375
+          ],
+          "bootstrap_seed": 61002999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        }
+      ],
+      "aggregate": {
+        "paired_games": 256,
+        "reference_first_rate": 0.16796875,
+        "candidate_first_rate": 0.1875,
+        "reference_top4_rate": 0.6875,
+        "candidate_top4_rate": 0.75390625,
+        "reference_mean_placement": 3.6171875,
+        "candidate_mean_placement": 3.33203125,
+        "mean_difference_candidate_minus_reference": -0.28515625,
+        "difference_ci95": [
+          -0.58203125,
+          0.015625
+        ],
+        "bootstrap_seed": 61002999,
+        "bootstrap_samples": 10000,
+        "unit": "whole native seed/lane game pair",
+        "negative_difference_is_better": true
+      }
+    }
+  },
+  "test_delivery_decision": {
+    "decision": "delivery_ready",
+    "delivery_ready": true,
+    "reasons": [],
+    "statistics": {
+      "passed": true,
+      "reasons": [],
+      "sampled_difference": -0.23828125,
+      "sampled_ci95": [
+        -0.421875,
+        -0.049479166666666664
+      ],
+      "sampled_per_seed_differences": [
+        -0.328125,
+        -0.26953125,
+        -0.1171875
+      ],
+      "greedy_difference": -0.28515625
+    },
+    "block": 2,
+    "champion_changed": false,
+    "hyperparameters_selected_from_test": false,
+    "uses_test_for_promotion": false
+  },
+  "development_results": {
+    "sampled": {
+      "purpose": "development",
+      "per_seed": [
+        {
+          "seed": 51020001,
+          "paired_games": 128,
+          "reference_first_rate": 0.1484375,
+          "candidate_first_rate": 0.203125,
+          "reference_top4_rate": 0.65625,
+          "candidate_top4_rate": 0.7734375,
+          "reference_mean_placement": 3.7734375,
+          "candidate_mean_placement": 3.2421875,
+          "mean_difference_candidate_minus_reference": -0.53125,
+          "difference_ci95": [
+            -0.96875,
+            -0.0859375
+          ],
+          "bootstrap_seed": 51029999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        },
+        {
+          "seed": 51020002,
+          "paired_games": 128,
+          "reference_first_rate": 0.21875,
+          "candidate_first_rate": 0.265625,
+          "reference_top4_rate": 0.6953125,
+          "candidate_top4_rate": 0.6953125,
+          "reference_mean_placement": 3.3828125,
+          "candidate_mean_placement": 3.25,
+          "mean_difference_candidate_minus_reference": -0.1328125,
+          "difference_ci95": [
+            -0.59375,
+            0.33613281249999716
+          ],
+          "bootstrap_seed": 51029999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        },
+        {
+          "seed": 51020003,
+          "paired_games": 128,
+          "reference_first_rate": 0.21875,
+          "candidate_first_rate": 0.1875,
+          "reference_top4_rate": 0.6875,
+          "candidate_top4_rate": 0.7421875,
+          "reference_mean_placement": 3.4921875,
+          "candidate_mean_placement": 3.21875,
+          "mean_difference_candidate_minus_reference": -0.2734375,
+          "difference_ci95": [
+            -0.734375,
+            0.1875
+          ],
+          "bootstrap_seed": 51029999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        }
+      ],
+      "aggregate": {
+        "paired_games": 384,
+        "reference_first_rate": 0.1953125,
+        "candidate_first_rate": 0.21875,
+        "reference_top4_rate": 0.6796875,
+        "candidate_top4_rate": 0.7369791666666666,
+        "reference_mean_placement": 3.5494791666666665,
+        "candidate_mean_placement": 3.2369791666666665,
+        "mean_difference_candidate_minus_reference": -0.3125,
+        "difference_ci95": [
+          -0.5729166666666666,
+          -0.049479166666666664
+        ],
+        "bootstrap_seed": 51029999,
+        "bootstrap_samples": 10000,
+        "unit": "whole native seed/lane game pair",
+        "negative_difference_is_better": true
+      }
+    },
+    "greedy": {
+      "purpose": "development",
+      "per_seed": [
+        {
+          "seed": 51021001,
+          "paired_games": 128,
+          "reference_first_rate": 0.1640625,
+          "candidate_first_rate": 0.15625,
+          "reference_top4_rate": 0.703125,
+          "candidate_top4_rate": 0.7734375,
+          "reference_mean_placement": 3.421875,
+          "candidate_mean_placement": 3.3125,
+          "mean_difference_candidate_minus_reference": -0.109375,
+          "difference_ci95": [
+            -0.5390625,
+            0.3359375
+          ],
+          "bootstrap_seed": 51029999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        },
+        {
+          "seed": 51021002,
+          "paired_games": 128,
+          "reference_first_rate": 0.1328125,
+          "candidate_first_rate": 0.265625,
+          "reference_top4_rate": 0.6796875,
+          "candidate_top4_rate": 0.7265625,
+          "reference_mean_placement": 3.53125,
+          "candidate_mean_placement": 3.25,
+          "mean_difference_candidate_minus_reference": -0.28125,
+          "difference_ci95": [
+            -0.7421875,
+            0.1796875
+          ],
+          "bootstrap_seed": 51029999,
+          "bootstrap_samples": 10000,
+          "unit": "whole native seed/lane game pair",
+          "negative_difference_is_better": true
+        }
+      ],
+      "aggregate": {
+        "paired_games": 256,
+        "reference_first_rate": 0.1484375,
+        "candidate_first_rate": 0.2109375,
+        "reference_top4_rate": 0.69140625,
+        "candidate_top4_rate": 0.75,
+        "reference_mean_placement": 3.4765625,
+        "candidate_mean_placement": 3.28125,
+        "mean_difference_candidate_minus_reference": -0.1953125,
+        "difference_ci95": [
+          -0.51171875,
+          0.125
+        ],
+        "bootstrap_seed": 51029999,
+        "bootstrap_samples": 10000,
+        "unit": "whole native seed/lane game pair",
+        "negative_difference_is_better": true
+      }
+    }
+  },
+  "first_incomplete_block": "block1 failed infra;2048 initialized1936 persisted; original data/counts/clock retained and partial quality never scored",
+  "test_did_not_change_champion_or_training": true,
+  "full_suite_limitations": {
+    "fixed_engine_Rust_release_passed": 889,
+    "fmt_clippy_passed": true,
+    "fixed_binding_full_Python_passed": 693,
+    "fixed_binding_full_Python_failed": 17,
+    "fixed_binding_full_Python_skipped": 4,
+    "known_failure_categories": {
+      "bare_import_post_c003_cpu_gate": 13,
+      "Main_runtime_path_guard": 4
+    },
+    "exact_prior_failure_nodes_and_signatures_compared": true,
+    "new_related_rulefix_failures": 0,
+    "subsequent_actual_CUDA_passed": 3,
+    "full_Python_suite_wholegreen_claim": false
+  },
+  "display_version": "V8",
+  "version_scope": "deanxizian/eric-3702",
+  "canonical_version": "eric-v7-3702-c007",
+  "selected_ppo": 75,
+  "selected_total_adam": 11600,
+  "checkpoint_sha256": "10da2508386bf38472bdbb13e3d1e32cbbcd6638640cd99ed686b6c5d0b21c10",
+  "full_policy_sha256": "1a0d87e07bdd2ceabde684c880932040322db5875b9b4b05aca2a98eaef33360",
+  "full_adam_sha256": "db305b141d1a11ad450ab068f706cc310912d1b3b2ca7931022a23ac0fae32af",
+  "checkpoint_selected_from_development_not_test": true,
+  "raw_records_in_git": false,
+  "manual_test_ready": true,
+  "real_Hearthstone_winrate_claimed": false,
+  "evidence": {
+    "official_complete_raw_audit_sha256": "ea11e4b72ac12a4af591332b3c9a9333d09800896fb590ebd2b4fbf6e84865f0",
+    "independent_raw_and_behavior_audit_sha256": "c671c2deaa914f9c4e02d82f4bf4a1e66d33935c3621b1e140d466a5ff7d021a",
+    "durable_raw_archive_sha256": "bc72d89613828ca4d21f7bf131746f0f5df4bacdcea97929048ad6f89c7b434d",
+    "durable_raw_archive_manifest_sha256": "4ada716859d91859e26981d89e82c9e33b834d7c3c7468b3b197a1799c6ee554",
+    "controlled_player_records": 14336,
+    "turn_records": 213719,
+    "initial_concurrency": 2048,
+    "replacement_games": 0,
+    "failed_block1_raw_quality_used": false,
+    "environment_recoveries": 1,
+    "automatic_retries": 0
+  }
+}

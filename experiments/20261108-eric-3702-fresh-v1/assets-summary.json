@@ -1,0 +1,40 @@
+{
+  "text_asset": "/root/autodl-tmp/AutoTavern-Eric/runs/assets/eric-3702-fresh-v1/cards-7a02d107-minilm.pt",
+  "text_asset_sha256": "0642ac7cd88b144c4c1116a6e610890bb2af34a0c89b1d12ff043230c1da88b5",
+  "text_shape": [
+    3984,
+    384
+  ],
+  "text_finite": true,
+  "text_metadata": {
+    "format_version": 1,
+    "encoder": "sentence-transformers/all-MiniLM-L6-v2",
+    "revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "language": "en",
+    "preprocessing": "HTML unescape, strip tags, collapse whitespace; rule text only",
+    "normalize_embeddings": true,
+    "max_seq_length": 256,
+    "dimension": 384,
+    "cards": 3984,
+    "nonempty_texts": 3755,
+    "unique_nonempty_texts": 3463,
+    "card_data_sha256": "7a02d10794cf80c56fa77b1dd235d49b892c8d3e31c2cf56887f696e2cf922a6",
+    "created_at": "2026-11-07T16:14:27.264919+00:00",
+    "paper_encoder": false
+  },
+  "static_generated_from_current_native": true,
+  "static_shape": [
+    3984,
+    66
+  ],
+  "static_raw_sha256": "8ea4fd0f909f722b8661733ce5574cb6348680409da1a2341fc32fd1fdae8318",
+  "native_build": {
+    "source_hash": "0f1e29b2c698b4e9",
+    "profile": "release",
+    "file": "/root/autodl-tmp/AutoTavern-Eric/python/taverngym/_core.abi3.so"
+  },
+  "native_source_hash": "0f1e29b2c698b4e9",
+  "native_build_current": true,
+  "rules_version": "37.0.2",
+  "game_version": "37.0.2.256589"
+}

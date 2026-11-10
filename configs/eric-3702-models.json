@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "lineage": "deanxizian/eric-3702",
+  "current_version": "v8",
+  "versions": {
+    "v8": {
+      "display_version": "V8",
+      "canonical_version": "eric-v7-3702-c007",
+      "selected_ppo": 75,
+      "cumulative_adam": 11600,
+      "status": "development_and_independent_validation_passed",
+      "checkpoint": "runs/eric-3702-v8/20261110-022609-best_model.zip",
+      "checkpoint_sha256": "10da2508386bf38472bdbb13e3d1e32cbbcd6638640cd99ed686b6c5d0b21c10",
+      "RNG_sha256": "c783d0105167483dcb7139344b7a3fc36e46913ec50e1052ac0ca1ea6262a635",
+      "full_policy_sha256": "1a0d87e07bdd2ceabde684c880932040322db5875b9b4b05aca2a98eaef33360",
+      "full_adam_sha256": "db305b141d1a11ad450ab068f706cc310912d1b3b2ca7931022a23ac0fae32af",
+      "rules_version": "37.0.2",
+      "source_fingerprint": "5007e0ac24cc5f70",
+      "card_data_sha256": "7a02d10794cf80c56fa77b1dd235d49b892c8d3e31c2cf56887f696e2cf922a6",
+      "hero_choices": 2,
+      "turn_action_caps": [
+        60
+      ],
+      "precision": "BF16 forward; FP32 parameters/gradients/Adam",
+      "report": "experiments/20261110-eric-v8-3702/README.md",
+      "weights_in_git": false,
+      "prior_C004_V8_label_is_historical_not_current": true,
+      "upstream_Eric_V8_V9_are_separate_unchanged_versions": true
+    }
+  }
+}

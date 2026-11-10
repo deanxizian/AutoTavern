@@ -1,0 +1,489 @@
+{
+  "scope": "same2048 complete independent games; model-player appearances are denominators",
+  "groups": {
+    "candidate_learner:sampled": {
+      "appearances": 768,
+      "actions_per_game": {
+        "n": 768,
+        "mean": 335.80859375,
+        "p50": 332.5,
+        "p90": 457.0,
+        "p95": 503.65,
+        "p99": 594.3200000000002
+      },
+      "actions_per_recruit_turn": {
+        "n": 11496,
+        "mean": 22.367171189979125,
+        "p50": 18.0,
+        "p90": 49.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "no_visible_returns_fraction": 0.005208333333333333,
+      "returns_per_game": {
+        "n": 768,
+        "mean": 11.114583333333334,
+        "p50": 10.0,
+        "p90": 19.0,
+        "p95": 21.0,
+        "p99": 28.0
+      },
+      "return_fraction_per_game": {
+        "n": 768,
+        "mean": 0.03353249441550838,
+        "p50": 0.03133216627192531,
+        "p90": 0.05488509000339637,
+        "p95": 0.06375084580106757,
+        "p99": 0.08259596616785957
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 768,
+        "mean": 2.859375,
+        "p50": 2.0,
+        "p90": 5.0,
+        "p95": 6.0,
+        "p99": 8.0
+      },
+      "max_consecutive_returns": 9,
+      "forced_ends": 626,
+      "mean_cycle_penalty": -0.11114583333333333,
+      "mean_move_penalty": -0.060581380208333376
+    },
+    "v1_opponent:sampled": {
+      "appearances": 3072,
+      "actions_per_game": {
+        "n": 3072,
+        "mean": 662.9947916666666,
+        "p50": 650.0,
+        "p90": 870.0,
+        "p95": 930.0,
+        "p99": 1044.58
+      },
+      "actions_per_recruit_turn": {
+        "n": 39970,
+        "mean": 50.87935951963973,
+        "p50": 61.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "no_visible_returns_fraction": 0.0,
+      "returns_per_game": {
+        "n": 3072,
+        "mean": 109.259765625,
+        "p50": 109.0,
+        "p90": 149.0,
+        "p95": 162.0,
+        "p99": 189.0
+      },
+      "return_fraction_per_game": {
+        "n": 3072,
+        "mean": 0.17056843714835968,
+        "p50": 0.16277364795744392,
+        "p90": 0.24420591210520404,
+        "p95": 0.27178972514152844,
+        "p99": 0.3252684717504023
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 3072,
+        "mean": 28.933919270833332,
+        "p50": 29.0,
+        "p90": 48.0,
+        "p95": 50.0,
+        "p99": 54.0
+      },
+      "max_consecutive_returns": 56,
+      "forced_ends": 28939,
+      "mean_cycle_penalty": -1.0925976562500008,
+      "mean_move_penalty": -0.2392234700520835
+    },
+    "v2_opponent:sampled": {
+      "appearances": 3072,
+      "actions_per_game": {
+        "n": 3072,
+        "mean": 716.4342447916666,
+        "p50": 703.0,
+        "p90": 953.0,
+        "p95": 1024.0,
+        "p99": 1179.29
+      },
+      "actions_per_recruit_turn": {
+        "n": 41988,
+        "mean": 52.3438601505192,
+        "p50": 61.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 62.0
+      },
+      "no_visible_returns_fraction": 0.0,
+      "returns_per_game": {
+        "n": 3072,
+        "mean": 150.31608072916666,
+        "p50": 141.0,
+        "p90": 237.0,
+        "p95": 258.4499999999998,
+        "p99": 300.28999999999996
+      },
+      "return_fraction_per_game": {
+        "n": 3072,
+        "mean": 0.22050933849959284,
+        "p50": 0.1971654461747621,
+        "p90": 0.361425172036787,
+        "p95": 0.42013043478260864,
+        "p99": 0.5405406840018814
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 3072,
+        "mean": 36.957682291666664,
+        "p50": 39.0,
+        "p90": 57.0,
+        "p95": 58.0,
+        "p99": 59.0
+      },
+      "max_consecutive_returns": 59,
+      "forced_ends": 31591,
+      "mean_cycle_penalty": -1.5031608072916658,
+      "mean_move_penalty": -0.2230926106770835
+    },
+    "v7_opponent:sampled": {
+      "appearances": 3072,
+      "actions_per_game": {
+        "n": 3072,
+        "mean": 404.2526041666667,
+        "p50": 400.0,
+        "p90": 582.9000000000001,
+        "p95": 641.0,
+        "p99": 730.8699999999999
+      },
+      "actions_per_recruit_turn": {
+        "n": 44830,
+        "mean": 27.63310283292438,
+        "p50": 21.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "no_visible_returns_fraction": 0.0026041666666666665,
+      "returns_per_game": {
+        "n": 3072,
+        "mean": 14.525390625,
+        "p50": 13.0,
+        "p90": 24.0,
+        "p95": 28.0,
+        "p99": 37.0
+      },
+      "return_fraction_per_game": {
+        "n": 3072,
+        "mean": 0.03685245723294889,
+        "p50": 0.033707865168539325,
+        "p90": 0.058823529411764705,
+        "p95": 0.07004406858284715,
+        "p99": 0.09566423965050967
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 3072,
+        "mean": 3.1630859375,
+        "p50": 3.0,
+        "p90": 6.0,
+        "p95": 7.0,
+        "p99": 9.0
+      },
+      "max_consecutive_returns": 12,
+      "forced_ends": 6965,
+      "mean_cycle_penalty": -0.14525390625,
+      "mean_move_penalty": -0.0925208333333334
+    },
+    "baseline_learner:sampled": {
+      "appearances": 768,
+      "actions_per_game": {
+        "n": 768,
+        "mean": 400.8255208333333,
+        "p50": 387.0,
+        "p90": 583.3000000000001,
+        "p95": 644.3,
+        "p99": 780.6600000000001
+      },
+      "actions_per_recruit_turn": {
+        "n": 11189,
+        "mean": 27.443560639914203,
+        "p50": 21.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "no_visible_returns_fraction": 0.0026041666666666665,
+      "returns_per_game": {
+        "n": 768,
+        "mean": 14.489583333333334,
+        "p50": 14.0,
+        "p90": 24.0,
+        "p95": 27.0,
+        "p99": 36.33000000000004
+      },
+      "return_fraction_per_game": {
+        "n": 768,
+        "mean": 0.03732789544418913,
+        "p50": 0.034482758620689655,
+        "p90": 0.0576369104146882,
+        "p95": 0.06940487496043048,
+        "p99": 0.09113809854267872
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 768,
+        "mean": 3.12109375,
+        "p50": 3.0,
+        "p90": 6.0,
+        "p95": 7.0,
+        "p99": 9.0
+      },
+      "max_consecutive_returns": 14,
+      "forced_ends": 1721,
+      "mean_cycle_penalty": -0.14489583333333333,
+      "mean_move_penalty": -0.0920227864583334
+    },
+    "candidate_learner:greedy": {
+      "appearances": 256,
+      "actions_per_game": {
+        "n": 256,
+        "mean": 417.515625,
+        "p50": 396.0,
+        "p90": 549.0,
+        "p95": 627.75,
+        "p99": 809.3499999999997
+      },
+      "actions_per_recruit_turn": {
+        "n": 3927,
+        "mean": 27.152533740769034,
+        "p50": 25.0,
+        "p90": 41.0,
+        "p95": 61.0,
+        "p99": 62.0
+      },
+      "no_visible_returns_fraction": 0.0,
+      "returns_per_game": {
+        "n": 256,
+        "mean": 164.828125,
+        "p50": 146.0,
+        "p90": 220.5,
+        "p95": 285.0,
+        "p99": 574.9499999999998
+      },
+      "return_fraction_per_game": {
+        "n": 256,
+        "mean": 0.38786003063406804,
+        "p50": 0.36315699831521187,
+        "p90": 0.4934001670843776,
+        "p95": 0.5411815275096525,
+        "p99": 0.7030917323740403
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 256,
+        "mean": 19.1953125,
+        "p50": 9.0,
+        "p90": 38.5,
+        "p95": 48.75,
+        "p99": 59.0
+      },
+      "max_consecutive_returns": 59,
+      "forced_ends": 268,
+      "mean_cycle_penalty": -1.6482812499999977,
+      "mean_move_penalty": -0.009173828125000007
+    },
+    "v1_opponent:greedy": {
+      "appearances": 1024,
+      "actions_per_game": {
+        "n": 1024,
+        "mean": 658.9560546875,
+        "p50": 633.5,
+        "p90": 882.7,
+        "p95": 954.8499999999999,
+        "p99": 1103.0099999999998
+      },
+      "actions_per_recruit_turn": {
+        "n": 13254,
+        "mean": 50.8334842311755,
+        "p50": 61.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "no_visible_returns_fraction": 0.0,
+      "returns_per_game": {
+        "n": 1024,
+        "mean": 109.39453125,
+        "p50": 108.0,
+        "p90": 149.0,
+        "p95": 161.0,
+        "p99": 177.0
+      },
+      "return_fraction_per_game": {
+        "n": 1024,
+        "mean": 0.1723216456916262,
+        "p50": 0.16653584510727368,
+        "p90": 0.2459223905374559,
+        "p95": 0.2738953964976021,
+        "p99": 0.3225203905408409
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 1024,
+        "mean": 30.0322265625,
+        "p50": 31.0,
+        "p90": 47.0,
+        "p95": 49.0,
+        "p99": 53.0
+      },
+      "max_consecutive_returns": 54,
+      "forced_ends": 9580,
+      "mean_cycle_penalty": -1.0939453125000007,
+      "mean_move_penalty": -0.23708056640625016
+    },
+    "v2_opponent:greedy": {
+      "appearances": 1024,
+      "actions_per_game": {
+        "n": 1024,
+        "mean": 711.400390625,
+        "p50": 704.0,
+        "p90": 923.7,
+        "p95": 1000.6999999999998,
+        "p99": 1107.08
+      },
+      "actions_per_recruit_turn": {
+        "n": 13828,
+        "mean": 52.60702921608331,
+        "p50": 61.0,
+        "p90": 61.0,
+        "p95": 62.0,
+        "p99": 62.0
+      },
+      "no_visible_returns_fraction": 0.0,
+      "returns_per_game": {
+        "n": 1024,
+        "mean": 151.7685546875,
+        "p50": 140.0,
+        "p90": 236.70000000000005,
+        "p95": 258.8499999999999,
+        "p99": 297.53999999999996
+      },
+      "return_fraction_per_game": {
+        "n": 1024,
+        "mean": 0.2227048546964274,
+        "p50": 0.199379729046818,
+        "p90": 0.3589264047041255,
+        "p95": 0.4133951324897491,
+        "p99": 0.5126557799742156
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 1024,
+        "mean": 37.75,
+        "p50": 41.0,
+        "p90": 57.0,
+        "p95": 58.0,
+        "p99": 59.0
+      },
+      "max_consecutive_returns": 59,
+      "forced_ends": 10483,
+      "mean_cycle_penalty": -1.517685546874999,
+      "mean_move_penalty": -0.21923974609375016
+    },
+    "v7_opponent:greedy": {
+      "appearances": 1024,
+      "actions_per_game": {
+        "n": 1024,
+        "mean": 410.1875,
+        "p50": 405.0,
+        "p90": 587.7,
+        "p95": 639.0,
+        "p99": 745.3899999999999
+      },
+      "actions_per_recruit_turn": {
+        "n": 15149,
+        "mean": 27.659119413822694,
+        "p50": 22.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 61.0
+      },
+      "no_visible_returns_fraction": 0.0,
+      "returns_per_game": {
+        "n": 1024,
+        "mean": 14.828125,
+        "p50": 14.0,
+        "p90": 25.0,
+        "p95": 28.0,
+        "p99": 39.76999999999998
+      },
+      "return_fraction_per_game": {
+        "n": 1024,
+        "mean": 0.037116989419004015,
+        "p50": 0.034482758620689655,
+        "p90": 0.0576657213753988,
+        "p95": 0.06797499075815285,
+        "p99": 0.10353383458646602
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 1024,
+        "mean": 3.181640625,
+        "p50": 3.0,
+        "p90": 6.0,
+        "p95": 7.0,
+        "p99": 9.0
+      },
+      "max_consecutive_returns": 12,
+      "forced_ends": 2352,
+      "mean_cycle_penalty": -0.14828125,
+      "mean_move_penalty": -0.09498437500000007
+    },
+    "baseline_learner:greedy": {
+      "appearances": 256,
+      "actions_per_game": {
+        "n": 256,
+        "mean": 511.44140625,
+        "p50": 489.0,
+        "p90": 728.5,
+        "p95": 839.0,
+        "p99": 961.5999999999997
+      },
+      "actions_per_recruit_turn": {
+        "n": 3752,
+        "mean": 34.82755863539445,
+        "p50": 28.0,
+        "p90": 61.0,
+        "p95": 61.0,
+        "p99": 62.0
+      },
+      "no_visible_returns_fraction": 0.0,
+      "returns_per_game": {
+        "n": 256,
+        "mean": 254.69140625,
+        "p50": 217.5,
+        "p90": 436.5,
+        "p95": 494.25,
+        "p99": 663.8999999999995
+      },
+      "return_fraction_per_game": {
+        "n": 256,
+        "mean": 0.4797294129537499,
+        "p50": 0.4671462829736211,
+        "p90": 0.6365839358999413,
+        "p95": 0.6786393781256795,
+        "p99": 0.7906642532617411
+      },
+      "max_consecutive_returns_per_game": {
+        "n": 256,
+        "mean": 33.78515625,
+        "p50": 35.0,
+        "p90": 43.0,
+        "p95": 57.0,
+        "p99": 59.0
+      },
+      "max_consecutive_returns": 59,
+      "forced_ends": 1057,
+      "mean_cycle_penalty": -2.5469140624999853,
+      "mean_move_penalty": -0.059443359375000046
+    }
+  },
+  "V0_behavior": "unknown",
+  "turn_policy_transition_count_not_native_action_budget_count": true,
+  "no_rule_or_reward_changed_for_measurement": true,
+  "source_summary_sha256": "c17f0207856227871a254c1334a1a664bd7a045137e6c1fef76cf2361774632b"
+}

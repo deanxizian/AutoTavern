@@ -381,6 +381,7 @@ impl Game {
         pl.freezes_this_turn = 0;
         pl.skipping = false;
         pl.turn_data.clear();
+        pl.tavern_turn_health = 0;
         // Refill: the natural amount plus max-Gold bonuses, capped at 99; Gold gained on top at the
         // start of the turn has no cap.
         pl.gold = (base + pl.max_gold_bonus).min(99) + pl.gold_next_turn;
@@ -551,7 +552,11 @@ impl Game {
         let offer = self.trinket_offer(p, kind);
         let gold = self.players[p].gold;
         // Nothing affordable: the offer is skipped (an assumption).
-        if offer.is_empty() || offer.iter().all(|t| self.trinket_price(p, *t) > gold) {
+        if offer.is_empty()
+            || offer
+                .iter()
+                .all(|t| self.regular_trinket_price(p, *t) > gold)
+        {
             self.players[p].trinket_pivots = if below { kept } else { Vec::new() };
             self.log(|| format!("p{p}: no affordable trinket, offer skipped"));
             return;
@@ -559,6 +564,7 @@ impl Game {
         if below {
             self.players[p].trinket_pivot_stack.push(kept);
         }
+        self.with_recruit(p, |c| crate::content::prepare_trinket_options(c, 0, &offer));
         self.players[p].pending.push(Pending::Trinket {
             options: offer,
             free: false,
@@ -568,6 +574,20 @@ impl Game {
 
     /// Price of trinket `t` in player `p`'s current offer (pivot options are cheaper).
     pub fn trinket_price(&self, p: PlayerId, t: CardId) -> i32 {
+        let cost = db().get(t).cost;
+        if matches!(
+            self.players[p].pending.last(),
+            Some(Pending::Trinket {
+                replace: Some(_),
+                ..
+            })
+        ) {
+            return cost;
+        }
+        self.regular_trinket_price(p, t)
+    }
+
+    pub(crate) fn regular_trinket_price(&self, p: PlayerId, t: CardId) -> i32 {
         let cost = db().get(t).cost;
         if self.players[p].trinket_pivots.contains(&t) {
             (cost - self.cfg.trinket_pivot_discount).max(0)
@@ -860,7 +880,7 @@ impl Game {
     }
 
     /// `viewer` has fought `other` (or its ghost) this turn: it remembers what it saw.
-    fn note_scouted(&mut self, viewer: PlayerId, other: PlayerId) {
+    pub(crate) fn note_scouted(&mut self, viewer: PlayerId, other: PlayerId) {
         let n = self.players.len();
         let o = &self.players[other];
         let seen = Scouted {
@@ -1046,6 +1066,32 @@ impl Game {
             }
         }
         unreachable!("an unconstrained pairing always exists")
+    }
+
+    /// Explicit surrender during recruitment; use the normal elimination path so
+    /// placement, pool returns and death-triggered offers remain consistent.
+    pub fn concede(&mut self, p: PlayerId) -> Result<(), String> {
+        self.concede_many(&[p])
+    }
+
+    /// Settle simultaneous explicit surrenders with the normal physical-seat
+    /// tie break, independent of the caller's logical role order.
+    pub fn concede_many(&mut self, players: &[PlayerId]) -> Result<(), String> {
+        if self.phase != Phase::Recruit
+            || self.stopped_reason.is_some()
+            || players.is_empty()
+            || players
+                .iter()
+                .any(|&p| !self.players.get(p).is_some_and(|player| player.alive))
+        {
+            return Err("concede requires a living recruit-phase player".into());
+        }
+        for &p in players {
+            self.players[p].health = 0;
+            self.players[p].armor = 0;
+        }
+        self.recruit_deaths();
+        Ok(())
     }
 
     /// Eliminate players at 0 health. Several deaths in one round are ranked by remaining health

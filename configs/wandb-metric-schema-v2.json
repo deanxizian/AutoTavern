@@ -1,0 +1,482 @@
+{
+  "schema_version": 2,
+  "effective_from_model_version": "v8",
+  "status": "prepared_not_integrated_with_active_v7",
+  "user_directive_date": "2026-11-01",
+  "name_format": "{panel_section}/{field}",
+  "families": {
+    "core": "Top 1, Top 4, mean placement only",
+    "reward": "Signed reward amounts and subtotals only",
+    "operation": "Action counts, ratios, repeat/forced-End diagnostics and milestone counts",
+    "optimization": "Adam losses/gradients and separately named PPO aggregates",
+    "progress": "PPO, actual Adam and fresh-sample counters",
+    "performance": "Sampling/update/environment and per-model inference performance"
+  },
+  "axis": {
+    "field": "optimizer_step",
+    "meaning": "actual stage Adam updates; preserve the existing axis and do not substitute W&B internal _step"
+  },
+  "base_metrics": {
+    "action_limit_forfeit_placement": {
+      "family": "operation",
+      "name": "legacy_action_limit_forfeit_placement",
+      "visibility": "legacy"
+    },
+    "action_limit_forfeit_rate": {
+      "family": "operation",
+      "name": "legacy_action_limit_forfeit_rate",
+      "visibility": "legacy"
+    },
+    "action_limit_forfeit_turn": {
+      "family": "operation",
+      "name": "legacy_action_limit_forfeit_turn",
+      "visibility": "legacy"
+    },
+    "action_reward": {
+      "family": "reward",
+      "name": "operation",
+      "visibility": "main"
+    },
+    "actions_per_game": {
+      "family": "operation",
+      "name": "actions_per_game",
+      "visibility": "diagnostic"
+    },
+    "cap_end_rate": {
+      "family": "operation",
+      "name": "cap_end_rate",
+      "visibility": "diagnostic"
+    },
+    "cycle_forfeit_placement": {
+      "family": "operation",
+      "name": "legacy_cycle_forfeit_placement",
+      "visibility": "legacy"
+    },
+    "cycle_forfeit_rate": {
+      "family": "operation",
+      "name": "legacy_cycle_forfeit_rate",
+      "visibility": "legacy"
+    },
+    "cycle_forfeit_turn": {
+      "family": "operation",
+      "name": "legacy_cycle_forfeit_turn",
+      "visibility": "legacy"
+    },
+    "cycle_penalty": {
+      "family": "reward",
+      "name": "cycle",
+      "visibility": "diagnostic"
+    },
+    "cycle_return_fraction": {
+      "family": "operation",
+      "name": "cycle_return_fraction",
+      "visibility": "diagnostic"
+    },
+    "cycle_returns": {
+      "family": "operation",
+      "name": "cycle_returns",
+      "visibility": "diagnostic"
+    },
+    "early_action_penalty": {
+      "family": "reward",
+      "name": "early_action",
+      "visibility": "diagnostic"
+    },
+    "early_actions": {
+      "family": "operation",
+      "name": "early_actions",
+      "visibility": "diagnostic"
+    },
+    "early_chargeable_actions": {
+      "family": "operation",
+      "name": "early_chargeable_actions",
+      "visibility": "diagnostic"
+    },
+    "early_menu_actions": {
+      "family": "operation",
+      "name": "early_menu_actions",
+      "visibility": "diagnostic"
+    },
+    "early_turn1_actions": {
+      "family": "operation",
+      "name": "early_turn1_actions",
+      "visibility": "diagnostic"
+    },
+    "early_turn1_observed": {
+      "family": "operation",
+      "name": "early_turn1_observed",
+      "visibility": "diagnostic"
+    },
+    "early_turn2_actions": {
+      "family": "operation",
+      "name": "early_turn2_actions",
+      "visibility": "diagnostic"
+    },
+    "early_turn2_observed": {
+      "family": "operation",
+      "name": "early_turn2_observed",
+      "visibility": "diagnostic"
+    },
+    "early_turn3_actions": {
+      "family": "operation",
+      "name": "early_turn3_actions",
+      "visibility": "diagnostic"
+    },
+    "early_turn3_observed": {
+      "family": "operation",
+      "name": "early_turn3_observed",
+      "visibility": "diagnostic"
+    },
+    "early_turn4_actions": {
+      "family": "operation",
+      "name": "early_turn4_actions",
+      "visibility": "diagnostic"
+    },
+    "early_turn4_observed": {
+      "family": "operation",
+      "name": "early_turn4_observed",
+      "visibility": "diagnostic"
+    },
+    "early_turn5_actions": {
+      "family": "operation",
+      "name": "early_turn5_actions",
+      "visibility": "diagnostic"
+    },
+    "early_turn5_observed": {
+      "family": "operation",
+      "name": "early_turn5_observed",
+      "visibility": "diagnostic"
+    },
+    "first_rate": {
+      "family": "core",
+      "name": "first_rate",
+      "visibility": "main"
+    },
+    "first_turn_minion_bonus": {
+      "family": "reward",
+      "name": "first_turn_minion",
+      "visibility": "diagnostic"
+    },
+    "first_turn_minion_bonus_count": {
+      "family": "operation",
+      "name": "first_turn_minion_milestone_count",
+      "visibility": "diagnostic"
+    },
+    "hero_selection_bonus": {
+      "family": "reward",
+      "name": "hero_selection",
+      "visibility": "main"
+    },
+    "hero_selection_bonus_count": {
+      "family": "operation",
+      "name": "hero_selection_preference_hits",
+      "visibility": "diagnostic"
+    },
+    "hero_selection_count": {
+      "family": "operation",
+      "name": "hero_selection_count",
+      "visibility": "diagnostic"
+    },
+    "hero_selection_known_fraction": {
+      "family": "operation",
+      "name": "hero_selection_known_fraction",
+      "visibility": "diagnostic"
+    },
+    "hero_selection_offered_heroes": {
+      "family": "operation",
+      "name": "hero_selection_offered_heroes",
+      "visibility": "diagnostic"
+    },
+    "hero_selection_scorable": {
+      "family": "operation",
+      "name": "hero_selection_scorable",
+      "visibility": "diagnostic"
+    },
+    "hero_selection_unknown_heroes": {
+      "family": "operation",
+      "name": "hero_selection_unknown_heroes",
+      "visibility": "diagnostic"
+    },
+    "hero_selection_unknown_offer": {
+      "family": "operation",
+      "name": "hero_selection_unknown_offer",
+      "visibility": "diagnostic"
+    },
+    "max_consecutive_cycle_returns": {
+      "family": "operation",
+      "name": "max_consecutive_cycle_returns",
+      "visibility": "diagnostic"
+    },
+    "max_consecutive_cycles": {
+      "family": "operation",
+      "name": "legacy_max_consecutive_cycles",
+      "visibility": "legacy"
+    },
+    "mean_placement": {
+      "family": "core",
+      "name": "mean_placement",
+      "visibility": "main"
+    },
+    "move_action_fraction": {
+      "family": "operation",
+      "name": "move_action_fraction",
+      "visibility": "diagnostic"
+    },
+    "move_actions": {
+      "family": "operation",
+      "name": "move_actions",
+      "visibility": "diagnostic"
+    },
+    "move_penalty": {
+      "family": "reward",
+      "name": "move",
+      "visibility": "diagnostic"
+    },
+    "opening_bonus": {
+      "family": "reward",
+      "name": "opening",
+      "visibility": "diagnostic"
+    },
+    "operation_penalty": {
+      "family": "reward",
+      "name": "legacy_move_freeze",
+      "visibility": "legacy"
+    },
+    "opponent_action_limit_forfeits": {
+      "family": "operation",
+      "name": "legacy_opponent_action_limit_forfeits",
+      "visibility": "legacy"
+    },
+    "opponent_cycle_forfeits": {
+      "family": "operation",
+      "name": "legacy_opponent_cycle_forfeits",
+      "visibility": "legacy"
+    },
+    "placement_reward": {
+      "family": "reward",
+      "name": "placement",
+      "visibility": "main"
+    },
+    "reversible_actions": {
+      "family": "operation",
+      "name": "reversible_actions",
+      "visibility": "diagnostic"
+    },
+    "second_turn_tier2_bonus": {
+      "family": "reward",
+      "name": "second_turn_tier2",
+      "visibility": "diagnostic"
+    },
+    "second_turn_tier2_bonus_count": {
+      "family": "operation",
+      "name": "second_turn_tier2_milestone_count",
+      "visibility": "diagnostic"
+    },
+    "third_turn_dark_gift_bonus": {
+      "family": "reward",
+      "name": "third_turn_dark_gift",
+      "visibility": "diagnostic"
+    },
+    "third_turn_dark_gift_bonus_count": {
+      "family": "operation",
+      "name": "third_turn_dark_gift_milestone_count",
+      "visibility": "diagnostic"
+    },
+    "top4_rate": {
+      "family": "core",
+      "name": "top4_rate",
+      "visibility": "main"
+    },
+    "total_reward": {
+      "family": "reward",
+      "name": "total",
+      "visibility": "main"
+    }
+  },
+  "adam_optimization_metrics": [
+    "loss",
+    "policy_gradient_loss",
+    "value_loss",
+    "entropy_loss",
+    "placement_loss",
+    "placement_label_fraction",
+    "approx_kl",
+    "clip_fraction",
+    "grad_norm",
+    "learning_rate"
+  ],
+  "ppo_optimization_metrics": [
+    "loss",
+    "policy_gradient_loss",
+    "value_loss",
+    "entropy_loss",
+    "placement_loss",
+    "placement_label_fraction",
+    "approx_kl",
+    "clip_fraction",
+    "clip_range",
+    "learning_rate",
+    "explained_variance"
+  ],
+  "special_metrics": {
+    "adam_total_steps": {
+      "family": "progress",
+      "name": "adam_total_steps"
+    },
+    "ppo_iteration": {
+      "family": "progress",
+      "name": "ppo_iteration"
+    },
+    "sampled_decisions": {
+      "family": "progress",
+      "name": "sampled_decisions"
+    },
+    "ppo_optimizer_steps": {
+      "family": "progress",
+      "name": "adam_steps"
+    },
+    "optimizer_steps": {
+      "family": "progress",
+      "name": "adam_steps"
+    },
+    "ppo_optimizer_steps_this_iteration": {
+      "family": "progress",
+      "name": "adam_steps_this_ppo"
+    },
+    "optimizer_steps_this_iteration": {
+      "family": "progress",
+      "name": "adam_steps_this_ppo"
+    },
+    "n_updates": {
+      "family": "progress",
+      "name": "epoch_updates"
+    },
+    "opponent_decisions": {
+      "family": "operation",
+      "name": "opponent_decisions"
+    },
+    "clip_range": {
+      "family": "optimization",
+      "name": "ppo_clip_range"
+    },
+    "explained_variance": {
+      "family": "optimization",
+      "name": "ppo_explained_variance"
+    }
+  },
+  "activation_requirements": [
+    "Do not edit, reload, restart, rename or backfill the active V7 run.",
+    "At V8 startup explicitly integrate metric_name_v2 at the W&B output boundary and record metric_schema_version=2 in the new run config/manifest.",
+    "Keep simulator, rewards, validation files and model-selection keys unchanged; map only W&B names.",
+    "Use the same mapping for journal/backfill deduplication and heldout-finalization markers, and make monitoring aware of v2 names.",
+    "Verify a mock complete train/val/greedy/heldout logging flow before starting a new v2 run; never create both v1 and v2 aliases in one new run.",
+    "Record final runtime/schema hashes in the V8 manifest. This schema is not authorization to start V8."
+  ],
+  "performance_metrics": [
+    "rollout_seconds",
+    "update_seconds",
+    "actor_learner_samples",
+    "actor_learner_samples_per_second",
+    "actor_native_steps",
+    "actor_native_seconds",
+    "actor_observation_seconds",
+    "actor_reward_and_sink_seconds",
+    "actor_sampling_seconds",
+    "actor_deferred_opponent_actions",
+    "actor_terminal_transitions"
+  ],
+  "performance_dynamic_pattern": "actor_.+_(batch_mean|batch_median|forward_calls|inference_seconds)",
+  "reserved_system_policy": "W&B System is SDK hardware telemetry only (CPU/GPU/RAM). Custom sampling/inference/update metrics use train/performance_*. Active V7 is unchanged.",
+  "stages": {
+    "train": "training; optimization, progress and custom performance also belong here",
+    "val": "validation; core/reward have their own flat sections; greedy_ stays inside each section",
+    "test": "independent heldout; checkpoint and sampled/greedy follow the family prefix; never selection"
+  },
+  "variant_prefixes": {
+    "train": [
+      ""
+    ],
+    "val": [
+      "",
+      "greedy_"
+    ],
+    "test": [
+      "{initial|best|final}_{sampled|greedy}_"
+    ]
+  },
+  "panel_sections": {
+    "train_core": "training core performance only",
+    "train_reward": "all training reward amounts, subtotals and total",
+    "train": "other training metrics: operation, optimization, progress and performance",
+    "val_core": "stochastic and greedy validation core performance; greedy_ prefixes greedy fields",
+    "val_reward": "all stochastic and greedy validation reward amounts; greedy_ prefixes greedy fields",
+    "val": "other stochastic and greedy validation metrics, with family_greedy_ for greedy fields",
+    "test": "all initial/best/final sampled/greedy heldout metrics, preserving family_checkpoint_mode_ prefixes"
+  },
+  "section_routing": {
+    "train": {
+      "core": "train_core",
+      "reward": "train_reward",
+      "default": "train"
+    },
+    "val": {
+      "core": "val_core",
+      "reward": "val_reward",
+      "default": "val"
+    },
+    "test": {
+      "default": "test"
+    }
+  },
+  "field_naming": {
+    "train_core|train_reward": "{metric}",
+    "val_core|val_reward": "{variant_prefix}{metric}",
+    "train|val": "{family}_{variant_prefix}{metric}",
+    "test": "{family}_{checkpoint}_{mode}_{metric}"
+  },
+  "default_dashboard_metrics": {
+    "train": [
+      "train_core/first_rate",
+      "train_core/top4_rate",
+      "train_core/mean_placement",
+      "train_reward/placement",
+      "train_reward/hero_selection",
+      "train_reward/operation",
+      "train_reward/total"
+    ],
+    "val_sampled": [
+      "val_core/first_rate",
+      "val_core/top4_rate",
+      "val_core/mean_placement",
+      "val_reward/placement",
+      "val_reward/hero_selection",
+      "val_reward/operation",
+      "val_reward/total"
+    ],
+    "val_greedy": [
+      "val_core/greedy_first_rate",
+      "val_core/greedy_top4_rate",
+      "val_core/greedy_mean_placement",
+      "val_reward/greedy_placement",
+      "val_reward/greedy_hero_selection",
+      "val_reward/greedy_operation",
+      "val_reward/greedy_total"
+    ]
+  },
+  "activation_policy": {
+    "minimum_model_version": 8,
+    "required_metric_schema_version": 2,
+    "required_panel_sections": [
+      "train_core",
+      "train_reward",
+      "train",
+      "val_core",
+      "val_reward",
+      "val",
+      "test"
+    ],
+    "legacy_fallback_allowed_for_new_runs": false,
+    "activation_in_new_process_only": true,
+    "training_start_authorized_by_this_policy": false
+  }
+}

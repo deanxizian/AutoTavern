@@ -1,0 +1,552 @@
+﻿v1_field,v2_field,group,meaning,frequency,source_status,effective_from,status
+optimizer_step,optimizer_step,axis,本阶段实际Adam步数；val0为0，W&B内部_step不是该值,每条程序日志携带,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v2_batch_mean,train/performance_actor_bot_v2_batch_mean,train,v2：每次前向的平均batch大小,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v2_batch_median,train/performance_actor_bot_v2_batch_median,train,v2：前向batch大小中位数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v2_forward_calls,train/performance_actor_bot_v2_forward_calls,train,v2：前向调用次数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v2_inference_seconds,train/performance_actor_bot_v2_inference_seconds,train,v2：前向推理累计耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v3_batch_mean,train/performance_actor_bot_v3_batch_mean,train,v3：每次前向的平均batch大小,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v3_batch_median,train/performance_actor_bot_v3_batch_median,train,v3：前向batch大小中位数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v3_forward_calls,train/performance_actor_bot_v3_forward_calls,train,v3：前向调用次数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v3_inference_seconds,train/performance_actor_bot_v3_inference_seconds,train,v3：前向推理累计耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v5_batch_mean,train/performance_actor_bot_v5_batch_mean,train,v5：每次前向的平均batch大小,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v5_batch_median,train/performance_actor_bot_v5_batch_median,train,v5：前向batch大小中位数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v5_forward_calls,train/performance_actor_bot_v5_forward_calls,train,v5：前向调用次数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_bot_v5_inference_seconds,train/performance_actor_bot_v5_inference_seconds,train,v5：前向推理累计耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_deferred_opponent_actions,train/performance_actor_deferred_opponent_actions,train,本PPO被冻结席位合法但延期、未执行的请求数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_learner_batch_mean,train/performance_actor_learner_batch_mean,train,学习者：每次前向的平均batch大小,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_learner_batch_median,train/performance_actor_learner_batch_median,train,学习者：前向batch大小中位数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_learner_forward_calls,train/performance_actor_learner_forward_calls,train,学习者：前向调用次数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_learner_inference_seconds,train/performance_actor_learner_inference_seconds,train,学习者：前向推理累计耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_learner_samples,train/performance_actor_learner_samples,train,本PPO实际收集的学习者样本数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_learner_samples_per_second,train/performance_actor_learner_samples_per_second,train,unified_actor学习者样本/秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_native_seconds,train/performance_actor_native_seconds,train,本PPO原生环境推进耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_native_steps,train/performance_actor_native_steps,train,本PPO原生批量推进轮数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_observation_seconds,train/performance_actor_observation_seconds,train,本PPO读取观测耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_reward_and_sink_seconds,train/performance_actor_reward_and_sink_seconds,train,本PPO奖励计算及写入buffer耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_sampling_seconds,train/performance_actor_sampling_seconds,train,unified_actor收集本PPO样本的耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/actor_terminal_transitions,train/performance_actor_terminal_transitions,train,本PPO学习者真实终局转移数,每PPO,当前在线已有,V8,prepared; not active in V7
+system/rollout_seconds,train/performance_rollout_seconds,train,本PPO完整采样耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+system/update_seconds,train/performance_update_seconds,train,本PPO梯度计算与更新耗时，秒,每PPO,当前在线已有,V8,prepared; not active in V7
+test/best_mixed_greedy_action_limit_forfeit_placement,test/operation_best_greedy_legacy_action_limit_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_action_limit_forfeit_rate,test/operation_best_greedy_legacy_action_limit_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_action_limit_forfeit_turn,test/operation_best_greedy_legacy_action_limit_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_action_reward,test/reward_best_greedy_operation,test,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_actions_per_game,test/operation_best_greedy_actions_per_game,test,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_cap_end_rate,test/operation_best_greedy_cap_end_rate,test,每局强制End回合占比，再按局平均；不是提前判负,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_cycle_forfeit_placement,test/operation_best_greedy_legacy_cycle_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_cycle_forfeit_rate,test/operation_best_greedy_legacy_cycle_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_cycle_forfeit_turn,test/operation_best_greedy_legacy_cycle_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_cycle_penalty,test/reward_best_greedy_cycle,test,可见状态返回累计罚分，每次-0.01，线性无封顶,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_cycle_return_fraction,test/operation_best_greedy_cycle_return_fraction,test,先逐局计算返回次数/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_cycle_returns,test/operation_best_greedy_cycle_returns,test,每局返回已见完整可见状态次数，不是重复动作ID数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_action_penalty,test/reward_best_greedy_early_action,test,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_actions,test/operation_best_greedy_early_actions,test,T1-5全部成功操作数，含End与菜单，不含英雄选择,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_chargeable_actions,test/operation_best_greedy_early_chargeable_actions,test,T1-5非End成功操作数；费用封顶后仍计数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_menu_actions,test/operation_best_greedy_early_menu_actions,test,T1-5成功Choose/Cancel次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn1_actions,test/operation_best_greedy_early_turn1_actions,test,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn1_observed,test/operation_best_greedy_early_turn1_observed,test,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn2_actions,test/operation_best_greedy_early_turn2_actions,test,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn2_observed,test/operation_best_greedy_early_turn2_observed,test,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn3_actions,test/operation_best_greedy_early_turn3_actions,test,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn3_observed,test/operation_best_greedy_early_turn3_observed,test,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn4_actions,test/operation_best_greedy_early_turn4_actions,test,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn4_observed,test/operation_best_greedy_early_turn4_observed,test,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn5_actions,test/operation_best_greedy_early_turn5_actions,test,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_early_turn5_observed,test/operation_best_greedy_early_turn5_observed,test,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_first_rate,test/core_best_greedy_first_rate,test,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_first_turn_minion_bonus,test/reward_best_greedy_first_turn_minion,test,T1首随从实际在战场出现的累计正奖励，最多0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_first_turn_minion_bonus_count,test/operation_best_greedy_first_turn_minion_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_hero_selection_bonus,test/reward_best_greedy_hero_selection,test,初始选英雄偏好reward；当前12位前1%均名，未知整组0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_hero_selection_bonus_count,test/operation_best_greedy_hero_selection_preference_hits,test,本局是否收到正的选英雄奖励，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_hero_selection_count,test/operation_best_greedy_hero_selection_count,test,启用先验时本局是否完成初始选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_hero_selection_known_fraction,test/operation_best_greedy_hero_selection_known_fraction,test,已知英雄数/不同合法可选英雄数，资料覆盖度,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_hero_selection_offered_heroes,test/operation_best_greedy_hero_selection_offered_heroes,test,不同合法可选英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_hero_selection_scorable,test/operation_best_greedy_hero_selection_scorable,test,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_hero_selection_unknown_heroes,test/operation_best_greedy_hero_selection_unknown_heroes,test,其中无资料的英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_hero_selection_unknown_offer,test/operation_best_greedy_hero_selection_unknown_offer,test,是否存在未知的合法可选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_max_consecutive_cycle_returns,test/operation_best_greedy_max_consecutive_cycle_returns,test,每局连续状态返回峰值，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_max_consecutive_cycles,test/operation_best_greedy_legacy_max_consecutive_cycles,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_mean_placement,test/core_best_greedy_mean_placement,test,平均真实最终名次；仅随机val严格降低用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_move_action_fraction,test/operation_best_greedy_move_action_fraction,test,逐局Move/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_move_actions,test/operation_best_greedy_move_actions,test,每局实际成功招募Move次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_move_penalty,test/reward_best_greedy_move,test,实际Move累计罚分，每次-0.0005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_opening_bonus,test/reward_best_greedy_opening,test,三个操作里程碑奖励之和，已计入action_reward,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_operation_penalty,test/reward_best_greedy_legacy_move_freeze,test,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_opponent_action_limit_forfeits,test/operation_best_greedy_legacy_opponent_action_limit_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_opponent_cycle_forfeits,test/operation_best_greedy_legacy_opponent_cycle_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_placement_reward,test/reward_best_greedy_placement,test,"名次reward：每局真实终局线性[-1,1]",100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_reversible_actions,test/operation_best_greedy_reversible_actions,test,历史Move/Freeze操作总数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_second_turn_tier2_bonus,test/reward_best_greedy_second_turn_tier2,test,T2实际升二本的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_second_turn_tier2_bonus_count,test/operation_best_greedy_second_turn_tier2_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_third_turn_dark_gift_bonus,test/reward_best_greedy_third_turn_dark_gift,test,T3完成匹配DarkGift选择的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_third_turn_dark_gift_bonus_count,test/operation_best_greedy_third_turn_dark_gift_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_top4_rate,test/core_best_greedy_top4_rate,test,Top 4率,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_greedy_total_reward,test/reward_best_greedy_total,test,三大类reward之和；不用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_action_limit_forfeit_placement,test/operation_best_sampled_legacy_action_limit_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_action_limit_forfeit_rate,test/operation_best_sampled_legacy_action_limit_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_action_limit_forfeit_turn,test/operation_best_sampled_legacy_action_limit_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_action_reward,test/reward_best_sampled_operation,test,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_actions_per_game,test/operation_best_sampled_actions_per_game,test,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_cap_end_rate,test/operation_best_sampled_cap_end_rate,test,每局强制End回合占比，再按局平均；不是提前判负,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_cycle_forfeit_placement,test/operation_best_sampled_legacy_cycle_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_cycle_forfeit_rate,test/operation_best_sampled_legacy_cycle_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_cycle_forfeit_turn,test/operation_best_sampled_legacy_cycle_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_cycle_penalty,test/reward_best_sampled_cycle,test,可见状态返回累计罚分，每次-0.01，线性无封顶,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_cycle_return_fraction,test/operation_best_sampled_cycle_return_fraction,test,先逐局计算返回次数/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_cycle_returns,test/operation_best_sampled_cycle_returns,test,每局返回已见完整可见状态次数，不是重复动作ID数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_action_penalty,test/reward_best_sampled_early_action,test,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_actions,test/operation_best_sampled_early_actions,test,T1-5全部成功操作数，含End与菜单，不含英雄选择,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_chargeable_actions,test/operation_best_sampled_early_chargeable_actions,test,T1-5非End成功操作数；费用封顶后仍计数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_menu_actions,test/operation_best_sampled_early_menu_actions,test,T1-5成功Choose/Cancel次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn1_actions,test/operation_best_sampled_early_turn1_actions,test,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn1_observed,test/operation_best_sampled_early_turn1_observed,test,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn2_actions,test/operation_best_sampled_early_turn2_actions,test,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn2_observed,test/operation_best_sampled_early_turn2_observed,test,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn3_actions,test/operation_best_sampled_early_turn3_actions,test,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn3_observed,test/operation_best_sampled_early_turn3_observed,test,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn4_actions,test/operation_best_sampled_early_turn4_actions,test,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn4_observed,test/operation_best_sampled_early_turn4_observed,test,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn5_actions,test/operation_best_sampled_early_turn5_actions,test,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_early_turn5_observed,test/operation_best_sampled_early_turn5_observed,test,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_first_rate,test/core_best_sampled_first_rate,test,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_first_turn_minion_bonus,test/reward_best_sampled_first_turn_minion,test,T1首随从实际在战场出现的累计正奖励，最多0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_first_turn_minion_bonus_count,test/operation_best_sampled_first_turn_minion_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_hero_selection_bonus,test/reward_best_sampled_hero_selection,test,初始选英雄偏好reward；当前12位前1%均名，未知整组0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_hero_selection_bonus_count,test/operation_best_sampled_hero_selection_preference_hits,test,本局是否收到正的选英雄奖励，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_hero_selection_count,test/operation_best_sampled_hero_selection_count,test,启用先验时本局是否完成初始选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_hero_selection_known_fraction,test/operation_best_sampled_hero_selection_known_fraction,test,已知英雄数/不同合法可选英雄数，资料覆盖度,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_hero_selection_offered_heroes,test/operation_best_sampled_hero_selection_offered_heroes,test,不同合法可选英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_hero_selection_scorable,test/operation_best_sampled_hero_selection_scorable,test,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_hero_selection_unknown_heroes,test/operation_best_sampled_hero_selection_unknown_heroes,test,其中无资料的英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_hero_selection_unknown_offer,test/operation_best_sampled_hero_selection_unknown_offer,test,是否存在未知的合法可选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_max_consecutive_cycle_returns,test/operation_best_sampled_max_consecutive_cycle_returns,test,每局连续状态返回峰值，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_max_consecutive_cycles,test/operation_best_sampled_legacy_max_consecutive_cycles,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_mean_placement,test/core_best_sampled_mean_placement,test,平均真实最终名次；仅随机val严格降低用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_move_action_fraction,test/operation_best_sampled_move_action_fraction,test,逐局Move/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_move_actions,test/operation_best_sampled_move_actions,test,每局实际成功招募Move次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_move_penalty,test/reward_best_sampled_move,test,实际Move累计罚分，每次-0.0005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_opening_bonus,test/reward_best_sampled_opening,test,三个操作里程碑奖励之和，已计入action_reward,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_operation_penalty,test/reward_best_sampled_legacy_move_freeze,test,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_opponent_action_limit_forfeits,test/operation_best_sampled_legacy_opponent_action_limit_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_opponent_cycle_forfeits,test/operation_best_sampled_legacy_opponent_cycle_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_placement_reward,test/reward_best_sampled_placement,test,"名次reward：每局真实终局线性[-1,1]",100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_reversible_actions,test/operation_best_sampled_reversible_actions,test,历史Move/Freeze操作总数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_second_turn_tier2_bonus,test/reward_best_sampled_second_turn_tier2,test,T2实际升二本的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_second_turn_tier2_bonus_count,test/operation_best_sampled_second_turn_tier2_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_third_turn_dark_gift_bonus,test/reward_best_sampled_third_turn_dark_gift,test,T3完成匹配DarkGift选择的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_third_turn_dark_gift_bonus_count,test/operation_best_sampled_third_turn_dark_gift_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_top4_rate,test/core_best_sampled_top4_rate,test,Top 4率,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/best_mixed_sampled_total_reward,test/reward_best_sampled_total,test,三大类reward之和；不用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_action_limit_forfeit_placement,test/operation_final_greedy_legacy_action_limit_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_action_limit_forfeit_rate,test/operation_final_greedy_legacy_action_limit_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_action_limit_forfeit_turn,test/operation_final_greedy_legacy_action_limit_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_action_reward,test/reward_final_greedy_operation,test,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_actions_per_game,test/operation_final_greedy_actions_per_game,test,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_cap_end_rate,test/operation_final_greedy_cap_end_rate,test,每局强制End回合占比，再按局平均；不是提前判负,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_cycle_forfeit_placement,test/operation_final_greedy_legacy_cycle_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_cycle_forfeit_rate,test/operation_final_greedy_legacy_cycle_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_cycle_forfeit_turn,test/operation_final_greedy_legacy_cycle_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_cycle_penalty,test/reward_final_greedy_cycle,test,可见状态返回累计罚分，每次-0.01，线性无封顶,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_cycle_return_fraction,test/operation_final_greedy_cycle_return_fraction,test,先逐局计算返回次数/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_cycle_returns,test/operation_final_greedy_cycle_returns,test,每局返回已见完整可见状态次数，不是重复动作ID数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_action_penalty,test/reward_final_greedy_early_action,test,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_actions,test/operation_final_greedy_early_actions,test,T1-5全部成功操作数，含End与菜单，不含英雄选择,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_chargeable_actions,test/operation_final_greedy_early_chargeable_actions,test,T1-5非End成功操作数；费用封顶后仍计数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_menu_actions,test/operation_final_greedy_early_menu_actions,test,T1-5成功Choose/Cancel次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn1_actions,test/operation_final_greedy_early_turn1_actions,test,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn1_observed,test/operation_final_greedy_early_turn1_observed,test,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn2_actions,test/operation_final_greedy_early_turn2_actions,test,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn2_observed,test/operation_final_greedy_early_turn2_observed,test,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn3_actions,test/operation_final_greedy_early_turn3_actions,test,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn3_observed,test/operation_final_greedy_early_turn3_observed,test,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn4_actions,test/operation_final_greedy_early_turn4_actions,test,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn4_observed,test/operation_final_greedy_early_turn4_observed,test,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn5_actions,test/operation_final_greedy_early_turn5_actions,test,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_early_turn5_observed,test/operation_final_greedy_early_turn5_observed,test,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_first_rate,test/core_final_greedy_first_rate,test,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_first_turn_minion_bonus,test/reward_final_greedy_first_turn_minion,test,T1首随从实际在战场出现的累计正奖励，最多0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_first_turn_minion_bonus_count,test/operation_final_greedy_first_turn_minion_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_hero_selection_bonus,test/reward_final_greedy_hero_selection,test,初始选英雄偏好reward；当前12位前1%均名，未知整组0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_hero_selection_bonus_count,test/operation_final_greedy_hero_selection_preference_hits,test,本局是否收到正的选英雄奖励，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_hero_selection_count,test/operation_final_greedy_hero_selection_count,test,启用先验时本局是否完成初始选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_hero_selection_known_fraction,test/operation_final_greedy_hero_selection_known_fraction,test,已知英雄数/不同合法可选英雄数，资料覆盖度,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_hero_selection_offered_heroes,test/operation_final_greedy_hero_selection_offered_heroes,test,不同合法可选英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_hero_selection_scorable,test/operation_final_greedy_hero_selection_scorable,test,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_hero_selection_unknown_heroes,test/operation_final_greedy_hero_selection_unknown_heroes,test,其中无资料的英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_hero_selection_unknown_offer,test/operation_final_greedy_hero_selection_unknown_offer,test,是否存在未知的合法可选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_max_consecutive_cycle_returns,test/operation_final_greedy_max_consecutive_cycle_returns,test,每局连续状态返回峰值，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_max_consecutive_cycles,test/operation_final_greedy_legacy_max_consecutive_cycles,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_mean_placement,test/core_final_greedy_mean_placement,test,平均真实最终名次；仅随机val严格降低用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_move_action_fraction,test/operation_final_greedy_move_action_fraction,test,逐局Move/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_move_actions,test/operation_final_greedy_move_actions,test,每局实际成功招募Move次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_move_penalty,test/reward_final_greedy_move,test,实际Move累计罚分，每次-0.0005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_opening_bonus,test/reward_final_greedy_opening,test,三个操作里程碑奖励之和，已计入action_reward,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_operation_penalty,test/reward_final_greedy_legacy_move_freeze,test,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_opponent_action_limit_forfeits,test/operation_final_greedy_legacy_opponent_action_limit_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_opponent_cycle_forfeits,test/operation_final_greedy_legacy_opponent_cycle_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_placement_reward,test/reward_final_greedy_placement,test,"名次reward：每局真实终局线性[-1,1]",100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_reversible_actions,test/operation_final_greedy_reversible_actions,test,历史Move/Freeze操作总数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_second_turn_tier2_bonus,test/reward_final_greedy_second_turn_tier2,test,T2实际升二本的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_second_turn_tier2_bonus_count,test/operation_final_greedy_second_turn_tier2_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_third_turn_dark_gift_bonus,test/reward_final_greedy_third_turn_dark_gift,test,T3完成匹配DarkGift选择的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_third_turn_dark_gift_bonus_count,test/operation_final_greedy_third_turn_dark_gift_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_top4_rate,test/core_final_greedy_top4_rate,test,Top 4率,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_greedy_total_reward,test/reward_final_greedy_total,test,三大类reward之和；不用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_action_limit_forfeit_placement,test/operation_final_sampled_legacy_action_limit_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_action_limit_forfeit_rate,test/operation_final_sampled_legacy_action_limit_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_action_limit_forfeit_turn,test/operation_final_sampled_legacy_action_limit_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_action_reward,test/reward_final_sampled_operation,test,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_actions_per_game,test/operation_final_sampled_actions_per_game,test,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_cap_end_rate,test/operation_final_sampled_cap_end_rate,test,每局强制End回合占比，再按局平均；不是提前判负,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_cycle_forfeit_placement,test/operation_final_sampled_legacy_cycle_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_cycle_forfeit_rate,test/operation_final_sampled_legacy_cycle_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_cycle_forfeit_turn,test/operation_final_sampled_legacy_cycle_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_cycle_penalty,test/reward_final_sampled_cycle,test,可见状态返回累计罚分，每次-0.01，线性无封顶,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_cycle_return_fraction,test/operation_final_sampled_cycle_return_fraction,test,先逐局计算返回次数/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_cycle_returns,test/operation_final_sampled_cycle_returns,test,每局返回已见完整可见状态次数，不是重复动作ID数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_action_penalty,test/reward_final_sampled_early_action,test,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_actions,test/operation_final_sampled_early_actions,test,T1-5全部成功操作数，含End与菜单，不含英雄选择,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_chargeable_actions,test/operation_final_sampled_early_chargeable_actions,test,T1-5非End成功操作数；费用封顶后仍计数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_menu_actions,test/operation_final_sampled_early_menu_actions,test,T1-5成功Choose/Cancel次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn1_actions,test/operation_final_sampled_early_turn1_actions,test,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn1_observed,test/operation_final_sampled_early_turn1_observed,test,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn2_actions,test/operation_final_sampled_early_turn2_actions,test,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn2_observed,test/operation_final_sampled_early_turn2_observed,test,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn3_actions,test/operation_final_sampled_early_turn3_actions,test,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn3_observed,test/operation_final_sampled_early_turn3_observed,test,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn4_actions,test/operation_final_sampled_early_turn4_actions,test,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn4_observed,test/operation_final_sampled_early_turn4_observed,test,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn5_actions,test/operation_final_sampled_early_turn5_actions,test,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_early_turn5_observed,test/operation_final_sampled_early_turn5_observed,test,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_first_rate,test/core_final_sampled_first_rate,test,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_first_turn_minion_bonus,test/reward_final_sampled_first_turn_minion,test,T1首随从实际在战场出现的累计正奖励，最多0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_first_turn_minion_bonus_count,test/operation_final_sampled_first_turn_minion_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_hero_selection_bonus,test/reward_final_sampled_hero_selection,test,初始选英雄偏好reward；当前12位前1%均名，未知整组0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_hero_selection_bonus_count,test/operation_final_sampled_hero_selection_preference_hits,test,本局是否收到正的选英雄奖励，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_hero_selection_count,test/operation_final_sampled_hero_selection_count,test,启用先验时本局是否完成初始选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_hero_selection_known_fraction,test/operation_final_sampled_hero_selection_known_fraction,test,已知英雄数/不同合法可选英雄数，资料覆盖度,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_hero_selection_offered_heroes,test/operation_final_sampled_hero_selection_offered_heroes,test,不同合法可选英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_hero_selection_scorable,test/operation_final_sampled_hero_selection_scorable,test,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_hero_selection_unknown_heroes,test/operation_final_sampled_hero_selection_unknown_heroes,test,其中无资料的英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_hero_selection_unknown_offer,test/operation_final_sampled_hero_selection_unknown_offer,test,是否存在未知的合法可选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_max_consecutive_cycle_returns,test/operation_final_sampled_max_consecutive_cycle_returns,test,每局连续状态返回峰值，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_max_consecutive_cycles,test/operation_final_sampled_legacy_max_consecutive_cycles,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_mean_placement,test/core_final_sampled_mean_placement,test,平均真实最终名次；仅随机val严格降低用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_move_action_fraction,test/operation_final_sampled_move_action_fraction,test,逐局Move/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_move_actions,test/operation_final_sampled_move_actions,test,每局实际成功招募Move次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_move_penalty,test/reward_final_sampled_move,test,实际Move累计罚分，每次-0.0005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_opening_bonus,test/reward_final_sampled_opening,test,三个操作里程碑奖励之和，已计入action_reward,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_operation_penalty,test/reward_final_sampled_legacy_move_freeze,test,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_opponent_action_limit_forfeits,test/operation_final_sampled_legacy_opponent_action_limit_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_opponent_cycle_forfeits,test/operation_final_sampled_legacy_opponent_cycle_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_placement_reward,test/reward_final_sampled_placement,test,"名次reward：每局真实终局线性[-1,1]",100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_reversible_actions,test/operation_final_sampled_reversible_actions,test,历史Move/Freeze操作总数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_second_turn_tier2_bonus,test/reward_final_sampled_second_turn_tier2,test,T2实际升二本的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_second_turn_tier2_bonus_count,test/operation_final_sampled_second_turn_tier2_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_third_turn_dark_gift_bonus,test/reward_final_sampled_third_turn_dark_gift,test,T3完成匹配DarkGift选择的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_third_turn_dark_gift_bonus_count,test/operation_final_sampled_third_turn_dark_gift_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_top4_rate,test/core_final_sampled_top4_rate,test,Top 4率,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/final_mixed_sampled_total_reward,test/reward_final_sampled_total,test,三大类reward之和；不用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_action_limit_forfeit_placement,test/operation_initial_greedy_legacy_action_limit_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_action_limit_forfeit_rate,test/operation_initial_greedy_legacy_action_limit_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_action_limit_forfeit_turn,test/operation_initial_greedy_legacy_action_limit_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_action_reward,test/reward_initial_greedy_operation,test,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_actions_per_game,test/operation_initial_greedy_actions_per_game,test,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_cap_end_rate,test/operation_initial_greedy_cap_end_rate,test,每局强制End回合占比，再按局平均；不是提前判负,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_cycle_forfeit_placement,test/operation_initial_greedy_legacy_cycle_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_cycle_forfeit_rate,test/operation_initial_greedy_legacy_cycle_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_cycle_forfeit_turn,test/operation_initial_greedy_legacy_cycle_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_cycle_penalty,test/reward_initial_greedy_cycle,test,可见状态返回累计罚分，每次-0.01，线性无封顶,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_cycle_return_fraction,test/operation_initial_greedy_cycle_return_fraction,test,先逐局计算返回次数/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_cycle_returns,test/operation_initial_greedy_cycle_returns,test,每局返回已见完整可见状态次数，不是重复动作ID数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_action_penalty,test/reward_initial_greedy_early_action,test,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_actions,test/operation_initial_greedy_early_actions,test,T1-5全部成功操作数，含End与菜单，不含英雄选择,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_chargeable_actions,test/operation_initial_greedy_early_chargeable_actions,test,T1-5非End成功操作数；费用封顶后仍计数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_menu_actions,test/operation_initial_greedy_early_menu_actions,test,T1-5成功Choose/Cancel次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn1_actions,test/operation_initial_greedy_early_turn1_actions,test,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn1_observed,test/operation_initial_greedy_early_turn1_observed,test,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn2_actions,test/operation_initial_greedy_early_turn2_actions,test,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn2_observed,test/operation_initial_greedy_early_turn2_observed,test,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn3_actions,test/operation_initial_greedy_early_turn3_actions,test,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn3_observed,test/operation_initial_greedy_early_turn3_observed,test,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn4_actions,test/operation_initial_greedy_early_turn4_actions,test,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn4_observed,test/operation_initial_greedy_early_turn4_observed,test,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn5_actions,test/operation_initial_greedy_early_turn5_actions,test,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_early_turn5_observed,test/operation_initial_greedy_early_turn5_observed,test,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_first_rate,test/core_initial_greedy_first_rate,test,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_first_turn_minion_bonus,test/reward_initial_greedy_first_turn_minion,test,T1首随从实际在战场出现的累计正奖励，最多0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_first_turn_minion_bonus_count,test/operation_initial_greedy_first_turn_minion_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_hero_selection_bonus,test/reward_initial_greedy_hero_selection,test,初始选英雄偏好reward；当前12位前1%均名，未知整组0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_hero_selection_bonus_count,test/operation_initial_greedy_hero_selection_preference_hits,test,本局是否收到正的选英雄奖励，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_hero_selection_count,test/operation_initial_greedy_hero_selection_count,test,启用先验时本局是否完成初始选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_hero_selection_known_fraction,test/operation_initial_greedy_hero_selection_known_fraction,test,已知英雄数/不同合法可选英雄数，资料覆盖度,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_hero_selection_offered_heroes,test/operation_initial_greedy_hero_selection_offered_heroes,test,不同合法可选英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_hero_selection_scorable,test/operation_initial_greedy_hero_selection_scorable,test,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_hero_selection_unknown_heroes,test/operation_initial_greedy_hero_selection_unknown_heroes,test,其中无资料的英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_hero_selection_unknown_offer,test/operation_initial_greedy_hero_selection_unknown_offer,test,是否存在未知的合法可选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_max_consecutive_cycle_returns,test/operation_initial_greedy_max_consecutive_cycle_returns,test,每局连续状态返回峰值，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_max_consecutive_cycles,test/operation_initial_greedy_legacy_max_consecutive_cycles,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_mean_placement,test/core_initial_greedy_mean_placement,test,平均真实最终名次；仅随机val严格降低用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_move_action_fraction,test/operation_initial_greedy_move_action_fraction,test,逐局Move/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_move_actions,test/operation_initial_greedy_move_actions,test,每局实际成功招募Move次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_move_penalty,test/reward_initial_greedy_move,test,实际Move累计罚分，每次-0.0005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_opening_bonus,test/reward_initial_greedy_opening,test,三个操作里程碑奖励之和，已计入action_reward,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_operation_penalty,test/reward_initial_greedy_legacy_move_freeze,test,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_opponent_action_limit_forfeits,test/operation_initial_greedy_legacy_opponent_action_limit_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_opponent_cycle_forfeits,test/operation_initial_greedy_legacy_opponent_cycle_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_placement_reward,test/reward_initial_greedy_placement,test,"名次reward：每局真实终局线性[-1,1]",100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_reversible_actions,test/operation_initial_greedy_reversible_actions,test,历史Move/Freeze操作总数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_second_turn_tier2_bonus,test/reward_initial_greedy_second_turn_tier2,test,T2实际升二本的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_second_turn_tier2_bonus_count,test/operation_initial_greedy_second_turn_tier2_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_third_turn_dark_gift_bonus,test/reward_initial_greedy_third_turn_dark_gift,test,T3完成匹配DarkGift选择的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_third_turn_dark_gift_bonus_count,test/operation_initial_greedy_third_turn_dark_gift_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_top4_rate,test/core_initial_greedy_top4_rate,test,Top 4率,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_greedy_total_reward,test/reward_initial_greedy_total,test,三大类reward之和；不用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_action_limit_forfeit_placement,test/operation_initial_sampled_legacy_action_limit_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_action_limit_forfeit_rate,test/operation_initial_sampled_legacy_action_limit_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_action_limit_forfeit_turn,test/operation_initial_sampled_legacy_action_limit_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_action_reward,test/reward_initial_sampled_operation,test,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_actions_per_game,test/operation_initial_sampled_actions_per_game,test,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_cap_end_rate,test/operation_initial_sampled_cap_end_rate,test,每局强制End回合占比，再按局平均；不是提前判负,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_cycle_forfeit_placement,test/operation_initial_sampled_legacy_cycle_forfeit_placement,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_cycle_forfeit_rate,test/operation_initial_sampled_legacy_cycle_forfeit_rate,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_cycle_forfeit_turn,test/operation_initial_sampled_legacy_cycle_forfeit_turn,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_cycle_penalty,test/reward_initial_sampled_cycle,test,可见状态返回累计罚分，每次-0.01，线性无封顶,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_cycle_return_fraction,test/operation_initial_sampled_cycle_return_fraction,test,先逐局计算返回次数/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_cycle_returns,test/operation_initial_sampled_cycle_returns,test,每局返回已见完整可见状态次数，不是重复动作ID数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_action_penalty,test/reward_initial_sampled_early_action,test,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_actions,test/operation_initial_sampled_early_actions,test,T1-5全部成功操作数，含End与菜单，不含英雄选择,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_chargeable_actions,test/operation_initial_sampled_early_chargeable_actions,test,T1-5非End成功操作数；费用封顶后仍计数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_menu_actions,test/operation_initial_sampled_early_menu_actions,test,T1-5成功Choose/Cancel次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn1_actions,test/operation_initial_sampled_early_turn1_actions,test,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn1_observed,test/operation_initial_sampled_early_turn1_observed,test,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn2_actions,test/operation_initial_sampled_early_turn2_actions,test,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn2_observed,test/operation_initial_sampled_early_turn2_observed,test,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn3_actions,test/operation_initial_sampled_early_turn3_actions,test,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn3_observed,test/operation_initial_sampled_early_turn3_observed,test,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn4_actions,test/operation_initial_sampled_early_turn4_actions,test,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn4_observed,test/operation_initial_sampled_early_turn4_observed,test,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn5_actions,test/operation_initial_sampled_early_turn5_actions,test,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_early_turn5_observed,test/operation_initial_sampled_early_turn5_observed,test,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_first_rate,test/core_initial_sampled_first_rate,test,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_first_turn_minion_bonus,test/reward_initial_sampled_first_turn_minion,test,T1首随从实际在战场出现的累计正奖励，最多0.01,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_first_turn_minion_bonus_count,test/operation_initial_sampled_first_turn_minion_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_hero_selection_bonus,test/reward_initial_sampled_hero_selection,test,初始选英雄偏好reward；当前12位前1%均名，未知整组0,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_hero_selection_bonus_count,test/operation_initial_sampled_hero_selection_preference_hits,test,本局是否收到正的选英雄奖励，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_hero_selection_count,test/operation_initial_sampled_hero_selection_count,test,启用先验时本局是否完成初始选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_hero_selection_known_fraction,test/operation_initial_sampled_hero_selection_known_fraction,test,已知英雄数/不同合法可选英雄数，资料覆盖度,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_hero_selection_offered_heroes,test/operation_initial_sampled_hero_selection_offered_heroes,test,不同合法可选英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_hero_selection_scorable,test/operation_initial_sampled_hero_selection_scorable,test,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_hero_selection_unknown_heroes,test/operation_initial_sampled_hero_selection_unknown_heroes,test,其中无资料的英雄数量,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_hero_selection_unknown_offer,test/operation_initial_sampled_hero_selection_unknown_offer,test,是否存在未知的合法可选英雄，0/1,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_max_consecutive_cycle_returns,test/operation_initial_sampled_max_consecutive_cycle_returns,test,每局连续状态返回峰值，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_max_consecutive_cycles,test/operation_initial_sampled_legacy_max_consecutive_cycles,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_mean_placement,test/core_initial_sampled_mean_placement,test,平均真实最终名次；仅随机val严格降低用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_move_action_fraction,test/operation_initial_sampled_move_action_fraction,test,逐局Move/策略转移数，再按局平均,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_move_actions,test/operation_initial_sampled_move_actions,test,每局实际成功招募Move次数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_move_penalty,test/reward_initial_sampled_move,test,实际Move累计罚分，每次-0.0005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_opening_bonus,test/reward_initial_sampled_opening,test,三个操作里程碑奖励之和，已计入action_reward,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_operation_penalty,test/reward_initial_sampled_legacy_move_freeze,test,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_opponent_action_limit_forfeits,test/operation_initial_sampled_legacy_opponent_action_limit_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_opponent_cycle_forfeits,test/operation_initial_sampled_legacy_opponent_cycle_forfeits,test,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_placement_reward,test/reward_initial_sampled_placement,test,"名次reward：每局真实终局线性[-1,1]",100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_reversible_actions,test/operation_initial_sampled_reversible_actions,test,历史Move/Freeze操作总数,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_second_turn_tier2_bonus,test/reward_initial_sampled_second_turn_tier2,test,T2实际升二本的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_second_turn_tier2_bonus_count,test/operation_initial_sampled_second_turn_tier2_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_third_turn_dark_gift_bonus,test/reward_initial_sampled_third_turn_dark_gift,test,T3完成匹配DarkGift选择的累计正奖励，最多0.005,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_third_turn_dark_gift_bonus_count,test/operation_initial_sampled_third_turn_dark_gift_milestone_count,test,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_top4_rate,test/core_initial_sampled_top4_rate,test,Top 4率,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+test/initial_mixed_sampled_total_reward,test/reward_initial_sampled_total,test,三大类reward之和；不用于选best,100 PPO收尾；各检查点随机/贪心各128局，不选模,收尾后产生；当前尚无,V8,prepared; not active in V7
+train/action_limit_forfeit_placement,train/operation_legacy_action_limit_forfeit_placement,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/action_limit_forfeit_rate,train/operation_legacy_action_limit_forfeit_rate,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/action_limit_forfeit_turn,train/operation_legacy_action_limit_forfeit_turn,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/action_reward,train_reward/operation,train_reward,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/actions_per_game,train/operation_actions_per_game,train,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/adam_total_steps,train/progress_adam_total_steps,train,含继承V5 Adam7200的累计Adam时钟,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/approx_kl,train/optimization_adam_approx_kl,train,策略近似KL,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/cap_end_rate,train/operation_cap_end_rate,train,每局强制End回合占比，再按局平均；不是提前判负,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/clip_fraction,train/optimization_adam_clip_fraction,train,PPO概率比裁剪比例,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/cycle_forfeit_placement,train/operation_legacy_cycle_forfeit_placement,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/cycle_forfeit_rate,train/operation_legacy_cycle_forfeit_rate,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/cycle_forfeit_turn,train/operation_legacy_cycle_forfeit_turn,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/cycle_penalty,train_reward/cycle,train_reward,可见状态返回累计罚分，每次-0.01，线性无封顶,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/cycle_return_fraction,train/operation_cycle_return_fraction,train,先逐局计算返回次数/策略转移数，再按局平均,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/cycle_returns,train/operation_cycle_returns,train,每局返回已见完整可见状态次数，不是重复动作ID数,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_action_penalty,train_reward/early_action,train_reward,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_actions,train/operation_early_actions,train,T1-5全部成功操作数，含End与菜单，不含英雄选择,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_chargeable_actions,train/operation_early_chargeable_actions,train,T1-5非End成功操作数；费用封顶后仍计数,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_menu_actions,train/operation_early_menu_actions,train,T1-5成功Choose/Cancel次数,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn1_actions,train/operation_early_turn1_actions,train,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn1_observed,train/operation_early_turn1_observed,train,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn2_actions,train/operation_early_turn2_actions,train,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn2_observed,train/operation_early_turn2_observed,train,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn3_actions,train/operation_early_turn3_actions,train,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn3_observed,train/operation_early_turn3_observed,train,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn4_actions,train/operation_early_turn4_actions,train,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn4_observed,train/operation_early_turn4_observed,train,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn5_actions,train/operation_early_turn5_actions,train,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/early_turn5_observed,train/operation_early_turn5_observed,train,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/entropy_loss,train/optimization_adam_entropy_loss,train,负熵项,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/first_rate,train_core/first_rate,train_core,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/first_turn_minion_bonus,train_reward/first_turn_minion,train_reward,T1首随从实际在战场出现的累计正奖励，最多0.01,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/first_turn_minion_bonus_count,train/operation_first_turn_minion_milestone_count,train,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/grad_norm,train/optimization_adam_grad_norm,train,裁剪前梯度范数,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/hero_selection_bonus,train_reward/hero_selection,train_reward,初始选英雄偏好reward；当前12位前1%均名，未知整组0,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/hero_selection_bonus_count,train/operation_hero_selection_preference_hits,train,本局是否收到正的选英雄奖励，0/1,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/hero_selection_count,train/operation_hero_selection_count,train,启用先验时本局是否完成初始选英雄，0/1,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/hero_selection_known_fraction,train/operation_hero_selection_known_fraction,train,已知英雄数/不同合法可选英雄数，资料覆盖度,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/hero_selection_offered_heroes,train/operation_hero_selection_offered_heroes,train,不同合法可选英雄数量,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/hero_selection_scorable,train/operation_hero_selection_scorable,train,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/hero_selection_unknown_heroes,train/operation_hero_selection_unknown_heroes,train,其中无资料的英雄数量,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/hero_selection_unknown_offer,train/operation_hero_selection_unknown_offer,train,是否存在未知的合法可选英雄，0/1,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/learning_rate,train/optimization_adam_learning_rate,train,实际Adam学习率,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/loss,train/optimization_adam_loss,train,总优化损失,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/max_consecutive_cycle_returns,train/operation_max_consecutive_cycle_returns,train,每局连续状态返回峰值，再按局平均,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/max_consecutive_cycles,train/operation_legacy_max_consecutive_cycles,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/mean_placement,train_core/mean_placement,train_core,平均真实最终名次；仅随机val严格降低用于选best,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/move_action_fraction,train/operation_move_action_fraction,train,逐局Move/策略转移数，再按局平均,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/move_actions,train/operation_move_actions,train,每局实际成功招募Move次数,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/move_penalty,train_reward/move,train_reward,实际Move累计罚分，每次-0.0005,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/opening_bonus,train_reward/opening,train_reward,三个操作里程碑奖励之和，已计入action_reward,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/operation_penalty,train_reward/legacy_move_freeze,train_reward,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/opponent_action_limit_forfeits,train/operation_legacy_opponent_action_limit_forfeits,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/opponent_cycle_forfeits,train/operation_legacy_opponent_cycle_forfeits,train,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/opponent_decisions,train/operation_opponent_decisions,train,本PPO冻结对手的实际操作量，不计学习者训练样本,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/placement_label_fraction,train/optimization_adam_placement_label_fraction,train,当前优化样本中有终局名次标签的比例,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/placement_loss,train/optimization_adam_placement_loss,train,终局名次辅助分类损失,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/placement_reward,train_reward/placement,train_reward,"名次reward：每局真实终局线性[-1,1]",每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/policy_gradient_loss,train/optimization_adam_policy_gradient_loss,train,PPO策略损失,每实际Adam,当前在线已有,V8,prepared; not active in V7
+train/ppo_approx_kl,train/optimization_ppo_approx_kl,train,策略近似KL（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_clip_fraction,train/optimization_ppo_clip_fraction,train,PPO概率比裁剪比例（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_clip_range,train/optimization_ppo_clip_range,train,PPO裁剪范围（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_entropy_loss,train/optimization_ppo_entropy_loss,train,负熵项（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_explained_variance,train/optimization_ppo_explained_variance,train,rollout价值预测解释方差（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_iteration,train/progress_ppo_iteration,train,本阶段PPO轮数；在Adam点和PPO汇总点均可能写入,每Adam及PPO汇总,当前在线已有,V8,prepared; not active in V7
+train/ppo_learning_rate,train/optimization_ppo_learning_rate,train,实际Adam学习率（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_loss,train/optimization_ppo_loss,train,总优化损失（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_optimizer_steps,train/progress_adam_steps,train,本阶段实际Adam更新数（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_optimizer_steps_this_iteration,train/progress_adam_steps_this_ppo,train,本PPO实际Adam更新数（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_placement_label_fraction,train/optimization_ppo_placement_label_fraction,train,当前优化样本中有终局名次标签的比例（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_placement_loss,train/optimization_ppo_placement_loss,train,终局名次辅助分类损失（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_policy_gradient_loss,train/optimization_ppo_policy_gradient_loss,train,PPO策略损失（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/ppo_value_loss,train/optimization_ppo_value_loss,train,价值估计损失（PPO汇总，与每Adam字段频率不同）,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/reversible_actions,train/operation_reversible_actions,train,历史Move/Freeze操作总数,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/sampled_decisions,train/progress_sampled_decisions,train,本阶段已采样学习者决策数，不含冻结对手动作,每Adam及PPO汇总,当前在线已有,V8,prepared; not active in V7
+train/second_turn_tier2_bonus,train_reward/second_turn_tier2,train_reward,T2实际升二本的累计正奖励，最多0.005,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/second_turn_tier2_bonus_count,train/operation_second_turn_tier2_milestone_count,train,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/third_turn_dark_gift_bonus,train_reward/third_turn_dark_gift,train_reward,T3完成匹配DarkGift选择的累计正奖励，最多0.005,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/third_turn_dark_gift_bonus_count,train/operation_third_turn_dark_gift_milestone_count,train,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/top4_rate,train_core/top4_rate,train_core,Top 4率,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/total_reward,train_reward/total,train_reward,三大类reward之和；不用于选best,每PPO；对局项为已结束整局累计值的局均,当前在线已有,V8,prepared; not active in V7
+train/value_loss,train/optimization_adam_value_loss,train,价值估计损失,每实际Adam,当前在线已有,V8,prepared; not active in V7
+val/action_limit_forfeit_placement,val/operation_legacy_action_limit_forfeit_placement,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/action_limit_forfeit_rate,val/operation_legacy_action_limit_forfeit_rate,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/action_limit_forfeit_turn,val/operation_legacy_action_limit_forfeit_turn,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/action_reward,val_reward/operation,val_reward,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/actions_per_game,val/operation_actions_per_game,val,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/cap_end_rate,val/operation_cap_end_rate,val,每局强制End回合占比，再按局平均；不是提前判负,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/cycle_forfeit_placement,val/operation_legacy_cycle_forfeit_placement,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/cycle_forfeit_rate,val/operation_legacy_cycle_forfeit_rate,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/cycle_forfeit_turn,val/operation_legacy_cycle_forfeit_turn,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/cycle_penalty,val_reward/cycle,val_reward,可见状态返回累计罚分，每次-0.01，线性无封顶,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/cycle_return_fraction,val/operation_cycle_return_fraction,val,先逐局计算返回次数/策略转移数，再按局平均,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/cycle_returns,val/operation_cycle_returns,val,每局返回已见完整可见状态次数，不是重复动作ID数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_action_penalty,val_reward/early_action,val_reward,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_actions,val/operation_early_actions,val,T1-5全部成功操作数，含End与菜单，不含英雄选择,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_chargeable_actions,val/operation_early_chargeable_actions,val,T1-5非End成功操作数；费用封顶后仍计数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_menu_actions,val/operation_early_menu_actions,val,T1-5成功Choose/Cancel次数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn1_actions,val/operation_early_turn1_actions,val,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn1_observed,val/operation_early_turn1_observed,val,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn2_actions,val/operation_early_turn2_actions,val,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn2_observed,val/operation_early_turn2_observed,val,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn3_actions,val/operation_early_turn3_actions,val,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn3_observed,val/operation_early_turn3_observed,val,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn4_actions,val/operation_early_turn4_actions,val,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn4_observed,val/operation_early_turn4_observed,val,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn5_actions,val/operation_early_turn5_actions,val,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/early_turn5_observed,val/operation_early_turn5_observed,val,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/first_rate,val_core/first_rate,val_core,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/first_turn_minion_bonus,val_reward/first_turn_minion,val_reward,T1首随从实际在战场出现的累计正奖励，最多0.01,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/first_turn_minion_bonus_count,val/operation_first_turn_minion_milestone_count,val,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_action_limit_forfeit_placement,val/operation_greedy_legacy_action_limit_forfeit_placement,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_action_limit_forfeit_rate,val/operation_greedy_legacy_action_limit_forfeit_rate,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_action_limit_forfeit_turn,val/operation_greedy_legacy_action_limit_forfeit_turn,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_action_reward,val_reward/greedy_operation,val_reward,操作reward小计；已包含费用与opening_bonus，不可再次叠加细分项,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_actions_per_game,val/operation_greedy_actions_per_game,val,每局全部策略转移数；含英雄选择和End，不能简单视为越少越好,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_cap_end_rate,val/operation_greedy_cap_end_rate,val,每局强制End回合占比，再按局平均；不是提前判负,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_cycle_forfeit_placement,val/operation_greedy_legacy_cycle_forfeit_placement,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_cycle_forfeit_rate,val/operation_greedy_legacy_cycle_forfeit_rate,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_cycle_forfeit_turn,val/operation_greedy_legacy_cycle_forfeit_turn,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_cycle_penalty,val_reward/greedy_cycle,val_reward,可见状态返回累计罚分，每次-0.01，线性无封顶,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_cycle_return_fraction,val/operation_greedy_cycle_return_fraction,val,先逐局计算返回次数/策略转移数，再按局平均,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_cycle_returns,val/operation_greedy_cycle_returns,val,每局返回已见完整可见状态次数，不是重复动作ID数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_action_penalty,val_reward/greedy_early_action,val_reward,T1/2每次-0.001、T3-5每次-0.0005；单回合本项最多-0.01,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_actions,val/operation_greedy_early_actions,val,T1-5全部成功操作数，含End与菜单，不含英雄选择,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_chargeable_actions,val/operation_greedy_early_chargeable_actions,val,T1-5非End成功操作数；费用封顶后仍计数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_menu_actions,val/operation_greedy_early_menu_actions,val,T1-5成功Choose/Cancel次数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn1_actions,val/operation_greedy_early_turn1_actions,val,每局T1全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn1_observed,val/operation_greedy_early_turn1_observed,val,本局T1是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn2_actions,val/operation_greedy_early_turn2_actions,val,每局T2全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn2_observed,val/operation_greedy_early_turn2_observed,val,本局T2是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn3_actions,val/operation_greedy_early_turn3_actions,val,每局T3全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn3_observed,val/operation_greedy_early_turn3_observed,val,本局T3是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn4_actions,val/operation_greedy_early_turn4_actions,val,每局T4全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn4_observed,val/operation_greedy_early_turn4_observed,val,本局T4是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn5_actions,val/operation_greedy_early_turn5_actions,val,每局T5全部成功操作数，含End；未执行该回合动作的局贡献0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_early_turn5_observed,val/operation_greedy_early_turn5_observed,val,本局T5是否执行至少一个真实动作，0/1；用于条件均值分母,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_first_rate,val_core/greedy_first_rate,val_core,Top 1率；训练采样表现或对应固定验证表现，取决于前缀,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_first_turn_minion_bonus,val_reward/greedy_first_turn_minion,val_reward,T1首随从实际在战场出现的累计正奖励，最多0.01,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_first_turn_minion_bonus_count,val/operation_greedy_first_turn_minion_milestone_count,val,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_hero_selection_bonus,val_reward/greedy_hero_selection,val_reward,初始选英雄偏好reward；当前12位前1%均名，未知整组0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_hero_selection_bonus_count,val/operation_greedy_hero_selection_preference_hits,val,本局是否收到正的选英雄奖励，0/1,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_hero_selection_count,val/operation_greedy_hero_selection_count,val,启用先验时本局是否完成初始选英雄，0/1,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_hero_selection_known_fraction,val/operation_greedy_hero_selection_known_fraction,val,已知英雄数/不同合法可选英雄数，资料覆盖度,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_hero_selection_offered_heroes,val/operation_greedy_hero_selection_offered_heroes,val,不同合法可选英雄数量,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_hero_selection_scorable,val/operation_greedy_hero_selection_scorable,val,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_hero_selection_unknown_heroes,val/operation_greedy_hero_selection_unknown_heroes,val,其中无资料的英雄数量,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_hero_selection_unknown_offer,val/operation_greedy_hero_selection_unknown_offer,val,是否存在未知的合法可选英雄，0/1,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_max_consecutive_cycle_returns,val/operation_greedy_max_consecutive_cycle_returns,val,每局连续状态返回峰值，再按局平均,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_max_consecutive_cycles,val/operation_greedy_legacy_max_consecutive_cycles,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_mean_placement,val_core/greedy_mean_placement,val_core,平均真实最终名次；仅随机val严格降低用于选best,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_move_action_fraction,val/operation_greedy_move_action_fraction,val,逐局Move/策略转移数，再按局平均,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_move_actions,val/operation_greedy_move_actions,val,每局实际成功招募Move次数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_move_penalty,val_reward/greedy_move,val_reward,实际Move累计罚分，每次-0.0005,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_opening_bonus,val_reward/greedy_opening,val_reward,三个操作里程碑奖励之和，已计入action_reward,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_operation_penalty,val_reward/greedy_legacy_move_freeze,val_reward,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_opponent_action_limit_forfeits,val/operation_greedy_legacy_opponent_action_limit_forfeits,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_opponent_cycle_forfeits,val/operation_greedy_legacy_opponent_cycle_forfeits,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_placement_reward,val_reward/greedy_placement,val_reward,"名次reward：每局真实终局线性[-1,1]",PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_reversible_actions,val/operation_greedy_reversible_actions,val,历史Move/Freeze操作总数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_second_turn_tier2_bonus,val_reward/greedy_second_turn_tier2,val_reward,T2实际升二本的累计正奖励，最多0.005,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_second_turn_tier2_bonus_count,val/operation_greedy_second_turn_tier2_milestone_count,val,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_third_turn_dark_gift_bonus,val_reward/greedy_third_turn_dark_gift,val_reward,T3完成匹配DarkGift选择的累计正奖励，最多0.005,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_third_turn_dark_gift_bonus_count,val/operation_greedy_third_turn_dark_gift_milestone_count,val,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_top4_rate,val_core/greedy_top4_rate,val_core,Top 4率,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/greedy_total_reward,val_reward/greedy_total,val_reward,三大类reward之和；不用于选best,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/hero_selection_bonus,val_reward/hero_selection,val_reward,初始选英雄偏好reward；当前12位前1%均名，未知整组0,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/hero_selection_bonus_count,val/operation_hero_selection_preference_hits,val,本局是否收到正的选英雄奖励，0/1,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/hero_selection_count,val/operation_hero_selection_count,val,启用先验时本局是否完成初始选英雄，0/1,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/hero_selection_known_fraction,val/operation_hero_selection_known_fraction,val,已知英雄数/不同合法可选英雄数，资料覆盖度,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/hero_selection_offered_heroes,val/operation_hero_selection_offered_heroes,val,不同合法可选英雄数量,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/hero_selection_scorable,val/operation_hero_selection_scorable,val,选项是否全有数据且至少2种不同英雄，0/1；不是估计可靠性,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/hero_selection_unknown_heroes,val/operation_hero_selection_unknown_heroes,val,其中无资料的英雄数量,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/hero_selection_unknown_offer,val/operation_hero_selection_unknown_offer,val,是否存在未知的合法可选英雄，0/1,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/max_consecutive_cycle_returns,val/operation_max_consecutive_cycle_returns,val,每局连续状态返回峰值，再按局平均,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/max_consecutive_cycles,val/operation_legacy_max_consecutive_cycles,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/mean_placement,val_core/mean_placement,val_core,平均真实最终名次；仅随机val严格降低用于选best,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/move_action_fraction,val/operation_move_action_fraction,val,逐局Move/策略转移数，再按局平均,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/move_actions,val/operation_move_actions,val,每局实际成功招募Move次数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/move_penalty,val_reward/move,val_reward,实际Move累计罚分，每次-0.0005,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/opening_bonus,val_reward/opening,val_reward,三个操作里程碑奖励之和，已计入action_reward,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/operation_penalty,val_reward/legacy_move_freeze,val_reward,旧Move/Freeze联合费；当前operation_cost=0，兼容保留,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/opponent_action_limit_forfeits,val/operation_legacy_opponent_action_limit_forfeits,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/opponent_cycle_forfeits,val/operation_legacy_opponent_cycle_forfeits,val,历史提前判负/完整闭环诊断；V7两项forfeit关闭，当前应为0，零不表示策略改善,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/placement_reward,val_reward/placement,val_reward,"名次reward：每局真实终局线性[-1,1]",PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/ppo_iteration,val/progress_ppo_iteration,val,本阶段PPO轮数；在Adam点和PPO汇总点均可能写入,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/reversible_actions,val/operation_reversible_actions,val,历史Move/Freeze操作总数,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/second_turn_tier2_bonus,val_reward/second_turn_tier2,val_reward,T2实际升二本的累计正奖励，最多0.005,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/second_turn_tier2_bonus_count,val/operation_second_turn_tier2_milestone_count,val,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/third_turn_dark_gift_bonus,val_reward/third_turn_dark_gift,val_reward,T3完成匹配DarkGift选择的累计正奖励，最多0.005,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/third_turn_dark_gift_bonus_count,val/operation_third_turn_dark_gift_milestone_count,val,该奖励本局发放次数，0或1；奖励关闭时0不代表操作未发生,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/top4_rate,val_core/top4_rate,val_core,Top 4率,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7
+val/total_reward,val_reward/total,val_reward,三大类reward之和；不用于选best,PPO0/25/50/75/100；各模式64局；逐局累计后取局均,当前在线已有,V8,prepared; not active in V7

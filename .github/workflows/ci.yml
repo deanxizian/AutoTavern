@@ -32,3 +32,22 @@ jobs:
       - name: Build and install the extension in place
         run: pip install -e ".[test]"
       - run: pytest -q
+
+  training:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Toolchain (pinned in rust-toolchain.toml)
+        run: rustup show
+      - uses: Swatinem/rust-cache@v2
+      - name: Install uv
+        run: pip install uv
+      - name: Install locked training and test dependencies
+        run: uv sync --locked --python 3.12 --group train --extra test
+      - name: Run complete Python suite with training dependencies
+        run: uv run --locked --group train --extra test python -m pytest -q
+      - name: Check training entry point
+        run: uv run --locked --group train python -m taverngym.learning.experiment --help

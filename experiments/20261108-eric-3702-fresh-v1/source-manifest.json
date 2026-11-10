@@ -1,0 +1,381 @@
+{
+  "eric_baseline": "719a3491eb0b95c16f5d028d549d944cbc7cd286",
+  "upstream_baseline": "1c2086a997afde46d68c6c5992cab194ddcfce88",
+  "merge_method": "git merge --no-ff upstream/main; README only textual conflict; retained Eric training links and upstream37.0.2 description",
+  "merge_conflicts": [
+    "README.md"
+  ],
+  "auto_merged_overlap_review": [
+    "flow.rs keeps Eric concede/concede_many plus upstream37.0.2 death semantics",
+    "pyproject.toml package1.1.0 plus unchanged Eric train dependency constraints"
+  ],
+  "card_base_ids": 3983,
+  "card_id_order_unchanged": true,
+  "card_id_sequence_sha256": "3b6fa2aeebe0955cb57438a9d8d5b487d61d8beb614f0c94c360dea3e9232270",
+  "cards_json_old_sha256": "429305fb9dd53e6c5240bf5219a747602e96d7a0e4bbd19a0d65b8b044ed6168",
+  "cards_json_sha256": "7a02d10794cf80c56fa77b1dd235d49b892c8d3e31c2cf56887f696e2cf922a6",
+  "contracts": {
+    "N_CARDS_including_padding": 3984,
+    "actions": 245,
+    "numeric_features": 3227,
+    "observation_card_indices": 124,
+    "hero_choices_config_field": "simulator_config.hero_choices",
+    "hero_choices": 2
+  },
+  "unchanged_upstream_eric_blobs": {
+    "crates/taverngym/src/actions.rs": "56a8c76d496c923134e733f46f85682f2bea7bf7",
+    "crates/taverngym/src/obs.rs": "d1f182b49411932ca88454c29ef3fbece819aeb9"
+  },
+  "engine_source_files": [
+    {
+      "path": "crates/taverngym/data/cards.json",
+      "sha256": "7a02d10794cf80c56fa77b1dd235d49b892c8d3e31c2cf56887f696e2cf922a6"
+    },
+    {
+      "path": "crates/taverngym/src/actions.rs",
+      "sha256": "c44915a4236a945d0a76e577953e00cad87118b8b78eae341776cd19a1aa9e1d"
+    },
+    {
+      "path": "crates/taverngym/src/batch.rs",
+      "sha256": "84e0cb134e6e1eee2a1df982c15f8f83b3f0eae605a7a5ae69227622293858d7"
+    },
+    {
+      "path": "crates/taverngym/src/bot.rs",
+      "sha256": "63b24e6d48a65bab585c415753b437804e6039b71d6b6fb5a5f3f497e4789855"
+    },
+    {
+      "path": "crates/taverngym/src/cards.rs",
+      "sha256": "b82d3f6df6c07893e59759006f53521e506fd49288f94798d786281f1c347651"
+    },
+    {
+      "path": "crates/taverngym/src/combat.rs",
+      "sha256": "101b429ab3c8153d7f03daa634d8301612b22b36591399f3cd199ffaac29a3cd"
+    },
+    {
+      "path": "crates/taverngym/src/config.rs",
+      "sha256": "b4f497252393744b76e6710affbea3b087349562bee94d6ef9348e3e592107c3"
+    },
+    {
+      "path": "crates/taverngym/src/content/aberrations.rs",
+      "sha256": "37ad12070fb79d552f8f0db2a2c9d79fdda57c06673d60c73de9763019f812a1"
+    },
+    {
+      "path": "crates/taverngym/src/content/beasts.rs",
+      "sha256": "740a233bc3f8399ed31d5b92396fe45142667fe9682febc29dc945798a560644"
+    },
+    {
+      "path": "crates/taverngym/src/content/buddies_a.rs",
+      "sha256": "c52ae56c1d52e9ff5bc1eb722ccebf533e0ddb06b351eaddcc60f280c4238f4c"
+    },
+    {
+      "path": "crates/taverngym/src/content/buddies_b.rs",
+      "sha256": "c0c21663d326236158f64e2ac074e7a133d53693303c837237522f4e71299147"
+    },
+    {
+      "path": "crates/taverngym/src/content/buddies_c.rs",
+      "sha256": "95e2f26b7335218d2a4f1204e370767b023405fba5c2b6826594e404d0c3606b"
+    },
+    {
+      "path": "crates/taverngym/src/content/darkmoon.rs",
+      "sha256": "f3dbc4bd103f5cc2b7e7fdbdba4cf1b6fcb9c58e788137b890677fc123bbbdb1"
+    },
+    {
+      "path": "crates/taverngym/src/content/demons.rs",
+      "sha256": "9c835db9229a52791717bf2613450080d0add5ce2eebdf90ed4389ffc1d5f749"
+    },
+    {
+      "path": "crates/taverngym/src/content/demons_p1.rs",
+      "sha256": "415aa38525acbc91691d631003c7cfb6660c2fbfad034919a1610b7343e9c102"
+    },
+    {
+      "path": "crates/taverngym/src/content/dragons.rs",
+      "sha256": "f45509cf23b9ee1ba9ea68183681e35dbb587e74e4543ea615191d041db6ecab"
+    },
+    {
+      "path": "crates/taverngym/src/content/elementals.rs",
+      "sha256": "21267f8a7910bb75199e3ff8de86734484e29dc92c3ed6db52fd2deb3b119ea7"
+    },
+    {
+      "path": "crates/taverngym/src/content/gifts.rs",
+      "sha256": "da499d0bf2cb14fa502eeccd57d4137e86789386b9001df09dc34f3a1a3a673f"
+    },
+    {
+      "path": "crates/taverngym/src/content/helpful.rs",
+      "sha256": "48b7a63fefef0fb1fc81147a4601330202dc4c6f0a23489e8ebfda9010c38418"
+    },
+    {
+      "path": "crates/taverngym/src/content/hero_powers.rs",
+      "sha256": "57375fe9ec573bd65d62e10ed8fcd0907949ffd1bc938a2f9e83f5cee531fa09"
+    },
+    {
+      "path": "crates/taverngym/src/content/heroes.rs",
+      "sha256": "1c0a84a511f055d9679ae56495038dcc4e74cde581127d20cac441b7a8ee5a5f"
+    },
+    {
+      "path": "crates/taverngym/src/content/heroes_active.rs",
+      "sha256": "dc06d11c5a171d7e0afeb8fd434496c773cfe6f2beb2b5ebd3c312964334e969"
+    },
+    {
+      "path": "crates/taverngym/src/content/heroes_combat.rs",
+      "sha256": "6e62985b677deae3bda36f90eb878d09150f55c892c02dd40ca0ca0353912d9e"
+    },
+    {
+      "path": "crates/taverngym/src/content/heroes_eco.rs",
+      "sha256": "09781798e7e1d7c2088c7cc05b58e18f598f614dee53d9a16796b5888aaaaabc"
+    },
+    {
+      "path": "crates/taverngym/src/content/heroes_gen.rs",
+      "sha256": "f374883a95440e416c86cde38e09362db280a9e701f8717f3e9c8683174b5c7a"
+    },
+    {
+      "path": "crates/taverngym/src/content/heroes_special.rs",
+      "sha256": "8b4afe543661e435abba89408df0d39449890e7f34069d9a7e5fdf729dceedee"
+    },
+    {
+      "path": "crates/taverngym/src/content/mechs.rs",
+      "sha256": "e6c35513f96abd69bfcbdd09e79c36f5166a4be4c97c08e9a63b8720d87a94af"
+    },
+    {
+      "path": "crates/taverngym/src/content/mechs_p1.rs",
+      "sha256": "af7a63fec976bc5f90e9c1a48c02146453303df490f69dd63dba96dfd102d853"
+    },
+    {
+      "path": "crates/taverngym/src/content/minions.rs",
+      "sha256": "eb48eedfc775010963a3109ffb5d986571d52b585272b77f0dba0199fee2f79c"
+    },
+    {
+      "path": "crates/taverngym/src/content/mod.rs",
+      "sha256": "9f2c497a8a8c321b9c4734df6cf512f964d8adb0b4a52bc55cbda7743482ee28"
+    },
+    {
+      "path": "crates/taverngym/src/content/murlocs.rs",
+      "sha256": "b77c5898678c098963f00510273fa45bde93c3884219e529a8b212f355b3f33e"
+    },
+    {
+      "path": "crates/taverngym/src/content/murlocs_p1.rs",
+      "sha256": "5b41433403d33e2a5445d483b99fccf09de635bef604f4cc8182542006bdff45"
+    },
+    {
+      "path": "crates/taverngym/src/content/naga.rs",
+      "sha256": "0cbffe59fe59a0f256dfa054ec22db613dc30f95d39bed1198b955aff6ae09ec"
+    },
+    {
+      "path": "crates/taverngym/src/content/neutral.rs",
+      "sha256": "4be858d65fd3dcdc042ce508600b16c384f457fcf4486fec147c42c8f46228c0"
+    },
+    {
+      "path": "crates/taverngym/src/content/pirates.rs",
+      "sha256": "43d8f0c167371f2eb7722998869b95ddc091e8e6503516516b099f024a2b0df7"
+    },
+    {
+      "path": "crates/taverngym/src/content/pirates_p1.rs",
+      "sha256": "aad148fcc52d2a06879618a348edb3c9046cbbd086e86afe0d33ee4b3f65ddef"
+    },
+    {
+      "path": "crates/taverngym/src/content/putricide.rs",
+      "sha256": "ccdf6349126c42196c37360be3f9589a3ee39f172c264d66adab15f335e10f56"
+    },
+    {
+      "path": "crates/taverngym/src/content/quests.rs",
+      "sha256": "c590f37796c0f3cbeb2acb016623a68307cf7c0a1890b33f6b564505d480994b"
+    },
+    {
+      "path": "crates/taverngym/src/content/quilboar.rs",
+      "sha256": "3ee56861eb764f9a21b6b0adc925fe3f81580105a3f775edab9a2dee6b4d200b"
+    },
+    {
+      "path": "crates/taverngym/src/content/quilboar_p1.rs",
+      "sha256": "f55e4e9d3f84603a3354167a50a8fc9da4fcadf09face538bab44694bd0825a7"
+    },
+    {
+      "path": "crates/taverngym/src/content/secrets.rs",
+      "sha256": "39833ad779f4fc861d6c019ab8439a6827d077e86beb43412848a880ff938f14"
+    },
+    {
+      "path": "crates/taverngym/src/content/spells.rs",
+      "sha256": "3b192f1e71b4a49e95d7a1481065a2445fea2cd1e3a2faafeb8e814bf6552b01"
+    },
+    {
+      "path": "crates/taverngym/src/content/spells_p2.rs",
+      "sha256": "2a1ec634d822a1bbe1535847ccd383b6d8d6e65b35ae6bf5e16ec9e002aeba7e"
+    },
+    {
+      "path": "crates/taverngym/src/content/starcraft.rs",
+      "sha256": "d4719dacace45513fadae241d00bcbb27e2002a8b796db22e0c7311dbf164130"
+    },
+    {
+      "path": "crates/taverngym/src/content/tier7.rs",
+      "sha256": "63a35a923e2c52a40b613eb9c1aa648ec5eb9a32789b289a606dddec3685b0ac"
+    },
+    {
+      "path": "crates/taverngym/src/content/timewarp.rs",
+      "sha256": "5fa9c91996fcc9061f9bbe7a451730e8515cfbba85a62b457427b68f2f05e489"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinket_offers.rs",
+      "sha256": "92befb7f6a607ef4744a20933a75d4cfab6fd54d7578b45c442406f310318b3b"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets.rs",
+      "sha256": "f4a2ed76fbf5da6d82c088693dbc64b282d28d3ede63147109a8a71d85f91412"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_3702.rs",
+      "sha256": "dfd92186a1e5f07903238b6701483263d55baa42463a12c211eb87a6d5b19c69"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_p1.rs",
+      "sha256": "8763903d63ce28a403f12cdb2b7bc26d20f50643cb803221839ff3b6fb210615"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_p2.rs",
+      "sha256": "5efa2e4de38d614976b091dba9c0c661f8a36fc65d041643ac656445013d0a24"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_p3.rs",
+      "sha256": "8f4e8a0cb5630aaeedd333c9fe61a57a7869699d821a28ce2c096712c6721943"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_p4.rs",
+      "sha256": "1c89a713d10e6c7b3ba565999f96a0736a54c12d573ab61a483d3d3c9f38aab2"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_p5.rs",
+      "sha256": "77948d68c666a201d6a576088a7c66798962203ec115d1a44cf5c74eee3a5d88"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_p6.rs",
+      "sha256": "71225d1287d439669df62992bb3e43f05283fe47b3d97252f98a90961379f403"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_p7.rs",
+      "sha256": "f46f985b8d430fc533625c256b2de3056815fa2132b5051b2867fac30bcc58d2"
+    },
+    {
+      "path": "crates/taverngym/src/content/trinkets_p8.rs",
+      "sha256": "4f8cb55a65c75dd831d9ab2be37f85864f9f59c876727a14969f27b0673ba6d7"
+    },
+    {
+      "path": "crates/taverngym/src/content/tw_beasts.rs",
+      "sha256": "bf90dd34adf111ae02cd5be3a4af81beed9d923b0c70cb57853f7b7cb325546f"
+    },
+    {
+      "path": "crates/taverngym/src/content/tw_demons.rs",
+      "sha256": "516fa7c4de426d1a9f4752e389164a5f1815f25b0103c3d8188a1ee528e08006"
+    },
+    {
+      "path": "crates/taverngym/src/content/tw_dragons_pirates.rs",
+      "sha256": "a4e777537777f61ac3089e413dc4c60ef241af28e3004d9a399c0f90d413d4ca"
+    },
+    {
+      "path": "crates/taverngym/src/content/tw_elementals.rs",
+      "sha256": "beace9d59da8bfff7962ddaeb1d23f2919fcba4bb2a437f3a48da267798c0938"
+    },
+    {
+      "path": "crates/taverngym/src/content/tw_murlocs_mechs.rs",
+      "sha256": "ce98772b0001ac4e1d8220ade0f424009a06f73a676a9f0bbf10c25418acd4ff"
+    },
+    {
+      "path": "crates/taverngym/src/content/tw_quilboar_neutral.rs",
+      "sha256": "3462fa3e5a37c2529a195bd58a630916244d2b15a3d70e4266ece211f6979918"
+    },
+    {
+      "path": "crates/taverngym/src/content/tw_spells.rs",
+      "sha256": "1fdf4dee2c6f593a8a4ff4e199dd13fa1a677337c950d10e84de8429aef7d1bd"
+    },
+    {
+      "path": "crates/taverngym/src/content/tw_undead.rs",
+      "sha256": "fe7da8a20f99e328690c06620e50c7495589039b76ca3bb86c6eb99eacb2bc39"
+    },
+    {
+      "path": "crates/taverngym/src/content/undead.rs",
+      "sha256": "60caf79485a5308f93895ee9bcfb3497b4dcb00e634f8b778ed1d147aac7d672"
+    },
+    {
+      "path": "crates/taverngym/src/content/yogg.rs",
+      "sha256": "fa16ee0a9eb9c0eaf980e738398e4303aba157a13e99af3c2f783b1db68f805f"
+    },
+    {
+      "path": "crates/taverngym/src/debug.rs",
+      "sha256": "0c44f1e64779f7ee0ed980c4a96098927ff455ddee47d3fda0e40d5b3571aa28"
+    },
+    {
+      "path": "crates/taverngym/src/engine.rs",
+      "sha256": "50b0d8d42c00e087fd12fa69ec71e5ee598f96602d6b0fa135378e72dbe1f440"
+    },
+    {
+      "path": "crates/taverngym/src/env.rs",
+      "sha256": "c33485cc2981bf6b25bce413fbf4b00ce57d8664b6c77eb0a099843f57f11775"
+    },
+    {
+      "path": "crates/taverngym/src/event.rs",
+      "sha256": "39f9340aa58ac89b374580af607f194ad8b24524ed5e0ad4778ee1a7e38b2d7e"
+    },
+    {
+      "path": "crates/taverngym/src/experimental.rs",
+      "sha256": "3c174ea10d152d683ab52f3352f796018f3403edb9f4ad3f68b69848b8ac929b"
+    },
+    {
+      "path": "crates/taverngym/src/flow.rs",
+      "sha256": "5bad269d3d6b33c4342cec47d599f4f956f51439dbe4b20748e7ea666adb1e6b"
+    },
+    {
+      "path": "crates/taverngym/src/guard.rs",
+      "sha256": "a6c2e9695bb74de54cd2adf5f5b588507c53d419481c328d5be2ec0812d7f72c"
+    },
+    {
+      "path": "crates/taverngym/src/invariants.rs",
+      "sha256": "0b9f919ec49c1a87f9d991747ea1d49a2f22e47d242554498a4ccb758d77d872"
+    },
+    {
+      "path": "crates/taverngym/src/lib.rs",
+      "sha256": "cab9ca0682f8d2bca615cd06fef0a490d636a891ed9f7213b79d307e01c33efb"
+    },
+    {
+      "path": "crates/taverngym/src/obs.rs",
+      "sha256": "906b2612ffc6eec44b7055f27c8fb31807f30477b0065a3df5bfd80808d7faa1"
+    },
+    {
+      "path": "crates/taverngym/src/recruit.rs",
+      "sha256": "fb26e83d4531603662d591475d129c7d003e8a00521c660f37004423578330c7"
+    },
+    {
+      "path": "crates/taverngym/src/rng.rs",
+      "sha256": "cf0a954f165814f746b3eb478797b3ed39d47ff8362b289d1926764a981bcb2e"
+    },
+    {
+      "path": "crates/taverngym/src/script.rs",
+      "sha256": "90e56e23b563952de3ee114dab9225f30845e815d06bcb038dedf574d4150385"
+    },
+    {
+      "path": "crates/taverngym/src/state.rs",
+      "sha256": "ba8f1cd7191f20f864e91bbac42862537fa53676a4b1ad9a00a752d2f8083e00"
+    },
+    {
+      "path": "crates/taverngym/src/types.rs",
+      "sha256": "1b3bb9e4dd3395b1205a1eaaab8aa2bbd8e9152ac188a97bfd91038d6165dc21"
+    },
+    {
+      "path": "crates/taverngym/src/workers.rs",
+      "sha256": "decec43d9a3483e8e68fc35569209306f7d34bc53f2abe98776ceecc7a42457f"
+    },
+    {
+      "path": "crates/taverngym-py/src/lib.rs",
+      "sha256": "0443aef8c8a0470f1bad8713c2aa13c52837609f624b3aaa053c349cc5b83ada"
+    }
+  ],
+  "engine_sha256": "2ea40cbbeb508036f0b81d1477582ee036603a8f69e63f8a21ca6b696c34b1cf",
+  "uv_lock_sha256": "3997d2c4787db3f2f211954eab8c3b7612607bf920345641651e811b3074fba5",
+  "lock_package_version_changes": {
+    "taverngym": [
+      "1.0.0",
+      "1.1.0"
+    ]
+  },
+  "lock_source_change": "TUNA \u2192 official PyPI \u2192 HTTPS Aliyun after measured large-wheel network stalls; all non-project versions and matching artifact SHA256 unchanged; uv revision3\u21925 metadata normalization; no train dependency downgrade",
+  "old_checkpoints_imported": false,
+  "old_files_deleted": false,
+  "remote_git_writes": false,
+  "lock_network_evidence": "/root/autodl-tmp/bootstrap/eric-3702-status/mirror-lock-verification.json",
+  "merge_commit": "50c38f5de0a6fe445b60559c2dbf16e7ca181000"
+}
