@@ -18,6 +18,7 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.logger import HumanOutputFormat, configure
 
 from .buffer import CompactPlacementBuffer
+from .checkpoint_completion import ensure_complete_ppo_checkpoint
 from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO, PlacementBuffer
 from .precision import FORWARD_PRECISIONS, configure_precision
 from .rewards import REWARD_METRICS, RewardShapingConfig, reward_protocols_equal
@@ -453,15 +454,13 @@ def main():
         micro_batch_size=config["micro_batch_size"], rollout_buffer_class=CompactPlacementBuffer,
         rollout_buffer_kwargs={}, seed=config["seed"],
     )
+    ensure_complete_ppo_checkpoint(model, args.model)
     configure_precision(model, config, opponent_policy)
     total_decisions = config["iterations"] * expected
     if args.warm_start or args.continue_stage:
         config["warm_start_source_timesteps"] = model.num_timesteps
         config["warm_start_source_optimizer_steps"] = model.optimizer_step_count()
         config["stage_source_adam_total_steps"] = model.optimizer_total_step_count()
-        old_budget = getattr(model, "experiment_config", {}).get("decisions_per_iteration")
-        if args.continue_stage and old_budget and model.num_timesteps % old_budget:
-            raise ValueError("Continuation requires a fully updated source PPO iteration")
         model.start_new_stage(preserve_adam=args.continue_stage)
         config["preserve_optimizer_state"] = args.continue_stage
         config["stage_initialization"] = (

@@ -381,3 +381,21 @@ uv run --locked --group train --extra test python -m taverngym.learning.experime
 后续模板已接入 BF16 autocast 前向，参数与训练状态继续保存 FP32。
 按 microbatch=1,024 重算的 300 轮预算见
 [默认值变更与耗时估算](../experiments/20261031-infra/20261031-ppo-small-paper300/config-changes/microbatch-1024/README.md)。
+# Checkpoint completion when resuming
+
+Training entry points require a completed PPO optimization, not merely a sample
+count divisible by the rollout size. New checkpoints persist `_ppo_completion`:
+collection/update checkpoints remain `in_progress` until optimization completes.
+An interrupted minibatch cannot become a resumable source by changing its filename.
+
+Legacy zero-step initializations remain supported. A legacy checkpoint with positive
+samples needs its audited `<model>.zip.boundary.json` alongside the unchanged ZIP.
+The boundary must bind `checkpoint_sha256`, `samples`, `source_Adam_offset`,
+`stage_Adam`, `complete_PPO_boundary: true`, and `train_returned: true`; an explicit
+in-progress marker is never overridden by a sidecar. The delivered V8 packet includes
+this boundary and its RNG companion. Inference-only loading is unchanged.
+
+This check proves the optimization boundary, not exact replay of NativeGame worlds.
+Environment/history and RNG restoration requirements still apply to the selected
+deployment's recovery protocol. Keep original model/Adam/RNG evidence and never
+reset a spent stage budget to retry an incomplete update.

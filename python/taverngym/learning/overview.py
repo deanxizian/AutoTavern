@@ -17,7 +17,7 @@ def update_stage_overview(folder, config, *, completed=False):
     from .stage_chain import inspect_checkpoint
 
     root = Path(__file__).resolve().parents[3]
-    folder = Path(folder)
+    folder = Path(folder).resolve()
     version = config["model_version"]
     lock = Path("/tmp") / ("autotavern-overview-" + hashlib.sha256(str(root).encode()).hexdigest()[:12])
     with lock.open("a+") as stream:
@@ -57,7 +57,7 @@ def update_stage_overview(folder, config, *, completed=False):
             lifecycle = json.loads((root / config["model_version_registry"]).read_text())["versions"][version]
             row.update(lifecycle_status=lifecycle["status"],
                        canonical_version=lifecycle["canonical_version"])
-        overview["stages"][version] = row
+        overview.setdefault("stages", {})[version] = row
         overview["updated_at"] = now()
         overview["scope"] = overview.get("scope", "").replace("V8/V9 remain paused.", "V8/V9 new authorized finite instance recorded below; old drafts preserved.")
         write_json(path, overview)

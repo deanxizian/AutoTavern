@@ -16,6 +16,8 @@ from stable_baselines3.common.callbacks import BaseCallback
 from stable_baselines3.common.utils import explained_variance
 from torch.nn import functional as F
 
+from .checkpoint_completion import ppo_completion_marker
+
 
 DEFAULT_MICRO_BATCH_SIZE = 1024
 
@@ -86,6 +88,9 @@ class EntityPPO(MaskablePPO):
     def __init__(self, *args, aux_coef=0.1, micro_batch_size=DEFAULT_MICRO_BATCH_SIZE, **kwargs):
         if aux_coef < 0:
             raise ValueError("aux_coef must be nonnegative")
+        self._ppo_completion = {"version": 1, "status": "complete", "num_timesteps": 0,
+                                "n_updates": 0, "source_Adam_offset": 0,
+                                "stage_Adam": 0, "total_Adam": 0}
         self.aux_coef = aux_coef
         self.micro_batch_size = micro_batch_size
         kwargs.setdefault("rollout_buffer_class", PlacementBuffer)
@@ -124,8 +129,10 @@ class EntityPPO(MaskablePPO):
         self._total_timesteps = self._num_timesteps_at_start = 0
         self._last_obs = self._last_original_obs = None
         self.ep_info_buffer = self.ep_success_buffer = None
+        self._ppo_completion = ppo_completion_marker(self, "complete")
 
     def collect_rollouts(self, env, callback, rollout_buffer, n_rollout_steps, use_masking=True):
+        self._ppo_completion = ppo_completion_marker(self, "in_progress")
         started = time.monotonic()
         self._rollout_places = []
         self._rollout_reward_components = []
@@ -186,6 +193,7 @@ class EntityPPO(MaskablePPO):
         return True
 
     def train(self):
+        self._ppo_completion = ppo_completion_marker(self, "in_progress")
         started = time.monotonic()
         self.policy.set_training_mode(True)
         self._update_learning_rate(self.policy.optimizer)
@@ -266,5 +274,6 @@ class EntityPPO(MaskablePPO):
             self.rollout_buffer.values.flatten(), self.rollout_buffer.returns.flatten(),
         ))
         self.last_train_seconds = time.monotonic() - started
+        self._ppo_completion = ppo_completion_marker(self, "complete")
         if getattr(self, "_after_update", None) is not None:
             self._after_update(self)

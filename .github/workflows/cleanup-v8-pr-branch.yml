@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ref="repos/${GITHUB_REPOSITORY}/git/refs/heads/codex/publish-eric-v8-3702"
-          current="$(gh api "$ref" --jq '.object.sha')"
+          git_api="repos/${GITHUB_REPOSITORY}/git"
+          current="$(gh api "$git_api/ref/heads/codex/publish-eric-v8-3702" --jq '.object.sha')"
           test "$current" = "$EXPECTED_HEAD"
-          gh api --method DELETE "$ref"
+          gh api --method DELETE "$git_api/refs/heads/codex/publish-eric-v8-3702"

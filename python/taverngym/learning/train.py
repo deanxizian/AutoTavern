@@ -13,10 +13,12 @@ from stable_baselines3.common.callbacks import CheckpointCallback
 from stable_baselines3.common.logger import configure
 
 from .env import make_vector_env
+from .checkpoint_completion import ensure_complete_ppo_checkpoint
 from .ppo import DEFAULT_MICRO_BATCH_SIZE, EntityPPO
 from .precision import FORWARD_PRECISIONS, configure_precision
 from .rewards import RewardShapingConfig
-from .tracking import WandbOutputFormat, WandbTracker, tracking_settings
+from .tracking import WandbOutputFormat, tracking_settings
+from .tracking_v2 import tracker_for_config
 
 
 def main():
@@ -44,6 +46,7 @@ def main():
         raise ValueError("Training steps, checkpoint interval and microbatch size must be positive")
     torch.set_num_threads(2)
     model = EntityPPO.load(args.model, device=args.device, micro_batch_size=args.micro_batch_size)
+    ensure_complete_ppo_checkpoint(model, args.model)
     config = dict(model.experiment_config)
     if args.forward_precision is not None:
         config["forward_precision"] = args.forward_precision
@@ -66,7 +69,8 @@ def main():
         config["reward_shaping"] = asdict(RewardShapingConfig(**config["reward_shaping"]))
     model.experiment_config = config
     env = make_vector_env(args.n_envs if args.n_envs is not None else config["n_envs"], config["seed"],
-                          reward_shaping=config.get("reward_shaping"))
+                          reward_shaping=config.get("reward_shaping"),
+                          config=config.get("simulator_config"))
     model.set_env(env)
     model.tensorboard_log = None
     args.run_dir.mkdir(parents=True)
@@ -78,7 +82,8 @@ def main():
                     source_checkpoint_sha256=hashlib.sha256(args.model.read_bytes()).hexdigest(),
                     requested_additional_timesteps=args.total_timesteps)
     (experiment_dir / "config.json").write_text(json.dumps(resolved, indent=2) + "\n")
-    tracker = WandbTracker(experiment_dir, resolved) if args.tracking_backend == "wandb" else None
+    tracker = (tracker_for_config(experiment_dir, resolved)
+               if args.tracking_backend == "wandb" else None)
     logger = configure(str(experiment_dir), ["stdout", "csv"])
     if tracker is not None:
         logger.output_formats.append(WandbOutputFormat(tracker))

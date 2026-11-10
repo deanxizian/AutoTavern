@@ -1,6 +1,7 @@
 """Completed training and an active retained model are distinct states."""
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -97,3 +98,20 @@ def test_fresh_overview_keeps_zero_step_best_and_counts_only_saved_complete_upda
     assert fresh['fresh_samples'] == 524288
     assert fresh['best']['ppo'] == 0 and fresh['best']['adam'] == 0
     assert fresh['roster'] == '7 V0'
+
+
+def test_generic_overview_resolves_relative_experiment_dir(tmp_path, monkeypatch):
+    root = tmp_path
+    folder = root / "experiments" / "v8"
+    folder.mkdir(parents=True)
+    (root / "experiments/experiment-overview.json").write_text("{}")
+    (root / "experiments/EXPERIMENT_OVERVIEW.md").write_text("Historical results stay here.\n")
+    monkeypatch.setattr(overview, "__file__", str(root / "python/taverngym/learning/overview.py"))
+    monkeypatch.chdir(root)
+    config = {"metric_schema_version": 2, "metric_schema_sha256": "schema", "model_version": "v8",
+        "instance_id": "relative-v8", "name": "v8", "best_model_filename": "best.zip",
+        "iterations": 100, "initial_model_version": "v7", "initial_model_sha256": "source",
+        "opponent_pool": [{"count": 6, "model_version": "v7"}], "evaluation_games": 64}
+    overview.update_stage_overview(Path("experiments/v8"), config)
+    row = json.loads((root / "experiments/experiment-overview.json").read_text())["stages"]["v8"]
+    assert row["experiment_dir"] == "experiments/v8"
